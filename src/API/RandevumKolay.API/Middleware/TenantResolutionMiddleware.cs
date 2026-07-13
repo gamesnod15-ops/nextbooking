@@ -25,6 +25,7 @@ public class TenantResolutionMiddleware
         "/api/v1/businesses",
         "/api/v1/users",
         "/api/v1/reviews",
+        "/api/v1/geocoding",
         "/health",
         "/swagger",
         "/hangfire"

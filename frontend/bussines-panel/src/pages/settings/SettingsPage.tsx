@@ -909,6 +909,8 @@ function GeneralSettings() {
   const [description, setDescription] = useState('')
   const [latitude, setLatitude] = useState('')
   const [longitude, setLongitude] = useState('')
+  const [geocoding, setGeocoding] = useState(false)
+  const [geocodeError, setGeocodeError] = useState('')
   const [saved, setSaved] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [galleryImages, setGalleryImages] = useState<string[]>(() => {
@@ -937,6 +939,31 @@ function GeneralSettings() {
       localStorage.setItem('rk_gallery_images', JSON.stringify(business.galleryImages))
     }
     setInitialized(true)
+  }
+
+  async function geocodeAddress() {
+    const fullAddress = [address, city].filter(Boolean).join(', ')
+    if (!fullAddress.trim()) return
+    setGeocoding(true)
+    setGeocodeError('')
+    try {
+      const query = encodeURIComponent(fullAddress + ', Türkiye')
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&accept-language=tr`,
+        { headers: { 'User-Agent': 'RandevumKolay/1.0 (randevumkolay.com)' } }
+      )
+      const data = await res.json()
+      if (data && data.length > 0) {
+        setLatitude(String(data[0].lat))
+        setLongitude(String(data[0].lon))
+      } else {
+        setGeocodeError('Adres bulunamadı. Lütfen adresi netleştirin.')
+      }
+    } catch {
+      setGeocodeError('Konum servisine erişilemedi.')
+    } finally {
+      setGeocoding(false)
+    }
   }
 
   async function handleSave() {
@@ -1056,6 +1083,7 @@ function GeneralSettings() {
               <input
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
+                onBlur={geocodeAddress}
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="İstanbul"
               />
@@ -1075,10 +1103,17 @@ function GeneralSettings() {
             <textarea
               value={address}
               onChange={(e) => setAddress(e.target.value)}
+              onBlur={geocodeAddress}
               rows={2}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              placeholder="İşletme adresi"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="İşletme adresi (otomatik konum belirlenir)"
             />
+            {(geocoding || (latitude && longitude)) && (
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {geocoding ? 'Konum aranıyor...' : `Konum: ${latitude}, ${longitude}`}
+              </p>
+            )}
+            {geocodeError && <p className="mt-1 text-[11px] text-orange-500">{geocodeError}</p>}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Açıklama</label>
@@ -1089,28 +1124,6 @@ function GeneralSettings() {
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               placeholder="İşletmeniz hakkında kısa bilgi"
             />
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Enlem (Latitude)</label>
-              <input
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value.replace(/[^0-9.\-]/g, ''))}
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Örn: 41.0082"
-              />
-              <p className="mt-1 text-[11px] text-muted-foreground">Haritada konumunuz için gerekli</p>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Boylam (Longitude)</label>
-              <input
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value.replace(/[^0-9.\-]/g, ''))}
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Örn: 28.9784"
-              />
-              <p className="mt-1 text-[11px] text-muted-foreground">Haritada konumunuz için gerekli</p>
-            </div>
           </div>
           <div className="flex items-center justify-end gap-3 pt-2">
             {saved && <span className="text-sm text-emerald-600">✓ Kaydedildi</span>}
