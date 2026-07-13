@@ -85,29 +85,39 @@ public class ScheduleOptimizationService : IScheduleOptimizationService
     {
         var suggestions = new List<OverbookingSuggestion>();
 
+        var startUtc = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+        var endUtc = startUtc.AddDays(1);
+
         var appointments = await _context.Appointments
             .AsNoTracking()
             .Where(a => a.TenantId == tenantId
-                     && a.StartTime.Date == date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc).Date
+                     && a.StartTime >= startUtc
+                     && a.StartTime < endUtc
                      && a.Status != AppointmentStatus.Cancelled
                      && a.Status != AppointmentStatus.Completed
                      && !a.IsDeleted)
-            .Include(a => a.Service)
-            .Include(a => a.Customer)
+            .Select(a => new { a.Id, a.CustomerId })
             .ToListAsync(ct);
 
         foreach (var appointment in appointments)
         {
-            var prediction = await _predictionService.PredictNoShowAsync(
-                tenantId, appointment.Id, appointment.CustomerId, ct);
-
-            if (prediction.Probability >= 0.4m)
+            try
             {
-                suggestions.Add(new OverbookingSuggestion(
-                    appointment.Id,
-                    prediction.Probability,
-                    prediction.RiskLevel,
-                    $"No-show riski %{prediction.Probability * 100:F0}. Aynı slot için yedek müşteri alınabilir."));
+                var prediction = await _predictionService.PredictNoShowAsync(
+                    tenantId, appointment.Id, appointment.CustomerId, ct);
+
+                if (prediction.Probability >= 0.4m)
+                {
+                    suggestions.Add(new OverbookingSuggestion(
+                        appointment.Id,
+                        prediction.Probability,
+                        prediction.RiskLevel,
+                        $"No-show riski %{prediction.Probability * 100:F0}. Aynı slot için yedek müşteri alınabilir."));
+                }
+            }
+            catch
+            {
+                // Skip failed predictions for individual appointments
             }
         }
 

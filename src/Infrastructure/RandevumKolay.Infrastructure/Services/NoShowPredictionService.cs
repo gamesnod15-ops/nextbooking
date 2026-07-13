@@ -55,7 +55,7 @@ public class NoShowPredictionService : INoShowPredictionService
         probability += CalculateCustomerHistoryFactor(customer, pastAppointments, factors);
         probability += CalculateTimingFactor(appointmentStart, factors);
         probability += CalculateLeadTimeFactor(appointmentStart, factors);
-        probability += CalculateServiceFactor(serviceId, ct, factors);
+        probability += await CalculateServiceFactorAsync(serviceId, ct, factors);
 
         probability = Math.Clamp(probability, 0.01m, 0.95m);
 
@@ -107,7 +107,7 @@ public class NoShowPredictionService : INoShowPredictionService
         probability += CalculateCustomerHistoryFactor(customer, pastAppointments, factors);
         probability += CalculateTimingFactor(appointment.StartTime, factors);
         probability += CalculateLeadTimeFactor(appointment.StartTime, factors);
-        probability += CalculateServiceFactor(appointment.ServiceId, ct, factors);
+        probability += await CalculateServiceFactorAsync(appointment.ServiceId, ct, factors);
 
         probability = Math.Clamp(probability, 0.01m, 0.95m);
 
@@ -217,11 +217,11 @@ public class NoShowPredictionService : INoShowPredictionService
         return 0;
     }
 
-    private decimal CalculateServiceFactor(Guid? serviceId, CancellationToken ct, List<string> factors)
+    private async Task<decimal> CalculateServiceFactorAsync(Guid? serviceId, CancellationToken ct, List<string> factors)
     {
         if (serviceId is null) return 0;
 
-        var serviceNoShowRate = GetServiceNoShowRate(serviceId.Value);
+        var serviceNoShowRate = await GetServiceNoShowRateAsync(serviceId.Value, ct);
         if (serviceNoShowRate > 0.15m)
         {
             factors.Add($"Hizmet no-show oranı yüksek (%{serviceNoShowRate * 100:F0})");
@@ -231,15 +231,21 @@ public class NoShowPredictionService : INoShowPredictionService
         return 0;
     }
 
-    private decimal GetServiceNoShowRate(Guid serviceId)
+    private async Task<decimal> GetServiceNoShowRateAsync(Guid serviceId, CancellationToken ct = default)
     {
-        var appointments = _context.Appointments
+        var total = await _context.Appointments
             .AsNoTracking()
             .Where(a => a.ServiceId == serviceId && !a.IsDeleted)
-            .ToList();
+            .CountAsync(ct);
 
-        if (appointments.Count == 0) return 0;
-        return (decimal)appointments.Count(a => a.Status == AppointmentStatus.NoShow) / appointments.Count;
+        if (total == 0) return 0;
+
+        var noShowCount = await _context.Appointments
+            .AsNoTracking()
+            .Where(a => a.ServiceId == serviceId && !a.IsDeleted && a.Status == AppointmentStatus.NoShow)
+            .CountAsync(ct);
+
+        return (decimal)noShowCount / total;
     }
 
     private static string GetRiskLevel(decimal probability)

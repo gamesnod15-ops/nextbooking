@@ -39,7 +39,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   const [fullName, setFullName] = useState('');
   const [avatar, setAvatar] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [businessPanelUrl, setBusinessPanelUrl] = useState('http://localhost:3000');
+  const [businessPanelUrl, setBusinessPanelUrl] = useState(process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -56,7 +56,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
     const tenantId = localStorage.getItem('tenantId') ?? '';
     const fullName = localStorage.getItem('fullName') ?? '';
     const params = new URLSearchParams({ autologin: t, userId, role, tenantId, fullName });
-    setBusinessPanelUrl(`http://localhost:3000?${params.toString()}`);
+    setBusinessPanelUrl(`${process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000'}?${params.toString()}`);
 
     const handler = () => {
       setFullName(localStorage.getItem('fullName') ?? '');

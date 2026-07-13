@@ -1444,8 +1444,7 @@ export function BillingSettings() {
   const accessToken = useAppSelector((s) => s.auth.accessToken)
 
   function getWebAppBaseUrl() {
-    if (window.location.hostname === 'localhost') return 'http://localhost:3004'
-    return window.location.origin
+    return import.meta.env.VITE_WEB_APP_URL || window.location.origin
   }
 
   function handleUpgradeClick(targetPlan: string) {

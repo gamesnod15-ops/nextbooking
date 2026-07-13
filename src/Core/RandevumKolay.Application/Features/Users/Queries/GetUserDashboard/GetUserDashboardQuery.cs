@@ -84,7 +84,7 @@ public sealed class GetUserDashboardQueryHandler
             .ToListAsync(cancellationToken);
 
         var activeSessions = await _context.RefreshTokens
-            .Where(t => t.UserId == userId && t.IsActive)
+            .Where(t => t.UserId == userId && t.RevokedAt == null && t.ExpiresAt > DateTimeOffset.UtcNow)
             .Select(t => new ActiveSessionInfo(
                 t.Id,
                 t.DeviceInfo,

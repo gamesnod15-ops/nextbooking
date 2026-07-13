@@ -31,7 +31,7 @@ export default function PanelPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState('');
-  const [businessPanelUrl, setBusinessPanelUrl] = useState('http://localhost:3000');
+  const [businessPanelUrl, setBusinessPanelUrl] = useState(process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000');
   const [cards, setCards] = useState<SummaryCard[]>([]);
   const [hasSiteBuilder, setHasSiteBuilder] = useState(false);
   const [domain, setDomain] = useState('');
@@ -51,7 +51,7 @@ export default function PanelPage() {
     const tenantId = localStorage.getItem('tenantId') ?? '';
     const fullName = localStorage.getItem('fullName') ?? '';
     const params = new URLSearchParams({ autologin: token, userId, role, tenantId, fullName });
-    setBusinessPanelUrl(`http://localhost:3000?${params.toString()}`);
+    setBusinessPanelUrl(`${process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000'}?${params.toString()}`);
 
     Promise.all([
       axios.get('/api/v1/Business/me'),

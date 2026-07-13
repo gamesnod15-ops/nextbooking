@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using RandevumKolay.Application.Common.Interfaces;
-using RandevumKolay.Infrastructure.Cache;
 
 namespace RandevumKolay.API.Middleware;
 
@@ -18,9 +18,11 @@ public class TenantResolutionMiddleware
     [
         "/api/v1/tenants/register",
         "/api/v1/auth/login",
+        "/api/v1/auth/register",
         "/api/v1/auth/oauth/google/callback",
         "/api/v1/auth/oauth/apple/callback",
         "/api/v1/auth/oauth/complete-registration",
+        "/api/v1/businesses",
         "/health",
         "/swagger",
         "/hangfire"
@@ -29,7 +31,7 @@ public class TenantResolutionMiddleware
     public async Task InvokeAsync(
         HttpContext context,
         IApplicationDbContext db,
-        ICacheService cache,
+        IMemoryCache memoryCache,
         ICurrentTenantService tenantService)
     {
         var path = context.Request.Path.Value ?? string.Empty;
@@ -62,17 +64,30 @@ public class TenantResolutionMiddleware
         }
 
         var cacheKey = $"tenant:{subdomain}";
-        var tenant = await cache.GetOrSetAsync(
-            cacheKey,
-            async () => await db.Tenants
+        var tenant = await memoryCache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            return await db.Tenants
                 .AsNoTracking()
                 .Where(t => t.Subdomain == subdomain && t.IsActive)
                 .Select(t => new TenantCacheDto(t.Id, t.Subdomain, t.IsActive))
-                .FirstOrDefaultAsync(),
-            TimeSpan.FromMinutes(5));
+                .FirstOrDefaultAsync();
+        });
 
         if (tenant is null)
         {
+            // Subdomain from Host header didn't match any tenant.
+            // This happens when requests are proxied (e.g. Vercel rewrite) and the
+            // Host header reflects the proxy domain rather than the tenant domain.
+            // Fall back to JWT-based tenant resolution before giving up.
+            var tenantIdClaim = context.User.FindFirst("tenant_id")?.Value;
+            if (!string.IsNullOrWhiteSpace(tenantIdClaim) && Guid.TryParse(tenantIdClaim, out var claimTenantId))
+            {
+                tenantService.SetTenant(claimTenantId, string.Empty);
+                await _next(context);
+                return;
+            }
+
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             await context.Response.WriteAsJsonAsync(new { error = "Tenant not found." });
             return;

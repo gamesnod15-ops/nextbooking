@@ -28,8 +28,9 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 
         // Redis — lazy connection so startup doesn't block when Redis is unavailable
-        var redisConn = configuration.GetConnectionString("Redis")
-            ?? "localhost:6379";
+        var redisConn = configuration.GetConnectionString("Redis");
+        if (string.IsNullOrWhiteSpace(redisConn))
+            redisConn = "localhost:6379";
 
         services.AddSingleton<IConnectionMultiplexer>(_ =>
         {

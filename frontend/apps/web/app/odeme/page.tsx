@@ -9,9 +9,9 @@ import axios from '@/lib/axios'
 interface PlanMeta { id: string; name: string; price: string; period: string; color: string; monthlyPrice: number }
 
 const PLAN_META: Record<string, PlanMeta> = {
-  starter:      { id: 'starter',      name: 'Starter',      price: '?299', period: '/ay', color: 'bg-slate-600', monthlyPrice: 299 },
-  business:     { id: 'business',     name: 'Business',     price: '?599', period: '/ay', color: 'bg-brand-500', monthlyPrice: 599 },
-  professional: { id: 'professional', name: 'Professional', price: '?999', period: '/ay', color: 'bg-blue-600', monthlyPrice: 999 },
+  starter:      { id: 'starter',      name: 'Starter',      price: '\u20BA299', period: '/ay', color: 'bg-slate-600', monthlyPrice: 299 },
+  business:     { id: 'business',     name: 'Business',     price: '\u20BA599', period: '/ay', color: 'bg-brand-500', monthlyPrice: 599 },
+  professional: { id: 'professional', name: 'Professional', price: '\u20BA999', period: '/ay', color: 'bg-blue-600', monthlyPrice: 999 },
   custom:       { id: 'custom',       name: 'Custom',       price: 'Özel', period: ' fiyat', color: 'bg-amber-500', monthlyPrice: 0 },
 }
 
@@ -252,7 +252,7 @@ function OdemeInner() {
         totalAmount: getGrandTotal(),
         dueDate: dueDate.toISOString().split('T')[0],
         installmentCount: 1,
-        description: `${plan.name} Plan - ${getDurationOpt().label} (${plan.monthlyPrice}?/ay × ${duration} ay)`,
+        description: `${plan.name} Plan - ${getDurationOpt().label} (${plan.monthlyPrice}\u20BA/ay \u00D7 ${duration} ay)`,
       })
 
       // 4. Save billing info to business profile
@@ -347,10 +347,10 @@ function OdemeInner() {
           </Link>
           {/* Step indicator */}
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">?</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
             <span className="text-gray-400">Hesap</span>
             <span className="text-gray-300">›</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">?</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
             <span className="text-gray-400">Paket</span>
             <span className="text-gray-300">›</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black text-xs font-bold">3</span>
@@ -621,7 +621,7 @@ function OdemeInner() {
                     <button type="submit" disabled={paying}
                       className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-4 text-base font-bold text-black shadow-lg hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl">
                       <Lock className="h-4 w-4" />
-                      {paying ? 'İşleniyor…' : plan.id === 'custom' ? 'Ödeme Yap' : `?${getGrandTotal().toLocaleString('tr-TR')} Öde`}
+                      {paying ? 'İşleniyor…' : plan.id === 'custom' ? 'Ödeme Yap' : `\u20BA${getGrandTotal().toLocaleString('tr-TR')} Öde`}
                     </button>
                   </form>
 
@@ -689,23 +689,23 @@ function OdemeInner() {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Ara Toplam</span>
-                    <span className="font-semibold text-gray-900">?{getSubtotal().toLocaleString('tr-TR')}</span>
+                    <span className="font-semibold text-gray-900">{'\u20BA'}{getSubtotal().toLocaleString('tr-TR')}</span>
                   </div>
                   {getDiscount() > 0 && (
                     <div className="flex justify-between text-emerald-600">
                       <span>İndirim (%{getDurationOpt().discount})</span>
-                      <span className="font-semibold">-?{getDiscount().toLocaleString('tr-TR')}</span>
+                      <span className="font-semibold">-{'\u20BA'}{getDiscount().toLocaleString('tr-TR')}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-gray-600">
                     <span>KDV (%20)</span>
-                    <span className="font-semibold text-gray-900">?{getVat().toLocaleString('tr-TR')}</span>
+                    <span className="font-semibold text-gray-900">{'\u20BA'}{getVat().toLocaleString('tr-TR')}</span>
                   </div>
                   <div className="border-t border-gray-100 pt-2.5 flex justify-between font-bold text-gray-900 text-base">
                     <span>Toplam</span>
-                    <span>?{getGrandTotal().toLocaleString('tr-TR')}</span>
+                    <span>{'\u20BA'}{getGrandTotal().toLocaleString('tr-TR')}</span>
                   </div>
-                  <p className="text-xs text-emerald-600 font-medium">? İlk 14 gün ücretsiz</p>
+                  <p className="text-xs text-emerald-600 font-medium">{'\u2713'} İlk 14 gün ücretsiz</p>
                 </div>
               ) : (
                 <p className="text-sm text-gray-500">Özel fiyatlandırma için bizimle iletişime geçin.</p>
