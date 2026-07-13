@@ -1,0 +1,6 @@
+@RandevumKolay.API_HostAddress = http://localhost:5280
+
+GET {{RandevumKolay.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
