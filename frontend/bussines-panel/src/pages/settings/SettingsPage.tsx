@@ -947,20 +947,13 @@ function GeneralSettings() {
     setGeocoding(true)
     setGeocodeError('')
     try {
-      const query = encodeURIComponent(fullAddress + ', Türkiye')
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&accept-language=tr`,
-        { headers: { 'User-Agent': 'RandevumKolay/1.0 (randevumkolay.com)' } }
+      const res = await api.get<{ latitude: number; longitude: number; displayName: string }>(
+        `/geocoding?address=${encodeURIComponent(fullAddress)}`
       )
-      const data = await res.json()
-      if (data && data.length > 0) {
-        setLatitude(String(data[0].lat))
-        setLongitude(String(data[0].lon))
-      } else {
-        setGeocodeError('Adres bulunamadı. Lütfen adresi netleştirin.')
-      }
+      setLatitude(String(res.data.latitude))
+      setLongitude(String(res.data.longitude))
     } catch {
-      setGeocodeError('Konum servisine erişilemedi.')
+      setGeocodeError('Konum belirlenemedi. Kaydettiğinizde tekrar denenecek.')
     } finally {
       setGeocoding(false)
     }

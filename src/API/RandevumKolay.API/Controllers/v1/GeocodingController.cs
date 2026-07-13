@@ -8,10 +8,12 @@ namespace RandevumKolay.API.Controllers.v1;
 [ApiController]
 public class GeocodingController : ControllerBase
 {
-    private static readonly HttpClient _http = new()
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public GeocodingController(IHttpClientFactory httpClientFactory)
     {
-        Timeout = TimeSpan.FromSeconds(10),
-    };
+        _httpClientFactory = httpClientFactory;
+    }
 
     [HttpGet]
     public async Task<IActionResult> Geocode(
@@ -21,32 +23,46 @@ public class GeocodingController : ControllerBase
         if (string.IsNullOrWhiteSpace(address))
             return BadRequest(new { error = "Adres gerekli." });
 
-        var query = Uri.EscapeDataString(address + ", Türkiye");
-        var url = $"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1&accept-language=tr";
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Add("User-Agent", "RandevumKolay/1.0 (randevumkolay.com)");
+        try
+        {
+            var client = _httpClientFactory.CreateClient();
+            var query = Uri.EscapeDataString(address + ", Türkiye");
+            var url = $"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1&accept-language=tr";
 
-        var response = await _http.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-            return StatusCode(502, new { error = "Geocoding servisi erişilemedi." });
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.TryAddWithoutValidation("User-Agent", "RandevumKolay/1.0 (https://randevumkolay.com; info@randevumkolay.com)");
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        var results = System.Text.Json.JsonSerializer.Deserialize<List<NominatimResult>>(json);
+            var response = await client.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+                return StatusCode(502, new { error = "Geocoding servisi erişilemedi." });
 
-        if (results is null || results.Count == 0)
-            return NotFound(new { error = "Adres bulunamadı." });
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            var results = System.Text.Json.JsonSerializer.Deserialize<List<NominatimResult>>(json);
 
-        var first = results[0];
-        return Ok(new { latitude = first.Lat, longitude = first.Lon, displayName = first.DisplayName });
+            if (results is null || results.Count == 0)
+                return NotFound(new { error = "Adres bulunamadı." });
+
+            var first = results[0];
+            if (double.TryParse(first.Lat, System.Globalization.CultureInfo.InvariantCulture, out var lat) &&
+                double.TryParse(first.Lon, System.Globalization.CultureInfo.InvariantCulture, out var lon))
+            {
+                return Ok(new { latitude = lat, longitude = lon, displayName = first.DisplayName });
+            }
+            return StatusCode(502, new { error = "Koordinatlar ayrıştırılamadı." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(502, new { error = "Geocoding hatası: " + ex.Message });
+        }
     }
 
     private class NominatimResult
     {
         [System.Text.Json.Serialization.JsonPropertyName("lat")]
-        public double Lat { get; set; }
+        public string Lat { get; set; } = string.Empty;
 
         [System.Text.Json.Serialization.JsonPropertyName("lon")]
-        public double Lon { get; set; }
+        public string Lon { get; set; } = string.Empty;
 
         [System.Text.Json.Serialization.JsonPropertyName("display_name")]
         public string DisplayName { get; set; } = string.Empty;
