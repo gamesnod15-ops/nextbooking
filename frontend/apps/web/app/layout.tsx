@@ -1,6 +1,7 @@
 
 import type { Metadata } from 'next'
 import './globals.css'
+import 'leaflet/dist/leaflet.css'
 import { CookieConsent } from '@/components/CookieConsent'
 
 export const metadata: Metadata = {

@@ -23,6 +23,8 @@ public class TenantResolutionMiddleware
         "/api/v1/auth/oauth/apple/callback",
         "/api/v1/auth/oauth/complete-registration",
         "/api/v1/businesses",
+        "/api/v1/users",
+        "/api/v1/reviews",
         "/health",
         "/swagger",
         "/hangfire"

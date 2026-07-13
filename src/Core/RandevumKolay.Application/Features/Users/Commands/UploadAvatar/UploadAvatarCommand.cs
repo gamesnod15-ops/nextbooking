@@ -26,7 +26,10 @@ public sealed class UploadAvatarCommandHandler : IRequestHandler<UploadAvatarCom
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken)
             ?? throw new KeyNotFoundException("User not found.");
 
-        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+        var uploadsDir = Path.Combine(
+            Environment.GetEnvironmentVariable("UPLOADS_DIR")
+                ?? Path.Combine(AppContext.BaseDirectory, "wwwroot"),
+            "uploads", "avatars");
         Directory.CreateDirectory(uploadsDir);
 
         var ext = Path.GetExtension(request.FileName);
@@ -38,7 +41,9 @@ public sealed class UploadAvatarCommandHandler : IRequestHandler<UploadAvatarCom
             await request.FileStream.CopyToAsync(fileStream, cancellationToken);
         }
 
-        var url = $"/uploads/avatars/{fileName}";
+        var baseUrl = Environment.GetEnvironmentVariable("BASE_URL")
+            ?? "https://api-randevumkolay.azurewebsites.net";
+        var url = $"{baseUrl}/uploads/avatars/{fileName}";
         user.SetAvatar(url);
         await _context.SaveChangesAsync(cancellationToken);
 

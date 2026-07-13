@@ -907,6 +907,8 @@ function GeneralSettings() {
   const [city, setCity] = useState('')
   const [website, setWebsite] = useState('')
   const [description, setDescription] = useState('')
+  const [latitude, setLatitude] = useState('')
+  const [longitude, setLongitude] = useState('')
   const [saved, setSaved] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [galleryImages, setGalleryImages] = useState<string[]>(() => {
@@ -928,6 +930,8 @@ function GeneralSettings() {
     setCity(business.city ?? '')
     setWebsite(business.website ?? '')
     setDescription(business.description ?? '')
+    setLatitude(business.latitude?.toString() ?? '')
+    setLongitude(business.longitude?.toString() ?? '')
     if (business.galleryImages?.length) {
       setGalleryImages(business.galleryImages)
       localStorage.setItem('rk_gallery_images', JSON.stringify(business.galleryImages))
@@ -938,6 +942,8 @@ function GeneralSettings() {
   async function handleSave() {
     await updateMutation.mutateAsync({
       name, phone, email, address, city, website, description,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
       logoUrl: business?.logoUrl ?? null,
       galleryImages,
       postalCode: business?.postalCode ?? null,
@@ -1083,6 +1089,28 @@ function GeneralSettings() {
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               placeholder="İşletmeniz hakkında kısa bilgi"
             />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Enlem (Latitude)</label>
+              <input
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value.replace(/[^0-9.\-]/g, ''))}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="Örn: 41.0082"
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">Haritada konumunuz için gerekli</p>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Boylam (Longitude)</label>
+              <input
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value.replace(/[^0-9.\-]/g, ''))}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="Örn: 28.9784"
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">Haritada konumunuz için gerekli</p>
+            </div>
           </div>
           <div className="flex items-center justify-end gap-3 pt-2">
             {saved && <span className="text-sm text-emerald-600">✓ Kaydedildi</span>}
@@ -1274,6 +1302,8 @@ function WorkingHoursSettings() {
 
   function save() {
     localStorage.setItem('working_hours', JSON.stringify(schedule))
+    api.patch('/business/me/settings', { workingHours: JSON.stringify(schedule) })
+      .catch(() => {})
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }

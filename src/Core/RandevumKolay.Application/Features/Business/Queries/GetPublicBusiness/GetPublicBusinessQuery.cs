@@ -20,6 +20,9 @@ public record PublicBusinessDetailDto(
     string? LogoUrl,
     string? CoverImageUrl,
     string? Description,
+    double? Latitude,
+    double? Longitude,
+    string? WorkingHours,
     List<string> GalleryImages,
     List<PublicServiceDto> Services,
     List<PublicEmployeeDto> Employees);
@@ -75,6 +78,10 @@ public sealed class GetPublicBusinessQueryHandler
 
         if (business is null) return null;
 
+        string? workingHoursJson = null;
+        if (business.Settings is not null)
+            business.Settings.TryGetValue("workingHours", out workingHoursJson);
+
         return new PublicBusinessDetailDto(
             business.Id,
             business.Name,
@@ -88,7 +95,10 @@ public sealed class GetPublicBusinessQueryHandler
             business.LogoUrl,
             business.CoverImageUrl,
             business.Description,
-            business.GalleryImages,
+            business.Latitude,
+            business.Longitude,
+            workingHoursJson,
+            business.GalleryImages ?? new(),
             business.Services.Select(s => new PublicServiceDto(
                 s.Id, s.Name, s.Description, s.DurationMinutes, s.Price, s.ImageUrl)).ToList(),
             business.Employees.Select(e => new PublicEmployeeDto(

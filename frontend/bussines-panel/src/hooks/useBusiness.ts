@@ -16,7 +16,10 @@ export interface BusinessProfile {
   taxOffice: string | null
   website: string | null
   logoUrl: string | null
+  coverImageUrl: string | null
   description: string | null
+  latitude: number | null
+  longitude: number | null
   galleryImages: string[]
   settings: Record<string, string>
 }

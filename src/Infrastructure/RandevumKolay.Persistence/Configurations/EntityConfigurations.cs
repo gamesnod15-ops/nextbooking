@@ -60,6 +60,8 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
         builder.Property(b => b.TaxNumber).HasMaxLength(50);
         builder.Property(b => b.TaxOffice).HasMaxLength(200);
         builder.Property(b => b.LogoUrl).HasColumnType("text");
+        builder.Property(b => b.Latitude);
+        builder.Property(b => b.Longitude);
 
         builder.Property(b => b.GalleryImages)
             .HasColumnType("jsonb")
@@ -72,7 +74,7 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
             .HasColumnType("jsonb")
             .HasConversion(
                 v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions?)null),
-                v => System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new());
+                v => v == null ? new Dictionary<string, string>() : System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new());
 
         builder.HasIndex(b => b.TenantId);
 

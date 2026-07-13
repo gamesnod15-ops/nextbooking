@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { RandevuModal } from '@/components/RandevuModal'
@@ -12,6 +13,13 @@ import {
   Share2, Heart, ChevronRight, Clock, Loader2,
   Globe, Building2, Image, Star, Check,
 } from 'lucide-react'
+
+const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContainer), { ssr: false })
+const TileLayer = dynamic(() => import('react-leaflet').then(m => m.TileLayer), { ssr: false })
+const Marker = dynamic(() => import('react-leaflet').then(m => m.Marker), { ssr: false })
+const Popup = dynamic(() => import('react-leaflet').then(m => m.Popup), { ssr: false })
+
+const DAYS_TR = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
 
 interface ServiceDto {
   id: string
@@ -50,6 +58,9 @@ interface BusinessDetail {
   logoUrl: string | null
   coverImageUrl: string | null
   description: string | null
+  latitude: number | null
+  longitude: number | null
+  workingHours: string | null
   galleryImages: string[]
   services: ServiceDto[]
   employees: EmployeeDto[]
@@ -177,16 +188,20 @@ export default function BusinessDetailPage() {
 
           <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 pt-6">
             {biz.galleryImages.length > 0 && (
-              <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-2 rounded-2xl overflow-hidden">
-                <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer" onClick={() => setSelectedImage(0)}>
-                  <img src={biz.galleryImages[0]} alt={biz.name} className="w-full h-64 md:h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                </div>
-                {biz.galleryImages.slice(1, 4).map((img, i) => (
-                  <div key={i} className="relative group cursor-pointer" onClick={() => setSelectedImage(i + 1)}>
-                    <img src={img} alt={`${biz.name} ${i + 2}`} className="w-full h-32 md:h-40 object-cover" />
+              <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-2">
+                {biz.galleryImages.slice(0, 4).map((img, i) => (
+                  <div
+                    key={i}
+                    className="relative aspect-square cursor-pointer overflow-hidden rounded-xl group"
+                    onClick={() => setSelectedImage(i)}
+                  >
+                    <img
+                      src={img}
+                      alt={`${biz.name} ${i + 1}`}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    {i === 2 && biz.galleryImages.length > 4 && (
+                    {i === 3 && biz.galleryImages.length > 4 && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white text-sm font-medium">
                         <Image className="h-4 w-4 mr-1" /> +{biz.galleryImages.length - 4}
                       </div>
@@ -471,11 +486,61 @@ export default function BusinessDetailPage() {
 
               <div className="rounded-2xl border-2 border-gray-100 bg-gray-50 p-6">
                 <h3 className="text-sm font-bold text-gray-900 mb-3">Konum</h3>
-                <div className="rounded-xl bg-gray-100 h-40 flex items-center justify-center text-gray-400 text-xs">
-                  <MapPin className="h-5 w-5 mr-1" /> Harita Yükleniyor...
-                </div>
+                {biz.latitude && biz.longitude ? (
+                  <div className="rounded-xl overflow-hidden h-48">
+                    <MapContainer
+                      center={[biz.latitude, biz.longitude]}
+                      zoom={15}
+                      scrollWheelZoom={false}
+                      className="h-full w-full"
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <Marker position={[biz.latitude, biz.longitude]}>
+                        <Popup>{biz.name}</Popup>
+                      </Marker>
+                    </MapContainer>
+                  </div>
+                ) : (
+                  <div className="rounded-xl bg-gray-100 h-48 flex items-center justify-center text-gray-400 text-xs">
+                    <MapPin className="h-5 w-5 mr-1" /> Konum belirtilmemiş
+                  </div>
+                )}
                 {biz.address && <p className="text-xs text-gray-500 mt-2">{biz.address}</p>}
               </div>
+
+              {biz.workingHours && (() => {
+                let hours: { open: boolean; start: string; end: string }[] = []
+                try { hours = JSON.parse(biz.workingHours) } catch { return null }
+                if (!Array.isArray(hours) || hours.length === 0) return null
+                const today = new Date().getDay()
+                const todayIdx = today === 0 ? 6 : today - 1
+                const todayHours = hours[todayIdx]
+                return (
+                  <div className="rounded-2xl border-2 border-gray-100 bg-gray-50 p-6">
+                    <h3 className="text-sm font-bold text-gray-900 mb-3">Çalışma Saatleri</h3>
+                    <div className="space-y-2">
+                      {DAYS_TR.map((day, i) => {
+                        const h = hours[i]
+                        if (!h) return null
+                        const isToday = i === todayIdx
+                        return (
+                          <div key={day} className={`flex items-center justify-between text-xs py-1.5 px-2 rounded-lg ${isToday ? 'bg-brand-50 font-semibold' : ''}`}>
+                            <span className={isToday ? 'text-brand-600' : 'text-gray-600'}>{day}</span>
+                            {h.open ? (
+                              <span className={isToday ? 'text-brand-700' : 'text-gray-900'}>{h.start} – {h.end}</span>
+                            ) : (
+                              <span className="text-gray-400">Kapalı</span>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
             </aside>
           </div>
         </div>

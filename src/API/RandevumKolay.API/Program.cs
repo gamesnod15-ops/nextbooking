@@ -1,8 +1,10 @@
 using Asp.Versioning;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RandevumKolay.API.Middleware;
@@ -110,6 +112,8 @@ builder.Services.AddCors(opts =>
         policy.SetIsOriginAllowedToAllowWildcardSubdomains()
               .WithOrigins(
                   "https://*.randevumkolay.com",
+                  "https://next-bussines-ten.vercel.app",
+                  "https://nextbooking-six.vercel.app",
                   "http://localhost:3000",
                   "http://localhost:3001",
                   "http://localhost:3002",
@@ -173,9 +177,21 @@ builder.Services.AddHealthChecks()
 // ──────────────────────────────────────────────
 var app = builder.Build();
 
+var uploadsBase = Environment.GetEnvironmentVariable("UPLOADS_DIR")
+    ?? (app.Environment.IsDevelopment()
+        ? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")
+        : "/home");
+var uploadsDir = Path.Combine(uploadsBase, "uploads");
+Directory.CreateDirectory(uploadsDir);
+
 app.UseSerilogRequestLogging();
 app.UseCors("AllowAll");
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsDir),
+    RequestPath = "/uploads"
+});
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())

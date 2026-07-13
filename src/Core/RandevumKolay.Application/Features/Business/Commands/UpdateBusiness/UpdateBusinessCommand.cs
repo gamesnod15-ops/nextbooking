@@ -18,6 +18,8 @@ public record UpdateBusinessCommand(
     string? Website,
     string? Description,
     string? LogoUrl,
+    double? Latitude,
+    double? Longitude,
     List<string>? GalleryImages,
     Dictionary<string, string>? Settings) : IRequest;
 
@@ -38,7 +40,7 @@ public sealed class UpdateBusinessCommandHandler : IRequestHandler<UpdateBusines
             .FirstOrDefaultAsync(b => b.TenantId == _tenantService.TenantId, cancellationToken)
             ?? throw new KeyNotFoundException("Business not found for tenant.");
 
-        business.Update(request.Name, request.Phone, request.Email, request.Address, request.City, request.PostalCode, request.Country, request.TaxNumber, request.TaxOffice, request.Website, request.Description);
+        business.Update(request.Name, request.Phone, request.Email, request.Address, request.City, request.PostalCode, request.Country, request.TaxNumber, request.TaxOffice, request.Website, request.Description, request.Latitude, request.Longitude);
 
         if (request.LogoUrl is not null)
             business.SetLogo(request.LogoUrl);

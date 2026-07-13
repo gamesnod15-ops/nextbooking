@@ -21,6 +21,8 @@ public class Business : AuditableEntity, ITenantEntity
     public string? LogoUrl { get; private set; }
     public string? CoverImageUrl { get; private set; }
     public string? Description { get; private set; }
+    public double? Latitude { get; private set; }
+    public double? Longitude { get; private set; }
     public bool IsActive { get; private set; } = true;
     public List<string> GalleryImages { get; private set; } = new();
     public Dictionary<string, string> Settings { get; private set; } = new();
@@ -62,7 +64,9 @@ public class Business : AuditableEntity, ITenantEntity
         string? taxNumber,
         string? taxOffice,
         string? website,
-        string? description)
+        string? description,
+        double? latitude = null,
+        double? longitude = null)
     {
         Name = name;
         Phone = phone;
@@ -75,6 +79,8 @@ public class Business : AuditableEntity, ITenantEntity
         TaxOffice = taxOffice;
         Website = website;
         Description = description;
+        Latitude = latitude;
+        Longitude = longitude;
     }
 
     public void SetLogo(string logoUrl) => LogoUrl = logoUrl;
