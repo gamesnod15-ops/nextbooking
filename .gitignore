@@ -53,3 +53,5 @@ coverage/
 # Misc
 *.tsbuildinfo
 appsettings.Development.json
+
+.vercel
