@@ -25,30 +25,78 @@ public class GeocodingController : ControllerBase
 
         try
         {
+            var parts = address.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (parts.Length == 0)
+                return BadRequest(new { error = "Adres gerekli." });
+
             var client = _httpClientFactory.CreateClient();
-            var query = Uri.EscapeDataString(address + ", Türkiye");
-            var url = $"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1&accept-language=tr";
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.TryAddWithoutValidation("User-Agent", "RandevumKolay/1.0 (https://randevumkolay.com; info@randevumkolay.com)");
-
-            var response = await client.SendAsync(request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-                return StatusCode(502, new { error = "Geocoding servisi erişilemedi." });
-
-            var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var results = System.Text.Json.JsonSerializer.Deserialize<List<NominatimResult>>(json);
-
-            if (results is null || results.Count == 0)
-                return NotFound(new { error = "Adres bulunamadı." });
-
-            var first = results[0];
-            if (double.TryParse(first.Lat, System.Globalization.CultureInfo.InvariantCulture, out var lat) &&
-                double.TryParse(first.Lon, System.Globalization.CultureInfo.InvariantCulture, out var lon))
+            // Try progressively simpler queries: full address, without street, just city
+            var attempts = new List<string>();
+            if (parts.Length >= 3)
             {
-                return Ok(new { latitude = lat, longitude = lon, displayName = first.DisplayName });
+                // Try: neighborhood + city (skip street details)
+                attempts.Add(string.Join(", ", parts[0], parts[^1]) + ", Türkiye");
+                // Try: full address
+                attempts.Add(address + ", Türkiye");
             }
-            return StatusCode(502, new { error = "Koordinatlar ayrıştırılamadı." });
+            else
+            {
+                attempts.Add(address + ", Türkiye");
+            }
+
+            foreach (var attempt in attempts)
+            {
+                var query = Uri.EscapeDataString(attempt);
+                var url = $"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1&accept-language=tr";
+
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.TryAddWithoutValidation("User-Agent", "RandevumKolay/1.0 (https://randevumkolay.com; info@randevumkolay.com)");
+
+                var response = await client.SendAsync(request, cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                    continue;
+
+                var json = await response.Content.ReadAsStringAsync(cancellationToken);
+                var results = System.Text.Json.JsonSerializer.Deserialize<List<NominatimResult>>(json);
+
+                if (results is not null && results.Count > 0)
+                {
+                    var first = results[0];
+                    if (double.TryParse(first.Lat, System.Globalization.CultureInfo.InvariantCulture, out var lat) &&
+                        double.TryParse(first.Lon, System.Globalization.CultureInfo.InvariantCulture, out var lon))
+                    {
+                        return Ok(new { latitude = lat, longitude = lon, displayName = first.DisplayName });
+                    }
+                }
+
+                // Respect Nominatim rate limit (1 req/sec)
+                await Task.Delay(1100, cancellationToken);
+            }
+
+            // Final attempt: try just the last part (city)
+            var cityAttempt = parts[^1].Trim() + ", Türkiye";
+            var cityQuery = Uri.EscapeDataString(cityAttempt);
+            var cityUrl = $"https://nominatim.openstreetmap.org/search?q={cityQuery}&format=json&limit=1&accept-language=tr";
+            using var cityRequest = new HttpRequestMessage(HttpMethod.Get, cityUrl);
+            cityRequest.Headers.TryAddWithoutValidation("User-Agent", "RandevumKolay/1.0 (https://randevumkolay.com; info@randevumkolay.com)");
+            var cityResponse = await client.SendAsync(cityRequest, cancellationToken);
+            if (cityResponse.IsSuccessStatusCode)
+            {
+                var cityJson = await cityResponse.Content.ReadAsStringAsync(cancellationToken);
+                var cityResults = System.Text.Json.JsonSerializer.Deserialize<List<NominatimResult>>(cityJson);
+                if (cityResults is not null && cityResults.Count > 0)
+                {
+                    var first = cityResults[0];
+                    if (double.TryParse(first.Lat, System.Globalization.CultureInfo.InvariantCulture, out var lat) &&
+                        double.TryParse(first.Lon, System.Globalization.CultureInfo.InvariantCulture, out var lon))
+                    {
+                        return Ok(new { latitude = lat, longitude = lon, displayName = first.DisplayName });
+                    }
+                }
+            }
+
+            return NotFound(new { error = "Adres bulunamadı." });
         }
         catch (Exception ex)
         {
