@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { setCredentials } from '@/store/slices/authSlice'
+import api from '@/lib/api'
 import { normalizePlanId, planAllows } from '@/config/plans'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { OAuthCallbackPage } from '@/pages/auth/OAuthCallbackPage'
 import { CompleteRegistrationPage } from '@/pages/auth/CompleteRegistrationPage'
+import { OnboardingWizardPage } from '@/pages/onboarding/OnboardingWizardPage'
 import { UserDashboardPage } from '@/pages/user/UserDashboardPage'
 import { ToastContainer } from '@/components/ui/Toast'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
@@ -86,6 +88,37 @@ function AutoLoginHandler() {
   return null;
 }
 
+/** First-login setup gate: if the business has no services yet (and the wizard
+ *  hasn't been completed/skipped), redirect to /onboarding. Existing tenants
+ *  with data get flagged as done automatically and are never interrupted. */
+function OnboardingGate() {
+  const { accessToken, role, tenantId } = useSelector((s: RootState) => s.auth)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const checked = useRef(false)
+
+  useEffect(() => {
+    if (!accessToken || !role || !['business', 'tenant_admin'].includes(role)) return
+    if (checked.current) return
+    const key = `onboarding_done_${tenantId ?? 'default'}`
+    if (localStorage.getItem(key)) return
+    if (location.pathname.startsWith('/onboarding') || location.pathname.startsWith('/login')) return
+
+    checked.current = true
+    api.get<{ totalCount: number }>('/services', { params: { pageNumber: 1, pageSize: 1 } })
+      .then((r) => {
+        if ((r.data?.totalCount ?? 0) > 0) {
+          localStorage.setItem(key, '1')
+        } else {
+          navigate('/onboarding', { replace: true })
+        }
+      })
+      .catch(() => { checked.current = false })
+  }, [accessToken, role, tenantId, location.pathname, navigate])
+
+  return null
+}
+
 function ModuleRoute({ moduleId, children }: { moduleId: string; children: React.ReactNode }) {
   const modules = useSelector((s: RootState) => s.modules.modules)
   const plan = useSelector((s: RootState) => normalizePlanId(s.business.business?.plan))
@@ -104,12 +137,14 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <AutoLoginHandler />
+        <OnboardingGate />
         <GlobalSearch />
         <ToastContainer />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/oauth/callback" element={<OAuthCallbackPage />} />
           <Route path="/auth/complete-registration" element={<CompleteRegistrationPage />} />
+          <Route path="/onboarding" element={<PrivateRoute><OnboardingWizardPage /></PrivateRoute>} />
           <Route path="/user/dashboard" element={<AuthRoute><UserDashboardPage /></AuthRoute>} />
           <Route
             path="/"

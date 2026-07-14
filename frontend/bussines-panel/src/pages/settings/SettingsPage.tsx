@@ -897,6 +897,17 @@ function ProfileSettings() {
   )
 }
 
+/** Best-effort local cache for the gallery. Base64 image lists can easily
+ *  exceed the ~5MB localStorage quota; the API is the source of truth, so on
+ *  quota failure we drop the (stale) cache instead of crashing the page. */
+function cacheGallery(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    try { localStorage.removeItem(key) } catch { /* ignore */ }
+  }
+}
+
 function GeneralSettings() {
   const { data: business, isLoading } = useBusiness()
   const updateMutation = useUpdateBusiness()
@@ -936,7 +947,7 @@ function GeneralSettings() {
     setLongitude(business.longitude?.toString() ?? '')
     if (business.galleryImages?.length) {
       setGalleryImages(business.galleryImages)
-      localStorage.setItem('rk_gallery_images', JSON.stringify(business.galleryImages))
+      cacheGallery('rk_gallery_images', business.galleryImages)
     }
     setInitialized(true)
   }
@@ -1178,7 +1189,7 @@ function GeneralSettings() {
                   <button onClick={async () => {
                     const next = galleryImages.filter((_, j) => j !== i)
                     setGalleryImages(next)
-                    localStorage.setItem('rk_gallery_images', JSON.stringify(next))
+                    cacheGallery('rk_gallery_images', next)
                     try {
                       await updateMutation.mutateAsync({
                         name, phone, email, address, city, website, description,
@@ -1214,7 +1225,7 @@ function GeneralSettings() {
                        }))).then(async results => {
                          const next = [...galleryImages, ...results]
                          setGalleryImages(next)
-                         localStorage.setItem('rk_gallery_images', JSON.stringify(next))
+                         cacheGallery('rk_gallery_images', next)
                          try {
                            await updateMutation.mutateAsync({
                              name, phone, email, address, city, website, description,
@@ -1245,7 +1256,7 @@ function GeneralSettings() {
                   <button onClick={() => {
                     const next = galleryVideos.filter((_, j) => j !== i)
                     setGalleryVideos(next)
-                    localStorage.setItem('rk_gallery_videos', JSON.stringify(next))
+                    cacheGallery('rk_gallery_videos', next)
                   }}>
                     <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                   </button>
@@ -1258,7 +1269,7 @@ function GeneralSettings() {
                          if (e.key === 'Enter' && videoRef.current?.value) {
                            const next = [...galleryVideos, videoRef.current.value]
                            setGalleryVideos(next)
-                           localStorage.setItem('rk_gallery_videos', JSON.stringify(next))
+                           cacheGallery('rk_gallery_videos', next)
                            videoRef.current.value = ''
                          }
                        }} />
@@ -1266,7 +1277,7 @@ function GeneralSettings() {
                   if (videoRef.current?.value) {
                     const next = [...galleryVideos, videoRef.current.value]
                     setGalleryVideos(next)
-                    localStorage.setItem('rk_gallery_videos', JSON.stringify(next))
+                    cacheGallery('rk_gallery_videos', next)
                     videoRef.current.value = ''
                   }
                 }}><Plus className="h-4 w-4" /></Button>

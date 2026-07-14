@@ -501,7 +501,7 @@ function SlideMobileApp() {
         </div>
       </div>
 
-      <div className="hidden lg:relative lg:flex lg:w-[440px] lg:shrink-0 lg:items-center lg:justify-center lg:ml-auto">
+      <div className="hidden lg:relative lg:flex lg:w-[490px] lg:shrink-0 lg:items-center lg:justify-center lg:ml-auto">
         <PhoneMockup />
       </div>
     </div>
@@ -511,12 +511,31 @@ function SlideMobileApp() {
 // Angled phone mockup — tilted in 3D, facing left. Pure CSS/SVG, no images.
 function PhoneMockup() {
   return (
-    <div className="relative flex h-[500px] w-[380px] items-center justify-center" style={{ perspective: '1600px' }}>
+    <div className="relative flex h-[540px] w-[480px] items-center justify-center" style={{ perspective: '1600px' }}>
       {/* Glow */}
-      <div aria-hidden className="absolute h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
+      <div aria-hidden className="absolute h-80 w-80 rounded-full bg-brand-500/15 blur-3xl" />
+
+      {/* Background scenery — rings, dots, orbits filling the negative space */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none">
+        <div className="absolute -right-4 top-2 h-40 w-40 rounded-full border-[14px] border-brand-500/10" />
+        <div className="absolute left-2 top-6 h-24 w-24 rounded-full border-2 border-dashed border-white/10" />
+        <div className="absolute -left-6 bottom-10 h-32 w-32 rounded-3xl border border-white/10 rotate-12" />
+        <div className="absolute right-6 bottom-2 h-20 w-20 rounded-full border-[8px] border-white/5" />
+        <div
+          className="absolute left-0 top-1/3 h-40 w-28 opacity-40"
+          style={{ backgroundImage: 'radial-gradient(rgba(207,242,30,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }}
+        />
+        <div
+          className="absolute right-0 bottom-1/4 h-36 w-24 opacity-30"
+          style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }}
+        />
+        <svg className="absolute inset-0 h-full w-full opacity-[0.12]" viewBox="0 0 480 540" fill="none">
+          <ellipse cx="240" cy="270" rx="225" ry="150" className="stroke-brand-500" strokeWidth="1" strokeDasharray="3 7" transform="rotate(-18 240 270)" />
+        </svg>
+      </div>
 
       {/* Floating decorations (upright, independent bob) */}
-      <div className="absolute right-2 top-8 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '0s' }}>
+      <div className="absolute right-0 top-10 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '0s' }}>
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/15">
             <CheckCircle className="h-4 w-4 text-brand-500" />
@@ -528,7 +547,7 @@ function PhoneMockup() {
         </div>
       </div>
 
-      <div className="absolute left-0 top-1/2 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '1.2s' }}>
+      <div className="absolute left-2 top-24 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '1.2s' }}>
         <div className="flex items-center gap-2">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
           <div>
@@ -538,10 +557,51 @@ function PhoneMockup() {
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-6 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2s' }}>
+      {/* Mini calendar chip — fills mid-left gap */}
+      <div className="absolute left-0 top-1/2 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 p-3 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '0.6s' }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 flex-col items-center justify-center overflow-hidden rounded-lg border border-white/10">
+            <span className="w-full bg-brand-500 text-center text-[6px] font-bold uppercase text-black">May</span>
+            <span className="flex-1 pt-0.5 text-[13px] font-extrabold leading-none text-white">12</span>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-white">3 randevu</p>
+            <p className="text-[8px] text-gray-400">bugün planlandı</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Avatar stack — fills bottom-left gap */}
+      <div className="absolute bottom-10 left-8 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2s' }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex -space-x-2">
+            {['bg-violet-500', 'bg-brand-500', 'bg-amber-500'].map((c, i) => (
+              <span key={c} className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-black ${c} text-[8px] font-bold text-black`}>
+                {['A', 'S', 'M'][i]}
+              </span>
+            ))}
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-white">10.000+ işletme</p>
+            <p className="text-[8px] text-gray-400">NextBooking kullanıyor</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bell chip — fills bottom-right gap */}
+      <div className="absolute bottom-4 right-10 z-20 flex animate-float items-center gap-1.5 rounded-full border border-white/10 bg-black/90 px-3 py-1.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '1.6s' }}>
+        <Bell className="h-3.5 w-3.5 text-brand-500" />
+        <span className="text-[10px] font-semibold text-white">Yeni bildirim</span>
+      </div>
+
+      {/* Growth chip — fills mid-right gap */}
+      <div className="absolute right-2 top-[58%] z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2.6s' }}>
         <div className="flex items-center gap-2">
-          <Bell className="h-4 w-4 text-brand-500" />
-          <p className="text-[11px] font-semibold text-white">Yeni bildirim</p>
+          <BarChart3 className="h-4 w-4 text-brand-500" />
+          <div>
+            <p className="text-[12px] font-extrabold leading-none text-white">+%35</p>
+            <p className="text-[8px] text-gray-400">doluluk artışı</p>
+          </div>
         </div>
       </div>
 
@@ -663,7 +723,7 @@ function SlideWhatsApp() {
         </div>
       </div>
 
-      <div className="hidden lg:relative lg:flex lg:w-[440px] lg:shrink-0 lg:items-center lg:justify-center lg:ml-auto">
+      <div className="hidden lg:relative lg:flex lg:w-[490px] lg:shrink-0 lg:items-center lg:justify-center lg:ml-auto">
         <WhatsAppMockup />
       </div>
     </div>
@@ -673,16 +733,43 @@ function SlideWhatsApp() {
 // WhatsApp conversation mockup inside an angled phone. Pure CSS/SVG, no images.
 function WhatsAppMockup() {
   return (
-    <div className="relative flex h-[500px] w-[380px] items-center justify-center" style={{ perspective: '1600px' }}>
-      <div aria-hidden className="absolute h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
+    <div className="relative flex h-[540px] w-[480px] items-center justify-center" style={{ perspective: '1600px' }}>
+      <div aria-hidden className="absolute h-80 w-80 rounded-full bg-brand-500/15 blur-3xl" />
+
+      {/* Background scenery — rings, dots, orbits filling the negative space */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none">
+        <div className="absolute -right-4 top-4 h-36 w-36 rounded-full border-[12px] border-[#25D366]/10" />
+        <div className="absolute left-4 top-8 h-24 w-24 rounded-full border-2 border-dashed border-white/10" />
+        <div className="absolute -left-4 bottom-12 h-28 w-28 rounded-3xl border border-white/10 -rotate-6" />
+        <div className="absolute right-8 bottom-4 h-16 w-16 rounded-full border-[6px] border-white/5" />
+        <div
+          className="absolute left-0 top-[55%] h-36 w-24 opacity-40"
+          style={{ backgroundImage: 'radial-gradient(rgba(37,211,102,0.4) 1.5px, transparent 0)', backgroundSize: '14px 14px' }}
+        />
+        <div
+          className="absolute right-2 top-1/3 h-32 w-20 opacity-30"
+          style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }}
+        />
+        <svg className="absolute inset-0 h-full w-full opacity-[0.12]" viewBox="0 0 480 540" fill="none">
+          <ellipse cx="240" cy="270" rx="225" ry="150" className="stroke-[#25D366]" strokeWidth="1" strokeDasharray="3 7" transform="rotate(-18 240 270)" />
+        </svg>
+      </div>
 
       {/* Floating chat decorations (upright, independent bob) */}
-      <div className="absolute right-1 top-6 z-20 animate-float rounded-2xl rounded-tr-none border border-white/10 bg-white px-3 py-2 shadow-2xl" style={{ animationDelay: '0s' }}>
+      <div className="absolute right-2 top-8 z-20 animate-float rounded-2xl rounded-tr-none border border-white/10 bg-white px-3 py-2 shadow-2xl" style={{ animationDelay: '0s' }}>
         <p className="text-[11px] font-semibold text-gray-800">🔔 Hatırlatma gönderildi</p>
         <p className="mt-0.5 text-right text-[8px] text-gray-400">şimdi</p>
       </div>
 
-      <div className="absolute left-0 top-1/3 z-20 animate-float rounded-2xl border border-white/10 bg-[#25D366] px-3.5 py-2 shadow-2xl" style={{ animationDelay: '1.1s' }}>
+      {/* Extra incoming bubble — fills upper-left gap */}
+      <div className="absolute left-4 top-20 z-20 animate-float rounded-2xl rounded-tl-none bg-[#DCF8C6] px-3 py-2 shadow-2xl" style={{ animationDelay: '0.5s' }}>
+        <p className="text-[11px] font-semibold text-gray-800">Teşekkürler! 🙏</p>
+        <p className="mt-0.5 flex items-center justify-end gap-0.5 text-[8px] text-gray-500">
+          09:16 <CheckCircle className="h-2.5 w-2.5 text-sky-500" />
+        </p>
+      </div>
+
+      <div className="absolute left-0 top-[45%] z-20 animate-float rounded-2xl border border-white/10 bg-[#25D366] px-3.5 py-2 shadow-2xl" style={{ animationDelay: '1.1s' }}>
         <div className="flex items-center gap-2">
           <MessageCircle className="h-4 w-4 text-white" />
           <div>
@@ -692,9 +779,40 @@ function WhatsAppMockup() {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-4 z-20 flex animate-float items-center gap-1.5 rounded-full border border-white/10 bg-black/90 px-3 py-1.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2s' }}>
+      {/* Campaign card — fills bottom-left gap */}
+      <div className="absolute bottom-14 left-6 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '1.7s' }}>
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#25D366]/15">
+            <Share2 className="h-4 w-4 text-[#25D366]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-white">Kampanya gönderildi</p>
+            <p className="text-[8px] text-gray-400">1.240 müşteriye ulaştı</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-6 left-2 z-20 flex animate-float items-center gap-1.5 rounded-full border border-white/10 bg-black/90 px-3 py-1.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2.4s' }}>
         <CheckCircle className="h-3.5 w-3.5 text-sky-400" />
         <span className="text-[10px] font-semibold text-white">Okundu</span>
+      </div>
+
+      {/* Timer chip — fills mid-right gap */}
+      <div className="absolute right-0 top-[55%] z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2.9s' }}>
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-brand-500" />
+          <div>
+            <p className="text-[11px] font-bold leading-none text-white">24 saat önce</p>
+            <p className="text-[8px] text-gray-400">otomatik hatırlatma</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Typing indicator — fills bottom-right gap */}
+      <div className="absolute bottom-3 right-14 z-20 flex animate-float items-center gap-1 rounded-full bg-white px-3 py-2 shadow-2xl" style={{ animationDelay: '0.9s' }}>
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400" style={{ animationDelay: '0s' }} />
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400" style={{ animationDelay: '0.2s' }} />
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400" style={{ animationDelay: '0.4s' }} />
       </div>
 
       {/* Float wrapper (translateY only) → tilt child (3D rotation) */}
@@ -779,9 +897,50 @@ const CALENDAR_DAYS = [
 
 function CalendarMockup() {
   return (
-    <div className="relative h-[400px] w-[460px]">
-      {/* Calendar card */}
-      <div className="absolute inset-0 overflow-hidden rounded-3xl border border-gray-200 bg-white p-5 shadow-2xl">
+    <div className="relative h-[440px] w-[580px]">
+      {/* Background scenery — fills the left negative space */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none">
+        <div className="absolute -left-4 top-2 h-32 w-32 rounded-full border-[12px] border-brand-500/10" />
+        <div className="absolute left-10 bottom-4 h-24 w-24 rounded-full border-2 border-dashed border-white/10" />
+        <div className="absolute left-0 top-1/2 h-36 w-24 -translate-y-1/2 opacity-40"
+          style={{ backgroundImage: 'radial-gradient(rgba(207,242,30,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }} />
+        <div className="absolute left-24 top-6 h-20 w-14 opacity-30"
+          style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }} />
+      </div>
+
+      {/* Left floating cards */}
+      <div className="absolute left-0 top-6 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '0.4s' }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
+            <BarChart3 className="h-4 w-4 text-brand-500" />
+          </div>
+          <div>
+            <p className="text-[13px] font-extrabold leading-none text-white">₺12.450</p>
+            <p className="mt-0.5 text-[9px] text-gray-400">bugünkü ciro</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute left-2 top-[45%] z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '1.3s' }}>
+        <p className="text-[10px] font-bold text-white">%92 doluluk</p>
+        <div className="mt-1.5 h-1.5 w-24 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full w-[92%] rounded-full bg-brand-500" />
+        </div>
+        <p className="mt-1 text-[8px] text-gray-400">bu hafta</p>
+      </div>
+
+      <div className="absolute bottom-8 left-6 z-20 flex animate-float items-center gap-2 rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2.1s' }}>
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/15">
+          <Bell className="h-4 w-4 text-brand-500" />
+        </div>
+        <div>
+          <p className="text-[10px] font-bold text-white">5 hatırlatma gönderildi</p>
+          <p className="text-[8px] text-gray-400">SMS & WhatsApp</p>
+        </div>
+      </div>
+
+      {/* Calendar card — anchored right */}
+      <div className="absolute right-0 top-1/2 h-[400px] w-[440px] -translate-y-1/2 overflow-hidden rounded-3xl border border-gray-200 bg-white p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
             <Calendar className="h-4 w-4 text-brand-600" />
@@ -895,7 +1054,7 @@ function SlideDashboard() {
         </div>
       </div>
 
-      <div className="hidden lg:relative lg:flex lg:w-[500px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
+      <div className="hidden lg:relative lg:flex lg:w-[580px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
         <CalendarMockup />
       </div>
     </div>
