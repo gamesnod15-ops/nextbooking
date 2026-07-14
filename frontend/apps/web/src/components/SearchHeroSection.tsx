@@ -6,7 +6,8 @@ import Link from 'next/link'
 import {
   Search, MapPin, ArrowRight, Sparkles, X, History, ChevronDown,
   Smartphone, Store, User, Users, Star, CheckCircle, MessageCircle, Bell, Calendar,
-  MessageSquare, Share2, Clock, Shield, PlayCircle,
+  MessageSquare, Share2, Clock, Shield, PlayCircle, MousePointerClick, Headphones,
+  BarChart3, Plus, CheckCheck,
 } from 'lucide-react'
 import { DemoBookingModal } from './DemoBookingModal'
 import { LiveStatsBanner } from './LiveStatsBanner'
@@ -387,34 +388,40 @@ function SlideSearch() {
         <DemoBookingModal open={demoOpen} onClose={() => setDemoOpen(false)} />
       </div>
 
-      <div className="hidden lg:relative lg:flex lg:w-[420px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
-        <div className="relative h-[430px] w-[400px]">
-          <div className="absolute left-0 top-4 h-[260px] w-[240px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl -rotate-3 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
+      <div className="hidden lg:relative lg:flex lg:w-[440px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
+        <div className="relative h-[460px] w-[380px]">
+          {/* Decorative accent ring behind the photo */}
+          <div aria-hidden className="absolute -right-6 -top-6 h-40 w-40 rounded-full border-[16px] border-brand-500/15" />
+          <div aria-hidden className="absolute -bottom-8 -left-8 h-28 w-28 rounded-3xl border-2 border-white/10 rotate-12" />
+
+          {/* Main portrait */}
+          <div className="absolute inset-0 overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl">
             <img
-              src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80"
-              alt="Güzellik Salonu"
+              src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=700&q=80"
+              alt="Kadın kuaför"
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">Güzellik Salonu</span>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute bottom-5 left-5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-3 py-1 text-xs font-bold text-black">
+                <Star className="h-3 w-3" /> 4.9 Puan
+              </span>
+              <p className="mt-2 text-lg font-bold text-white">Elif Studio</p>
+              <p className="text-xs text-gray-300">Kuaför & Güzellik · İstanbul</p>
+            </div>
           </div>
-          <div className="absolute right-4 top-0 h-[190px] w-[180px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&q=80"
-              alt="Diş Kliniği"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">Diş Kliniği</span>
-          </div>
-          <div className="absolute bottom-4 right-8 h-[210px] w-[220px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl -rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=400&q=80"
-              alt="Masaj & Spa"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">Spa & Masaj</span>
+
+          {/* Floating booking chip */}
+          <div className="absolute -left-8 top-10 animate-float rounded-2xl border border-white/10 bg-black/90 px-4 py-3 shadow-2xl backdrop-blur-xl">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
+                <CheckCircle className="h-4 w-4 text-brand-500" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white">Randevu Onaylandı</p>
+                <p className="text-[10px] text-gray-400">Bugün 14:30 · Saç Kesimi</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -442,20 +449,10 @@ function SlideMobileApp() {
   return (
     <div className="mx-auto flex w-full max-w-7xl items-center gap-10 px-5 sm:px-8 lg:px-10">
       <div className="w-full max-w-2xl py-16 lg:py-20">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 shadow-sm">
-          <Smartphone className="h-3.5 w-3.5 text-brand-500" />
-          <span className="text-xs font-semibold text-brand-500">iOS & Android</span>
-        </div>
-
         <h1 className="text-3xl font-extrabold leading-[1.2] tracking-tight text-white sm:text-4xl lg:text-5xl">
           <span className="block mb-2">Mobil Uygulamamız</span>
           <span className="block text-brand-500">Her An Her Yerde</span>
         </h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-gray-400 sm:text-base">
-          İşletme sahipleri ve müşteriler için özel olarak tasarlanmış mobil uygulamalarımızla
-          randevu yönetimi artık çok daha kolay. İster işletmenizi yönetin, ister randevu alın —
-          hepsi cebinizde.
-        </p>
 
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
@@ -504,33 +501,114 @@ function SlideMobileApp() {
         </div>
       </div>
 
-      <div className="hidden lg:relative lg:flex lg:w-[420px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
-        <div className="relative h-[430px] w-[400px]">
-          <div className="absolute left-0 top-4 h-[300px] w-[200px] overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl -rotate-3 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80"
-              alt="Mobil uygulama ekranı"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+      <div className="hidden lg:relative lg:flex lg:w-[440px] lg:shrink-0 lg:items-center lg:justify-center lg:ml-auto">
+        <PhoneMockup />
+      </div>
+    </div>
+  )
+}
+
+// Angled phone mockup — tilted in 3D, facing left. Pure CSS/SVG, no images.
+function PhoneMockup() {
+  return (
+    <div className="relative flex h-[500px] w-[380px] items-center justify-center" style={{ perspective: '1600px' }}>
+      {/* Glow */}
+      <div aria-hidden className="absolute h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
+
+      {/* Floating decorations (upright, independent bob) */}
+      <div className="absolute right-2 top-8 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '0s' }}>
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/15">
+            <CheckCircle className="h-4 w-4 text-brand-500" />
           </div>
-          <div className="absolute right-4 top-0 h-[250px] w-[170px] overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&q=80"
-              alt="Uygulama arayüzü"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div>
+            <p className="text-[11px] font-bold text-white">Randevu Onaylandı</p>
+            <p className="text-[9px] text-gray-400">14:30 · Saç Kesimi</p>
           </div>
-          <div className="absolute bottom-4 right-8 h-[180px] w-[220px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl -rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80"
-              alt="Dijital dönüşüm"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">Dijital Dönüşüm</span>
+        </div>
+      </div>
+
+      <div className="absolute left-0 top-1/2 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '1.2s' }}>
+        <div className="flex items-center gap-2">
+          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <div>
+            <p className="text-[13px] font-extrabold leading-none text-white">4.9</p>
+            <p className="text-[8px] text-gray-400">2.400+ yorum</p>
           </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-6 left-6 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2s' }}>
+        <div className="flex items-center gap-2">
+          <Bell className="h-4 w-4 text-brand-500" />
+          <p className="text-[11px] font-semibold text-white">Yeni bildirim</p>
+        </div>
+      </div>
+
+      {/* Float wrapper (translateY only) → tilt child (3D rotation) */}
+      <div className="animate-float">
+        <div style={{ transform: 'rotateY(-22deg) rotateZ(4deg)' }}>
+        {/* Phone body */}
+        <div className="h-[460px] w-[228px] rounded-[2.6rem] border-[3px] border-white/15 bg-neutral-900 p-2.5 shadow-2xl">
+          {/* Screen */}
+          <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-gray-50">
+            {/* Dynamic island */}
+            <div className="absolute left-1/2 top-2 z-10 h-5 w-20 -translate-x-1/2 rounded-full bg-black" />
+
+            {/* Status bar */}
+            <div className="flex items-center justify-between px-5 pt-3 text-[10px] font-semibold text-gray-900">
+              <span>9:41</span>
+              <span className="flex items-center gap-1 text-gray-500">
+                <span className="h-2 w-3 rounded-sm bg-gray-400" />
+                <span className="h-2 w-2 rounded-full bg-brand-500" />
+              </span>
+            </div>
+
+            {/* App header */}
+            <div className="px-4 pt-5">
+              <p className="text-[10px] text-gray-400">Merhaba 👋</p>
+              <p className="text-base font-extrabold text-gray-900">Ayşe Yılmaz</p>
+            </div>
+
+            {/* Next appointment hero card */}
+            <div className="mx-4 mt-4 rounded-2xl bg-brand-500 p-3.5 shadow-sm">
+              <p className="text-[9px] font-bold uppercase tracking-wide text-black/60">Sıradaki Randevu</p>
+              <p className="mt-1 text-sm font-extrabold text-black">Saç Kesimi & Fön</p>
+              <div className="mt-2 flex items-center gap-3 text-[10px] font-semibold text-black/80">
+                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Bugün</span>
+                <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> 14:30</span>
+              </div>
+            </div>
+
+            {/* List */}
+            <div className="mx-4 mt-4 space-y-2.5">
+              {[
+                { name: 'Elif Studio', svc: 'Manikür', time: 'Yarın · 11:00' },
+                { name: 'GlowUp Spa', svc: 'Cilt Bakımı', time: 'Cuma · 16:30' },
+                { name: 'Dr. Mehmet', svc: 'Diş Kontrol', time: 'Pzt · 09:00' },
+              ].map((a) => (
+                <div key={a.name} className="flex items-center gap-2.5 rounded-xl border border-gray-100 bg-white p-2.5 shadow-sm">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-[11px] font-bold text-brand-600">
+                    {a.name[0]}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[11px] font-bold text-gray-900">{a.name}</p>
+                    <p className="truncate text-[9px] text-gray-400">{a.svc}</p>
+                  </div>
+                  <span className="shrink-0 text-[8px] font-semibold text-gray-400">{a.time}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom nav */}
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-around border-t border-gray-100 bg-white px-4 py-3">
+              <Calendar className="h-4 w-4 text-brand-500" />
+              <Search className="h-4 w-4 text-gray-300" />
+              <Bell className="h-4 w-4 text-gray-300" />
+              <User className="h-4 w-4 text-gray-300" />
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -550,20 +628,10 @@ function SlideWhatsApp() {
   return (
     <div className="mx-auto flex w-full max-w-7xl items-center gap-10 px-5 sm:px-8 lg:px-10">
       <div className="w-full max-w-2xl py-16 lg:py-20">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 shadow-sm">
-          <MessageCircle className="h-3.5 w-3.5 text-brand-500" />
-          <span className="text-xs font-semibold text-brand-500">WhatsApp API Entegrasyonu</span>
-        </div>
-
         <h1 className="text-3xl font-extrabold leading-[1.2] tracking-tight text-white sm:text-4xl lg:text-5xl">
           <span className="block mb-2">WhatsApp ile</span>
           <span className="block text-brand-500">Randevu Yönetimi</span>
         </h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-gray-400 sm:text-base">
-          Müşterilerinizle en etkili iletişim kanalı olan WhatsApp üzerinden randevu
-          hatırlatmaları, bildirimler ve kampanya mesajları gönderin. Tüm süreçler
-          otomatikleşsin, siz işinize odaklanın.
-        </p>
 
         <div className="mt-8 space-y-4">
           {WHATSAPP_FEATURES.map((f) => (
@@ -595,36 +663,240 @@ function SlideWhatsApp() {
         </div>
       </div>
 
-      <div className="hidden lg:relative lg:flex lg:w-[420px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
-        <div className="relative h-[430px] w-[400px]">
-          <div className="absolute left-0 top-4 h-[260px] w-[230px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl -rotate-3 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1611746872915-6e3e9009b3b6?w=400&q=80"
-              alt="WhatsApp mesajlaşma"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">WhatsApp İletişim</span>
-          </div>
-          <div className="absolute right-4 top-0 h-[190px] w-[180px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=400&q=80"
-              alt="Anlık mesajlaşma"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">Anlık Mesaj</span>
-          </div>
-          <div className="absolute bottom-4 right-8 h-[210px] w-[220px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl -rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-20">
-            <img
-              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&q=80"
-              alt="Müşteri iletişim"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white">Müşteri Memnuniyeti</span>
+      <div className="hidden lg:relative lg:flex lg:w-[440px] lg:shrink-0 lg:items-center lg:justify-center lg:ml-auto">
+        <WhatsAppMockup />
+      </div>
+    </div>
+  )
+}
+
+// WhatsApp conversation mockup inside an angled phone. Pure CSS/SVG, no images.
+function WhatsAppMockup() {
+  return (
+    <div className="relative flex h-[500px] w-[380px] items-center justify-center" style={{ perspective: '1600px' }}>
+      <div aria-hidden className="absolute h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
+
+      {/* Floating chat decorations (upright, independent bob) */}
+      <div className="absolute right-1 top-6 z-20 animate-float rounded-2xl rounded-tr-none border border-white/10 bg-white px-3 py-2 shadow-2xl" style={{ animationDelay: '0s' }}>
+        <p className="text-[11px] font-semibold text-gray-800">🔔 Hatırlatma gönderildi</p>
+        <p className="mt-0.5 text-right text-[8px] text-gray-400">şimdi</p>
+      </div>
+
+      <div className="absolute left-0 top-1/3 z-20 animate-float rounded-2xl border border-white/10 bg-[#25D366] px-3.5 py-2 shadow-2xl" style={{ animationDelay: '1.1s' }}>
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-4 w-4 text-white" />
+          <div>
+            <p className="text-[11px] font-bold leading-none text-white">%98</p>
+            <p className="text-[8px] text-emerald-50/90">okunma oranı</p>
           </div>
         </div>
+      </div>
+
+      <div className="absolute bottom-8 left-4 z-20 flex animate-float items-center gap-1.5 rounded-full border border-white/10 bg-black/90 px-3 py-1.5 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '2s' }}>
+        <CheckCircle className="h-3.5 w-3.5 text-sky-400" />
+        <span className="text-[10px] font-semibold text-white">Okundu</span>
+      </div>
+
+      {/* Float wrapper (translateY only) → tilt child (3D rotation) */}
+      <div className="animate-float">
+        <div style={{ transform: 'rotateY(-22deg) rotateZ(4deg)' }}>
+        <div className="h-[460px] w-[228px] rounded-[2.6rem] border-[3px] border-white/15 bg-neutral-900 p-2.5 shadow-2xl">
+          <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[2rem] bg-[#ECE5DD]">
+            {/* WhatsApp header */}
+            <div className="flex items-center gap-2.5 bg-[#075E54] px-3.5 pb-2.5 pt-6">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-black">N</div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[11px] font-bold text-white">NextBooking</p>
+                <p className="text-[8px] text-emerald-100/80">çevrimiçi</p>
+              </div>
+              <MessageCircle className="h-3.5 w-3.5 text-emerald-100" />
+            </div>
+
+            {/* Chat area */}
+            <div
+              className="flex flex-1 flex-col gap-2 px-3 py-3"
+              style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.04) 1px, transparent 0)', backgroundSize: '14px 14px' }}
+            >
+              {/* Incoming */}
+              <div className="max-w-[80%] self-start rounded-lg rounded-tl-none bg-white px-2.5 py-1.5 shadow-sm">
+                <p className="text-[9.5px] leading-snug text-gray-800">Merhaba! 🗓️ Yarınki randevunuzu hatırlatmak isteriz.</p>
+                <p className="mt-0.5 text-right text-[7px] text-gray-400">09:12</p>
+              </div>
+              <div className="max-w-[85%] self-start rounded-lg rounded-tl-none bg-white px-2.5 py-1.5 shadow-sm">
+                <p className="text-[9.5px] font-semibold leading-snug text-gray-800">Saç Kesimi & Fön</p>
+                <p className="text-[9px] leading-snug text-gray-600">Yarın · 14:30 · Elif Studio</p>
+                <p className="mt-0.5 text-right text-[7px] text-gray-400">09:12</p>
+              </div>
+
+              {/* Outgoing */}
+              <div className="max-w-[75%] self-end rounded-lg rounded-tr-none bg-[#DCF8C6] px-2.5 py-1.5 shadow-sm">
+                <p className="text-[9.5px] leading-snug text-gray-800">Onaylıyorum ✅</p>
+                <p className="mt-0.5 flex items-center justify-end gap-0.5 text-[7px] text-gray-500">
+                  09:15
+                  <CheckCircle className="h-2 w-2 text-sky-500" />
+                </p>
+              </div>
+
+              {/* Incoming confirmation */}
+              <div className="max-w-[85%] self-start rounded-lg rounded-tl-none bg-white px-2.5 py-1.5 shadow-sm">
+                <p className="text-[9.5px] leading-snug text-gray-800">Harika! Randevunuz onaylandı. Görüşmek üzere 💚</p>
+                <p className="mt-0.5 text-right text-[7px] text-gray-400">09:15</p>
+              </div>
+            </div>
+
+            {/* Input bar */}
+            <div className="flex items-center gap-2 bg-[#ECE5DD] px-3 pb-4 pt-1">
+              <div className="flex-1 rounded-full bg-white px-3 py-1.5 text-[9px] text-gray-400 shadow-sm">Mesaj yazın…</div>
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#075E54]">
+                <ArrowRight className="h-3.5 w-3.5 text-white" />
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Slide 4: Dashboard Showcase ──────────────────────────────────────────────
+
+const DASHBOARD_BADGES = [
+  { icon: MousePointerClick, label: 'Kolay Kullanım' },
+  { icon: Shield,            label: 'Güvenli Altyapı' },
+  { icon: Headphones,        label: '7/24 Destek' },
+  { icon: BarChart3,         label: 'Raporlama' },
+]
+
+// Static illustrative grid — a decorative calendar mockup, not a real date engine.
+const CALENDAR_WEEKDAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
+const CALENDAR_DAYS = [
+  { n: 30, muted: true }, { n: 31, muted: true }, { n: 1 }, { n: 2 }, { n: 2, busy: true }, { n: 3 }, { n: 4 },
+  { n: 5 }, { n: 6 }, { n: 7, busy: true }, { n: 8 }, { n: 9 }, { n: 10 }, { n: 11 },
+  { n: 12 }, { n: 13, busy: true }, { n: 14 }, { n: 15 }, { n: 16 }, { n: 17, today: true }, { n: 18 },
+  { n: 19 }, { n: 20 }, { n: 21 }, { n: 22 }, { n: 23 }, { n: 24 }, { n: 25, busy: true },
+]
+
+function CalendarMockup() {
+  return (
+    <div className="relative h-[400px] w-[460px]">
+      {/* Calendar card */}
+      <div className="absolute inset-0 overflow-hidden rounded-3xl border border-gray-200 bg-white p-5 shadow-2xl">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+            <Calendar className="h-4 w-4 text-brand-600" />
+            Ocak
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600">
+              <Plus className="h-3 w-3" /> Randevu
+            </span>
+            <span className="rounded-lg bg-brand-500 px-2 py-1 text-[10px] font-bold text-black">Bugün</span>
+          </div>
+        </div>
+
+        <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[10px] font-medium text-gray-400">
+          {CALENDAR_WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {CALENDAR_DAYS.map((d, i) => (
+            <div
+              key={i}
+              className={`flex h-9 items-center justify-center rounded-lg text-[11px] transition-colors ${
+                d.today
+                  ? 'bg-brand-500 font-bold text-black'
+                  : d.busy
+                  ? 'bg-brand-50 font-semibold text-brand-600'
+                  : d.muted
+                  ? 'text-gray-300'
+                  : 'text-gray-600'
+              }`}
+            >
+              {d.n}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 space-y-2 border-t border-gray-100 pt-4">
+          {[
+            { time: '09:30', name: 'Zeynep Aksoy', service: 'Saç Kesimi' },
+            { time: '11:00', name: 'Can Yıldız', service: 'Sakal Tıraşı' },
+          ].map((row) => (
+            <div key={row.time} className="flex items-center gap-2.5 rounded-lg bg-gray-50 px-2.5 py-2">
+              <span className="text-[10px] font-semibold text-brand-600">{row.time}</span>
+              <span className="h-1 w-1 rounded-full bg-gray-300" />
+              <span className="text-[11px] text-gray-700">{row.name}</span>
+              <span className="ml-auto text-[10px] text-gray-400">{row.service}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Floating "new booking" card */}
+      <div className="absolute -bottom-7 -right-7 w-52 animate-float rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl">
+        <p className="mb-2.5 text-sm font-bold text-gray-900">Yeni Rezervasyon</p>
+        <div className="space-y-1.5 text-[11px] text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <User className="h-3 w-3 shrink-0 text-brand-600" /> Ayşe Yılmaz
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3 w-3 shrink-0 text-brand-600" /> 12 Mayıs 2026
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Clock className="h-3 w-3 shrink-0 text-brand-600" /> 12:00 - 13:00
+          </div>
+        </div>
+        <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-semibold text-brand-600">
+          <CheckCircle className="h-3 w-3" /> Oluşturuldu
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function SlideDashboard() {
+  return (
+    <div className="mx-auto flex w-full max-w-7xl items-center gap-10 px-5 sm:px-8 lg:px-10">
+      <div className="w-full max-w-2xl py-16 lg:py-20">
+        <h1 className="text-3xl font-extrabold leading-[1.2] tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <span className="block">Randevu yönetimi artık</span>
+          <span className="block">çok daha <span className="text-brand-500">kolay.</span></span>
+        </h1>
+        <p className="mt-5 max-w-lg text-sm leading-relaxed text-gray-400 sm:text-base">
+          NextBooking ile rezervasyon süreçlerinizi yönetin, müşteri memnuniyetini artırın,
+          işinizi büyütün.
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <Link
+            href="/register"
+            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+          >
+            Hemen Başlayın
+          </Link>
+          <Link
+            href="/demo"
+            className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-base font-semibold text-gray-300 hover:bg-white/10 transition-all"
+          >
+            <PlayCircle className="h-4 w-4" /> Demo İzle
+          </Link>
+        </div>
+
+        <div className="mt-10 flex flex-wrap gap-x-6 gap-y-5 border-t border-white/10 pt-8">
+          {DASHBOARD_BADGES.map(({ icon: Icon, label }) => (
+            <div key={label} className="flex flex-col items-start gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                <Icon className="h-5 w-5 text-brand-500" />
+              </div>
+              <span className="text-xs font-medium text-gray-300">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="hidden lg:relative lg:flex lg:w-[500px] lg:shrink-0 lg:items-center lg:justify-end lg:ml-auto">
+        <CalendarMockup />
       </div>
     </div>
   )
@@ -643,18 +915,20 @@ export function SearchHeroSection() {
     setTimeout(() => setIsAutoPlaying(true), 6000)
   }, [])
 
+  const SLIDE_COUNT = 4
+
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % 3)
+    setCurrentSlide((prev) => (prev + 1) % SLIDE_COUNT)
   }, [])
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 2) % 3)
+    setCurrentSlide((prev) => (prev + SLIDE_COUNT - 1) % SLIDE_COUNT)
   }, [])
 
   useEffect(() => {
     if (!isAutoPlaying) return
     autoPlayRef.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3)
+      setCurrentSlide((prev) => (prev + 1) % SLIDE_COUNT)
     }, 8000)
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current)
@@ -668,6 +942,7 @@ export function SearchHeroSection() {
     { id: 'search', label: 'Hizmet Ara' },
     { id: 'mobile', label: 'Mobil Uygulama' },
     { id: 'whatsapp', label: 'WhatsApp' },
+    { id: 'dashboard', label: 'Panel' },
   ]
 
   return (
@@ -707,6 +982,9 @@ export function SearchHeroSection() {
             </div>
             <div className="w-full flex-shrink-0">
               <SlideWhatsApp />
+            </div>
+            <div className="w-full flex-shrink-0">
+              <SlideDashboard />
             </div>
           </div>
         </div>

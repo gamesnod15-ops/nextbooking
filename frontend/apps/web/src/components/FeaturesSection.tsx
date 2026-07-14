@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import type { ComponentType, SVGProps } from 'react'
+import { Reveal, StaggerGroup, StaggerItem } from './motion/Reveal'
 
 const features = [
   { icon: Calendar,       title: 'Online Randevu',       desc: '7/24 web ve mobil üzerinden randevu. Gerçek zamanlı müsaitlik takvimi.' },
@@ -317,8 +318,8 @@ export function FeaturesSection() {
         <div aria-hidden className="pointer-events-none absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full border-[40px] border-brand-500/5" />
         <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full border-[20px] border-brand-500/5" />
 
-        <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="text-center mb-14">
+        <div className="relative mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
+          <Reveal className="text-center mb-14">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 mb-4">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-gray-900">Avantajlar</span>
@@ -331,59 +332,50 @@ export function FeaturesSection() {
               Müşterileriniz artık telefon beklemiyor. Online randevu sistemiyle hem müşteri memnuniyetini artırın,
               hem de idari yükünüzü azaltın.
             </p>
-          </div>
+          </Reveal>
 
-          {/* Stats row — large metric cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
-            {[
-              { value: '%70', label: 'Daha Az Hayır-deme', icon: Bell },
-              { value: '%35', label: 'Daha Yüksek Doluluk', icon: Calendar },
-              { value: '%80', label: 'Daha Az Telefon', icon: Smartphone },
-              { value: '5 dk', label: 'Kurulum Süresi', icon: Zap },
-            ].map((stat) => {
-              const Icon = stat.icon
-              return (
-                <div
-                  key={stat.label}
-                  className="group relative rounded-2xl bg-white p-7 text-center shadow-sm hover:shadow-xl transition-all hover:-translate-y-1.5 overflow-hidden border-2 border-gray-200 hover:border-brand-200"
-                >
-                  {/* Decorative number bg */}
-                  <div aria-hidden className="absolute -bottom-6 -right-6 text-8xl font-black text-gray-50 select-none pointer-events-none leading-none">
-                    {stat.value.replace(/[^0-9]/g, '')}
-                  </div>
-                  <div className="relative">
-                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 shadow-sm">
-                      <Icon className="h-6 w-6 text-brand-500" />
-                    </div>
-                    <p className="text-3xl font-extrabold text-brand-500">{stat.value}</p>
-                    <p className="mt-1.5 text-sm font-medium text-gray-600">{stat.label}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          {/* Single unified panel: stat strip + benefit rows, no box clutter */}
+          <Reveal delay={0.1} className="relative overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-gray-50 via-white to-brand-50/40 shadow-xl">
+            <div aria-hidden className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-brand-500/10 blur-3xl" />
 
-          {/* Benefits checklist */}
-          <div className="max-w-3xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Stat strip */}
+            <StaggerGroup className="relative grid grid-cols-2 divide-x divide-y divide-gray-200/80 sm:grid-cols-4 sm:divide-y-0">
               {[
-                { icon: Bell, text: 'Hayır-deme oranını %70 azaltın', sub: 'Otomatik hatırlatmalar sayesinde' },
-                { icon: Calendar, text: 'Doluluk oranınızı %35 artırın', sub: 'Akıllı takvim yönetimiyle' },
-                { icon: Smartphone, text: 'Telefon trafiğini %80 azaltın', sub: '7/24 online rezervasyonla' },
-                { icon: Star, text: 'Müşteri geri dönüş oranını yükseltin', sub: 'Sadakat programıyla' },
-              ].map(({ icon: Icon, text, sub }) => (
-                <div key={text} className="group flex items-start gap-4 rounded-2xl border-2 border-gray-200 bg-white p-5 hover:border-brand-200 hover:shadow-md transition-all">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50">
+                { value: '%70', label: 'Daha Az Hayır-deme' },
+                { value: '%35', label: 'Daha Yüksek Doluluk' },
+                { value: '%80', label: 'Daha Az Telefon' },
+                { value: '5 dk', label: 'Kurulum Süresi' },
+              ].map((stat) => (
+                <StaggerItem key={stat.label} className="px-6 py-9 text-center sm:py-11">
+                  <p className="text-3xl font-extrabold text-brand-600 sm:text-4xl">{stat.value}</p>
+                  <p className="mt-1.5 text-xs font-medium uppercase tracking-wide text-gray-500">{stat.label}</p>
+                </StaggerItem>
+              ))}
+            </StaggerGroup>
+
+            {/* Benefit rows */}
+            <StaggerGroup className="relative border-t border-gray-200/80 sm:grid sm:grid-cols-2">
+              {[
+                { icon: Bell, text: 'Hayır-deme oranını %70 azaltın', sub: 'Otomatik hatırlatmalar sayesinde', border: 'border-b sm:border-b sm:border-r' },
+                { icon: Calendar, text: 'Doluluk oranınızı %35 artırın', sub: 'Akıllı takvim yönetimiyle', border: 'border-b sm:border-b' },
+                { icon: Smartphone, text: 'Telefon trafiğini %80 azaltın', sub: '7/24 online rezervasyonla', border: 'border-b sm:border-b-0 sm:border-r' },
+                { icon: Star, text: 'Müşteri geri dönüş oranını yükseltin', sub: 'Sadakat programıyla', border: '' },
+              ].map(({ icon: Icon, text, sub, border }) => (
+                <StaggerItem
+                  key={text}
+                  className={`group flex items-center gap-4 border-gray-200/80 px-8 py-5 transition-colors hover:bg-brand-50/50 ${border}`}
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 transition-colors group-hover:bg-brand-100">
                     <Icon className="h-5 w-5 text-brand-500" />
                   </div>
-                  <div className="pt-0.5">
+                  <div>
                     <p className="text-sm font-bold text-gray-900">{text}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{sub}</p>
+                    <p className="mt-0.5 text-xs text-gray-500">{sub}</p>
                   </div>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
-          </div>
+            </StaggerGroup>
+          </Reveal>
         </div>
       </section>
 
