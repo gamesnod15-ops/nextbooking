@@ -1175,10 +1175,24 @@ function GeneralSettings() {
               {galleryImages.map((src, i) => (
                 <div key={i} className="group relative h-20 w-20 overflow-hidden rounded-lg border">
                   <img src={src} alt={`gallery-${i}`} className="h-full w-full object-cover" />
-                  <button onClick={() => {
+                  <button onClick={async () => {
                     const next = galleryImages.filter((_, j) => j !== i)
                     setGalleryImages(next)
                     localStorage.setItem('rk_gallery_images', JSON.stringify(next))
+                    try {
+                      await updateMutation.mutateAsync({
+                        name, phone, email, address, city, website, description,
+                        latitude: latitude ? parseFloat(latitude) : null,
+                        longitude: longitude ? parseFloat(longitude) : null,
+                        logoUrl: business?.logoUrl ?? null,
+                        galleryImages: next,
+                        postalCode: business?.postalCode ?? null,
+                        country: business?.country ?? null,
+                        taxNumber: business?.taxNumber ?? null,
+                        taxOffice: business?.taxOffice ?? null,
+                        settings: business?.settings,
+                      })
+                    } catch { /* sessiz */ }
                   }}
                   className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100">
                     <Trash2 className="h-3 w-3" />
@@ -1197,10 +1211,24 @@ function GeneralSettings() {
                          const r = new FileReader()
                          r.onload = () => resolve(r.result as string)
                          r.readAsDataURL(f)
-                       }))).then(results => {
+                       }))).then(async results => {
                          const next = [...galleryImages, ...results]
                          setGalleryImages(next)
                          localStorage.setItem('rk_gallery_images', JSON.stringify(next))
+                         try {
+                           await updateMutation.mutateAsync({
+                             name, phone, email, address, city, website, description,
+                             latitude: latitude ? parseFloat(latitude) : null,
+                             longitude: longitude ? parseFloat(longitude) : null,
+                             logoUrl: business?.logoUrl ?? null,
+                             galleryImages: next,
+                             postalCode: business?.postalCode ?? null,
+                             country: business?.country ?? null,
+                             taxNumber: business?.taxNumber ?? null,
+                             taxOffice: business?.taxOffice ?? null,
+                             settings: business?.settings,
+                           })
+                         } catch { /* sessiz */ }
                        })
                        e.target.value = ''
                      }} />
