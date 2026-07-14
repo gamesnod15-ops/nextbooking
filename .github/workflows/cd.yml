@@ -7,55 +7,39 @@ on:
 
 jobs:
   deploy:
-    name: Build & Deploy
+    name: Build & Deploy API to Azure
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v4
 
-      # Build and push Docker images
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          dotnet-version: '9.0.x'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Restore
+        run: dotnet restore src/API/RandevumKolay.API/RandevumKolay.API.csproj
 
-      - name: Build & push API
-        uses: docker/build-push-action@v5
+      - name: Build & Publish
+        run: dotnet publish src/API/RandevumKolay.API/RandevumKolay.API.csproj -c Release -o ./publish --no-restore
+
+      - name: Zip publish output
+        run: cd publish && zip -r ../deploy.zip .
+
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          context: .
-          file: infra/docker/Dockerfile.api
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/randevumkolay-api:latest
-            ${{ secrets.DOCKER_USERNAME }}/randevumkolay-api:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
 
-      - name: Build & push Admin Panel
-        uses: docker/build-push-action@v5
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
         with:
-          context: frontend/admin-panel
-          file: infra/docker/Dockerfile.admin
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/randevumkolay-admin:latest
-            ${{ secrets.DOCKER_USERNAME }}/randevumkolay-admin:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # Deploy to server via SSH
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            cd /opt/randevumkolay
-            docker compose -f infra/docker/docker-compose.yml pull
-            docker compose -f infra/docker/docker-compose.yml up -d --remove-orphans
-            docker image prune -f
+          app-name: 'api-randevumkolay'
+          package: ./deploy.zip
