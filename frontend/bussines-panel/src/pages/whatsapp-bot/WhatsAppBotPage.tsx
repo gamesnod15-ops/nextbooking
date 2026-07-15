@@ -10,7 +10,14 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { PhoneInput } from '@/components/ui/PhoneInput'
+import { showToast } from '@/components/ui/Toast'
 import { cn } from '@/lib/utils'
+import api from '@/lib/api'
+import { useQueryClient } from '@tanstack/react-query'
+import { useServices } from '@/hooks/useServices'
+import { useEmployees } from '@/hooks/useEmployees'
+import type { Customer } from '@/hooks/useCustomers'
+import type { WhatsAppAppointment } from '@/store/slices/whatsappBotSlice'
 import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
   RefreshCw, Send, CheckCircle2, XCircle, Bot, Smartphone,
@@ -111,14 +118,12 @@ function SimulatorTab() {
       if (step === 'welcome') {
         const low = reply.toLowerCase()
         if (reply.includes('Randevu') || low.includes('randevu') || reply.startsWith('1')) {
-          const slotList = settings.workingSlots
-            .map((s, i) => `${i + 1}. ${s.day}: ${s.hours}`)
-            .join('\n')
+          const serviceList = settings.services.map((s, i) => `${i + 1}. ${s}`).join('\n')
           dispatch(addSimMessage(botMsg(
-            `Uygun çalışma saatlerimiz:\n\n${slotList}\n\nHangi güne randevu almak istersiniz?`,
-            settings.workingSlots.map(s => `📅 ${s.day}`)
+            `Harika! Öncelikle hangi hizmeti almak istersiniz?\n\n${serviceList}`,
+            settings.services.map(s => `✂️ ${s}`)
           )))
-          dispatch(setSimStep('select_slot'))
+          dispatch(setSimStep('select_service'))
         } else if (reply.includes('Çalışma') || low.includes('çalışma') || low.includes('saat') || reply.startsWith('2')) {
           const slotList = settings.workingSlots
             .map(s => `• ${s.day}: ${s.hours}`)
@@ -135,6 +140,26 @@ function SimulatorTab() {
             ['📅 Randevu almak istiyorum', '🕐 Çalışma saatlerini öğrenmek istiyorum']
           )))
           dispatch(setSimStep('welcome'))
+        }
+      } else if (step === 'select_service') {
+        const serviceName = reply.replace('✂️ ', '').trim()
+        const matched = settings.services.find(s => s.toLowerCase() === serviceName.toLowerCase())
+          ?? settings.services.find(s => serviceName.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(serviceName.toLowerCase()))
+        if (matched) {
+          dispatch(updateSimDraft({ selectedService: matched }))
+          const slotList = settings.workingSlots
+            .map((s, i) => `${i + 1}. ${s.day}: ${s.hours}`)
+            .join('\n')
+          dispatch(addSimMessage(botMsg(
+            `*${matched}* için uygun günlerimiz:\n\n${slotList}\n\nHangi güne randevu almak istersiniz?`,
+            settings.workingSlots.map(s => `📅 ${s.day}`)
+          )))
+          dispatch(setSimStep('select_slot'))
+        } else {
+          dispatch(addSimMessage(botMsg(
+            'Bu hizmeti bulamadım. Lütfen aşağıdaki seçeneklerden birini seçiniz:',
+            settings.services.map(s => `✂️ ${s}`)
+          )))
         }
       } else if (step === 'select_slot') {
         const dayName = reply.replace('📅 ', '')
@@ -155,6 +180,8 @@ function SimulatorTab() {
       if (step === 'welcome' || step === 'select_option') {
         // Route typed text through the same option logic as quick replies
         processReply(text, 'welcome')
+      } else if (step === 'select_service' || step === 'select_slot') {
+        processReply(text, step)
       } else if (step === 'ask_name') {
         dispatch(updateSimDraft({ customerName: text }))
         dispatch(addSimMessage(botMsg('Telefon numaranızı paylaşır mısınız? (örn: 05XX XXX XX XX)')))
@@ -176,6 +203,7 @@ function SimulatorTab() {
           `📞 Telefon: ${updatedDraft.customerPhone}\n` +
           `🏙️ Şehir: ${updatedDraft.customerCity}\n` +
           `📧 E-posta: ${text}\n` +
+          `✂️ Hizmet: ${updatedDraft.selectedService || '—'}\n` +
           `📅 Tarih: ${updatedDraft.selectedSlot}\n\n` +
           `Randevunuzu hatırlatmak için size e-posta göndereceğiz. Görüşürüz! 🙏`,
           ['📅 Yeni randevu almak istiyorum']
@@ -238,6 +266,7 @@ function SimulatorTab() {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
               placeholder={
+                simStep === 'select_service' ? 'Hizmet adını yazın...' :
                 simStep === 'ask_name' ? 'Adınızı ve soyadınızı yazın...' :
                 simStep === 'ask_phone' ? 'Telefon numaranızı yazın...' :
                 simStep === 'ask_city' ? 'Şehrinizi yazın...' :
@@ -264,12 +293,13 @@ function SimulatorTab() {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bot Akışı</p>
             {[
               { step: 'welcome', label: '1. Karşılama & Seçenekler' },
-              { step: 'select_slot', label: '2. Gün Seçimi' },
-              { step: 'ask_name', label: '3. Ad Soyad' },
-              { step: 'ask_phone', label: '4. Telefon' },
-              { step: 'ask_city', label: '5. Şehir' },
-              { step: 'ask_email', label: '6. Gmail' },
-              { step: 'confirmed', label: '7. Onay' },
+              { step: 'select_service', label: '2. Hizmet Seçimi' },
+              { step: 'select_slot', label: '3. Gün Seçimi' },
+              { step: 'ask_name', label: '4. Ad Soyad' },
+              { step: 'ask_phone', label: '5. Telefon' },
+              { step: 'ask_city', label: '6. Şehir' },
+              { step: 'ask_email', label: '7. Gmail' },
+              { step: 'confirmed', label: '8. Onay' },
             ].map(item => (
               <div
                 key={item.step}
@@ -482,11 +512,122 @@ function SettingsTab() {
   )
 }
 
+// ─── Sync helpers: turn a WhatsApp booking into a real customer + appointment ─
+
+const TR_DAY_INDEX: Record<string, number> = {
+  'pazar': 0, 'pazartesi': 1, 'salı': 2, 'sali': 2, 'çarşamba': 3, 'carsamba': 3,
+  'perşembe': 4, 'persembe': 4, 'cuma': 5, 'cumartesi': 6,
+}
+
+/** "Pazartesi 09:00 – 18:00" → next occurrence of that weekday at the slot's
+ *  start hour. Falls back to tomorrow 09:00 when the slot can't be parsed. */
+function slotToDate(selectedSlot: string): Date {
+  const now = new Date()
+  const lower = selectedSlot.toLowerCase()
+  // Longest names first: "pazartesi" must not match its prefix "pazar",
+  // and "cumartesi" must not match "cuma".
+  const dayEntry = Object.entries(TR_DAY_INDEX)
+    .sort((a, b) => b[0].length - a[0].length)
+    .find(([name]) => lower.includes(name))
+  const timeMatch = selectedSlot.match(/(\d{1,2}):(\d{2})/)
+  const hour = timeMatch ? parseInt(timeMatch[1]) : 9
+  const minute = timeMatch ? parseInt(timeMatch[2]) : 0
+
+  const result = new Date(now)
+  result.setHours(hour, minute, 0, 0)
+  if (dayEntry) {
+    const target = dayEntry[1]
+    let diff = (target - now.getDay() + 7) % 7
+    if (diff === 0 && result <= now) diff = 7
+    result.setDate(now.getDate() + diff)
+  } else if (result <= now) {
+    result.setDate(now.getDate() + 1)
+  }
+  return result
+}
+
+function normalizePhone(p: string) {
+  return p.replace(/\D/g, '').replace(/^90/, '').replace(/^0/, '')
+}
+
 // ─── Appointments Tab ───────────────────────────────────────────────────────
 function AppointmentsTab() {
   const dispatch = useAppDispatch()
+  const qc = useQueryClient()
   const appointments = useAppSelector(s => s.whatsappBot.appointments)
   const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all')
+  const [approving, setApproving] = useState<string | null>(null)
+  const { data: svcData } = useServices({ pageNumber: 1, pageSize: 100 })
+  const { data: empData } = useEmployees({ pageNumber: 1, pageSize: 100 })
+
+  /** Approve = create the real customer + appointment so the booking shows up
+   *  in Randevular, Takvim and Müşteriler — then mark the WhatsApp card confirmed. */
+  async function approveAppointment(apt: WhatsAppAppointment) {
+    const services = svcData?.items ?? []
+    const employees = (empData?.items ?? []).filter(e => e.isActive)
+
+    const service =
+      services.find(s => s.name.toLowerCase().trim() === apt.selectedService.toLowerCase().trim()) ??
+      services.find(s => s.isActive) ?? services[0]
+    if (!service) {
+      showToast('error', 'Hizmet bulunamadı', 'Randevuyu aktarabilmek için önce Hizmetler sayfasından bir hizmet ekleyin.')
+      return
+    }
+
+    const employee =
+      employees.find(e => e.serviceIds.includes(service.id)) ?? employees[0]
+    if (!employee) {
+      showToast('error', 'Çalışan bulunamadı', 'Randevuyu aktarabilmek için önce Çalışanlar sayfasından bir çalışan ekleyin.')
+      return
+    }
+
+    setApproving(apt.id)
+    try {
+      // 1. Find or create the customer by phone
+      let customerId: string | undefined
+      try {
+        const { data } = await api.get<{ items: Customer[] }>('/customers', {
+          params: { pageNumber: 1, pageSize: 5, search: apt.customerPhone },
+        })
+        customerId = data.items.find(c => normalizePhone(c.phone) === normalizePhone(apt.customerPhone))?.id
+      } catch { /* fall through to create */ }
+
+      if (!customerId) {
+        const { data: created } = await api.post<{ id: string } | string>('/customers', {
+          name: apt.customerName,
+          phone: apt.customerPhone,
+          email: apt.customerEmail || null,
+          notes: `WhatsApp bot kaydı${apt.customerCity ? ` · Şehir: ${apt.customerCity}` : ''}`,
+          birthDate: null,
+        })
+        customerId = typeof created === 'string' ? created : created.id
+      }
+
+      // 2. Create the real appointment
+      const startTime = slotToDate(apt.selectedSlot).toISOString()
+      const { data: aptCreated } = await api.post<{ id: string } | string>('/appointments', {
+        serviceId: service.id,
+        employeeId: employee.id,
+        customerId,
+        startTime,
+        notes: `WhatsApp bot randevusu · ${apt.selectedService || service.name} · ${apt.selectedSlot}`,
+        source: 'whatsapp',
+      })
+      const realId = typeof aptCreated === 'string' ? aptCreated : aptCreated?.id
+
+      qc.invalidateQueries({ queryKey: ['appointments'] })
+      qc.invalidateQueries({ queryKey: ['customers'] })
+      qc.invalidateQueries({ queryKey: ['dashboard-stats'] })
+
+      dispatch(updateAppointmentStatus({ id: apt.id, status: 'confirmed', syncedAppointmentId: realId }))
+      showToast('success', 'Randevu onaylandı', 'Müşteri ve randevu sisteme kaydedildi — Randevular ve Takvim sayfalarında görünür.')
+    } catch (err: unknown) {
+      const anyErr = err as { response?: { data?: { message?: string; detail?: string } } }
+      showToast('error', 'Randevu aktarılamadı', anyErr?.response?.data?.message ?? anyErr?.response?.data?.detail ?? 'Lütfen tekrar deneyin.')
+    } finally {
+      setApproving(null)
+    }
+  }
 
   const filtered = filter === 'all' ? appointments : appointments.filter(a => a.status === filter)
 
@@ -553,16 +694,23 @@ function AppointmentsTab() {
                       <DetailItem icon={<MapPin className="h-3.5 w-3.5" />} label={apt.customerCity || '—'} />
                       <DetailItem icon={<Mail className="h-3.5 w-3.5" />} label={apt.customerEmail || '—'} />
                       <DetailItem icon={<CalendarCheck className="h-3.5 w-3.5" />} label={apt.selectedSlot || '—'} />
+                      <DetailItem icon={<Scissors className="h-3.5 w-3.5" />} label={apt.selectedService || '—'} />
                     </div>
+                    {apt.syncedAppointmentId && (
+                      <p className="text-[11px] text-emerald-600">✓ Randevular &amp; Takvim sayfalarına kaydedildi</p>
+                    )}
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
                     {apt.status === 'pending' && (
                       <button
-                        onClick={() => dispatch(updateAppointmentStatus({ id: apt.id, status: 'confirmed' }))}
-                        title="Onayla"
-                        className="rounded-lg border border-emerald-200 bg-emerald-50 p-1.5 text-emerald-700 hover:bg-emerald-100"
+                        onClick={() => approveAppointment(apt)}
+                        disabled={approving === apt.id}
+                        title="Onayla ve sisteme kaydet"
+                        className="rounded-lg border border-emerald-200 bg-emerald-50 p-1.5 text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
                       >
-                        <CheckCircle2 className="h-4 w-4" />
+                        {approving === apt.id
+                          ? <RefreshCw className="h-4 w-4 animate-spin" />
+                          : <CheckCircle2 className="h-4 w-4" />}
                       </button>
                     )}
                     {apt.status !== 'cancelled' && (

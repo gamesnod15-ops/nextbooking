@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 export type BotStep =
   | 'welcome'
   | 'select_option'
+  | 'select_service'
   | 'show_hours'
   | 'select_slot'
   | 'ask_name'
@@ -24,10 +25,13 @@ export interface WhatsAppAppointment {
   customerPhone: string
   customerCity: string
   customerEmail: string
+  selectedService: string
   selectedSlot: string
   createdAt: string
   status: 'pending' | 'confirmed' | 'cancelled'
   source: 'whatsapp'
+  /** Real appointment id once the booking is synced into the main system. */
+  syncedAppointmentId?: string
 }
 
 export interface ChatMessage {
@@ -150,6 +154,7 @@ const whatsappBotSlice = createSlice({
         customerPhone: draft.customerPhone ?? '',
         customerCity: draft.customerCity ?? '',
         customerEmail: draft.customerEmail ?? '',
+        selectedService: draft.selectedService ?? '',
         selectedSlot: draft.selectedSlot ?? '',
         createdAt: new Date().toISOString(),
         status: 'pending',
@@ -161,11 +166,14 @@ const whatsappBotSlice = createSlice({
 
     updateAppointmentStatus(
       state,
-      action: PayloadAction<{ id: string; status: WhatsAppAppointment['status'] }>
+      action: PayloadAction<{ id: string; status: WhatsAppAppointment['status']; syncedAppointmentId?: string }>
     ) {
       const apt = state.appointments.find(a => a.id === action.payload.id)
       if (apt) {
         apt.status = action.payload.status
+        if (action.payload.syncedAppointmentId) {
+          apt.syncedAppointmentId = action.payload.syncedAppointmentId
+        }
         save('wa_bot_appointments', state.appointments)
       }
     },
