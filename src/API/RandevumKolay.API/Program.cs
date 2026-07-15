@@ -218,12 +218,13 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
     Authorization = [new RandevumKolay.Infrastructure.BackgroundJobs.HangfireDashboardAuthFilter()]
 });
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await db.Database.MigrateAsync();
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+await db.Database.MigrateAsync();
+
+if (!await db.Tenants.AnyAsync())
     await SeedData.InitializeAsync(db);
-}
+
+await DemoSeedData.SeedAsync(db);
 
 await app.RunAsync();
