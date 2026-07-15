@@ -41,6 +41,7 @@ import {
 } from 'recharts'
 import { RootState } from '@/store'
 import { normalizePlanId, planAllows } from '@/config/plans'
+import { toLocalDateStr, futureLocalDateStr } from '@/lib/utils'
 import { PageHeader } from '@/components/ui/PageHeader'
 import {
   useAdvertisements,
@@ -525,8 +526,8 @@ const emptyForm: AdForm = {
   targetCategory: 'all',
   targetLocation: '',
   budget: '',
-  startDate: new Date().toISOString().slice(0, 10),
-  endDate: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+  startDate: toLocalDateStr(),
+  endDate: futureLocalDateStr(7),
 }
 
 function CreateAdTab({
@@ -765,7 +766,7 @@ function CreateAdTab({
             <input
               type="date"
               value={form.startDate}
-              min={new Date().toISOString().slice(0, 10)}
+              min={toLocalDateStr()}
               onChange={(e) => patch('startDate', e.target.value)}
               className={`w-full px-4 py-2.5 rounded-xl border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-shadow ${errors.startDate ? 'border-red-400' : 'border-slate-200'}`}
             />
@@ -784,7 +785,7 @@ function CreateAdTab({
             <input
               type="date"
               value={form.endDate}
-              min={form.startDate || new Date().toISOString().slice(0, 10)}
+              min={form.startDate || toLocalDateStr()}
               onChange={(e) => patch('endDate', e.target.value)}
               className={`w-full px-4 py-2.5 rounded-xl border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-shadow ${errors.endDate ? 'border-red-400' : 'border-slate-200'}`}
             />

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, Gift, X, Copy, CheckCircle, Search, Loader2 } from 'lucide-react'
 import { AxiosError } from 'axios'
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { formatDate, formatCurrency, futureLocalDateStr } from '@/lib/utils'
 import {
   useGiftCoupons,
   useCreateGiftCoupon,
@@ -39,7 +39,7 @@ const emptyModal: ModalData = {
   recipientEmail: '',
   purchasedBy: '',
   amount: 200,
-  expiryDate: new Date(Date.now() + 180 * 86400000).toISOString().slice(0, 10),
+  expiryDate: futureLocalDateStr(180),
   message: '',
 }
 

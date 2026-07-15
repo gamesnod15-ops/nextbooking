@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react'
 import { Plus, Edit2, Trash2, Tag, X, Calendar, Percent, Users, Loader2 } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+import { formatDate, toLocalDateStr, futureLocalDateStr } from '@/lib/utils'
 import {
   useCampaigns,
   useCreateCampaign,
@@ -25,8 +25,8 @@ type CampaignForm = {
 
 const emptyForm: CampaignForm = {
   name: '', description: '', discountType: 'percentage', discountValue: 10,
-  startDate: new Date().toISOString().slice(0, 10),
-  endDate: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+  startDate: toLocalDateStr(),
+  endDate: futureLocalDateStr(30),
   status: 'active', usageLimit: null, applicableServiceIds: []
 }
 

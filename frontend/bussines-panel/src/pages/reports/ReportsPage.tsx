@@ -2,7 +2,7 @@
 import { useReports, type ReportsFilter } from '@/hooks/useReports'
 import { useEmployees } from '@/hooks/useEmployees'
 import { useServices } from '@/hooks/useServices'
-import { formatCurrency, cn } from '@/lib/utils'
+import { formatCurrency, cn, toLocalDateStr } from '@/lib/utils'
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -27,7 +27,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 function getPresetDates(preset: Preset): { startDate: string; endDate: string } {
   const today = new Date()
-  const fmt = (d: Date) => d.toISOString().slice(0, 10)
+  const fmt = (d: Date) => toLocalDateStr(d)
   if (preset === 'week') {
     const diff = (today.getDay() + 6) % 7
     const mon = new Date(today); mon.setDate(today.getDate() - diff)

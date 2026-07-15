@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, Users, Calendar, DollarSign, Loader2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, toLocalDateStr } from '@/lib/utils'
 import { usePerformance, type PerformanceFilter } from '@/hooks/usePerformance'
 
 function getDefaultDates() {
@@ -8,8 +8,8 @@ function getDefaultDates() {
   const start = new Date()
   start.setDate(start.getDate() - 30)
   return {
-    start: start.toISOString().slice(0, 10),
-    end: end.toISOString().slice(0, 10),
+    start: toLocalDateStr(start),
+    end: toLocalDateStr(end),
   }
 }
 

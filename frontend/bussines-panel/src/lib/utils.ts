@@ -26,3 +26,13 @@ export function formatCurrency(amount: number, currency = 'TRY') {
     currency,
   }).format(amount)
 }
+
+export function toLocalDateStr(d: Date = new Date()) {
+  const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+export function futureLocalDateStr(days: number) {
+  const d = new Date(); d.setDate(d.getDate() + days)
+  return toLocalDateStr(d)
+}

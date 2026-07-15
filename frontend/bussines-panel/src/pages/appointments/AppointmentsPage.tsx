@@ -103,7 +103,7 @@ function CreateAppointmentModal({ onClose }: { onClose: () => void }) {
 
   const [form, setForm] = useState({
     customerId: '', serviceId: '', employeeId: '',
-    date: new Date().toISOString().slice(0, 10), time: '09:00', notes: '',
+    date: (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` })(), time: '09:00', notes: '',
   })
   const [customerSearch, setCustomerSearch] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})

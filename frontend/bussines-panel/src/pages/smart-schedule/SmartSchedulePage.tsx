@@ -10,7 +10,7 @@ export function SmartSchedulePage() {
   const weekLater = new Date(today)
   weekLater.setDate(weekLater.getDate() + 7)
 
-  const formatDate = (d: Date) => d.toISOString().split('T')[0]
+  const formatDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
 
   const [startDate, setStartDate] = useState(formatDate(today))
   const [endDate, setEndDate] = useState(formatDate(weekLater))

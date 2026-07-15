@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import type { RootState } from '@/store'
 import { updateBusiness } from '@/store/slices/businessSlice'
 import api from '@/lib/api'
+import { toLocalDateStr } from '@/lib/utils'
 import { showToast } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
 import { PhoneInput } from '@/components/ui/PhoneInput'
@@ -721,7 +722,7 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
       await api.post('/receivables', {
         customerName: payForm.cardHolder || 'Müşteri',
         totalAmount: PLAN_PRICES[selected],
-        dueDate: dueDate.toISOString().split('T')[0],
+        dueDate: toLocalDateStr(dueDate),
         installmentCount: 1,
         description: `${planCfg?.name ?? selected} Plan aboneliği (aylık)`,
       }).catch(() => {})

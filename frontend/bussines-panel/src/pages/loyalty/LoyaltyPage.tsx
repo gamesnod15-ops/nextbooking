@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { cn } from '@/lib/utils'
+import { cn, toLocalDateStr } from '@/lib/utils'
 import { useAppSelector, useAppDispatch } from '@/store'
 import {
   addMember, addReward as addRewardAction,
@@ -81,8 +81,8 @@ export function LoyaltyPage() {
       points,
       totalSpent: 0,
       tier: tier.id,
-      joinedAt: new Date().toISOString().split('T')[0],
-      lastVisit: new Date().toISOString().split('T')[0],
+      joinedAt: toLocalDateStr(),
+      lastVisit: toLocalDateStr(),
       visits: 0,
     }))
     setMemberForm({ name: '', phone: '', points: '' })

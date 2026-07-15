@@ -27,7 +27,10 @@ const DAYS_TR = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cu
 const DAYS_SHORT = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt']
 const MONTHS_TR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık']
 
-function toDateStr(d: Date) { return d.toISOString().slice(0, 10) }
+function toDateStr(d: Date) {
+  const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 const isToday = (d: Date) => {
   const n = new Date()
   return d.getDate() === n.getDate() && d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear()
@@ -110,7 +113,7 @@ function CreateAppointmentModal({ defaultDate, onClose, onCreated }: {
 
   const [form, setForm] = useState({
     customerId: '', serviceId: '', employeeId: '',
-    date: defaultDate ?? new Date().toISOString().slice(0, 10),
+    date: defaultDate ?? (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` })(),
     time: '09:00', notes: '',
   })
   const [customerSearch, setCustomerSearch] = useState('')

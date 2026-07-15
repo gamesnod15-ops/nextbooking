@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { cn } from '@/lib/utils'
+import { cn, toLocalDateStr } from '@/lib/utils'
 import {
   Plus, FileText, Eye, Pencil, Trash2, Copy, X, ArrowLeft, GripVertical,
   CheckSquare, AlignLeft, Hash, Mail, Phone, Calendar, List, Loader2,
@@ -24,7 +24,7 @@ function makeField(type: FieldType): FormField {
 }
 
 function makeForm(): FormDefinition {
-  return { id: Date.now().toString(), name: 'Yeni Form', description: '', isActive: true, createdAt: new Date().toISOString().slice(0, 10), fields: [] }
+  return { id: Date.now().toString(), name: 'Yeni Form', description: '', isActive: true, createdAt: toLocalDateStr(), fields: [] }
 }
 
 // ─── Field Editor ──────────────────────────────────────────────────────────
@@ -161,7 +161,7 @@ export function FormsPage() {
   }
 
   async function duplicateForm(form: FormDefinition) {
-    const copy: FormDefinition = { ...form, id: Date.now().toString(), name: `${form.name} (Kopya)`, createdAt: new Date().toISOString().slice(0, 10) }
+    const copy: FormDefinition = { ...form, id: Date.now().toString(), name: `${form.name} (Kopya)`, createdAt: toLocalDateStr() }
     await saveMutation.mutateAsync({ forms: [...forms, copy], submissions }).catch(() => {})
   }
 

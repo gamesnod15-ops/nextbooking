@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Edit2, Trash2, Percent, X, Search, Tag, Users, Loader2 } from 'lucide-react'
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { formatDate, formatCurrency, futureLocalDateStr } from '@/lib/utils'
 import {
   useCoupons,
   useCreateCoupon,
@@ -23,7 +23,7 @@ type CouponForm = {
 
 const emptyForm: CouponForm = {
   code: '', description: '', discountType: 'percentage', discountValue: 10,
-  minimumOrderAmount: null, expiresAt: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+  minimumOrderAmount: null, expiresAt: futureLocalDateStr(30),
   usageLimit: null, isActive: true,
 }
 
