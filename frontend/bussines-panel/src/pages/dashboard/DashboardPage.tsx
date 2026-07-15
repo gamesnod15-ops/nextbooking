@@ -30,6 +30,7 @@ import {
   Loader2,
   AlertTriangle,
   FileText,
+  MessageCircle,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useDashboardStats } from '@/hooks/useDashboard'
@@ -67,6 +68,68 @@ const statusConfig: Record<string, { label: string; variant: 'success' | 'warnin
   pending: { label: 'Beklemede', variant: 'warning' },
   cancelled: { label: 'İptal', variant: 'destructive' },
   completed: { label: 'Tamamlandı', variant: 'info' },
+}
+
+/** WhatsApp bookings on the dashboard: 4 per row, at most 8 (2 rows) — the
+ *  rest live on the WhatsApp bot page's appointments tab. */
+function WhatsAppBookingsSection() {
+  const appointments = useAppSelector((s) => s.whatsappBot.appointments)
+  if (appointments.length === 0) return null
+
+  const visible = appointments.slice(0, 8)
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100">
+              <MessageCircle className="h-3.5 w-3.5 text-green-600" />
+            </span>
+            WhatsApp Randevuları
+          </CardTitle>
+          <CardDescription>Bot üzerinden gelen randevu talepleri</CardDescription>
+        </div>
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/whatsapp-bot?tab=appointments" className="flex items-center gap-1">
+            {appointments.length > 8 ? `Tümünü Gör (${appointments.length})` : 'Tümü'}
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </Button>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {visible.map((apt) => {
+            const status = statusConfig[apt.status] ?? { label: apt.status, variant: 'info' as const }
+            return (
+              <div key={apt.id} className="rounded-xl border p-3.5 transition-colors hover:bg-accent/50">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
+                    {apt.customerName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || 'W'}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{apt.customerName}</p>
+                    <p className="truncate text-xs text-muted-foreground">{apt.customerPhone}</p>
+                  </div>
+                </div>
+                <div className="mt-2.5 space-y-1 text-xs text-muted-foreground">
+                  <p className="flex items-center gap-1.5 truncate">
+                    <Scissors className="h-3 w-3 shrink-0" /> {apt.selectedService || '—'}
+                  </p>
+                  <p className="flex items-center gap-1.5 truncate">
+                    <Clock className="h-3 w-3 shrink-0" /> {apt.selectedSlot || '—'}
+                  </p>
+                </div>
+                <div className="mt-2.5">
+                  <Badge variant={status.variant}>{status.label}</Badge>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
 
 export function DashboardPage() {
@@ -174,6 +237,9 @@ export function DashboardPage() {
           color="orange"
         />
       </div>
+
+      {/* WhatsApp bookings */}
+      <WhatsAppBookingsSection />
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

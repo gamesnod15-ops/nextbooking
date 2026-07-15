@@ -750,7 +750,10 @@ function DetailItem({ icon, label }: { icon: React.ReactNode; label: string }) {
 type Tab = 'settings' | 'simulator' | 'appointments'
 
 export function WhatsAppBotPage() {
-  const [tab, setTab] = useState<Tab>('simulator')
+  const [tab, setTab] = useState<Tab>(() => {
+    const param = new URLSearchParams(window.location.search).get('tab')
+    return param === 'appointments' || param === 'settings' ? param : 'simulator'
+  })
   const isEnabled = useAppSelector(s => s.whatsappBot.settings.isEnabled)
   const pendingCount = useAppSelector(s => s.whatsappBot.appointments.filter(a => a.status === 'pending').length)
 
