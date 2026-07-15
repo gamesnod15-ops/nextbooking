@@ -51,6 +51,38 @@ const defaultSchedule: DaySchedule[] = [
 const inputCls =
   'w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20'
 
+function formatPhoneDisplay(raw: string) {
+  const digits = raw.replace(/\D/g, '')
+  const local = digits.startsWith('90') ? digits.slice(2) : digits.startsWith('0') ? digits.slice(1) : digits
+  const d = local.slice(0, 10)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`
+  if (d.length <= 8) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`
+  return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`
+}
+
+function PhoneInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+    onChange(digits ? `+90${digits}` : '')
+  }
+  return (
+    <div className="flex w-full overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-colors">
+      <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
+        +90
+      </span>
+      <input
+        type="tel"
+        value={formatPhoneDisplay(value)}
+        onChange={handleChange}
+        placeholder={placeholder || '555 000 00 00'}
+        autoComplete="tel"
+        className="flex-1 bg-transparent px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+      />
+    </div>
+  )
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function OnboardingPage() {
@@ -498,8 +530,7 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
           <input className={inputCls} placeholder="Ünvan (örn. Kuaför)" value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
-          <input className={inputCls} placeholder="Telefon (opsiyonel)" value={form.phone}
-            onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+          <PhoneInput value={form.phone} onChange={v => setForm(f => ({ ...f, phone: v }))} placeholder="555 000 00 00" />
         </div>
 
         {services.length > 0 && (
@@ -642,8 +673,7 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
             onChange={e => setForm(f => ({ ...f, city: e.target.value }))} />
           <input className={inputCls} placeholder="Adres" value={form.address}
             onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
-          <input className={inputCls} placeholder="Telefon (opsiyonel)" value={form.phone}
-            onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+          <PhoneInput value={form.phone} onChange={v => setForm(f => ({ ...f, phone: v }))} placeholder="555 000 00 00" />
         </div>
         <button type="button" onClick={add} disabled={loading || !form.name.trim()}
           className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
