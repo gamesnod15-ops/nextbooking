@@ -100,4 +100,12 @@ api.interceptors.response.use(
   }
 )
 
+export async function uploadImage(file: File, folder?: string): Promise<string> {
+  const form = new FormData()
+  form.append('file', file)
+  const params = folder ? `?folder=${encodeURIComponent(folder)}` : ''
+  const { data } = await api.post<{ url: string }>(`/uploads/image${params}`, form)
+  return data.url
+}
+
 export default api

@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
-import api from '@/lib/api'
+import api, { uploadImage } from '@/lib/api'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import {
   Building2,
@@ -198,20 +198,28 @@ function ProfileSettings() {
   async function deleteBillingAddress(_id: string) {
     try {
       const current = await api.get<any>('/business/me').then(r => r.data)
+      const cleanedSettings: Record<string, string> = {}
+      if (current.settings) {
+        for (const [k, v] of Object.entries(current.settings)) {
+          if (v !== null && v !== undefined) cleanedSettings[k] = v as string
+        }
+      }
+      cleanedSettings.billing_invoice_type = ''
+      cleanedSettings.billing_contact_name = ''
       await api.put('/business/me', {
         name: current.name,
-        phone: null,
+        phone: current.phone,
         email: current.email,
-        address: null,
-        city: null,
-        postalCode: null,
-        country: null,
-        taxNumber: null,
-        taxOffice: null,
+        address: current.address,
+        city: current.city,
+        postalCode: current.postalCode,
+        country: current.country,
+        taxNumber: current.taxNumber,
+        taxOffice: current.taxOffice,
         website: current.website,
         description: current.description,
         logoUrl: current.logoUrl,
-        settings: { ...current.settings, billing_invoice_type: null, billing_contact_name: null },
+        settings: cleanedSettings,
       })
       setBillingAddresses([])
     } catch { /* sessiz */ }
@@ -1156,21 +1164,21 @@ function GeneralSettings() {
                      onChange={async (e) => {
                        const file = e.target.files?.[0]
                        if (!file) return
-                       const reader = new FileReader()
-                       reader.onload = async () => {
-                         const dataUrl = reader.result as string
-                          await updateMutation.mutateAsync({
-                            name, phone, email, address, city, website, description,
-                            logoUrl: dataUrl,
-                            galleryImages,
-                            postalCode: business?.postalCode ?? null,
-                            country: business?.country ?? null,
-                            taxNumber: business?.taxNumber ?? null,
-                            taxOffice: business?.taxOffice ?? null,
-                            settings: business?.settings,
-                          })
+                       try {
+                         const url = await uploadImage(file, 'logos')
+                         await updateMutation.mutateAsync({
+                           name, phone, email, address, city, website, description,
+                           logoUrl: url,
+                           galleryImages,
+                           postalCode: business?.postalCode ?? null,
+                           country: business?.country ?? null,
+                           taxNumber: business?.taxNumber ?? null,
+                           taxOffice: business?.taxOffice ?? null,
+                           settings: business?.settings,
+                         })
+                       } catch (err) {
+                         console.error('Logo upload failed', err)
                        }
-                       reader.readAsDataURL(file)
                      }} />
             </div>
           </div>
@@ -1190,7 +1198,7 @@ function GeneralSettings() {
                         name, phone, email, address, city, website, description,
                         latitude: latitude ? parseFloat(latitude) : null,
                         longitude: longitude ? parseFloat(longitude) : null,
-                        logoUrl: business?.logoUrl ?? null,
+                        logoUrl: null,
                         galleryImages: next,
                         postalCode: business?.postalCode ?? null,
                         country: business?.country ?? null,
@@ -1210,32 +1218,29 @@ function GeneralSettings() {
                 <Plus className="h-5 w-5 text-muted-foreground" />
               </button>
               <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
-                     onChange={(e) => {
+                     onChange={async (e) => {
                        const files = Array.from(e.target.files || [])
                        if (!files.length) return
-                       Promise.all(files.map(f => new Promise<string>(resolve => {
-                         const r = new FileReader()
-                         r.onload = () => resolve(r.result as string)
-                         r.readAsDataURL(f)
-                       }))).then(async results => {
-                         const next = [...galleryImages, ...results]
+                       try {
+                         const urls = await Promise.all(files.map(f => uploadImage(f, 'gallery')))
+                         const next = [...galleryImages, ...urls]
                          setGalleryImages(next)
                          cacheGallery('rk_gallery_images', next)
-                         try {
-                           await updateMutation.mutateAsync({
-                             name, phone, email, address, city, website, description,
-                             latitude: latitude ? parseFloat(latitude) : null,
-                             longitude: longitude ? parseFloat(longitude) : null,
-                             logoUrl: business?.logoUrl ?? null,
-                             galleryImages: next,
-                             postalCode: business?.postalCode ?? null,
-                             country: business?.country ?? null,
-                             taxNumber: business?.taxNumber ?? null,
-                             taxOffice: business?.taxOffice ?? null,
-                             settings: business?.settings,
-                           })
-                         } catch { /* sessiz */ }
-                       })
+                         await updateMutation.mutateAsync({
+                           name, phone, email, address, city, website, description,
+                           latitude: latitude ? parseFloat(latitude) : null,
+                           longitude: longitude ? parseFloat(longitude) : null,
+                           logoUrl: business?.logoUrl ?? null,
+                           galleryImages: next,
+                           postalCode: business?.postalCode ?? null,
+                           country: business?.country ?? null,
+                           taxNumber: business?.taxNumber ?? null,
+                           taxOffice: business?.taxOffice ?? null,
+                           settings: business?.settings,
+                         })
+                       } catch (err) {
+                         console.error('Gallery upload failed', err)
+                       }
                        e.target.value = ''
                      }} />
             </div>
