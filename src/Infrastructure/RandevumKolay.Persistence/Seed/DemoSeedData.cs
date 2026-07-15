@@ -418,6 +418,288 @@ public static class DemoSeedData
                 ctx.Reviews.Add(r);
             }
 
+            // Payments (for completed appointments)
+            var completedAppointments = ctx.ChangeTracker.Entries<Appointment>()
+                .Where(e => e.Entity.TenantId == tenantId &&
+                    e.State == Microsoft.EntityFrameworkCore.EntityState.Added &&
+                    e.Entity.Status == AppointmentStatus.Completed)
+                .Select(e => e.Entity)
+                .ToList();
+
+            foreach (var appt in completedAppointments)
+            {
+                var p = New<Payment>();
+                Set(p, nameof(Payment.Id), Guid.NewGuid());
+                Set(p, nameof(Payment.TenantId), tenantId);
+                Set(p, nameof(Payment.AppointmentId), appt.Id);
+                Set(p, nameof(Payment.Provider), Pick(new[] { "iyzico", "stripe", "paytr" }));
+                Set(p, nameof(Payment.Amount), appt.Price);
+                Set(p, nameof(Payment.Currency), "TRY");
+                Set(p, nameof(Payment.Status), PaymentStatus.Completed);
+                Set(p, nameof(Payment.PaidAt), appt.EndTime);
+                ctx.Payments.Add(p);
+            }
+
+            // Campaigns
+            var campNames = new[] { "Hoş Geldin İndirimi", "Yaz Kampanyası", "Arkadaşını Getir", "Sezon Sonu", "İlk Randevu" };
+            for (int i = 0; i < Rng.Next(2, 5); i++)
+            {
+                var c = New<Campaign>();
+                Set(c, nameof(Campaign.Id), Guid.NewGuid());
+                Set(c, nameof(Campaign.TenantId), tenantId);
+                Set(c, nameof(Campaign.Name), $"{Pick(campNames)} - {d.BizName}");
+                Set(c, nameof(Campaign.Description), $"%{Rng.Next(10, 40)} indirim fırsatı!");
+                Set(c, nameof(Campaign.DiscountType), DiscountType.Percentage);
+                Set(c, nameof(Campaign.DiscountValue), Rng.Next(10, 40));
+                Set(c, nameof(Campaign.StartDate), Now.AddDays(-Rng.Next(5, 30)));
+                Set(c, nameof(Campaign.EndDate), Now.AddDays(Rng.Next(15, 60)));
+                Set(c, nameof(Campaign.Status), Pick(new[] { CampaignStatus.Active, CampaignStatus.Active, CampaignStatus.Draft }));
+                Set(c, nameof(Campaign.UsageLimit), Rng.Next(20, 100));
+                Set(c, nameof(Campaign.UsageCount), Rng.Next(0, 20));
+                ctx.Campaigns.Add(c);
+            }
+
+            // Coupons
+            for (int i = 0; i < Rng.Next(3, 7); i++)
+            {
+                var c = New<Coupon>();
+                Set(c, nameof(Coupon.Id), Guid.NewGuid());
+                Set(c, nameof(Coupon.TenantId), tenantId);
+                Set(c, nameof(Coupon.Code), $"KUPON{Rng.Next(1000, 9999)}");
+                Set(c, nameof(Coupon.Description), $"{Rng.Next(10, 50)}% indirim");
+                Set(c, nameof(Coupon.DiscountType), Pick(new[] { DiscountType.Percentage, DiscountType.FixedAmount }));
+                Set(c, nameof(Coupon.DiscountValue), Rng.Next(2) == 0 ? Rng.Next(10, 40) : Rng.Next(50, 200));
+                Set(c, nameof(Coupon.MinimumOrderAmount), Rng.Next(2) == 0 ? Rng.Next(100, 500) : (decimal?)null);
+                Set(c, nameof(Coupon.ExpiresAt), Now.AddDays(Rng.Next(15, 90)));
+                Set(c, nameof(Coupon.UsageLimit), Rng.Next(10, 50));
+                Set(c, nameof(Coupon.UsageCount), Rng.Next(0, 10));
+                Set(c, nameof(Coupon.IsActive), true);
+                ctx.Coupons.Add(c);
+            }
+
+            // Packages
+            var pkgNames = new[] { "Bronz Paket", "Gümüş Paket", "Altın Paket", "Premium Paket", "Ekonomik Paket" };
+            for (int i = 0; i < Rng.Next(2, 5); i++)
+            {
+                var selected = services.OrderBy(_ => Rng.Next()).Take(Rng.Next(2, 4)).ToList();
+                var totalPkgPrice = selected.Sum(s => s.Price);
+                var p = New<Package>();
+                Set(p, nameof(Package.Id), Guid.NewGuid());
+                Set(p, nameof(Package.TenantId), tenantId);
+                Set(p, nameof(Package.Name), Pick(pkgNames));
+                Set(p, nameof(Package.Description), $"{selected.Count} hizmet bir arada!");
+                Set(p, nameof(Package.Price), (int)(totalPkgPrice * 0.75m));
+                Set(p, nameof(Package.OriginalPrice), (int)totalPkgPrice);
+                Set(p, nameof(Package.ValidityDays), Rng.Next(30, 181));
+                Set(p, nameof(Package.IsActive), true);
+                Set(p, nameof(Package.Items), selected.Select(s => new PackageItem
+                {
+                    ServiceId = s.Id,
+                    ServiceName = s.Name,
+                    Quantity = Rng.Next(1, 4)
+                }).ToList());
+                ctx.Packages.Add(p);
+            }
+
+            // Products
+            var productTemplates = d.Cat switch
+            {
+                BusinessCategory.BeautySalon => new[] { ("Nemlendirici Krem", 250), ("Saç Serumu", 180), ("Güneş Kremi", 200), ("Tonik", 120), ("El Kremi", 90) },
+                BusinessCategory.Barbershop => new[] { ("Saç Jölesi", 80), ("Sakal Yağı", 120), ("Tıraş Köpüğü", 60), ("Saç Kremi", 90), ("Kolonya", 50) },
+                BusinessCategory.Dentist => new[] { ("Diş Fırçası", 40), ("Diş Macunu", 30), ("Diş İpi", 25), ("Ağız Gargarası", 45) },
+                BusinessCategory.Spa => new[] { ("Aromaterapi Yağı", 150), ("Vücut Losyonu", 100), ("Masaj Yağı", 120), ("Banyo Tuzu", 60) },
+                BusinessCategory.NailSalon => new[] { ("Oje Seti", 80), ("Tırnak Törpüsü", 30), ("Base Coat", 40), ("Top Coat", 40) },
+                BusinessCategory.Gym => new[] { ("Protein Tozu", 350), ("Shaker", 80), ("Antrenman Eldiveni", 120), ("Su Şişesi", 50) },
+                BusinessCategory.Veterinarian => new[] { ("Kuru Mama", 200), ("Yaş Mama", 80), ("Vitamin", 150), ("Tasma", 90) },
+                BusinessCategory.CarService => new[] { ("Motor Yağı", 300), ("Hava Filtresi", 120), ("Yağ Filtresi", 100), ("Klima Spreyi", 80) },
+                _ => new[] { ("Kalem", 30), ("Defter", 50), ("Bardak", 40), ("Tişört", 100) }
+            };
+            foreach (var (name, price) in productTemplates)
+            {
+                var pr = New<Product>();
+                Set(pr, nameof(Product.Id), Guid.NewGuid());
+                Set(pr, nameof(Product.TenantId), tenantId);
+                Set(pr, nameof(Product.Name), name);
+                Set(pr, nameof(Product.SalePrice), price);
+                Set(pr, nameof(Product.CostPrice), (int)(price * 0.5m));
+                Set(pr, nameof(Product.StockQuantity), Rng.Next(5, 100));
+                Set(pr, nameof(Product.MinStockLevel), 5);
+                Set(pr, nameof(Product.Unit), "Adet");
+                Set(pr, nameof(Product.IsActive), true);
+                ctx.Products.Add(pr);
+            }
+
+            // EmployeeCommissions
+            foreach (var emp in employees)
+            {
+                var ec = New<EmployeeCommission>();
+                Set(ec, nameof(EmployeeCommission.Id), Guid.NewGuid());
+                Set(ec, nameof(EmployeeCommission.TenantId), tenantId);
+                Set(ec, nameof(EmployeeCommission.EmployeeId), emp.Id);
+                Set(ec, nameof(EmployeeCommission.EmployeeName), emp.Name);
+                Set(ec, nameof(EmployeeCommission.Period), $"{Now:yyyy-MM}");
+                Set(ec, nameof(EmployeeCommission.Type), Pick(new[] { CommissionType.Service, CommissionType.Sales, CommissionType.Mixed }));
+                Set(ec, nameof(EmployeeCommission.BaseAmount), Rng.Next(50, 300) * 10m);
+                Set(ec, nameof(EmployeeCommission.CommissionRate), Rng.Next(5, 25));
+                Set(ec, nameof(EmployeeCommission.CommissionAmount), Rng.Next(50, 300) * 10m * Rng.Next(5, 25) / 100m);
+                Set(ec, nameof(EmployeeCommission.BonusAmount), Rng.Next(2) == 0 ? Rng.Next(5, 30) * 10m : 0m);
+                Set(ec, nameof(EmployeeCommission.Status), Pick(new[] { CommissionStatus.Pending, CommissionStatus.Approved, CommissionStatus.Paid }));
+                ctx.EmployeeCommissions.Add(ec);
+            }
+
+            // GiftCoupons
+            for (int i = 0; i < Rng.Next(3, 8); i++)
+            {
+                var gc = New<GiftCoupon>();
+                Set(gc, nameof(GiftCoupon.Id), Guid.NewGuid());
+                Set(gc, nameof(GiftCoupon.TenantId), tenantId);
+                Set(gc, nameof(GiftCoupon.Code), $"HEDIYE{Rng.Next(10000, 99999)}");
+                Set(gc, nameof(GiftCoupon.Amount), Rng.Next(5, 30) * 10);
+                Set(gc, nameof(GiftCoupon.RecipientName), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                Set(gc, nameof(GiftCoupon.RecipientEmail), $"hediye{Rng.Next(1, 999)}@email.com");
+                Set(gc, nameof(GiftCoupon.PurchasedBy), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                Set(gc, nameof(GiftCoupon.PurchaseDate), Now.AddDays(-Rng.Next(1, 30)));
+                Set(gc, nameof(GiftCoupon.ExpiryDate), Now.AddDays(Rng.Next(30, 180)));
+                Set(gc, nameof(GiftCoupon.UsedAmount), 0m);
+                Set(gc, nameof(GiftCoupon.Status), Pick(new[] { GiftCouponStatus.Active, GiftCouponStatus.Active, GiftCouponStatus.Used }));
+                Set(gc, nameof(GiftCoupon.Message), Pick(new[] { "Mutlu yıllar!", "İyi Bayramlar!", "Doğum günün kutlu olsun!", "" }));
+                ctx.GiftCoupons.Add(gc);
+            }
+
+            // Advertisements
+            for (int i = 0; i < Rng.Next(1, 4); i++)
+            {
+                var ad = New<Advertisement>();
+                Set(ad, nameof(Advertisement.Id), Guid.NewGuid());
+                Set(ad, nameof(Advertisement.TenantId), tenantId);
+                Set(ad, nameof(Advertisement.Title), $"{d.BizName} - {Pick(new[] { "Öne Çıkan", "Tanıtım", "Kampanya" })}");
+                Set(ad, nameof(Advertisement.Description), $"{d.BizName} hizmetlerini keşfedin!");
+                Set(ad, nameof(Advertisement.PackageType), Pick(new[] { AdPackageType.BasicBoost, AdPackageType.ProfessionalBoost, AdPackageType.PremiumSpotlight }));
+                Set(ad, nameof(Advertisement.TargetCategory), AdTargetCategory.All);
+                Set(ad, nameof(Advertisement.Budget), Rng.Next(50, 200) * 10);
+                Set(ad, nameof(Advertisement.StartDate), Now.AddDays(-Rng.Next(0, 10)));
+                Set(ad, nameof(Advertisement.EndDate), Now.AddDays(Rng.Next(10, 40)));
+                Set(ad, nameof(Advertisement.Status), Pick(new[] { AdStatus.Active, AdStatus.Active, AdStatus.Pending }));
+                Set(ad, nameof(Advertisement.Impressions), Rng.Next(100, 5000));
+                Set(ad, nameof(Advertisement.Clicks), Rng.Next(10, 300));
+                Set(ad, nameof(Advertisement.Conversions), Rng.Next(1, 30));
+                ctx.Advertisements.Add(ad);
+            }
+
+            // QueueItems (walk-in)
+            for (int i = 0; i < Rng.Next(2, 6); i++)
+            {
+                var q = New<QueueItem>();
+                Set(q, nameof(QueueItem.Id), Guid.NewGuid());
+                Set(q, nameof(QueueItem.TenantId), tenantId);
+                Set(q, nameof(QueueItem.BusinessId), bizId);
+                Set(q, nameof(QueueItem.QueueNumber), Rng.Next(1, 50));
+                Set(q, nameof(QueueItem.CustomerName), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                Set(q, nameof(QueueItem.CustomerPhone), Phone());
+                Set(q, nameof(QueueItem.Status), Pick(new[] { QueueStatus.Waiting, QueueStatus.InService, QueueStatus.Completed }));
+                Set(q, nameof(QueueItem.EstimatedWaitMinutes), Rng.Next(5, 45));
+                ctx.QueueItems.Add(q);
+            }
+
+            // WaitingListEntries
+            for (int i = 0; i < Rng.Next(1, 4); i++)
+            {
+                var w = New<WaitingListEntry>();
+                Set(w, nameof(WaitingListEntry.Id), Guid.NewGuid());
+                Set(w, nameof(WaitingListEntry.TenantId), tenantId);
+                Set(w, nameof(WaitingListEntry.BusinessId), bizId);
+                Set(w, nameof(WaitingListEntry.CustomerName), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                Set(w, nameof(WaitingListEntry.CustomerPhone), Phone());
+                Set(w, nameof(WaitingListEntry.Status), Pick(new[] { WaitingListStatus.Waiting, WaitingListStatus.Notified, WaitingListStatus.Confirmed }));
+                Set(w, nameof(WaitingListEntry.PreferredDate), DateOnly.FromDateTime(DateTime.Now.AddDays(Rng.Next(1, 14))));
+                Set(w, nameof(WaitingListEntry.PreferredTime), new TimeOnly(Rng.Next(9, 18), 0));
+                ctx.WaitingListEntries.Add(w);
+            }
+
+            // Receivables + Installments
+            for (int i = 0; i < Rng.Next(2, 5); i++)
+            {
+                var cust = Pick(customers);
+                var total = Rng.Next(10, 100) * 100m;
+                var instCount = Pick(new[] { 1, 1, 2, 3 });
+                var paidAmt = instCount > 1 ? total / instCount * Rng.Next(0, 2) : Rng.Next(2) == 0 ? total : 0m;
+
+                var rec = New<Receivable>();
+                Set(rec, nameof(Receivable.Id), Guid.NewGuid());
+                Set(rec, nameof(Receivable.TenantId), tenantId);
+                Set(rec, nameof(Receivable.CustomerName), cust.Name);
+                Set(rec, nameof(Receivable.CustomerPhone), cust.Phone);
+                Set(rec, nameof(Receivable.TotalAmount), total);
+                Set(rec, nameof(Receivable.PaidAmount), paidAmt);
+                Set(rec, nameof(Receivable.DueDate), DateOnly.FromDateTime(DateTime.Now.AddDays(Rng.Next(-10, 31))));
+                Set(rec, nameof(Receivable.Status), paidAmt == 0 ? ReceivableStatus.Open : paidAmt >= total ? ReceivableStatus.Paid : ReceivableStatus.PartiallyPaid);
+                Set(rec, nameof(Receivable.InstallmentCount), instCount);
+                ctx.Receivables.Add(rec);
+
+                for (int j = 0; j < instCount; j++)
+                {
+                    var inst = New<Installment>();
+                    Set(inst, nameof(Installment.Id), Guid.NewGuid());
+                    Set(inst, nameof(Installment.TenantId), tenantId);
+                    Set(inst, nameof(Installment.ReceivableId), rec.Id);
+                    Set(inst, nameof(Installment.InstallmentNumber), j + 1);
+                    Set(inst, nameof(Installment.Amount), total / instCount);
+                    Set(inst, nameof(Installment.DueDate), DateOnly.FromDateTime(DateTime.Now.AddDays(j * 30 - 10)));
+                    Set(inst, nameof(Installment.IsPaid), j == 0 && paidAmt > 0);
+                    ctx.Installments.Add(inst);
+                }
+            }
+
+            // DebtRecords
+            var debtCats = new[] { DebtCategory.Rent, DebtCategory.Supplier, DebtCategory.Tax, DebtCategory.Equipment };
+            for (int i = 0; i < Rng.Next(2, 5); i++)
+            {
+                var debtCat = Pick(debtCats);
+                var total = Rng.Next(5, 100) * 1000m;
+                var paid = Rng.Next(2) == 0 ? 0m : Rng.Next(1, (int)(total / 1000)) * 1000m;
+
+                var dr = New<DebtRecord>();
+                Set(dr, nameof(DebtRecord.Id), Guid.NewGuid());
+                Set(dr, nameof(DebtRecord.TenantId), tenantId);
+                Set(dr, nameof(DebtRecord.Title), debtCat switch { DebtCategory.Rent => "Kira", DebtCategory.Supplier => "Tedarikçi Faturası", DebtCategory.Tax => "Vergi", _ => "Ekipman" });
+                Set(dr, nameof(DebtRecord.TotalAmount), total);
+                Set(dr, nameof(DebtRecord.PaidAmount), paid);
+                Set(dr, nameof(DebtRecord.DueDate), DateOnly.FromDateTime(DateTime.Now.AddDays(Rng.Next(-15, 45))));
+                Set(dr, nameof(DebtRecord.Category), debtCat);
+                Set(dr, nameof(DebtRecord.Status), paid == 0 ? DebtStatus.Open : paid >= total ? DebtStatus.Paid : DebtStatus.PartiallyPaid);
+                ctx.DebtRecords.Add(dr);
+            }
+
+            // Deposits
+            foreach (var appt in completedAppointments.Take(Rng.Next(2, 6)))
+            {
+                var dep = New<Deposit>();
+                Set(dep, nameof(Deposit.Id), Guid.NewGuid());
+                Set(dep, nameof(Deposit.TenantId), tenantId);
+                Set(dep, nameof(Deposit.AppointmentId), appt.Id);
+                Set(dep, nameof(Deposit.Amount), appt.Price * 0.3m);
+                Set(dep, nameof(Deposit.Currency), "TRY");
+                Set(dep, nameof(Deposit.Status), DepositStatus.Paid);
+                Set(dep, nameof(Deposit.PaymentMethod), Pick(new[] { "CreditCard", "BankTransfer", "Cash" }));
+                Set(dep, nameof(Deposit.PaidAt), appt.StartTime.AddDays(-1));
+                ctx.Deposits.Add(dep);
+            }
+
+            // Surveys
+            foreach (var appt in completedAppointments.Take(Rng.Next(3, 8)))
+            {
+                var s = New<Survey>();
+                Set(s, nameof(Survey.Id), Guid.NewGuid());
+                Set(s, nameof(Survey.TenantId), tenantId);
+                Set(s, nameof(Survey.BusinessId), bizId);
+                Set(s, nameof(Survey.AppointmentId), appt.Id);
+                Set(s, nameof(Survey.CustomerName), Pick(customers).Name);
+                Set(s, nameof(Survey.Rating), Rng.Next(3, 6));
+                Set(s, nameof(Survey.Comment), Pick(new[] { "Çok memnun kaldım!", "Harika hizmet!", "Profesyonel ekip.", "Tavsiye ederim.", "Mükemmel deneyim!" }));
+                Set(s, nameof(Survey.IsApproved), true);
+                ctx.Surveys.Add(s);
+            }
+
             // User account for panel login (tenant_admin)
             var demoPassword = "Demo1234!";
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(demoPassword);
