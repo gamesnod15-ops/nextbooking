@@ -254,7 +254,7 @@ function LoginForm() {
 
             <p className="mt-8 text-center text-xs text-gray-400">
               Sorun mu yaşıyorsunuz?{' '}
-              <Link href="/contact" className="text-brand-500 hover:underline">Destek alın</Link>
+              <Link href="/iletisim" className="text-brand-500 hover:underline">Destek alın</Link>
             </p>
           </div>
         </div>
