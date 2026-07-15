@@ -16,7 +16,6 @@ import api from '@/lib/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { useServices } from '@/hooks/useServices'
 import { useEmployees } from '@/hooks/useEmployees'
-import type { Customer } from '@/hooks/useCustomers'
 import type { WhatsAppAppointment } from '@/store/slices/whatsappBotSlice'
 import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
@@ -546,9 +545,7 @@ function slotToDate(selectedSlot: string): Date {
   return result
 }
 
-function normalizePhone(p: string) {
-  return p.replace(/\D/g, '').replace(/^90/, '').replace(/^0/, '')
-}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // ─── Appointments Tab ───────────────────────────────────────────────────────
 function AppointmentsTab() {
@@ -560,7 +557,8 @@ function AppointmentsTab() {
   const { data: svcData } = useServices({ pageNumber: 1, pageSize: 100 })
   const { data: empData } = useEmployees({ pageNumber: 1, pageSize: 100 })
 
-  /** Approve = create the real customer + appointment so the booking shows up
+  /** Approve = create the real appointment via the booking API (the backend
+   *  finds or creates the customer by phone itself), so the booking shows up
    *  in Randevular, Takvim and Müşteriler — then mark the WhatsApp card confirmed. */
   async function approveAppointment(apt: WhatsAppAppointment) {
     const services = svcData?.items ?? []
@@ -574,56 +572,55 @@ function AppointmentsTab() {
       return
     }
 
-    const employee =
-      employees.find(e => e.serviceIds.includes(service.id)) ?? employees[0]
-    if (!employee) {
-      showToast('error', 'Çalışan bulunamadı', 'Randevuyu aktarabilmek için önce Çalışanlar sayfasından bir çalışan ekleyin.')
-      return
-    }
+    // Prefer an employee who offers this service; the backend can also
+    // auto-assign (or create the owner employee) when null is sent.
+    const employee = employees.find(e => e.serviceIds.includes(service.id)) ?? employees[0] ?? null
 
     setApproving(apt.id)
     try {
-      // 1. Find or create the customer by phone
-      let customerId: string | undefined
-      try {
-        const { data } = await api.get<{ items: Customer[] }>('/customers', {
-          params: { pageNumber: 1, pageSize: 5, search: apt.customerPhone },
-        })
-        customerId = data.items.find(c => normalizePhone(c.phone) === normalizePhone(apt.customerPhone))?.id
-      } catch { /* fall through to create */ }
+      const d = slotToDate(apt.selectedSlot)
+      const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 
-      if (!customerId) {
-        const { data: created } = await api.post<{ id: string } | string>('/customers', {
-          name: apt.customerName,
-          phone: apt.customerPhone,
-          email: apt.customerEmail || null,
-          notes: `WhatsApp bot kaydı${apt.customerCity ? ` · Şehir: ${apt.customerCity}` : ''}`,
-          birthDate: null,
-        })
-        customerId = typeof created === 'string' ? created : created.id
-      }
+      const nameParts = apt.customerName.trim().split(/\s+/)
+      const firstName = nameParts[0] || 'Müşteri'
+      const lastName = nameParts.slice(1).join(' ') || '-'
+      const phone = apt.customerPhone.replace(/[\s-]/g, '')
+      // Email is required by the booking API — fall back to a per-customer
+      // placeholder when the bot collected an invalid/missing address.
+      const email = EMAIL_RE.test(apt.customerEmail.trim())
+        ? apt.customerEmail.trim()
+        : `wa${phone.replace(/\D/g, '') || Date.now()}@nextbooking.app`
 
-      // 2. Create the real appointment
-      const startTime = slotToDate(apt.selectedSlot).toISOString()
-      const { data: aptCreated } = await api.post<{ id: string } | string>('/appointments', {
+      const { data: created } = await api.post<{ id: string }>('/appointments', {
         serviceId: service.id,
-        employeeId: employee.id,
-        customerId,
-        startTime,
+        employeeId: employee?.id ?? null,
+        date,
+        time,
+        firstName,
+        lastName,
+        phone,
+        email,
+        city: apt.customerCity || null,
         notes: `WhatsApp bot randevusu · ${apt.selectedService || service.name} · ${apt.selectedSlot}`,
         source: 'whatsapp',
       })
-      const realId = typeof aptCreated === 'string' ? aptCreated : aptCreated?.id
 
       qc.invalidateQueries({ queryKey: ['appointments'] })
       qc.invalidateQueries({ queryKey: ['customers'] })
       qc.invalidateQueries({ queryKey: ['dashboard-stats'] })
 
-      dispatch(updateAppointmentStatus({ id: apt.id, status: 'confirmed', syncedAppointmentId: realId }))
-      showToast('success', 'Randevu onaylandı', 'Müşteri ve randevu sisteme kaydedildi — Randevular ve Takvim sayfalarında görünür.')
+      dispatch(updateAppointmentStatus({ id: apt.id, status: 'confirmed', syncedAppointmentId: created?.id }))
+      showToast('success', 'Randevu onaylandı', `${date} ${time} için randevu oluşturuldu — Randevular ve Takvim sayfalarında görünür.`)
     } catch (err: unknown) {
-      const anyErr = err as { response?: { data?: { message?: string; detail?: string } } }
-      showToast('error', 'Randevu aktarılamadı', anyErr?.response?.data?.message ?? anyErr?.response?.data?.detail ?? 'Lütfen tekrar deneyin.')
+      const anyErr = err as { response?: { status?: number; data?: { message?: string; detail?: string; errors?: Record<string, string[]> } } }
+      const valErrors = anyErr?.response?.data?.errors
+      const firstValError = valErrors ? Object.values(valErrors).flat()[0] : undefined
+      showToast(
+        'error',
+        anyErr?.response?.status === 409 ? 'Saat dolu' : 'Randevu aktarılamadı',
+        firstValError ?? anyErr?.response?.data?.message ?? anyErr?.response?.data?.detail ?? 'Lütfen tekrar deneyin.'
+      )
     } finally {
       setApproving(null)
     }
