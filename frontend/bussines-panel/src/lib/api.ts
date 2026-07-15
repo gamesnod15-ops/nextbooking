@@ -100,9 +100,45 @@ api.interceptors.response.use(
   }
 )
 
+/** Downscale + re-encode an image in the browser before upload. High-res phone
+ *  photos (5-10MB) become a few hundred KB, so uploads are fast and the stored
+ *  images stay light for visitors. SVG/GIF and already-small files pass through. */
+async function compressImage(file: File, maxDim: number, quality = 0.82): Promise<File> {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file
+  if (file.size < 300 * 1024) return file
+
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height))
+    const width = Math.max(1, Math.round(bitmap.width * scale))
+    const height = Math.max(1, Math.round(bitmap.height * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return file
+    ctx.drawImage(bitmap, 0, 0, width, height)
+    bitmap.close()
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/webp', quality)
+    )
+    // Only use the result when it actually got smaller
+    if (!blob || blob.size >= file.size) return file
+    return new File([blob], file.name.replace(/\.\w+$/, '') + '.webp', { type: 'image/webp' })
+  } catch {
+    return file
+  }
+}
+
 export async function uploadImage(file: File, folder?: string): Promise<string> {
+  // Logos render small — 512px is plenty. Gallery/other photos keep more detail.
+  const maxDim = folder === 'logos' ? 512 : 1920
+  const optimized = await compressImage(file, maxDim)
+
   const form = new FormData()
-  form.append('file', file)
+  form.append('file', optimized)
   const params = folder ? `?folder=${encodeURIComponent(folder)}` : ''
   const { data } = await api.post<{ url: string }>(`/uploads/image${params}`, form)
   return data.url
