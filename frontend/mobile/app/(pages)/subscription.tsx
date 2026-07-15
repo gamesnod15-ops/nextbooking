@@ -32,10 +32,13 @@ export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const { data: sub, refetch, isRefetching } = useQuery({
     queryKey: ['my-subscription'],
-    queryFn: async () => { const res = await api.get('/business/me/plan'); return res.data; },
+    // There is no GET /business/me/plan endpoint — plan info lives on /business/me
+    queryFn: async () => { const res = await api.get('/business/me'); return res.data; },
   });
-  const currentPlanId = sub?.planId;
-  const nextBilling = sub?.nextBilling;
+  const currentPlanId = sub?.plan;
+  const nextBilling = sub?.subscriptionEndsAt
+    ? new Date(sub.subscriptionEndsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+    : undefined;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>

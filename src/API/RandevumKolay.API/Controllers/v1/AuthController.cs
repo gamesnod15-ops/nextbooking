@@ -87,7 +87,10 @@ public class AuthController : ControllerBase
             Expires = DateTimeOffset.UtcNow.AddDays(7)
         });
 
-        return Ok(new { result.AccessToken });
+        // Mobile clients can't rely on cookies; they need the rotated refresh
+        // token in the body, otherwise their stored (now revoked) token dies
+        // on the next refresh and the user gets logged out.
+        return Ok(new { result.AccessToken, result.RefreshToken });
     }
 
     [HttpPost("logout")]

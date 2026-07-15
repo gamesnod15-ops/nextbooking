@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 // Use your local IP for development (change to your machine's IP)
 const BASE_URL = __DEV__
   ? 'http://192.168.1.3:5280/api/v1'  // Change to your dev machine IP
-  : 'https://api.randevumkolay.com/api/v1';
+  : 'https://api-randevumkolay.azurewebsites.net/api/v1';
 
 // Extract the server origin (scheme + host + port) from BASE_URL
 export const API_ORIGIN = BASE_URL.startsWith('http')
@@ -81,6 +81,11 @@ api.interceptors.response.use(
         const newToken = data.accessToken;
 
         await SecureStore.setItemAsync('access_token', newToken);
+        // The backend rotates refresh tokens (old one is revoked) — persist
+        // the new one or the next refresh will fail and log the user out.
+        if (data.refreshToken) {
+          await SecureStore.setItemAsync('refresh_token', data.refreshToken);
+        }
         processQueue(null, newToken);
         originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
         return api(originalRequest);
