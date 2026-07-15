@@ -257,8 +257,8 @@ function generateMockWeeklyData() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatusBadge({ status }: { status: AdStatus }) {
-  const cfg = STATUS_CONFIG[status]
+function StatusBadge({ status }: { status: AdStatus | string }) {
+  const cfg = STATUS_CONFIG[status as AdStatus] ?? { label: status ?? 'Bilinmiyor', bg: 'bg-gray-100', text: 'text-gray-600', dotColor: 'bg-gray-400' }
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${cfg.bg} ${cfg.text}`}
