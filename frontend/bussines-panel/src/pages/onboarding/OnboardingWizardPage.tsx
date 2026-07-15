@@ -7,6 +7,7 @@ import { updateBusiness } from '@/store/slices/businessSlice'
 import api from '@/lib/api'
 import { showToast } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
+import { PhoneInput } from '@/components/ui/PhoneInput'
 import { PLAN_CONFIGS } from '@/config/plans'
 import type { PlanId } from '@/types'
 import { useServices, useCreateService, type Service } from '@/hooks/useServices'
@@ -473,12 +474,7 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
             value={form.title}
             onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
           />
-          <input
-            className={inputCls}
-            placeholder="Telefon (opsiyonel)"
-            value={form.phone}
-            onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
-          />
+          <PhoneInput value={form.phone} onChange={(v) => setForm(f => ({ ...f, phone: v }))} />
         </div>
 
         {services.length > 0 && (
@@ -650,12 +646,7 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
             value={form.address}
             onChange={(e) => setForm(f => ({ ...f, address: e.target.value }))}
           />
-          <input
-            className={inputCls}
-            placeholder="Telefon (opsiyonel)"
-            value={form.phone}
-            onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
-          />
+          <PhoneInput value={form.phone} onChange={(v) => setForm(f => ({ ...f, phone: v }))} />
         </div>
         <Button onClick={add} disabled={createBranch.isPending} className="w-full sm:w-auto">
           {createBranch.isPending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}

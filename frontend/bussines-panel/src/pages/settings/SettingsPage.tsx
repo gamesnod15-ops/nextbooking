@@ -690,12 +690,7 @@ function ProfileSettings() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs font-medium">Telefon</label>
-                  <input
-                    value={billingForm.phone}
-                    onChange={e => setBillingForm(f => ({ ...f, phone: e.target.value }))}
-                    placeholder="+90 555 000 00 00"
-                    className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  />
+                  <PhoneInput value={billingForm.phone} onChange={(v) => setBillingForm(f => ({ ...f, phone: v }))} />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs font-medium">Fatura Tipi</label>

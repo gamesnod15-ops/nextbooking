@@ -9,6 +9,7 @@ import {
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { PhoneInput } from '@/components/ui/PhoneInput'
 import { cn } from '@/lib/utils'
 import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
@@ -382,14 +383,8 @@ function SettingsTab() {
 
           <div>
             <label className="text-xs font-medium text-gray-700">WhatsApp Numarası</label>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-sm text-gray-500">+90</span>
-              <input
-                value={settings.phoneNumber}
-                onChange={e => dispatch(updateSettings({ phoneNumber: e.target.value }))}
-                placeholder="5XX XXX XX XX"
-                className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-green-400"
-              />
+            <div className="mt-1">
+              <PhoneInput value={settings.phoneNumber} onChange={(v) => dispatch(updateSettings({ phoneNumber: v }))} />
             </div>
           </div>
 

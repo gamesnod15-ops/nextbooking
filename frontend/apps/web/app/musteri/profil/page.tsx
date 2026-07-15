@@ -5,6 +5,16 @@ import axios from '@/lib/axios'
 import { User, Mail, Phone, Save, Loader2, CheckCircle, AlertCircle, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
+function formatPhoneDisplay(raw: string) {
+  const digits = raw.replace(/\D/g, '')
+  const local = digits.startsWith('90') ? digits.slice(2) : digits.startsWith('0') ? digits.slice(1) : digits
+  const d = local.slice(0, 10)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`
+  if (d.length <= 8) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`
+  return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`
+}
+
 export default function MusteriProfilPage() {
   const router = useRouter()
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
@@ -107,10 +117,21 @@ export default function MusteriProfilPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefon</label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-              className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+          <div className="flex w-full overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-colors">
+            <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
+              +90
+            </span>
+            <input
+              type="tel"
+              value={formatPhoneDisplay(form.phone)}
+              onChange={e => {
+                const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+                setForm(p => ({ ...p, phone: digits ? `+90${digits}` : '' }))
+              }}
+              placeholder="555 000 00 00"
+              autoComplete="tel"
+              className="flex-1 bg-transparent px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+            />
           </div>
         </div>
 

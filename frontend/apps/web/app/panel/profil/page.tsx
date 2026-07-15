@@ -7,6 +7,16 @@ import {
   ArrowLeft, User, Mail, Phone, Building2, KeyRound, Save, Eye, EyeOff, Camera, Loader2,
 } from 'lucide-react'
 
+function formatPhoneDisplay(raw: string) {
+  const digits = raw.replace(/\D/g, '')
+  const local = digits.startsWith('90') ? digits.slice(2) : digits.startsWith('0') ? digits.slice(1) : digits
+  const d = local.slice(0, 10)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`
+  if (d.length <= 8) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`
+  return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`
+}
+
 export default function ProfilPage() {
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', company: '' })
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' })
@@ -261,32 +271,21 @@ export default function ProfilPage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1.5">Telefon</label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <div className="flex items-center">
-                <span className="pl-9 pr-2 py-2.5 text-sm text-gray-500 select-none bg-gray-50 border border-r-0 border-gray-200 rounded-l-lg">+90</span>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={13}
-                  placeholder="5XX XXX XX XX"
-                  value={form.phone}
-                  onChange={(e) => {
-                    let val = e.target.value.replace(/\D/g, '');
-                    if (val.startsWith('0')) val = val.slice(1); // baştaki 0'ı at
-                    if (val.length > 10) val = val.slice(0, 10);
-                    // 5XX XXX XX XX formatla
-                    let formatted = '';
-                    if (val.length > 0) formatted += val.slice(0, 3);
-                    if (val.length > 3) formatted += ' ' + val.slice(3, 6);
-                    if (val.length > 6) formatted += ' ' + val.slice(6, 8);
-                    if (val.length > 8) formatted += ' ' + val.slice(8, 10);
-                    setForm((p) => ({ ...p, phone: formatted }));
-                  }}
-                  className="w-full pr-3 py-2.5 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-brand-300"
-                  style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                />
-              </div>
+            <div className="flex w-full overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-colors">
+              <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
+                +90
+              </span>
+              <input
+                type="tel"
+                value={formatPhoneDisplay(form.phone)}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+                  setForm((p) => ({ ...p, phone: digits ? `+90${digits}` : '' }))
+                }}
+                placeholder="555 000 00 00"
+                autoComplete="tel"
+                className="flex-1 bg-transparent px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+              />
             </div>
           </div>
         </div>
