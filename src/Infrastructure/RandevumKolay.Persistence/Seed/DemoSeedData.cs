@@ -732,39 +732,361 @@ public static class DemoSeedData
             .Where(t => t.Subdomain.EndsWith("-demo"))
             .ToListAsync();
 
+        // 1) Users
         var existingUserTenantIds = await ctx.Users
             .Where(u => u.TenantId != null && u.Role == "tenant_admin")
             .Select(u => u.TenantId!.Value)
             .ToListAsync();
-
-        var tenantsNeedingUsers = demoTenants
-            .Where(t => !existingUserTenantIds.Contains(t.Id))
-            .ToList();
-
-        if (tenantsNeedingUsers.Count == 0)
+        var tenantsNeedingUsers = demoTenants.Where(t => !existingUserTenantIds.Contains(t.Id)).ToList();
+        if (tenantsNeedingUsers.Count > 0)
         {
-            Console.WriteLine("  ℹ️ Demo kullanıcıları zaten mevcut.");
-            return;
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword("Demo1234!");
+            foreach (var t in tenantsNeedingUsers)
+            {
+                var u = New<User>();
+                Set(u, nameof(User.Id), Guid.NewGuid());
+                Set(u, nameof(User.Email), $"admin@{t.Subdomain}.com");
+                Set(u, nameof(User.PasswordHash), passwordHash);
+                Set(u, nameof(User.FirstName), t.Name.Split(' ')[0]);
+                Set(u, nameof(User.LastName), "Admin");
+                Set(u, nameof(User.Role), "tenant_admin");
+                Set(u, nameof(User.TenantId), t.Id);
+                Set(u, nameof(User.IsActive), true);
+                Set(u, nameof(User.EmailVerified), true);
+                ctx.Users.Add(u);
+            }
+            await ctx.SaveChangesAsync();
+            Console.WriteLine($"  ✓ {tenantsNeedingUsers.Count} demo kullanıcı eklendi.");
         }
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword("Demo1234!");
-        foreach (var t in tenantsNeedingUsers)
+        // 2) Enrich each demo tenant that's missing data
+        foreach (var t in demoTenants)
         {
-            var ownerUser = New<User>();
-            Set(ownerUser, nameof(User.Id), Guid.NewGuid());
-            Set(ownerUser, nameof(User.Email), $"admin@{t.Subdomain}.com");
-            Set(ownerUser, nameof(User.PasswordHash), passwordHash);
-            Set(ownerUser, nameof(User.FirstName), t.Name.Split(' ')[0]);
-            Set(ownerUser, nameof(User.LastName), "Admin");
-            Set(ownerUser, nameof(User.Role), "tenant_admin");
-            Set(ownerUser, nameof(User.TenantId), t.Id);
-            Set(ownerUser, nameof(User.IsActive), true);
-            Set(ownerUser, nameof(User.EmailVerified), true);
-            ctx.Users.Add(ownerUser);
-            Console.WriteLine($"  ✓ Kullanıcı eklendi: admin@{t.Subdomain}.com ({t.Name})");
+            var tid = t.Id;
+            var biz = await ctx.Businesses.FirstOrDefaultAsync(b => b.TenantId == tid);
+            if (biz == null) continue;
+            var bizId = biz.Id;
+            var svcs = await ctx.Services.Where(s => s.TenantId == tid).ToListAsync();
+            var emps = await ctx.Employees.Where(e => e.TenantId == tid).ToListAsync();
+            var custs = await ctx.Customers.Where(c => c.TenantId == tid).ToListAsync();
+            var appts = await ctx.Appointments.Where(a => a.TenantId == tid).ToListAsync();
+            var completedAppts = appts.Where(a => a.Status == AppointmentStatus.Completed).ToList();
+            bool changed = false;
+
+            // Payments
+            if (!await ctx.Payments.AnyAsync(p => p.TenantId == tid))
+            {
+                foreach (var appt in completedAppts)
+                {
+                    var p = New<Payment>();
+                    Set(p, nameof(Payment.Id), Guid.NewGuid());
+                    Set(p, nameof(Payment.TenantId), tid);
+                    Set(p, nameof(Payment.AppointmentId), appt.Id);
+                    Set(p, nameof(Payment.Provider), Pick(new[] { "iyzico", "stripe", "paytr" }));
+                    Set(p, nameof(Payment.Amount), appt.Price);
+                    Set(p, nameof(Payment.Currency), "TRY");
+                    Set(p, nameof(Payment.Status), PaymentStatus.Completed);
+                    Set(p, nameof(Payment.PaidAt), appt.EndTime);
+                    ctx.Payments.Add(p);
+                }
+                changed = true;
+            }
+
+            // Campaigns
+            if (!await ctx.Campaigns.AnyAsync(c => c.TenantId == tid))
+            {
+                var campNames = new[] { "Hoş Geldin İndirimi", "Yaz Kampanyası", "Arkadaşını Getir", "Sezon Sonu", "İlk Randevu" };
+                for (int i = 0; i < Rng.Next(2, 5); i++)
+                {
+                    var c = New<Campaign>();
+                    Set(c, nameof(Campaign.Id), Guid.NewGuid());
+                    Set(c, nameof(Campaign.TenantId), tid);
+                    Set(c, nameof(Campaign.Name), $"{Pick(campNames)} - {t.Name}");
+                    Set(c, nameof(Campaign.DiscountType), DiscountType.Percentage);
+                    Set(c, nameof(Campaign.DiscountValue), Rng.Next(10, 40));
+                    Set(c, nameof(Campaign.StartDate), Now.AddDays(-Rng.Next(5, 30)));
+                    Set(c, nameof(Campaign.EndDate), Now.AddDays(Rng.Next(15, 60)));
+                    Set(c, nameof(Campaign.Status), Pick(new[] { CampaignStatus.Active, CampaignStatus.Active, CampaignStatus.Draft }));
+                    Set(c, nameof(Campaign.UsageLimit), Rng.Next(20, 100));
+                    Set(c, nameof(Campaign.UsageCount), Rng.Next(0, 20));
+                    ctx.Campaigns.Add(c);
+                }
+                changed = true;
+            }
+
+            // Coupons
+            if (!await ctx.Coupons.AnyAsync(c => c.TenantId == tid))
+            {
+                for (int i = 0; i < Rng.Next(3, 7); i++)
+                {
+                    var c = New<Coupon>();
+                    Set(c, nameof(Coupon.Id), Guid.NewGuid());
+                    Set(c, nameof(Coupon.TenantId), tid);
+                    Set(c, nameof(Coupon.Code), $"KUPON{Rng.Next(1000, 9999)}");
+                    Set(c, nameof(Coupon.DiscountType), Pick(new[] { DiscountType.Percentage, DiscountType.FixedAmount }));
+                    Set(c, nameof(Coupon.DiscountValue), Rng.Next(2) == 0 ? Rng.Next(10, 40) : Rng.Next(50, 200));
+                    Set(c, nameof(Coupon.ExpiresAt), Now.AddDays(Rng.Next(15, 90)));
+                    Set(c, nameof(Coupon.UsageLimit), Rng.Next(10, 50));
+                    Set(c, nameof(Coupon.UsageCount), Rng.Next(0, 10));
+                    Set(c, nameof(Coupon.IsActive), true);
+                    ctx.Coupons.Add(c);
+                }
+                changed = true;
+            }
+
+            // Packages
+            if (!await ctx.Packages.AnyAsync(p => p.TenantId == tid))
+            {
+                var pkgNames = new[] { "Bronz Paket", "Gümüş Paket", "Altın Paket", "Premium Paket" };
+                for (int i = 0; i < Rng.Next(2, 5); i++)
+                {
+                    var selected = svcs.OrderBy(_ => Rng.Next()).Take(Rng.Next(2, Math.Min(4, svcs.Count + 1))).ToList();
+                    if (selected.Count == 0) continue;
+                    var totalPrice = selected.Sum(s => s.Price);
+                    var pkg = New<Package>();
+                    Set(pkg, nameof(Package.Id), Guid.NewGuid());
+                    Set(pkg, nameof(Package.TenantId), tid);
+                    Set(pkg, nameof(Package.Name), Pick(pkgNames));
+                    Set(pkg, nameof(Package.Price), (int)(totalPrice * 0.75m));
+                    Set(pkg, nameof(Package.OriginalPrice), (int)totalPrice);
+                    Set(pkg, nameof(Package.ValidityDays), Rng.Next(30, 181));
+                    Set(pkg, nameof(Package.IsActive), true);
+                    Set(pkg, nameof(Package.Items), selected.Select(s => new PackageItem { ServiceId = s.Id, ServiceName = s.Name, Quantity = Rng.Next(1, 4) }).ToList());
+                    ctx.Packages.Add(pkg);
+                }
+                changed = true;
+            }
+
+            // Products
+            if (!await ctx.Products.AnyAsync(p => p.TenantId == tid))
+            {
+                var products = new[] { ("Ürün A", 150), ("Ürün B", 80), ("Ürün C", 200), ("Ürün D", 120) };
+                foreach (var (name, price) in products)
+                {
+                    var pr = New<Product>();
+                    Set(pr, nameof(Product.Id), Guid.NewGuid());
+                    Set(pr, nameof(Product.TenantId), tid);
+                    Set(pr, nameof(Product.Name), name);
+                    Set(pr, nameof(Product.SalePrice), price);
+                    Set(pr, nameof(Product.CostPrice), (int)(price * 0.5m));
+                    Set(pr, nameof(Product.StockQuantity), Rng.Next(5, 100));
+                    Set(pr, nameof(Product.MinStockLevel), 5);
+                    Set(pr, nameof(Product.Unit), "Adet");
+                    Set(pr, nameof(Product.IsActive), true);
+                    ctx.Products.Add(pr);
+                }
+                changed = true;
+            }
+
+            // EmployeeCommissions
+            if (!await ctx.EmployeeCommissions.AnyAsync(ec => ec.TenantId == tid))
+            {
+                foreach (var emp in emps)
+                {
+                    var ec = New<EmployeeCommission>();
+                    Set(ec, nameof(EmployeeCommission.Id), Guid.NewGuid());
+                    Set(ec, nameof(EmployeeCommission.TenantId), tid);
+                    Set(ec, nameof(EmployeeCommission.EmployeeId), emp.Id);
+                    Set(ec, nameof(EmployeeCommission.EmployeeName), emp.Name);
+                    Set(ec, nameof(EmployeeCommission.Period), $"{Now:yyyy-MM}");
+                    Set(ec, nameof(EmployeeCommission.Type), Pick(new[] { CommissionType.Service, CommissionType.Sales, CommissionType.Mixed }));
+                    Set(ec, nameof(EmployeeCommission.BaseAmount), Rng.Next(50, 300) * 10m);
+                    Set(ec, nameof(EmployeeCommission.CommissionRate), Rng.Next(5, 25));
+                    Set(ec, nameof(EmployeeCommission.CommissionAmount), Rng.Next(100, 500) * 1m);
+                    Set(ec, nameof(EmployeeCommission.BonusAmount), Rng.Next(2) == 0 ? Rng.Next(50, 200) * 1m : 0m);
+                    Set(ec, nameof(EmployeeCommission.Status), Pick(new[] { CommissionStatus.Pending, CommissionStatus.Approved, CommissionStatus.Paid }));
+                    ctx.EmployeeCommissions.Add(ec);
+                }
+                changed = true;
+            }
+
+            // GiftCoupons
+            if (!await ctx.GiftCoupons.AnyAsync(g => g.TenantId == tid))
+            {
+                for (int i = 0; i < Rng.Next(3, 8); i++)
+                {
+                    var gc = New<GiftCoupon>();
+                    Set(gc, nameof(GiftCoupon.Id), Guid.NewGuid());
+                    Set(gc, nameof(GiftCoupon.TenantId), tid);
+                    Set(gc, nameof(GiftCoupon.Code), $"HEDIYE{Rng.Next(10000, 99999)}");
+                    Set(gc, nameof(GiftCoupon.Amount), Rng.Next(5, 30) * 10);
+                    Set(gc, nameof(GiftCoupon.RecipientName), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                    Set(gc, nameof(GiftCoupon.PurchasedBy), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                    Set(gc, nameof(GiftCoupon.PurchaseDate), Now.AddDays(-Rng.Next(1, 30)));
+                    Set(gc, nameof(GiftCoupon.ExpiryDate), Now.AddDays(Rng.Next(30, 180)));
+                    Set(gc, nameof(GiftCoupon.UsedAmount), 0m);
+                    Set(gc, nameof(GiftCoupon.Status), Pick(new[] { GiftCouponStatus.Active, GiftCouponStatus.Active, GiftCouponStatus.Used }));
+                    ctx.GiftCoupons.Add(gc);
+                }
+                changed = true;
+            }
+
+            // Advertisements
+            if (!await ctx.Advertisements.AnyAsync(a => a.TenantId == tid))
+            {
+                for (int i = 0; i < Rng.Next(1, 4); i++)
+                {
+                    var ad = New<Advertisement>();
+                    Set(ad, nameof(Advertisement.Id), Guid.NewGuid());
+                    Set(ad, nameof(Advertisement.TenantId), tid);
+                    Set(ad, nameof(Advertisement.Title), $"{t.Name} - Tanıtım");
+                    Set(ad, nameof(Advertisement.PackageType), Pick(new[] { AdPackageType.BasicBoost, AdPackageType.ProfessionalBoost, AdPackageType.PremiumSpotlight }));
+                    Set(ad, nameof(Advertisement.TargetCategory), AdTargetCategory.All);
+                    Set(ad, nameof(Advertisement.Budget), Rng.Next(50, 200) * 10);
+                    Set(ad, nameof(Advertisement.StartDate), Now.AddDays(-Rng.Next(0, 10)));
+                    Set(ad, nameof(Advertisement.EndDate), Now.AddDays(Rng.Next(10, 40)));
+                    Set(ad, nameof(Advertisement.Status), Pick(new[] { AdStatus.Active, AdStatus.Active, AdStatus.Pending }));
+                    Set(ad, nameof(Advertisement.Impressions), Rng.Next(100, 5000));
+                    Set(ad, nameof(Advertisement.Clicks), Rng.Next(10, 300));
+                    Set(ad, nameof(Advertisement.Conversions), Rng.Next(1, 30));
+                    ctx.Advertisements.Add(ad);
+                }
+                changed = true;
+            }
+
+            // QueueItems
+            if (!await ctx.QueueItems.AnyAsync(q => q.TenantId == tid))
+            {
+                for (int i = 0; i < Rng.Next(2, 6); i++)
+                {
+                    var q = New<QueueItem>();
+                    Set(q, nameof(QueueItem.Id), Guid.NewGuid());
+                    Set(q, nameof(QueueItem.TenantId), tid);
+                    Set(q, nameof(QueueItem.BusinessId), bizId);
+                    Set(q, nameof(QueueItem.QueueNumber), Rng.Next(1, 50));
+                    Set(q, nameof(QueueItem.CustomerName), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                    Set(q, nameof(QueueItem.CustomerPhone), Phone());
+                    Set(q, nameof(QueueItem.Status), Pick(new[] { QueueStatus.Waiting, QueueStatus.InService, QueueStatus.Completed }));
+                    Set(q, nameof(QueueItem.EstimatedWaitMinutes), Rng.Next(5, 45));
+                    ctx.QueueItems.Add(q);
+                }
+                changed = true;
+            }
+
+            // WaitingListEntries
+            if (!await ctx.WaitingListEntries.AnyAsync(w => w.TenantId == tid))
+            {
+                for (int i = 0; i < Rng.Next(1, 4); i++)
+                {
+                    var w = New<WaitingListEntry>();
+                    Set(w, nameof(WaitingListEntry.Id), Guid.NewGuid());
+                    Set(w, nameof(WaitingListEntry.TenantId), tid);
+                    Set(w, nameof(WaitingListEntry.BusinessId), bizId);
+                    Set(w, nameof(WaitingListEntry.CustomerName), $"{Pick(FirstNames)} {Pick(LastNames)}");
+                    Set(w, nameof(WaitingListEntry.CustomerPhone), Phone());
+                    Set(w, nameof(WaitingListEntry.Status), Pick(new[] { WaitingListStatus.Waiting, WaitingListStatus.Notified, WaitingListStatus.Confirmed }));
+                    Set(w, nameof(WaitingListEntry.PreferredDate), DateOnly.FromDateTime(DateTime.Now.AddDays(Rng.Next(1, 14))));
+                    Set(w, nameof(WaitingListEntry.PreferredTime), new TimeOnly(Rng.Next(9, 18), 0));
+                    ctx.WaitingListEntries.Add(w);
+                }
+                changed = true;
+            }
+
+            // Receivables + Installments
+            if (!await ctx.Receivables.AnyAsync(r => r.TenantId == tid))
+            {
+                for (int i = 0; i < Rng.Next(2, 5); i++)
+                {
+                    var cust = custs.Count > 0 ? Pick(custs) : null;
+                    if (cust == null) continue;
+                    var total = Rng.Next(10, 100) * 100m;
+                    var instCount = Pick(new[] { 1, 1, 2, 3 });
+                    var paidAmt = instCount > 1 ? total / instCount * Rng.Next(0, 2) : Rng.Next(2) == 0 ? total : 0m;
+                    var rec = New<Receivable>();
+                    Set(rec, nameof(Receivable.Id), Guid.NewGuid());
+                    Set(rec, nameof(Receivable.TenantId), tid);
+                    Set(rec, nameof(Receivable.CustomerName), cust.Name);
+                    Set(rec, nameof(Receivable.CustomerPhone), cust.Phone);
+                    Set(rec, nameof(Receivable.TotalAmount), total);
+                    Set(rec, nameof(Receivable.PaidAmount), paidAmt);
+                    Set(rec, nameof(Receivable.DueDate), DateOnly.FromDateTime(DateTime.Now.AddDays(Rng.Next(-10, 31))));
+                    Set(rec, nameof(Receivable.Status), paidAmt == 0 ? ReceivableStatus.Open : paidAmt >= total ? ReceivableStatus.Paid : ReceivableStatus.PartiallyPaid);
+                    Set(rec, nameof(Receivable.InstallmentCount), instCount);
+                    ctx.Receivables.Add(rec);
+                    for (int j = 0; j < instCount; j++)
+                    {
+                        var inst = New<Installment>();
+                        Set(inst, nameof(Installment.Id), Guid.NewGuid());
+                        Set(inst, nameof(Installment.TenantId), tid);
+                        Set(inst, nameof(Installment.ReceivableId), rec.Id);
+                        Set(inst, nameof(Installment.InstallmentNumber), j + 1);
+                        Set(inst, nameof(Installment.Amount), total / instCount);
+                        Set(inst, nameof(Installment.DueDate), DateOnly.FromDateTime(DateTime.Now.AddDays(j * 30 - 10)));
+                        Set(inst, nameof(Installment.IsPaid), j == 0 && paidAmt > 0);
+                        ctx.Installments.Add(inst);
+                    }
+                }
+                changed = true;
+            }
+
+            // DebtRecords
+            if (!await ctx.DebtRecords.AnyAsync(d => d.TenantId == tid))
+            {
+                var debtCats = new[] { DebtCategory.Rent, DebtCategory.Supplier, DebtCategory.Tax, DebtCategory.Equipment };
+                for (int i = 0; i < Rng.Next(2, 5); i++)
+                {
+                    var cat = Pick(debtCats);
+                    var total = Rng.Next(5, 100) * 1000m;
+                    var paid = Rng.Next(2) == 0 ? 0m : Rng.Next(1, (int)(total / 1000)) * 1000m;
+                    var dr = New<DebtRecord>();
+                    Set(dr, nameof(DebtRecord.Id), Guid.NewGuid());
+                    Set(dr, nameof(DebtRecord.TenantId), tid);
+                    Set(dr, nameof(DebtRecord.Title), cat switch { DebtCategory.Rent => "Kira", DebtCategory.Supplier => "Tedarikçi", DebtCategory.Tax => "Vergi", _ => "Ekipman" });
+                    Set(dr, nameof(DebtRecord.TotalAmount), total);
+                    Set(dr, nameof(DebtRecord.PaidAmount), paid);
+                    Set(dr, nameof(DebtRecord.DueDate), DateOnly.FromDateTime(DateTime.Now.AddDays(Rng.Next(-15, 45))));
+                    Set(dr, nameof(DebtRecord.Category), cat);
+                    Set(dr, nameof(DebtRecord.Status), paid == 0 ? DebtStatus.Open : paid >= total ? DebtStatus.Paid : DebtStatus.PartiallyPaid);
+                    ctx.DebtRecords.Add(dr);
+                }
+                changed = true;
+            }
+
+            // Deposits
+            if (!await ctx.Deposits.AnyAsync(d => d.TenantId == tid))
+            {
+                foreach (var appt in completedAppts.Take(Rng.Next(2, 6)))
+                {
+                    var dep = New<Deposit>();
+                    Set(dep, nameof(Deposit.Id), Guid.NewGuid());
+                    Set(dep, nameof(Deposit.TenantId), tid);
+                    Set(dep, nameof(Deposit.AppointmentId), appt.Id);
+                    Set(dep, nameof(Deposit.Amount), appt.Price * 0.3m);
+                    Set(dep, nameof(Deposit.Currency), "TRY");
+                    Set(dep, nameof(Deposit.Status), DepositStatus.Paid);
+                    Set(dep, nameof(Deposit.PaymentMethod), Pick(new[] { "CreditCard", "BankTransfer", "Cash" }));
+                    Set(dep, nameof(Deposit.PaidAt), appt.StartTime.AddDays(-1));
+                    ctx.Deposits.Add(dep);
+                }
+                changed = true;
+            }
+
+            // Surveys
+            if (!await ctx.Surveys.AnyAsync(s => s.TenantId == tid))
+            {
+                foreach (var appt in completedAppts.Take(Rng.Next(3, 8)))
+                {
+                    var s = New<Survey>();
+                    Set(s, nameof(Survey.Id), Guid.NewGuid());
+                    Set(s, nameof(Survey.TenantId), tid);
+                    Set(s, nameof(Survey.BusinessId), bizId);
+                    Set(s, nameof(Survey.AppointmentId), appt.Id);
+                    Set(s, nameof(Survey.CustomerName), custs.Count > 0 ? Pick(custs).Name : "Müşteri");
+                    Set(s, nameof(Survey.Rating), Rng.Next(3, 6));
+                    Set(s, nameof(Survey.Comment), Pick(new[] { "Çok memnun kaldım!", "Harika hizmet!", "Profesyonel ekip.", "Tavsiye ederim." }));
+                    Set(s, nameof(Survey.IsApproved), true);
+                    ctx.Surveys.Add(s);
+                }
+                changed = true;
+            }
+
+            if (changed)
+            {
+                await ctx.SaveChangesAsync();
+                Console.WriteLine($"  ✓ {t.Name} verileri zenginleştirildi.");
+            }
         }
 
-        await ctx.SaveChangesAsync();
-        Console.WriteLine($"  ✅ {tenantsNeedingUsers.Count} demo kullanıcı eklendi.");
+        Console.WriteLine("  ✅ Demo verileri tamamlandı.");
     }
 }
