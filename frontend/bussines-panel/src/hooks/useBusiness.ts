@@ -35,8 +35,21 @@ export function useBusiness() {
 export function useUpdateBusiness() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Partial<BusinessProfile>) =>
-      api.put('/business/me', data),
+    mutationFn: (data: Partial<BusinessProfile>) => {
+      // Backend validators reject empty strings (e.g. Email must be a valid
+      // address when non-null), so normalize '' → null before sending.
+      const cleaned: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(data)) {
+        cleaned[key] = typeof value === 'string' && value.trim() === '' ? null : value
+      }
+      // Settings binds to Dictionary<string,string> — coerce values to strings.
+      if (data.settings) {
+        cleaned.settings = Object.fromEntries(
+          Object.entries(data.settings).map(([k, v]) => [k, String(v)])
+        )
+      }
+      return api.put('/business/me', cleaned)
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['business'] })
     },

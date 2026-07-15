@@ -41,8 +41,9 @@ public sealed class UpdateBusinessCommandHandler : IRequestHandler<UpdateBusines
             ?? throw new KeyNotFoundException("Business not found for tenant.");
 
         var effectiveName = string.IsNullOrWhiteSpace(request.Name) ? business.Name : request.Name;
+        var effectiveEmail = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email;
 
-        business.Update(effectiveName, request.Phone, request.Email, request.Address, request.City, request.PostalCode, request.Country, request.TaxNumber, request.TaxOffice, request.Website, request.Description, request.Latitude, request.Longitude);
+        business.Update(effectiveName, request.Phone, effectiveEmail, request.Address, request.City, request.PostalCode, request.Country, request.TaxNumber, request.TaxOffice, request.Website, request.Description, request.Latitude, request.Longitude);
 
         if (request.LogoUrl is not null)
             business.SetLogo(request.LogoUrl);
@@ -62,6 +63,7 @@ public class UpdateBusinessCommandValidator : AbstractValidator<UpdateBusinessCo
     public UpdateBusinessCommandValidator()
     {
         RuleFor(x => x.Name).MaximumLength(200).When(x => x.Name is not null);
-        RuleFor(x => x.Email).EmailAddress().When(x => x.Email is not null);
+        // Empty string means "no email" — only validate the format when a real value is sent.
+        RuleFor(x => x.Email).EmailAddress().When(x => !string.IsNullOrWhiteSpace(x.Email));
     }
 }

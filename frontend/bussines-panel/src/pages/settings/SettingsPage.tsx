@@ -1174,6 +1174,8 @@ function GeneralSettings() {
                           const url = await uploadImage(file, 'logos')
                           await updateMutation.mutateAsync({
                             name: name || business?.name || 'İşletme', phone, email, address, city, website, description,
+                            latitude: latitude ? parseFloat(latitude) : null,
+                            longitude: longitude ? parseFloat(longitude) : null,
                             logoUrl: url,
                             galleryImages: galleryImages.filter(img => img.startsWith('http')),
                             postalCode: business?.postalCode ?? null,
