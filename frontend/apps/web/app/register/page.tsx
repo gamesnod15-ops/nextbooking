@@ -212,7 +212,33 @@ export default function RegisterPage() {
         plan:             'starter',
       })
 
-      setSuccess(true)
+      // Auto-login after registration
+      try {
+        const loginRes = await api.post<{
+          accessToken: string
+          refreshToken: string
+          role: string
+          userId: string
+          fullName: string
+          tenantId: string
+        }>('/api/v1/auth/login', {
+          email: form.email,
+          password: form.password,
+        })
+
+        localStorage.setItem('accessToken', loginRes.accessToken)
+        localStorage.setItem('refreshToken', loginRes.refreshToken)
+        localStorage.setItem('role', loginRes.role)
+        localStorage.setItem('userId', loginRes.userId)
+        localStorage.setItem('fullName', loginRes.fullName)
+        localStorage.setItem('tenantId', loginRes.tenantId)
+        localStorage.setItem('business_panel_url', `https://next-bussines-ten.vercel.app?autologin=${loginRes.accessToken}&userId=${loginRes.userId}`)
+
+        router.push('/register/onboarding')
+      } catch {
+        // If auto-login fails, show success page with login link
+        setSuccess(true)
+      }
     } catch (err) {
       const apiErr = err as ApiError
       if (apiErr.status === 409) {
