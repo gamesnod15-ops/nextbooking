@@ -928,7 +928,10 @@ function GeneralSettings() {
   const [saved, setSaved] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [galleryImages, setGalleryImages] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('rk_gallery_images') || '[]') } catch { return [] }
+    try {
+      const raw: string[] = JSON.parse(localStorage.getItem('rk_gallery_images') || '[]')
+      return raw.filter(img => img.startsWith('http'))
+    } catch { return [] }
   })
   const [galleryVideos, setGalleryVideos] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('rk_gallery_videos') || '[]') } catch { return [] }
@@ -949,8 +952,9 @@ function GeneralSettings() {
     setLatitude(business.latitude?.toString() ?? '')
     setLongitude(business.longitude?.toString() ?? '')
     if (business.galleryImages?.length) {
-      setGalleryImages(business.galleryImages)
-      cacheGallery('rk_gallery_images', business.galleryImages)
+      const clean = business.galleryImages.filter(img => img.startsWith('http'))
+      setGalleryImages(clean)
+      cacheGallery('rk_gallery_images', clean)
     }
     setInitialized(true)
   }
@@ -974,12 +978,14 @@ function GeneralSettings() {
   }
 
   async function handleSave() {
+    const cleanLogo = business?.logoUrl && business.logoUrl.startsWith('http') ? business.logoUrl : null
+    const cleanGallery = galleryImages.filter(img => img.startsWith('http'))
     await updateMutation.mutateAsync({
       name, phone, email, address, city, website, description,
       latitude: latitude ? parseFloat(latitude) : null,
       longitude: longitude ? parseFloat(longitude) : null,
-      logoUrl: business?.logoUrl ?? null,
-      galleryImages,
+      logoUrl: cleanLogo,
+      galleryImages: cleanGallery,
       postalCode: business?.postalCode ?? null,
       country: business?.country ?? null,
       taxNumber: business?.taxNumber ?? null,
@@ -1164,18 +1170,18 @@ function GeneralSettings() {
                      onChange={async (e) => {
                        const file = e.target.files?.[0]
                        if (!file) return
-                       try {
-                         const url = await uploadImage(file, 'logos')
-                         await updateMutation.mutateAsync({
-                           name, phone, email, address, city, website, description,
-                           logoUrl: url,
-                           galleryImages,
-                           postalCode: business?.postalCode ?? null,
-                           country: business?.country ?? null,
-                           taxNumber: business?.taxNumber ?? null,
-                           taxOffice: business?.taxOffice ?? null,
-                           settings: business?.settings,
-                         })
+                        try {
+                          const url = await uploadImage(file, 'logos')
+                          await updateMutation.mutateAsync({
+                            name, phone, email, address, city, website, description,
+                            logoUrl: url,
+                            galleryImages: galleryImages.filter(img => img.startsWith('http')),
+                            postalCode: business?.postalCode ?? null,
+                            country: business?.country ?? null,
+                            taxNumber: business?.taxNumber ?? null,
+                            taxOffice: business?.taxOffice ?? null,
+                            settings: business?.settings,
+                          })
                        } catch (err) {
                          console.error('Logo upload failed', err)
                        }
@@ -1199,7 +1205,7 @@ function GeneralSettings() {
                         latitude: latitude ? parseFloat(latitude) : null,
                         longitude: longitude ? parseFloat(longitude) : null,
                         logoUrl: null,
-                        galleryImages: next,
+                        galleryImages: next.filter(img => img.startsWith('http')),
                         postalCode: business?.postalCode ?? null,
                         country: business?.country ?? null,
                         taxNumber: business?.taxNumber ?? null,
@@ -1226,18 +1232,18 @@ function GeneralSettings() {
                          const next = [...galleryImages, ...urls]
                          setGalleryImages(next)
                          cacheGallery('rk_gallery_images', next)
-                         await updateMutation.mutateAsync({
-                           name, phone, email, address, city, website, description,
-                           latitude: latitude ? parseFloat(latitude) : null,
-                           longitude: longitude ? parseFloat(longitude) : null,
-                           logoUrl: business?.logoUrl ?? null,
-                           galleryImages: next,
-                           postalCode: business?.postalCode ?? null,
-                           country: business?.country ?? null,
-                           taxNumber: business?.taxNumber ?? null,
-                           taxOffice: business?.taxOffice ?? null,
-                           settings: business?.settings,
-                         })
+                          await updateMutation.mutateAsync({
+                            name, phone, email, address, city, website, description,
+                            latitude: latitude ? parseFloat(latitude) : null,
+                            longitude: longitude ? parseFloat(longitude) : null,
+                            logoUrl: null,
+                            galleryImages: next.filter(img => img.startsWith('http')),
+                            postalCode: business?.postalCode ?? null,
+                            country: business?.country ?? null,
+                            taxNumber: business?.taxNumber ?? null,
+                            taxOffice: business?.taxOffice ?? null,
+                            settings: business?.settings,
+                          })
                        } catch (err) {
                          console.error('Gallery upload failed', err)
                        }
