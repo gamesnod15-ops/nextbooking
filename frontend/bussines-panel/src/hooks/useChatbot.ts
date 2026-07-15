@@ -142,7 +142,7 @@ async function saveChatbotSettings(settings: ChatbotSettings): Promise<void> {
   const biz = await api.get<{ name: string; phone: string | null; email: string | null; address: string | null; city: string | null; description: string | null }>('/business/me')
   const { name, phone, email, address, city, description } = biz.data
   await api.put('/business/me', {
-    name,
+    name: name || 'İşletme',
     phone,
     email,
     address,

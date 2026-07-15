@@ -182,7 +182,7 @@ function ProfileSettings() {
         taxOffice: billingForm.taxOffice || null,
         website: current.website,
         description: current.description,
-        logoUrl: current.logoUrl,
+        logoUrl: current.logoUrl?.startsWith('http') ? current.logoUrl : null,
         settings: { ...current.settings, billing_invoice_type: billingForm.invoiceType, billing_contact_name: billingForm.name },
       })
       const id = editingBillingId || `ba-${Date.now()}`
@@ -218,7 +218,7 @@ function ProfileSettings() {
         taxOffice: current.taxOffice,
         website: current.website,
         description: current.description,
-        logoUrl: current.logoUrl,
+        logoUrl: current.logoUrl?.startsWith('http') ? current.logoUrl : null,
         settings: cleanedSettings,
       })
       setBillingAddresses([])
@@ -981,7 +981,7 @@ function GeneralSettings() {
     const cleanLogo = business?.logoUrl && business.logoUrl.startsWith('http') ? business.logoUrl : null
     const cleanGallery = galleryImages.filter(img => img.startsWith('http'))
     await updateMutation.mutateAsync({
-      name, phone, email, address, city, website, description,
+      name: name || business?.name || 'İşletme', phone, email, address, city, website, description,
       latitude: latitude ? parseFloat(latitude) : null,
       longitude: longitude ? parseFloat(longitude) : null,
       logoUrl: cleanLogo,
@@ -1173,7 +1173,7 @@ function GeneralSettings() {
                         try {
                           const url = await uploadImage(file, 'logos')
                           await updateMutation.mutateAsync({
-                            name, phone, email, address, city, website, description,
+                            name: name || business?.name || 'İşletme', phone, email, address, city, website, description,
                             logoUrl: url,
                             galleryImages: galleryImages.filter(img => img.startsWith('http')),
                             postalCode: business?.postalCode ?? null,
@@ -1201,7 +1201,7 @@ function GeneralSettings() {
                     cacheGallery('rk_gallery_images', next)
                     try {
                       await updateMutation.mutateAsync({
-                        name, phone, email, address, city, website, description,
+                        name: name || business?.name || 'İşletme', phone, email, address, city, website, description,
                         latitude: latitude ? parseFloat(latitude) : null,
                         longitude: longitude ? parseFloat(longitude) : null,
                         logoUrl: null,
@@ -1232,12 +1232,12 @@ function GeneralSettings() {
                          const next = [...galleryImages, ...urls]
                          setGalleryImages(next)
                          cacheGallery('rk_gallery_images', next)
-                          await updateMutation.mutateAsync({
-                            name, phone, email, address, city, website, description,
-                            latitude: latitude ? parseFloat(latitude) : null,
-                            longitude: longitude ? parseFloat(longitude) : null,
-                            logoUrl: null,
-                            galleryImages: next.filter(img => img.startsWith('http')),
+                           await updateMutation.mutateAsync({
+                             name: name || business?.name || 'İşletme', phone, email, address, city, website, description,
+                             latitude: latitude ? parseFloat(latitude) : null,
+                             longitude: longitude ? parseFloat(longitude) : null,
+                             logoUrl: null,
+                             galleryImages: next.filter(img => img.startsWith('http')),
                             postalCode: business?.postalCode ?? null,
                             country: business?.country ?? null,
                             taxNumber: business?.taxNumber ?? null,

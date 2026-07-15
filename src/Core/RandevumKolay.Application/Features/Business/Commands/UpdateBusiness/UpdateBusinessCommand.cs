@@ -6,7 +6,7 @@ using RandevumKolay.Application.Common.Interfaces;
 namespace RandevumKolay.Application.Features.Business.Commands.UpdateBusiness;
 
 public record UpdateBusinessCommand(
-    string Name,
+    string? Name,
     string? Phone,
     string? Email,
     string? Address,
@@ -40,7 +40,9 @@ public sealed class UpdateBusinessCommandHandler : IRequestHandler<UpdateBusines
             .FirstOrDefaultAsync(b => b.TenantId == _tenantService.TenantId, cancellationToken)
             ?? throw new KeyNotFoundException("Business not found for tenant.");
 
-        business.Update(request.Name, request.Phone, request.Email, request.Address, request.City, request.PostalCode, request.Country, request.TaxNumber, request.TaxOffice, request.Website, request.Description, request.Latitude, request.Longitude);
+        var effectiveName = string.IsNullOrWhiteSpace(request.Name) ? business.Name : request.Name;
+
+        business.Update(effectiveName, request.Phone, request.Email, request.Address, request.City, request.PostalCode, request.Country, request.TaxNumber, request.TaxOffice, request.Website, request.Description, request.Latitude, request.Longitude);
 
         if (request.LogoUrl is not null)
             business.SetLogo(request.LogoUrl);
@@ -59,7 +61,7 @@ public class UpdateBusinessCommandValidator : AbstractValidator<UpdateBusinessCo
 {
     public UpdateBusinessCommandValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.Name).MaximumLength(200).When(x => x.Name is not null);
         RuleFor(x => x.Email).EmailAddress().When(x => x.Email is not null);
     }
 }
