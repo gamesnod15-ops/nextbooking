@@ -209,7 +209,12 @@ public static class DemoSeedData
     // ── Main ──────────────────────────────────────────────────────────────────
     public static async Task SeedAsync(ApplicationDbContext ctx)
     {
-        if (await ctx.Tenants.AnyAsync(t => t.Subdomain == MarkerSubdomain)) return;
+        // If demo tenants exist, just ensure they have admin users
+        if (await ctx.Tenants.AnyAsync(t => t.Subdomain == MarkerSubdomain))
+        {
+            await EnsureDemoUsersExistAsync(ctx);
+            return;
+        }
 
         Console.WriteLine("  ⏳ Seeding 20 demo businesses…");
 
@@ -413,8 +418,23 @@ public static class DemoSeedData
                 ctx.Reviews.Add(r);
             }
 
+            // User account for panel login (tenant_admin)
+            var demoPassword = "Demo1234!";
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(demoPassword);
+            var ownerUser = New<User>();
+            Set(ownerUser, nameof(User.Id), Guid.NewGuid());
+            Set(ownerUser, nameof(User.Email), $"admin@{Slug(d.BizName)}.com");
+            Set(ownerUser, nameof(User.PasswordHash), passwordHash);
+            Set(ownerUser, nameof(User.FirstName), d.BizName.Split(' ')[0]);
+            Set(ownerUser, nameof(User.LastName), "Admin");
+            Set(ownerUser, nameof(User.Role), "tenant_admin");
+            Set(ownerUser, nameof(User.TenantId), tenantId);
+            Set(ownerUser, nameof(User.IsActive), true);
+            Set(ownerUser, nameof(User.EmailVerified), true);
+            ctx.Users.Add(ownerUser);
+
             await ctx.SaveChangesAsync();
-            Console.WriteLine($"  ✓ [{bi + 1}/20] {d.BizName} ({city}) — {empCount} çalışan, {custCount} müşteri, {upcoming + past} randevu");
+            Console.WriteLine($"  ✓ [{bi + 1}/20] {d.BizName} ({city}) — {empCount} çalışan, {custCount} müşteri, {upcoming + past} randevu | Giriş: admin@{Slug(d.BizName)}.com / Demo1234!");
         }
 
         Console.WriteLine("═══════════════════════════════════════════");
@@ -422,5 +442,47 @@ public static class DemoSeedData
         Console.WriteLine($"  • 20 işletme (tüm kategoriler) · logolu + 5'er galeri fotoğraflı");
         Console.WriteLine($"  • {totalEmployees} çalışan · {totalCustomers} müşteri · {totalAppointments} randevu");
         Console.WriteLine("═══════════════════════════════════════════");
+    }
+
+    private static async Task EnsureDemoUsersExistAsync(ApplicationDbContext ctx)
+    {
+        var demoTenants = await ctx.Tenants
+            .Where(t => t.Subdomain.EndsWith("-demo"))
+            .ToListAsync();
+
+        var existingUserTenantIds = await ctx.Users
+            .Where(u => u.TenantId != null && u.Role == "tenant_admin")
+            .Select(u => u.TenantId!.Value)
+            .ToListAsync();
+
+        var tenantsNeedingUsers = demoTenants
+            .Where(t => !existingUserTenantIds.Contains(t.Id))
+            .ToList();
+
+        if (tenantsNeedingUsers.Count == 0)
+        {
+            Console.WriteLine("  ℹ️ Demo kullanıcıları zaten mevcut.");
+            return;
+        }
+
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword("Demo1234!");
+        foreach (var t in tenantsNeedingUsers)
+        {
+            var ownerUser = New<User>();
+            Set(ownerUser, nameof(User.Id), Guid.NewGuid());
+            Set(ownerUser, nameof(User.Email), $"admin@{t.Subdomain}.com");
+            Set(ownerUser, nameof(User.PasswordHash), passwordHash);
+            Set(ownerUser, nameof(User.FirstName), t.Name.Split(' ')[0]);
+            Set(ownerUser, nameof(User.LastName), "Admin");
+            Set(ownerUser, nameof(User.Role), "tenant_admin");
+            Set(ownerUser, nameof(User.TenantId), t.Id);
+            Set(ownerUser, nameof(User.IsActive), true);
+            Set(ownerUser, nameof(User.EmailVerified), true);
+            ctx.Users.Add(ownerUser);
+            Console.WriteLine($"  ✓ Kullanıcı eklendi: admin@{t.Subdomain}.com ({t.Name})");
+        }
+
+        await ctx.SaveChangesAsync();
+        Console.WriteLine($"  ✅ {tenantsNeedingUsers.Count} demo kullanıcı eklendi.");
     }
 }
