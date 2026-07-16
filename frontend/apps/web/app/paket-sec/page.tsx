@@ -315,8 +315,19 @@ function PaketSecContent() {
 
 // ─── Sales lead modal (Kurumsal / custom plan) ───────────────────────────────
 
+// Same +90 formatting used on /register — keeps phone input consistent site-wide.
+function formatPhoneDisplay(raw: string) {
+  const digits = raw.replace(/\D/g, '')
+  const local = digits.startsWith('90') ? digits.slice(2) : digits.startsWith('0') ? digits.slice(1) : digits
+  const d = local.slice(0, 10)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`
+  if (d.length <= 8) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`
+  return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`
+}
+
 function SalesLeadModal({ onClose }: { onClose: () => void }) {
-  const [form, setForm] = useState({ companyName: '', contactName: '', phone: '', email: '', branchCount: '', message: '' })
+  const [form, setForm] = useState({ companyName: '', firstName: '', lastName: '', phone: '', email: '', branchCount: '', message: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [sent, setSent] = useState(false)
@@ -329,11 +340,18 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
     }
   }
 
+  function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+    setForm((prev) => ({ ...prev, phone: digits ? `+90${digits}` : '' }))
+    if (errors.phone) setErrors((prev) => ({ ...prev, phone: '' }))
+  }
+
   function validate(): boolean {
     const errs: Record<string, string> = {}
     if (!form.companyName.trim()) errs.companyName = 'İşletme adı gereklidir.'
-    if (!form.contactName.trim()) errs.contactName = 'Yetkili adı gereklidir.'
-    if (!form.phone.trim()) errs.phone = 'Telefon gereklidir.'
+    if (!form.firstName.trim()) errs.firstName = 'Ad gereklidir.'
+    if (!form.lastName.trim()) errs.lastName = 'Soyad gereklidir.'
+    if (!form.phone.trim() || form.phone.replace(/\D/g, '').length < 12) errs.phone = 'Geçerli bir telefon numarası girin.'
     if (!form.email.trim()) errs.email = 'E-posta gereklidir.'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Geçerli bir e-posta girin.'
     setErrors(errs)
@@ -349,8 +367,8 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
     try {
       await api.post('/api/v1/sales-leads', {
         companyName: form.companyName.trim(),
-        contactName: form.contactName.trim(),
-        phone: form.phone.trim(),
+        contactName: `${form.firstName.trim()} ${form.lastName.trim()}`.trim(),
+        phone: form.phone,
         email: form.email.trim(),
         branchCount: form.branchCount ? parseInt(form.branchCount, 10) : null,
         message: form.message.trim() || null,
@@ -389,7 +407,7 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
             </div>
             <h3 className="text-lg font-bold text-gray-900">Talebiniz Alındı!</h3>
             <p className="max-w-sm text-sm text-gray-600">
-              Satış ekibimiz talebinizi inceleyip en kısa sürede <strong>{form.phone}</strong> numarasından
+              Satış ekibimiz talebinizi inceleyip en kısa sürede <strong>+90 {formatPhoneDisplay(form.phone)}</strong> numarasından
               veya <strong>{form.email}</strong> adresinden sizinle iletişime geçecek.
             </p>
             <button onClick={onClose} className="mt-2 text-sm font-medium text-brand-600 hover:underline">
@@ -407,32 +425,49 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
             </p>
 
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Ad *</label>
+                  <input value={form.firstName} onChange={set('firstName')} placeholder="Ahmet" autoComplete="given-name" className={inputCls(errors.firstName)} />
+                  {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
+                  <input value={form.lastName} onChange={set('lastName')} placeholder="Yılmaz" autoComplete="family-name" className={inputCls(errors.lastName)} />
+                  {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
+                </div>
+              </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-gray-700">İşletme Adı *</label>
-                <input value={form.companyName} onChange={set('companyName')} placeholder="Örn. Elit Güzellik Merkezi" className={inputCls(errors.companyName)} />
+                <input value={form.companyName} onChange={set('companyName')} placeholder="Örn. Elit Güzellik Merkezi" autoComplete="organization" className={inputCls(errors.companyName)} />
                 {errors.companyName && <p className="mt-1 text-xs text-red-500">{errors.companyName}</p>}
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta Adresi *</label>
+                <input value={form.email} onChange={set('email')} type="email" placeholder="ornek@email.com" autoComplete="email" className={inputCls(errors.email)} />
+                {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Yetkili Ad Soyad *</label>
-                  <input value={form.contactName} onChange={set('contactName')} placeholder="Ahmet Yılmaz" className={inputCls(errors.contactName)} />
-                  {errors.contactName && <p className="mt-1 text-xs text-red-500">{errors.contactName}</p>}
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefon Numarası *</label>
+                  <div className={`flex w-full overflow-hidden rounded-xl border bg-white focus-within:ring-2 focus-within:ring-brand-500/40 transition-shadow ${errors.phone ? 'border-red-400' : 'border-gray-200'}`}>
+                    <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
+                      🇹🇷 +90
+                    </span>
+                    <input
+                      type="tel"
+                      value={formatPhoneDisplay(form.phone)}
+                      onChange={handlePhoneChange}
+                      placeholder="555 000 00 00"
+                      autoComplete="tel"
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+                    />
+                  </div>
+                  {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-gray-700">Şube Sayısı</label>
                   <input value={form.branchCount} onChange={set('branchCount')} type="number" min={1} placeholder="Örn. 5" className={inputCls()} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefon *</label>
-                  <input value={form.phone} onChange={set('phone')} placeholder="0555 000 00 00" className={inputCls(errors.phone)} />
-                  {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta *</label>
-                  <input value={form.email} onChange={set('email')} type="email" placeholder="ornek@email.com" className={inputCls(errors.email)} />
-                  {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
                 </div>
               </div>
               <div>
