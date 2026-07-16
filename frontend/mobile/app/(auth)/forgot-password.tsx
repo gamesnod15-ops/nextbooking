@@ -95,11 +95,11 @@ export default function ForgotPasswordScreen() {
               activeOpacity={0.85}
             >
               {loading ? (
-                <ActivityIndicator color={COLORS.black} />
+                <ActivityIndicator color={COLORS.white} />
               ) : (
                 <>
                   <Text style={styles.resetBtnText}>Sıfırlama Bağlantısı Gönder</Text>
-                  <Ionicons name="send-outline" size={18} color={COLORS.black} />
+                  <Ionicons name="send-outline" size={18} color={COLORS.white} />
                 </>
               )}
             </TouchableOpacity>
@@ -111,7 +111,7 @@ export default function ForgotPasswordScreen() {
             activeOpacity={0.85}
           >
             <Text style={styles.resetBtnText}>Giriş Sayfasına Dön</Text>
-            <Ionicons name="arrow-forward" size={18} color={COLORS.black} />
+            <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -203,6 +203,6 @@ const styles = StyleSheet.create({
   resetBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.black,
+    color: COLORS.white,
   },
 });

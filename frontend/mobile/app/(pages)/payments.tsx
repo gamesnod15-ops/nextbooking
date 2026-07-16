@@ -61,12 +61,12 @@ export default function PaymentsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Ödemeler" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.summary}>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>Toplam Gelir</Text>
-          <Text style={styles.summaryValue}>{formatCurrency(total)}</Text>
+          <Text style={[styles.summaryLabel, { color: 'rgba(255,255,255,0.7)' }]}>Toplam Gelir</Text>
+          <Text style={[styles.summaryValue, { color: COLORS.white }]}>{formatCurrency(total)}</Text>
         </View>
         <View style={[styles.summaryCard, styles.summaryCardAlt]}>
           <Text style={styles.summaryLabel}>İşlem Sayısı</Text>

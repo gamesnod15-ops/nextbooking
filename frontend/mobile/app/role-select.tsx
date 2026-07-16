@@ -79,7 +79,7 @@ export default function RoleSelectScreen() {
             end={{ x: 1, y: 1 }}
           >
             <View style={[styles.cardIcon, styles.primaryCardIcon]}>
-              <Ionicons name="business-outline" size={28} color={COLORS.black} />
+              <Ionicons name="business-outline" size={28} color={COLORS.white} />
             </View>
             <View style={styles.cardContent}>
               <Text style={[styles.cardTitle, styles.primaryCardTitle]}>İşletme</Text>
@@ -88,7 +88,7 @@ export default function RoleSelectScreen() {
               </Text>
             </View>
             <View style={[styles.cardArrow, styles.primaryCardArrow]}>
-              <Ionicons name="chevron-forward" size={20} color={COLORS.black} />
+              <Ionicons name="chevron-forward" size={20} color={COLORS.white} />
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   primaryCardTitle: {
-    color: COLORS.black,
+    color: COLORS.white,
   },
   cardDesc: {
     fontSize: FONT.sm,

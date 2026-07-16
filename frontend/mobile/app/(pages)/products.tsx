@@ -56,7 +56,7 @@ export default function ProductsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Ürünler & Stok" subtitle={`${safeItems.length} ürün`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       {/* Low stock alert */}
       {safeItems.some(p => p.stock <= LOW_STOCK_THRESHOLD && p.isActive) && (

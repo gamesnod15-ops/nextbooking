@@ -421,7 +421,7 @@ export default function FaturaPage() {
                   İptal
                 </button>
                 <button type="submit" disabled={saving}
-                  className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-black text-sm font-semibold rounded-lg transition-colors">
+                  className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors">
                   {saving ? 'Kaydediliyor...' : 'Kaydet'}
                 </button>
               </div>

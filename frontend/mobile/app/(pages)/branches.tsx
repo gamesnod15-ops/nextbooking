@@ -51,7 +51,7 @@ export default function BranchesScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Şubeler" subtitle={`${(data ?? []).length} şube`} showBack
-        right={<TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <FlatList
         data={data ?? []}

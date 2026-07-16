@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     fontWeight: FONT.semibold,
     color: COLORS.textSecondary,
   },
-  dayNumTextSelected: { color: COLORS.black, fontWeight: FONT.bold },
+  dayNumTextSelected: { color: COLORS.white, fontWeight: FONT.bold },
   dayNumTextToday: { color: COLORS.primaryDark, fontWeight: FONT.bold },
   eventDot: {
     width: 5,

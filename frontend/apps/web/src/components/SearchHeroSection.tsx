@@ -221,7 +221,7 @@ function SlideSearch() {
             onSubmit={(e) => { e.preventDefault(); handleSearch() }}
             className={`relative flex items-center rounded-xl border-2 bg-black/70 backdrop-blur-xl transition-all duration-300 ${
               isFocused
-                ? 'border-brand-500 shadow-[0_0_50px_-10px_rgba(207,242,30,0.35)]'
+                ? 'border-brand-500 shadow-[0_0_50px_-10px_rgba(206,13,30,0.35)]'
                 : 'border-white/20 hover:border-white/40'
             }`}
           >
@@ -291,7 +291,7 @@ function SlideSearch() {
 
             <button
               type="submit"
-              className="mr-1.5 flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-3 text-sm font-bold text-black hover:bg-brand-600 transition-all hover:-translate-y-0.5 active:translate-y-0 shrink-0"
+              className="mr-1.5 flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 active:translate-y-0 shrink-0"
             >
               Ara
               <ArrowRight className="h-4 w-4" />
@@ -355,7 +355,7 @@ function SlideSearch() {
         <div className="mt-6 flex items-center gap-4">
           <button
             onClick={() => setDemoOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-black hover:bg-brand-600 hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-lg shadow-brand-500/25"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600 hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-lg shadow-brand-500/25"
           >
             <PlayCircle className="h-5 w-5" />
             Hemen Dene
@@ -405,7 +405,7 @@ function SlideSearch() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
             <div className="absolute bottom-5 left-5">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-3 py-1 text-xs font-bold text-black">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-3 py-1 text-xs font-bold text-white">
                 <Star className="h-3 w-3" /> 4.9 Puan
               </span>
               <p className="mt-2 text-lg font-bold text-white">Elif Studio</p>
@@ -490,7 +490,7 @@ function SlideMobileApp() {
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
             href="/register"
-            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
           >
             <Smartphone className="h-5 w-5" /> Uygulamayı İndir
           </Link>
@@ -525,7 +525,7 @@ function PhoneMockup() {
         <div className="absolute right-6 bottom-2 h-20 w-20 rounded-full border-[8px] border-white/5" />
         <div
           className="absolute left-0 top-1/3 h-40 w-28 opacity-40"
-          style={{ backgroundImage: 'radial-gradient(rgba(207,242,30,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }}
+          style={{ backgroundImage: 'radial-gradient(rgba(206,13,30,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }}
         />
         <div
           className="absolute right-0 bottom-1/4 h-36 w-24 opacity-30"
@@ -563,7 +563,7 @@ function PhoneMockup() {
       <div className="absolute left-0 top-1/2 z-20 animate-float rounded-2xl border border-white/10 bg-black/90 p-3 shadow-2xl backdrop-blur-xl" style={{ animationDelay: '0.6s' }}>
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 flex-col items-center justify-center overflow-hidden rounded-lg border border-white/10">
-            <span className="w-full bg-brand-500 text-center text-[6px] font-bold uppercase text-black">May</span>
+            <span className="w-full bg-brand-500 text-center text-[6px] font-bold uppercase text-white">May</span>
             <span className="flex-1 pt-0.5 text-[13px] font-extrabold leading-none text-white">12</span>
           </div>
           <div>
@@ -634,9 +634,9 @@ function PhoneMockup() {
 
             {/* Next appointment hero card */}
             <div className="mx-4 mt-4 rounded-2xl bg-brand-500 p-3.5 shadow-sm">
-              <p className="text-[9px] font-bold uppercase tracking-wide text-black/60">Sıradaki Randevu</p>
-              <p className="mt-1 text-sm font-extrabold text-black">Saç Kesimi & Fön</p>
-              <div className="mt-2 flex items-center gap-3 text-[10px] font-semibold text-black/80">
+              <p className="text-[9px] font-bold uppercase tracking-wide text-white/60">Sıradaki Randevu</p>
+              <p className="mt-1 text-sm font-extrabold text-white">Saç Kesimi & Fön</p>
+              <div className="mt-2 flex items-center gap-3 text-[10px] font-semibold text-white/80">
                 <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Bugün</span>
                 <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> 14:30</span>
               </div>
@@ -712,7 +712,7 @@ function SlideWhatsApp() {
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
             href="/register"
-            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
           >
             <MessageCircle className="h-5 w-5" /> Hemen Başla
           </Link>
@@ -824,7 +824,7 @@ function WhatsAppMockup() {
           <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[2rem] bg-[#ECE5DD]">
             {/* WhatsApp header */}
             <div className="flex items-center gap-2.5 bg-[#075E54] px-3.5 pb-2.5 pt-6">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-black">N</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-white">N</div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[11px] font-bold text-white">NextBooking</p>
                 <p className="text-[8px] text-emerald-100/80">çevrimiçi</p>
@@ -905,7 +905,7 @@ function CalendarMockup() {
         <div className="absolute -left-4 top-2 h-32 w-32 rounded-full border-[12px] border-brand-500/10" />
         <div className="absolute left-10 bottom-4 h-24 w-24 rounded-full border-2 border-dashed border-white/10" />
         <div className="absolute left-0 top-1/2 h-36 w-24 -translate-y-1/2 opacity-40"
-          style={{ backgroundImage: 'radial-gradient(rgba(207,242,30,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }} />
+          style={{ backgroundImage: 'radial-gradient(rgba(206,13,30,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }} />
         <div className="absolute left-24 top-6 h-20 w-14 opacity-30"
           style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 1.5px, transparent 0)', backgroundSize: '14px 14px' }} />
       </div>
@@ -952,7 +952,7 @@ function CalendarMockup() {
             <span className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600">
               <Plus className="h-3 w-3" /> Randevu
             </span>
-            <span className="rounded-lg bg-brand-500 px-2 py-1 text-[10px] font-bold text-black">Bugün</span>
+            <span className="rounded-lg bg-brand-500 px-2 py-1 text-[10px] font-bold text-white">Bugün</span>
           </div>
         </div>
 
@@ -966,7 +966,7 @@ function CalendarMockup() {
               key={i}
               className={`flex h-9 items-center justify-center rounded-lg text-[11px] transition-colors ${
                 d.today
-                  ? 'bg-brand-500 font-bold text-black'
+                  ? 'bg-brand-500 font-bold text-white'
                   : d.busy
                   ? 'bg-brand-50 font-semibold text-brand-600'
                   : d.muted
@@ -1032,7 +1032,7 @@ function SlideDashboard() {
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
             href="/register"
-            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
           >
             Hemen Başlayın
           </Link>

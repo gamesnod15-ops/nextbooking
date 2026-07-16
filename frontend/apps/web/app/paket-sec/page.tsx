@@ -52,9 +52,9 @@ const plans = [
     popular: true,
     accentBorder: 'border-brand-300',
     accentBg: 'bg-brand-500',
-    badgeClass: 'bg-white/20 text-black',
+    badgeClass: 'bg-white/20 text-white',
     iconBg: 'bg-white/20',
-    iconColor: 'text-black',
+    iconColor: 'text-white',
     btnClass: 'bg-white text-brand-600 hover:bg-brand-50 font-bold',
   },
   {
@@ -155,7 +155,7 @@ function PaketSecContent() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-              <CalendarCheck className="h-4 w-4 text-black" />
+              <CalendarCheck className="h-4 w-4 text-white" />
             </div>
             <span className="text-base font-bold text-gray-900">NextBooking</span>
           </Link>
@@ -164,7 +164,7 @@ function PaketSecContent() {
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
             <span className="text-gray-400">Hesap</span>
             <span className="text-gray-300">›</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black text-xs font-bold">2</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">2</span>
             <span className="font-semibold text-gray-800">Paket</span>
             <span className="text-gray-300">›</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs font-bold">3</span>
@@ -198,7 +198,7 @@ function PaketSecContent() {
                 className={[
                   'relative flex flex-col rounded-2xl border-2 text-left transition-all focus:outline-none',
                   isPopular
-                    ? `${plan.accentBg} text-black shadow-2xl scale-[1.03]`
+                    ? `${plan.accentBg} text-white shadow-2xl scale-[1.03]`
                     : `bg-white ${isSelected ? 'border-brand-400 shadow-lg ring-2 ring-brand-400/30' : `${plan.accentBorder} shadow-sm hover:shadow-md`}`,
                   isSelected && !isPopular ? 'scale-[1.02]' : '',
                 ].join(' ')}
@@ -212,7 +212,7 @@ function PaketSecContent() {
 
                 {/* Selected indicator */}
                 {isSelected && !isPopular && (
-                  <div className="absolute -top-3 right-4 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black text-xs">
+                  <div className="absolute -top-3 right-4 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-xs">
                     ✓
                   </div>
                 )}
@@ -229,23 +229,23 @@ function PaketSecContent() {
                   </div>
 
                   {/* Name + desc */}
-                  <h3 className={`text-lg font-extrabold ${isPopular ? 'text-black' : 'text-gray-900'}`}>{plan.name}</h3>
-                  <p className={`mt-1 text-xs leading-relaxed ${isPopular ? 'text-black/75' : 'text-gray-500'}`}>{plan.desc}</p>
+                  <h3 className={`text-lg font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+                  <p className={`mt-1 text-xs leading-relaxed ${isPopular ? 'text-white/75' : 'text-gray-500'}`}>{plan.desc}</p>
 
                   {/* Price */}
                   <div className="mt-4 mb-5">
-                    <span className={`text-3xl font-extrabold ${isPopular ? 'text-black' : 'text-gray-900'}`}>{plan.price}</span>
-                    <span className={`text-sm ${isPopular ? 'text-black/70' : 'text-gray-500'}`}>{plan.period}</span>
+                    <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.price}</span>
+                    <span className={`text-sm ${isPopular ? 'text-white/70' : 'text-gray-500'}`}>{plan.period}</span>
                     {plan.id !== 'custom' && (
-                      <p className={`text-xs mt-0.5 ${isPopular ? 'text-black/60' : 'text-gray-400'}`}>+ KDV • 14 gün ücretsiz</p>
+                      <p className={`text-xs mt-0.5 ${isPopular ? 'text-white/60' : 'text-gray-400'}`}>+ KDV • 14 gün ücretsiz</p>
                     )}
                   </div>
 
                   {/* Features */}
                   <ul className="space-y-2 flex-1">
                     {plan.features.map((f) => (
-                      <li key={f} className={`flex items-start gap-2 text-xs ${isPopular ? 'text-black/90' : 'text-gray-700'}`}>
-                        <Check className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${isPopular ? 'text-black' : 'text-emerald-500'}`} />
+                      <li key={f} className={`flex items-start gap-2 text-xs ${isPopular ? 'text-white/90' : 'text-gray-700'}`}>
+                        <Check className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${isPopular ? 'text-white' : 'text-emerald-500'}`} />
                         {f}
                       </li>
                     ))}
@@ -258,7 +258,7 @@ function PaketSecContent() {
                       : isSelected
                         ? isPopular
                           ? plan.btnClass
-                          : 'bg-brand-500 text-black'
+                          : 'bg-brand-500 text-white'
                         : isPopular
                           ? plan.btnClass
                           : `border-2 ${plan.accentBorder} text-gray-700 hover:border-brand-300`
@@ -283,7 +283,7 @@ function PaketSecContent() {
           <button
             onClick={handleContinue}
             disabled={!selected || loading}
-            className="flex items-center gap-2 rounded-2xl bg-brand-500 px-10 py-4 text-base font-bold text-black shadow-lg hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
+            className="flex items-center gap-2 rounded-2xl bg-brand-500 px-10 py-4 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             {loading ? 'Yönlendiriliyor…' : 'Devam Et — Ödeme'}
             <ArrowRight className="h-5 w-5" />
@@ -482,7 +482,7 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-black shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 {submitting ? 'Gönderiliyor…' : 'Talebi Gönder'}

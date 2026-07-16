@@ -42,7 +42,7 @@ export default function CustomerAppointmentsScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Randevularım</Text>
         <TouchableOpacity style={styles.addBtn}>
-          <Ionicons name="add" size={22} color={COLORS.black} />
+          <Ionicons name="add" size={22} color={COLORS.white} />
         </TouchableOpacity>
       </View>
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.black },
+  chipTextActive: { color: COLORS.white },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },

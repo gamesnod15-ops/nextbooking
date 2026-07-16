@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   bubbleContentUser: { backgroundColor: COLORS.primary, borderBottomRightRadius: 4 },
   bubbleText: { fontSize: FONT.sm, lineHeight: 20 },
   bubbleTextBot: { color: COLORS.text },
-  bubbleTextUser: { color: COLORS.black },
+  bubbleTextUser: { color: COLORS.white },
   section: { marginHorizontal: SPACE[5], marginTop: SPACE[4], backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.borderLight, overflow: 'hidden' },
   settingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SPACE[4], borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
   settingLabel: { fontSize: FONT.base, color: COLORS.text },

@@ -70,7 +70,7 @@ export default function ServicesScreen() {
       <ScreenHeader title="Hizmetler" subtitle={`${(data ?? []).length} hizmet`} showBack
         right={
           <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}>
-            <Ionicons name="add" size={22} color={COLORS.black} />
+            <Ionicons name="add" size={22} color={COLORS.white} />
           </TouchableOpacity>
         }
       />
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.black },
+  chipTextActive: { color: COLORS.white },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   catDot: { width: 44, height: 44, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center' },

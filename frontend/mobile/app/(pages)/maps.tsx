@@ -49,7 +49,7 @@ export default function MapsScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {BRANCHES.map((b) => (
           <TouchableOpacity key={b.id} style={[styles.branchChip, selected.id === b.id && styles.branchChipActive]} onPress={() => setSelected(b)} activeOpacity={0.8}>
-            <Ionicons name="business" size={14} color={selected.id === b.id ? COLORS.black : COLORS.textSecondary} />
+            <Ionicons name="business" size={14} color={selected.id === b.id ? COLORS.white : COLORS.textSecondary} />
             <Text style={[styles.branchChipText, selected.id === b.id && styles.branchChipTextActive]}>{b.name}</Text>
           </TouchableOpacity>
         ))}
@@ -79,7 +79,7 @@ export default function MapsScreen() {
         </View>
         <View style={styles.actions}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => Linking.openURL(getMapUrl(selected.lat, selected.lng))}>
-            <Ionicons name="navigate" size={18} color={COLORS.black} />
+            <Ionicons name="navigate" size={18} color={COLORS.white} />
             <Text style={styles.actionBtnText}>Yol Tarifi</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtnSecondary} onPress={() => Linking.openURL(`tel:${selected.phone}`)}>
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   branchChip: { flexDirection: 'row', alignItems: 'center', gap: SPACE[2], paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.surface },
   branchChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   branchChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  branchChipTextActive: { color: COLORS.black },
+  branchChipTextActive: { color: COLORS.white },
   mapContainer: { flex: 1, marginHorizontal: SPACE[5], borderRadius: RADIUS.xl, overflow: 'hidden', borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   infoCard: { backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginVertical: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], gap: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   infoHeader: { flexDirection: 'row', gap: SPACE[3] },
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   branchAddress: { fontSize: FONT.sm, color: COLORS.textMuted, lineHeight: 18 },
   actions: { flexDirection: 'row', gap: SPACE[3] },
   actionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACE[2], backgroundColor: COLORS.primary, borderRadius: RADIUS.xl, padding: SPACE[4], ...SHADOW.primary },
-  actionBtnText: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.black },
+  actionBtnText: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.white },
   actionBtnSecondary: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACE[2], backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.xl, padding: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight },
   actionBtnTextSecondary: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text },
 });

@@ -147,7 +147,7 @@ export function CompleteRegistrationPage() {
           <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
           <h2 className="mt-4 text-xl font-bold text-gray-900">Geçersiz Oturum</h2>
           <p className="mt-2 text-gray-600">Bu sayfaya doğrudan erişemezsiniz. Lütfen giriş yapın.</p>
-          <Link to="/login" className="mt-6 inline-block rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 transition-colors">
+          <Link to="/login" className="mt-6 inline-block rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
             Giriş Sayfasına Dön
           </Link>
         </div>
@@ -309,7 +309,7 @@ export function CompleteRegistrationPage() {
             <button
               type="submit"
               disabled={completeMutation.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-black shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
             >
               {completeMutation.isPending ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Kaydediliyor…</>

@@ -123,7 +123,7 @@ export default function OnboardingScreen() {
               <Text style={styles.nextBtnText}>
                 {step < totalSteps - 1 ? 'Devam Et' : 'Başla'}
               </Text>
-              <Ionicons name="arrow-forward" size={20} color={COLORS.black} />
+              <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
             </TouchableOpacity>
           </View>
         </View>
@@ -220,6 +220,6 @@ const styles = StyleSheet.create({
   nextBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.black,
+    color: COLORS.white,
   },
 });

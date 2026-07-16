@@ -325,7 +325,7 @@ function OdemeInner() {
             <span className="font-semibold">{plan.name}</span> planınız aktif edildi. Panel'e yönlendiriliyorsunuz…
           </p>
           <div className="mt-6 flex flex-col gap-3">
-            <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 py-3 text-sm font-semibold text-black hover:bg-brand-600 transition-colors">
+            <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
               Panele Git <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -341,7 +341,7 @@ function OdemeInner() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-              <CalendarCheck className="h-4 w-4 text-black" />
+              <CalendarCheck className="h-4 w-4 text-white" />
             </div>
             <span className="text-base font-bold text-gray-900">NextBooking</span>
           </Link>
@@ -353,7 +353,7 @@ function OdemeInner() {
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
             <span className="text-gray-400">Paket</span>
             <span className="text-gray-300">›</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black text-xs font-bold">3</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">3</span>
             <span className="font-semibold text-gray-800">Ödeme</span>
           </div>
         </div>
@@ -427,7 +427,7 @@ function OdemeInner() {
                       </select>
                     </div>
                   </div>
-                  <button type="submit" className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3 text-sm font-bold text-black hover:bg-brand-600 transition-colors">
+                  <button type="submit" className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-colors">
                     Bilgileri Kaydet & Devam Et <ArrowRight className="h-4 w-4" />
                   </button>
                 </form>
@@ -490,7 +490,7 @@ function OdemeInner() {
                             className={inputCls()} />
                         </div>
                       </div>
-                      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-2.5 text-sm font-bold text-black hover:bg-brand-600 transition-colors">
+                      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-2.5 text-sm font-bold text-white hover:bg-brand-600 transition-colors">
                         Bilgileri Güncelle
                       </button>
                     </form>
@@ -625,7 +625,7 @@ function OdemeInner() {
                     )}
 
                     <button type="submit" disabled={paying}
-                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-4 text-base font-bold text-black shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl">
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-4 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl">
                       <Lock className="h-4 w-4" />
                       {paying ? 'İşleniyor…' : plan.id === 'custom' ? 'Ödeme Yap' : `\u20BA${getGrandTotal().toLocaleString('tr-TR')} Öde`}
                     </button>
@@ -649,7 +649,7 @@ function OdemeInner() {
               <h2 className="mb-4 text-base font-bold text-gray-900">Sipariş Özeti</h2>
 
               {/* Plan badge */}
-              <div className={`rounded-xl ${plan.color} p-4 text-black mb-5`}>
+              <div className={`rounded-xl ${plan.color} p-4 text-white mb-5`}>
                 <p className="text-xs font-semibold opacity-75 uppercase tracking-widest">Seçilen Plan</p>
                 <p className="mt-1 text-xl font-extrabold">{plan.name}</p>
                 <p className="text-sm opacity-80">14 gün ücretsiz deneme</p>
@@ -665,7 +665,7 @@ function OdemeInner() {
                       <button key={opt.months} type="button" onClick={() => setDuration(opt.months)}
                         className={`relative rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                           active
-                            ? 'border-brand-500 bg-brand-500 text-black shadow-sm'
+                            ? 'border-brand-500 bg-brand-500 text-white shadow-sm'
                             : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
                         }`}>
                         {opt.label}

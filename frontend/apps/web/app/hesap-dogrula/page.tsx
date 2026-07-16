@@ -53,7 +53,7 @@ export default function HesapDogrulaPage() {
             <div className="mt-6 space-y-3">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors"
               >
                 Giriş Yap
               </Link>
@@ -74,7 +74,7 @@ export default function HesapDogrulaPage() {
               </p>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors"
               >
                 Giriş Sayfasına Dön
               </Link>

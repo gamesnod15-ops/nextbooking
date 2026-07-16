@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   accentValue: {
     fontSize: FONT['2xl'],
     fontWeight: FONT.bold,
-    color: COLORS.black,
+    color: COLORS.white,
   },
   sub: {
     fontSize: FONT.xs,

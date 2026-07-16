@@ -101,7 +101,7 @@ export default function MusteriPage() {
         </div>
         <Link
           href="/isletmeler"
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5 shrink-0"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5 shrink-0"
         >
           Yeni Randevu Al <ArrowRight className="h-4 w-4" />
         </Link>
@@ -112,7 +112,7 @@ export default function MusteriPage() {
           <button key={tab.key} onClick={() => setFilter(tab.key)}
             className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
               filter === tab.key
-                ? 'bg-brand-500 text-black shadow-sm'
+                ? 'bg-brand-500 text-white shadow-sm'
                 : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
             }`}>
             {tab.label}
@@ -136,7 +136,7 @@ export default function MusteriPage() {
           <p className="text-sm text-gray-500 mt-1">Henüz hiçbir randevunuz yok.</p>
           <Link
             href="/isletmeler"
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5"
           >
             İşletmelere Göz At <ArrowRight className="h-4 w-4" />
           </Link>

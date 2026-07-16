@@ -49,7 +49,7 @@ export default function MusteriLayout({ children }: { children: React.ReactNode 
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 active
-                  ? 'bg-brand-500 text-black shadow-sm'
+                  ? 'bg-brand-500 text-white shadow-sm'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}>
               <item.icon className="h-4 w-4" />
@@ -61,7 +61,7 @@ export default function MusteriLayout({ children }: { children: React.ReactNode 
 
       <div className="border-t border-gray-100 p-3">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-black text-xs font-bold uppercase">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold uppercase">
             {fullName.charAt(0) || '?'}
           </div>
           <span className="text-sm font-medium text-gray-900 truncate">{fullName || 'Kullanıcı'}</span>

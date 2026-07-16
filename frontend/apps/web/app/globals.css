@@ -4,11 +4,11 @@
 @tailwind utilities;
 
 :root {
-  --brand-50:  248 253 221;
-  --brand-100: 241 251 188;
-  --brand-500: 207 242 30;
-  --brand-600: 176 206 26;
-  --brand-700: 145 169 21;
+  --brand-50:  253 243 244;
+  --brand-100: 248 219 221;
+  --brand-500: 206 13 30;
+  --brand-600: 175 11 26;
+  --brand-700: 144 9 21;
 }
 
 html { scroll-behavior: smooth; }

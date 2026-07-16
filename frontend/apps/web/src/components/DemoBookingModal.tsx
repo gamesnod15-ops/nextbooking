@@ -110,7 +110,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white px-6 py-4 rounded-t-2xl">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-              <Sparkles className="h-4 w-4 text-black" />
+              <Sparkles className="h-4 w-4 text-white" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-gray-900">Hemen Dene</h2>
@@ -170,7 +170,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
               {[1, 2, 3].map((s) => (
                 <div key={s} className="flex items-center gap-2">
                   <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
-                    step >= s ? 'bg-brand-500 text-black' : 'bg-gray-100 text-gray-600'
+                    step >= s ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
                   }`}>
                     {s}
                   </div>
@@ -217,7 +217,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
                   <button
                     onClick={() => setStep(2)}
                     disabled={!selectedBusiness}
-                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     Devam Et <ChevronRight className="h-4 w-4" />
                   </button>
@@ -258,7 +258,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
                   <button
                     onClick={() => setStep(3)}
                     disabled={!selectedService}
-                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     Devam Et <ChevronRight className="h-4 w-4" />
                   </button>
@@ -287,7 +287,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
                         onClick={() => { setSelectedDate(dateStr); setSelectedTime(null) }}
                         className={`flex flex-col items-center rounded-lg py-2 px-1 text-xs transition-colors ${
                           isSelected
-                            ? 'bg-brand-500 text-black'
+                            ? 'bg-brand-500 text-white'
                             : isToday
                               ? 'bg-brand-50 text-brand-700'
                               : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
@@ -349,7 +349,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
                   <button
                     onClick={handleSubmit}
                     disabled={!selectedDate || !selectedTime || loading}
-                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Oluşturuluyor...</> : 'Randevu Oluştur'}
                   </button>

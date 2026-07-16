@@ -95,7 +95,7 @@ export function PricingSection() {
               key={plan.id}
               className={`relative flex flex-col rounded-2xl border-2 p-6 ${
                 plan.popular
-                  ? 'bg-brand-500 text-black border-brand-300 shadow-2xl scale-[1.03]'
+                  ? 'bg-brand-500 text-white border-brand-300 shadow-2xl scale-[1.03]'
                   : `bg-white ${plan.accentClass} shadow-sm`
               }`}
             >
@@ -109,24 +109,24 @@ export function PricingSection() {
 
               {/* Badge */}
               <div className="mb-3">
-                <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${plan.popular ? 'bg-white/20 text-black' : plan.badgeClass}`}>
+                <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${plan.popular ? 'bg-white/20 text-white' : plan.badgeClass}`}>
                   {plan.badge}
                 </span>
               </div>
 
-              <h3 className={`text-xl font-bold ${plan.popular ? 'text-black' : 'text-gray-900'}`}>{plan.name}</h3>
-              <p className={`mt-1 text-xs leading-relaxed ${plan.popular ? 'text-black/70' : 'text-gray-500'}`}>{plan.desc}</p>
+              <h3 className={`text-xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+              <p className={`mt-1 text-xs leading-relaxed ${plan.popular ? 'text-white/70' : 'text-gray-500'}`}>{plan.desc}</p>
 
               <div className="mt-5 flex items-baseline gap-0.5">
-                <span className={`text-4xl font-extrabold ${plan.popular ? 'text-black' : 'text-gray-900'}`}>{plan.price}</span>
-                <span className={`text-sm font-medium ${plan.popular ? 'text-black/70' : 'text-gray-500'}`}>{plan.period}</span>
+                <span className={`text-4xl font-extrabold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.price}</span>
+                <span className={`text-sm font-medium ${plan.popular ? 'text-white/70' : 'text-gray-500'}`}>{plan.period}</span>
               </div>
 
               <ul className="mt-6 flex-1 space-y-3">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.popular ? 'text-black/60' : 'text-gray-900'}`} />
-                    <span className={plan.popular ? 'text-black/80' : 'text-gray-700'}>{f}</span>
+                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.popular ? 'text-white/60' : 'text-gray-900'}`} />
+                    <span className={plan.popular ? 'text-white/80' : 'text-gray-700'}>{f}</span>
                   </li>
                 ))}
               </ul>
@@ -136,7 +136,7 @@ export function PricingSection() {
                 className={`mt-8 block rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all hover:-translate-y-0.5 ${
                   plan.popular
                     ? 'bg-black text-brand-500 hover:bg-gray-900 shadow'
-                    : 'bg-brand-500 text-black hover:bg-brand-600'
+                    : 'bg-brand-500 text-white hover:bg-brand-600'
                 }`}
               >
                 {plan.cta}

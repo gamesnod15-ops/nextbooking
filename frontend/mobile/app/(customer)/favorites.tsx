@@ -52,7 +52,7 @@ export default function FavoritesScreen() {
               <View style={styles.bottomRow}>
                 <Badge variant={item.isOpen ? 'success' : 'default'} size="sm">{item.isOpen ? 'Açık' : 'Kapalı'}</Badge>
                 <TouchableOpacity style={styles.bookBtn}>
-                  <Ionicons name="calendar" size={14} color={COLORS.black} />
+                  <Ionicons name="calendar" size={14} color={COLORS.white} />
                   <Text style={styles.bookBtnText}>{item.nextSlot}</Text>
                 </TouchableOpacity>
               </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   dist: { fontSize: FONT.xs, color: COLORS.textMuted },
   bottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   bookBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.primary, paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full, ...SHADOW.primary },
-  bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.black },
+  bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
   heartBtn: { padding: 4 },
 });
 

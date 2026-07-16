@@ -229,7 +229,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
             <p className="mt-2 text-sm text-gray-500 text-center max-w-xs">
               Randevu talebiniz alındı. İşletme sizinle iletişime geçecektir.
             </p>
-            <button onClick={handleClose} className="mt-6 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 transition-colors">
+            <button onClick={handleClose} className="mt-6 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
               Kapat
             </button>
           </div>
@@ -240,7 +240,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                 const s = i + 1
                 return (
                   <div key={s} className="flex items-center gap-2">
-                    <div className={'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ' + (step >= s ? 'bg-brand-500 text-black' : 'bg-gray-100 text-gray-600')}>
+                    <div className={'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ' + (step >= s ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600')}>
                       {s}
                     </div>
                     <span className={'text-xs font-medium ' + (step >= s ? 'text-brand-600' : 'text-gray-400')}>
@@ -275,7 +275,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                 )}
                 <div className="pt-4 flex justify-end">
                   <button onClick={() => { setStep(2); setCalendarMonth(today.getMonth()); setCalendarYear(today.getFullYear()) }} disabled={!selectedService}
-                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                     Devam Et
                   </button>
                 </div>
@@ -329,7 +329,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                       if (isPast) {
                         cls += 'text-gray-300 cursor-not-allowed '
                       } else if (isSelected) {
-                        cls += 'bg-brand-500 text-black '
+                        cls += 'bg-brand-500 text-white '
                       } else if (isToday) {
                         cls += 'bg-brand-50 text-brand-700 '
                       } else if (hasSlots) {
@@ -359,7 +359,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                     Geri
                   </button>
                   <button onClick={() => setStep(3)} disabled={!selectedDate}
-                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                     Devam Et
                   </button>
                 </div>
@@ -403,7 +403,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                     Geri
                   </button>
                   <button onClick={() => setStep(4)} disabled={!selectedTime}
-                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                     Devam Et
                   </button>
                 </div>
@@ -474,7 +474,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                     Geri
                   </button>
                   <button onClick={handleSubmit} disabled={loading}
-                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                    className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                     {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Gönderiliyor...</> : 'Randevu Oluştur'}
                   </button>
                 </div>

@@ -96,7 +96,7 @@ export default function ReklamverenPage() {
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/register"
-                className="group rounded-xl bg-brand-500 px-8 py-3.5 text-base font-bold text-black hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
+                className="group rounded-xl bg-brand-500 px-8 py-3.5 text-base font-bold text-white hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
                 Hemen Başla <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link href="#packages"
@@ -158,7 +158,7 @@ export default function ReklamverenPage() {
                 <div key={s.num} className="relative text-center">
                   <div className="relative z-10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-white border-2 border-brand-500 shadow-xl">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-yellow-400">
-                      <span className="text-2xl font-extrabold text-black">{s.num}</span>
+                      <span className="text-2xl font-extrabold text-white">{s.num}</span>
                     </div>
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-1.5">{s.title}</h3>
@@ -182,7 +182,7 @@ export default function ReklamverenPage() {
                 <div key={p.name} className={`relative rounded-3xl border-2 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${p.popular ? 'border-brand-500 shadow-xl shadow-brand-500/10 scale-105 md:scale-110' : 'border-gray-100 hover:border-gray-200'}`}>
                   {p.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-yellow-400 px-5 py-1 text-xs font-bold text-black shadow-lg">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-yellow-400 px-5 py-1 text-xs font-bold text-white shadow-lg">
                         <Star className="h-3 w-3 fill-black" /> En Çok Tercih Edilen
                       </div>
                     </div>
@@ -209,7 +209,7 @@ export default function ReklamverenPage() {
                     ))}
                   </ul>
                   <CheckoutLink type="ad" plan={p.name}
-                    className={`block rounded-xl py-3 text-center text-sm font-bold transition-all ${p.popular ? 'bg-gradient-to-r from-brand-500 to-yellow-400 text-black hover:from-brand-600 hover:to-yellow-500 shadow-lg' : 'border-2 border-gray-200 text-gray-700 hover:border-brand-500 hover:text-brand-600'}`}>
+                    className={`block rounded-xl py-3 text-center text-sm font-bold transition-all ${p.popular ? 'bg-gradient-to-r from-brand-500 to-yellow-400 text-white hover:from-brand-600 hover:to-yellow-500 shadow-lg' : 'border-2 border-gray-200 text-gray-700 hover:border-brand-500 hover:text-brand-600'}`}>
                     {p.popular ? 'Hemen Başla' : 'Paketi Seç'}
                   </CheckoutLink>
                 </div>
@@ -263,7 +263,7 @@ export default function ReklamverenPage() {
                   <summary className="flex items-center justify-between cursor-pointer list-none">
                     <span className="text-sm font-semibold text-gray-900 group-open:text-brand-600">{item.q}</span>
                     <div className="h-6 w-6 rounded-full bg-gray-100 group-open:bg-brand-500 flex items-center justify-center shrink-0 transition-colors">
-                      <svg className="h-3 w-3 text-gray-500 group-open:text-black transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                      <svg className="h-3 w-3 text-gray-500 group-open:text-white transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                     </div>
                   </summary>
                   <p className="mt-3 text-sm text-gray-600 leading-relaxed">{item.a}</p>
@@ -284,7 +284,7 @@ export default function ReklamverenPage() {
             <p className="text-gray-300 text-lg mb-8">İlk kampanyanızı oluşturun, işletmenizi binlerce potansiyel müşteriye tanıtın.</p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/register"
-                className="group rounded-xl bg-brand-500 px-10 py-4 text-base font-bold text-black hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
+                className="group rounded-xl bg-brand-500 px-10 py-4 text-base font-bold text-white hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
                 Ücretsiz Hesap Oluştur <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>

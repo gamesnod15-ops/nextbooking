@@ -1,10 +1,10 @@
 // ─── Brand Colors ───────────────────────────────────────────────────────────
 export const COLORS = {
-  // Primary lime brand
-  primary: '#CFF21E',
-  primaryDark: '#A8C818',
-  primaryLight: '#E8F98F',
-  primaryMuted: 'rgba(207, 242, 30, 0.12)',
+  // Primary red brand
+  primary: '#CE0D1E',
+  primaryDark: '#A70B18',
+  primaryLight: '#E78B93',
+  primaryMuted: 'rgba(206, 13, 30, 0.12)',
 
   // Neutrals
   black: '#0A0A0A',
@@ -126,7 +126,7 @@ export const SHADOW = {
     elevation: 8,
   },
   primary: {
-    shadowColor: '#CFF21E',
+    shadowColor: '#CE0D1E',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 12,

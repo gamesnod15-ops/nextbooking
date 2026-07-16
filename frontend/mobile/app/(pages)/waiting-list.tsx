@@ -50,7 +50,7 @@ export default function WaitingListScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Bekleme Listesi" subtitle={`${list.length} kişi`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',customerPhone:'',serviceName:'',notes:''}); setModal({open:true}); }}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',customerPhone:'',serviceName:'',notes:''}); setModal({open:true}); }}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {STATUS_FILTERS.map((f) => (
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.black },
+  chipTextActive: { color: COLORS.white },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   info: { flex: 1, gap: 3 },

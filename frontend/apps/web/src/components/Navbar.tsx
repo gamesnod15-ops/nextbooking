@@ -173,7 +173,7 @@ export function Navbar() {
                 {user.avatar ? (
                   <img src={user.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
                 ) : (
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-black">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-white">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -210,7 +210,7 @@ export function Navbar() {
                 <LogIn className="h-4 w-4" />
                 Giriş Yap
               </Link>
-              <Link href="/register" className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-black hover:bg-brand-600 transition-colors">
+              <Link href="/register" className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
                 <UserPlus className="h-4 w-4" />
                 Ücretsiz Başla
               </Link>
@@ -255,7 +255,7 @@ export function Navbar() {
                   {user.avatar ? (
                     <img src={user.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
                   ) : (
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-black">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-white">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -276,7 +276,7 @@ export function Navbar() {
                   <LogIn className="h-4 w-4" />
                   Giriş Yap
                 </Link>
-                <Link href="/register" onClick={() => setOpen(false)} className="flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-semibold text-black">
+                <Link href="/register" onClick={() => setOpen(false)} className="flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white">
                   <UserPlus className="h-4 w-4" />
                   Ücretsiz Başla
                 </Link>

@@ -181,7 +181,7 @@ export default function SettingsScreen() {
                   setSavingPass(true);
                   setTimeout(() => { setSavingPass(false); setSecurityItem(null); setPasswordForm({current:'',newPass:'',confirm:''}); Alert.alert('Başarılı', 'Şifre değiştirildi.'); }, 1000);
                 }}>
-                  {savingPass ? <ActivityIndicator size="small" color={COLORS.black} /> : <Text style={styles.saveBtnText}>Şifreyi Değiştir</Text>}
+                  {savingPass ? <ActivityIndicator size="small" color={COLORS.white} /> : <Text style={styles.saveBtnText}>Şifreyi Değiştir</Text>}
                 </TouchableOpacity>
               </View>
             )}
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.black },
+  chipTextActive: { color: COLORS.white },
   profileCard: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginBottom: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   profileInfo: { flex: 1, gap: 4 },
   profileName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   editLabel: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textMuted, marginLeft: SPACE[1] },
   editInput: { backgroundColor: COLORS.surface, borderRadius: RADIUS.lg, paddingHorizontal: SPACE[4], paddingVertical: SPACE[3], fontSize: FONT.base, color: COLORS.text, borderWidth: 1.5, borderColor: COLORS.border },
   saveBtn: { marginHorizontal: SPACE[5], marginTop: SPACE[2], backgroundColor: COLORS.primary, borderRadius: RADIUS.lg, paddingVertical: SPACE[4], alignItems: 'center', ...SHADOW.primary },
-  saveBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.black },
+  saveBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
   hoursCard: { marginHorizontal: SPACE[5], backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.borderLight, overflow: 'hidden', ...SHADOW.sm },
   hourRow: { flexDirection: 'row', alignItems: 'center', padding: SPACE[4], gap: SPACE[4] },
   dayLabel: { width: 36, fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },

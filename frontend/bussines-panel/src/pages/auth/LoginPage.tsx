@@ -67,7 +67,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loginMutation.isPending}
-            className="w-full bg-brand-600 hover:bg-brand-700 text-black font-semibold py-2 rounded-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {loginMutation.isPending ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> Giriş yapılıyor...</>

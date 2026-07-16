@@ -60,7 +60,7 @@ export default function ReceivablesScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Alacaklar" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.summaryCard}>
         <Text style={styles.summaryLabel}>Toplam Alacak</Text>
@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   summaryCard: { backgroundColor: COLORS.primary, marginHorizontal: SPACE[5], marginTop: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], gap: SPACE[1] },
   summaryLabel: { fontSize: FONT.xs, color: 'rgba(0,0,0,0.5)', fontWeight: FONT.medium },
-  summaryValue: { fontSize: FONT['3xl'], fontWeight: FONT.extrabold, color: COLORS.black },
+  summaryValue: { fontSize: FONT['3xl'], fontWeight: FONT.extrabold, color: COLORS.white },
   summaryMeta: { marginTop: 4 },
   summaryMetaText: { fontSize: FONT.xs, color: 'rgba(0,0,0,0.5)' },
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.black },
+  chipTextActive: { color: COLORS.white },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   info: { flex: 1, gap: 3 },

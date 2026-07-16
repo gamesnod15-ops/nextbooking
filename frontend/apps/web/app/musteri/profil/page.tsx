@@ -81,7 +81,7 @@ export default function MusteriProfilPage() {
 
       <form onSubmit={handleSave} className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-4 pb-5 border-b border-gray-100">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500 text-xl font-bold text-black">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500 text-xl font-bold text-white">
             {(form.firstName.charAt(0) + form.lastName.charAt(0)).toUpperCase() || '?'}
           </div>
           <div>
@@ -149,7 +149,7 @@ export default function MusteriProfilPage() {
         )}
 
         <button type="submit" disabled={saving}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {saving ? 'Kaydediliyor...' : 'Bilgileri Kaydet'}
         </button>

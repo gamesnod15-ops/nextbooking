@@ -5,17 +5,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#CFF21E',
-        'primary-dark': '#A8C818',
-        'primary-light': '#E8F98F',
+        primary: '#CE0D1E',
+        'primary-dark': '#A70B18',
+        'primary-light': '#E78B93',
         brand: {
-          50:  '#F7FDD8',
-          100: '#F0FBBF',
-          200: '#E5F994',
-          500: '#CFF21E',
-          600: '#AECE19',
-          700: '#8CAB14',
-          900: '#506210',
+          50:  '#F8DBDD',
+          100: '#F0B6BC',
+          200: '#E78891',
+          500: '#CE0D1E',
+          600: '#AF0B1A',
+          700: '#900915',
+          900: '#52050C',
         },
       },
       fontFamily: {

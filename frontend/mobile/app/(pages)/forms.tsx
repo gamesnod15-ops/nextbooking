@@ -37,7 +37,7 @@ export default function FormsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Formlar" subtitle={`${list.length} form`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={() => setModal({ open: true })}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={() => setModal({ open: true })}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <FlatList
         data={list}

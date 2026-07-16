@@ -57,7 +57,7 @@ export function CookieConsent() {
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500">
-              <Cookie className="h-5 w-5 text-black" />
+              <Cookie className="h-5 w-5 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">Çerez Politikası</h3>
@@ -86,7 +86,7 @@ export function CookieConsent() {
                     : 'border-white/20 bg-transparent'
                 }`}
               >
-                {choices[cat.key as keyof typeof choices] && <Check className="h-3 w-3 text-black" />}
+                {choices[cat.key as keyof typeof choices] && <Check className="h-3 w-3 text-white" />}
               </div>
               <input
                 type="checkbox"
@@ -107,7 +107,7 @@ export function CookieConsent() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <button onClick={acceptAll} className="flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-sm font-bold text-black hover:bg-brand-600 transition-all">
+          <button onClick={acceptAll} className="flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-all">
             <Check className="h-4 w-4" /> Tüm Çerezlere İzin Ver
           </button>
           <button onClick={acceptSelected} className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/10 transition-colors">

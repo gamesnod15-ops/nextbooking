@@ -50,7 +50,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={variant === 'primary' ? COLORS.black : COLORS.primary} />
+        <ActivityIndicator size="small" color={variant === 'primary' ? COLORS.white : COLORS.primary} />
       ) : (
         <>
           {icon && <>{icon}</>}
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 });
 
 const textStyles = StyleSheet.create({
-  primary: { color: COLORS.black },
+  primary: { color: COLORS.white },
   secondary: { color: COLORS.text },
   outline: { color: COLORS.text },
   ghost: { color: COLORS.text },

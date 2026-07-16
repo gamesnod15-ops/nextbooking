@@ -87,7 +87,7 @@ export default function FaqPage() {
                         <summary className="flex items-start justify-between cursor-pointer list-none gap-2">
                           <span className="text-xs font-semibold text-gray-900 group-open:text-brand-600 leading-snug">{item.q}</span>
                           <div className="h-5 w-5 rounded-full bg-gray-100 group-open:bg-brand-500 flex items-center justify-center shrink-0 mt-0.5 transition-colors">
-                            <svg className="h-2.5 w-2.5 text-gray-500 group-open:text-black transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                            <svg className="h-2.5 w-2.5 text-gray-500 group-open:text-white transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                           </div>
                         </summary>
                         <p className="mt-2 text-xs text-gray-600 leading-relaxed">{item.a}</p>

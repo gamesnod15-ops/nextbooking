@@ -211,7 +211,7 @@ export default function ProfilPage() {
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
             aria-label="Profil fotoğrafını değiştir"
-            className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black shadow hover:bg-brand-600 transition-colors disabled:opacity-60"
+            className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white shadow hover:bg-brand-600 transition-colors disabled:opacity-60"
           >
             {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Camera className="h-3 w-3" />}
           </button>
@@ -300,7 +300,7 @@ export default function ProfilPage() {
 
         <button
           type="submit"
-          className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-black text-sm font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold rounded-lg transition-colors"
         >
           <Save className="h-4 w-4" />
           {saved ? 'Kaydedildi ✓' : 'Değişiklikleri Kaydet'}
@@ -350,7 +350,7 @@ export default function ProfilPage() {
         <button
           type="submit"
           disabled={passwordSaving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-black text-sm font-bold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white text-sm font-bold rounded-lg transition-colors"
         >
           <KeyRound className="h-4 w-4" />
           {passwordSaving ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}

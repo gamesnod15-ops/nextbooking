@@ -20,7 +20,7 @@ export default function DemoPage() {
             <h1 className="text-5xl font-extrabold leading-tight mb-4">NextBooking&apos;i Keşfedin</h1>
             <p className="mx-auto max-w-xl text-lg text-gray-300 mb-8">Canlı bir demo talep edin, ekibimiz size özel bir tur düzenlesin.</p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/register" className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-black hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25">
+              <Link href="/register" className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-white hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25">
                 <Play className="h-4 w-4" /> Hemen Başla
               </Link>
               <Link href="/iletisim" className="flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3.5 text-base font-semibold text-gray-300 hover:bg-white/5 transition-all">

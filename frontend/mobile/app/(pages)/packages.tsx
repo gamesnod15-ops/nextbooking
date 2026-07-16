@@ -54,7 +54,7 @@ export default function PackagesScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Paketler" subtitle={`${list.length} paket`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <SearchBar value={search} onChangeText={setSearch} placeholder="Paket ara…" style={{ margin: SPACE[4] }} />
       <FlatList

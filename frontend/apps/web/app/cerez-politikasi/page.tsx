@@ -36,7 +36,7 @@ export default function CerezPolicyPage() {
                 <div className="mt-4 space-y-6">
                   <div className="rounded-xl border border-gray-200 p-4">
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">1</span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">1</span>
                       Zorunlu (Teknik) Çerezler
                     </h3>
                     <p className="mt-2">Bu çerezler, web sitemizin düzgün çalışması için kesinlikle gereklidir. Oturum yönetimi, güvenlik önlemleri ve site temel işlevlerinin sağlanması amacıyla kullanılır. Bu çerezleri devre dışı bırakmanız durumunda web sitemizin bazı bölümleri düzgün çalışmayabilir.</p>
@@ -45,7 +45,7 @@ export default function CerezPolicyPage() {
 
                   <div className="rounded-xl border border-gray-200 p-4">
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">2</span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">2</span>
                       Analitik ve Performans Çerezleri
                     </h3>
                     <p className="mt-2">Bu çerezler, ziyaretçilerin web sitemizi nasıl kullandığını anlamamıza yardımcı olur. Hangi sayfaların en çok ziyaret edildiği, kullanıcıların sitede ne kadar süre geçirdiği, hangi yönlendirme kanallarının etkili olduğu gibi anonim istatistiksel veriler toplarız.</p>
@@ -54,7 +54,7 @@ export default function CerezPolicyPage() {
 
                   <div className="rounded-xl border border-gray-200 p-4">
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">3</span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">3</span>
                       İşlevsellik ve Tercih Çerezleri
                     </h3>
                     <p className="mt-2">Bu çerezler, web sitemizde yaptığınız tercihleri (dil seçeneği, bölge, bildirim tercihleri gibi) hatırlayarak size kişiselleştirilmiş bir deneyim sunmamızı sağlar. Bu çerezlerin sağladığı bilgiler anonimleştirilebilir.</p>
@@ -62,7 +62,7 @@ export default function CerezPolicyPage() {
 
                   <div className="rounded-xl border border-gray-200 p-4">
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">4</span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">4</span>
                       Pazarlama ve Hedefleme Çerezleri
                     </h3>
                     <p className="mt-2">Bu çerezler, ilgi alanlarınıza uygun reklam ve içerikleri size göstermek için kullanılır. Ziyaret alışkanlıklarınızı takip ederek, sizin için daha anlamlı olacak kampanya ve tanıtımları belirlememize yardımcı olur. Bu çerezler, üçüncü taraf reklam ağları tarafından yerleştirilebilir.</p>

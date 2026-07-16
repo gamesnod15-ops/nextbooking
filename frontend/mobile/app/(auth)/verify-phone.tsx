@@ -136,7 +136,7 @@ export default function VerifyPhoneScreen() {
             activeOpacity={0.8}
           >
             {loading ? (
-              <ActivityIndicator color={COLORS.black} size="small" />
+              <ActivityIndicator color={COLORS.white} size="small" />
             ) : (
               <Text style={styles.verifyBtnText}>Doğrula</Text>
             )}
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACE[4],
   },
   verifyBtnDisabled: { opacity: 0.4 },
-  verifyBtnText: { fontSize: 16, fontWeight: '700', color: COLORS.black },
+  verifyBtnText: { fontSize: 16, fontWeight: '700', color: COLORS.white },
   resendBtn: { alignItems: 'center', padding: SPACE[2] },
   resendText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
   resendDisabled: { color: 'rgba(255,185,0,0.35)' },

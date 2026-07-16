@@ -85,7 +85,7 @@ function CheckoutForm() {
         </div>
         <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Satın Alma Başarılı!</h2>
         <p className="text-gray-500 mb-6">{TYPE_LABELS[type]} - {pkg.label} paketiniz aktif edildi.</p>
-        <Link href="/panel/siparisler" className="rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-black hover:bg-brand-600 transition-colors">
+        <Link href="/panel/siparisler" className="rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-colors">
           Siparişlerime Git
         </Link>
       </div>
@@ -143,7 +143,7 @@ function CheckoutForm() {
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">{error}</p>}
 
           <button type="submit" disabled={loading}
-            className="w-full rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-black hover:bg-brand-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg">
+            className="w-full rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-white hover:bg-brand-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg">
             {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> İşleniyor...</> : `₺${pkg.price.toLocaleString('tr-TR')} Öde`}
           </button>
         </form>

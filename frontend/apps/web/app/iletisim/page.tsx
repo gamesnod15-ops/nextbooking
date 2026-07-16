@@ -68,7 +68,7 @@ export default function IletisimPage() {
               {/* 7/24 Support */}
               <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 p-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500">
-                  <Clock className="h-6 w-6 text-black" />
+                  <Clock className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-1">7/24 Destek</h3>
                 <p className="text-xs text-gray-600 leading-relaxed">
@@ -216,7 +216,7 @@ export default function IletisimPage() {
                       {errors.mesaj && <p className="mt-1 text-xs text-red-500">{errors.mesaj}</p>}
                     </div>
                     <button type="submit"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-black shadow-md hover:bg-brand-600 transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-white shadow-md hover:bg-brand-600 transition-all hover:-translate-y-0.5 hover:shadow-lg">
                       <Send className="h-4 w-4" /> Gönder
                     </button>
                   </form>

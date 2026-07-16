@@ -58,7 +58,7 @@ export default function AdvertisementsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Reklamlar" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
@@ -71,7 +71,7 @@ export default function AdvertisementsScreen() {
         </View>
         <View style={[styles.statCard, { backgroundColor: COLORS.primary }]}>
           <Text style={[styles.statLabel, { color: 'rgba(0,0,0,0.5)' }]}>Tıklamalar</Text>
-          <Text style={[styles.statValue, { color: COLORS.black }]}>{totalClicks.toLocaleString('tr')}</Text>
+          <Text style={[styles.statValue, { color: COLORS.white }]}>{totalClicks.toLocaleString('tr')}</Text>
         </View>
       </View>
       <FlatList

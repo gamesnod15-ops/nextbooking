@@ -100,6 +100,6 @@ const chipStyles = StyleSheet.create({
     fontSize: FONT.sm,
     fontWeight: FONT.semibold,
   },
-  selectedLabel: { color: COLORS.black },
+  selectedLabel: { color: COLORS.white },
   unselectedLabel: { color: COLORS.textSecondary },
 });

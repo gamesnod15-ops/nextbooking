@@ -387,7 +387,7 @@ export default function OdemeYontemleriPage() {
                 <button
                   type="submit"
                   disabled={adding || !addForm.brand}
-                  className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-black text-sm font-semibold rounded-lg transition-colors"
+                  className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
                 >
                   {adding ? 'Ekleniyor...' : 'Ekle'}
                 </button>
@@ -412,7 +412,7 @@ export default function OdemeYontemleriPage() {
               <button
                 onClick={() => handleDelete(deleteId)}
                 disabled={deleting}
-                className="px-5 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-black text-sm font-semibold rounded-lg transition-colors"
+                className="px-5 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
               >
                 {deleting ? 'Siliniyor...' : 'Sil'}
               </button>
@@ -473,7 +473,7 @@ export default function OdemeYontemleriPage() {
                 <button
                   type="submit"
                   disabled={editing}
-                  className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-black text-sm font-semibold rounded-lg transition-colors"
+                  className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
                 >
                   {editing ? 'Kaydediliyor...' : 'Kaydet'}
                 </button>

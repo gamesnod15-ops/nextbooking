@@ -227,7 +227,7 @@ export function FeaturesSection() {
           <div className="mt-12 text-center">
             <Link
               href="/features"
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-black hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-md"
             >
               Tüm Özellikleri Görüntüle <ArrowRight className="h-4 w-4" />
             </Link>
@@ -283,7 +283,7 @@ export function FeaturesSection() {
               <div className="mt-10">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-black shadow hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-brand-600 transition-all hover:-translate-y-0.5"
                 >
                   <CheckCircle className="h-4 w-4" /> Hemen Başla — Ücretsiz
                 </Link>
@@ -463,7 +463,7 @@ export function FeaturesSection() {
             </div>
             <Link
               href="/iletisim"
-              className="shrink-0 flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-black hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-lg"
+              className="shrink-0 flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-lg"
             >
               Bizimle İletişime Geç <ArrowRight className="h-4 w-4" />
             </Link>

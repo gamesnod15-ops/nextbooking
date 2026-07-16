@@ -98,9 +98,9 @@ export default function LoginScreen() {
             <Ionicons
               name={isBusiness ? 'business-outline' : 'person-outline'}
               size={14}
-              color={isBusiness ? COLORS.black : COLORS.white}
+              color={COLORS.white}
             />
-            <Text style={[styles.roleTagText, isBusiness ? { color: COLORS.black } : { color: COLORS.white }]}>
+            <Text style={[styles.roleTagText, { color: COLORS.white }]}>
               {isBusiness ? 'İşletme' : 'Müşteri'}
             </Text>
           </View>
@@ -158,11 +158,11 @@ export default function LoginScreen() {
             activeOpacity={0.85}
           >
             {loading ? (
-              <ActivityIndicator color={COLORS.black} />
+              <ActivityIndicator color={COLORS.white} />
             ) : (
               <>
                 <Text style={styles.loginBtnText}>Giriş Yap</Text>
-                <Ionicons name="arrow-forward" size={18} color={COLORS.black} />
+                <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
               </>
             )}
           </TouchableOpacity>
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   loginBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.black,
+    color: COLORS.white,
   },
   registerRow: {
     flexDirection: 'row',

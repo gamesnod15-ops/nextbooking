@@ -272,7 +272,7 @@ export default function RegisterPage() {
             <p className="text-xs text-gray-400">
               E-postayı görmüyor musunuz? Gereksiz (spam) klasörünü kontrol edin.
             </p>
-            <Link href="/login" className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-brand-600 transition-colors">
+            <Link href="/login" className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
               Giriş Yap <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -376,7 +376,7 @@ export default function RegisterPage() {
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-                <CalendarCheck className="h-4 w-4 text-black" />
+                <CalendarCheck className="h-4 w-4 text-white" />
               </div>
               <span className="text-base font-bold text-gray-900">NextBooking</span>
             </Link>
@@ -439,7 +439,7 @@ export default function RegisterPage() {
           {/* Card: Kişisel Bilgiler */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <h2 className="mb-5 text-base font-bold text-gray-900 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">1</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">1</span>
               Kişisel Bilgiler
             </h2>
 
@@ -492,7 +492,7 @@ export default function RegisterPage() {
           {tab === 'business' && (
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <h2 className="mb-5 text-base font-bold text-gray-900 flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">2</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">2</span>
                 İşletme Bilgileri
               </h2>
 
@@ -540,7 +540,7 @@ export default function RegisterPage() {
           {/* Card: Şifre */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <h2 className="mb-5 text-base font-bold text-gray-900 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">{tab === 'customer' ? '2' : '3'}</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">{tab === 'customer' ? '2' : '3'}</span>
               Şifre Belirleyin
             </h2>
 
@@ -577,7 +577,7 @@ export default function RegisterPage() {
           {/* Card: Güvenlik doğrulaması */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <h2 className="mb-4 text-base font-bold text-gray-900 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-black">{tab === 'customer' ? '3' : '4'}</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">{tab === 'customer' ? '3' : '4'}</span>
               Güvenlik Doğrulaması
             </h2>
             <Field
@@ -614,7 +614,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-black shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             {loading ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> Hesap Oluşturuluyor⬦</>

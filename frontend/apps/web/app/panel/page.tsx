@@ -147,7 +147,7 @@ export default function PanelPage() {
         className="flex items-center gap-4 rounded-2xl bg-black p-5 text-white shadow-md hover:shadow-lg transition-shadow border border-white/10"
       >
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500">
-          <Globe className="h-6 w-6 text-black" />
+          <Globe className="h-6 w-6 text-white" />
         </div>
         <div className="flex-1">
           <p className="font-semibold text-base">İşletme Paneline Git</p>

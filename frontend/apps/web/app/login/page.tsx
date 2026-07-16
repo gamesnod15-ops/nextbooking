@@ -141,7 +141,7 @@ function LoginForm() {
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-                <CalendarCheck className="h-4 w-4 text-black" />
+                <CalendarCheck className="h-4 w-4 text-white" />
               </div>
               <span className="text-base font-bold text-gray-900">NextBooking</span>
             </Link>
@@ -225,7 +225,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-black shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
             >
               {loading ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Giriş Yapılıyor…</>

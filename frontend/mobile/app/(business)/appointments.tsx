@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   chipTextActive: {
-    color: COLORS.black,
+    color: COLORS.white,
   },
   search: { marginHorizontal: SPACE[5], marginVertical: SPACE[3] },
   chips: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[3], gap: SPACE[2], alignItems: 'center' },

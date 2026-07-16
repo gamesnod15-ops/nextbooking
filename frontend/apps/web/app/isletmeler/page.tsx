@@ -191,7 +191,7 @@ export default function BusinessListPage() {
                   onClick={() => { setCategoryId(null); onFilter() }}
                   className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                     categoryId === null
-                      ? 'bg-brand-500 text-black'
+                      ? 'bg-brand-500 text-white'
                       : 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -203,7 +203,7 @@ export default function BusinessListPage() {
                     onClick={() => { setCategoryId(data?.items.find(b => b.categoryName === cat)?.categoryId ?? null); onFilter() }}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                       categoryId === (data?.items.find(b => b.categoryName === cat)?.categoryId ?? -1)
-                        ? 'bg-brand-500 text-black'
+                        ? 'bg-brand-500 text-white'
                         : 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
                     }`}
                   >
@@ -224,7 +224,7 @@ export default function BusinessListPage() {
               <span className="text-gray-600">İşletmenizi öne çıkarın! Aylık ₺299&apos;dan başlayan reklam paketleri.</span>
             </div>
             <Link href="/register"
-              className="shrink-0 rounded-lg bg-brand-500 px-4 py-1.5 text-xs font-bold text-black hover:bg-brand-600 transition-colors">
+              className="shrink-0 rounded-lg bg-brand-500 px-4 py-1.5 text-xs font-bold text-white hover:bg-brand-600 transition-colors">
               Reklam Ver
             </Link>
           </div>
@@ -304,7 +304,7 @@ export default function BusinessListPage() {
                           </div>
                           <Link
                             href={`/isletmeler/${biz.id}`}
-                            className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-4 py-2 text-xs font-bold text-black hover:bg-brand-600 transition-all hover:-translate-y-0.5"
+                            className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-4 py-2 text-xs font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5"
                           >
                             <CalendarCheck className="h-3.5 w-3.5" /> Randevu Al
                           </Link>
@@ -330,7 +330,7 @@ export default function BusinessListPage() {
                       onClick={() => setPage(n)}
                       className={`h-9 w-9 rounded-lg text-sm font-medium transition-colors ${
                         n === page
-                          ? 'bg-brand-500 text-black'
+                          ? 'bg-brand-500 text-white'
                           : 'border border-gray-200 bg-white text-gray-700 hover:border-brand-300'
                       }`}
                     >
@@ -352,14 +352,14 @@ export default function BusinessListPage() {
             <aside className="hidden lg:flex flex-col gap-5">
               <div className="rounded-2xl border-2 border-brand-200 bg-gradient-to-br from-brand-50 to-violet-50 p-6">
                 <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500 text-lg">
-                  <Megaphone className="h-5 w-5 text-black" />
+                  <Megaphone className="h-5 w-5 text-white" />
                 </div>
                 <p className="mt-4 text-sm font-bold text-gray-900">İşletmenizi Platforma Ekleyin</p>
                 <p className="mt-1 text-xs text-gray-600 leading-relaxed">
                   Binlerce müşteriye ulaşın. Ücretsiz listeleme veya öne çıkan paketi seçin.
                 </p>
                 <Link href="/register"
-                  className="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-3 py-2.5 text-xs font-bold text-black hover:bg-brand-600 transition-colors">
+                  className="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-3 py-2.5 text-xs font-bold text-white hover:bg-brand-600 transition-colors">
                   Ücretsiz Ekle <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

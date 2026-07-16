@@ -124,7 +124,7 @@ export default function CustomersScreen() {
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}>
-            <Ionicons name="add" size={22} color={COLORS.black} />
+            <Ionicons name="add" size={22} color={COLORS.white} />
           </TouchableOpacity>
           <NotifButton />
           <MenuButton />

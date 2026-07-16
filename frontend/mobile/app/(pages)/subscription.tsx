@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   planCardCurrent: { borderColor: COLORS.primary, borderWidth: 2 },
   planCardPopular: { backgroundColor: COLORS.primaryLight, borderColor: COLORS.primary, borderWidth: 2 },
   popularBadge: { backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 4, borderRadius: RADIUS.full, alignSelf: 'flex-start' },
-  popularBadgeText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.black },
+  popularBadgeText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
   planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
   planName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
   priceRow: { flexDirection: 'row', alignItems: 'flex-end' },

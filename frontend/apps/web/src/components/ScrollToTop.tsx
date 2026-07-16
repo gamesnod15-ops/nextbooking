@@ -19,7 +19,7 @@ export function ScrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' })
         setTimeout(() => { document.documentElement.style.scrollBehavior = '' }, 100)
       }}
-      className={`fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-brand-500 text-black shadow-lg transition-all duration-300 hover:bg-brand-600 hover:-translate-y-1 ${
+      className={`fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-brand-500 text-white shadow-lg transition-all duration-300 hover:bg-brand-600 hover:-translate-y-1 ${
         visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
       }`}
       aria-label="Yukarı çık"

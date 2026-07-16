@@ -215,7 +215,7 @@ export default function BusinessDetailPage() {
               {biz.logoUrl ? (
                 <img src={biz.logoUrl} alt={biz.name} className="h-20 w-20 shrink-0 rounded-2xl object-cover ring-2 ring-white/20" />
               ) : (
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-brand-500 text-xl font-bold text-black">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-brand-500 text-xl font-bold text-white">
                   {initials}
                 </div>
               )}
@@ -253,7 +253,7 @@ export default function BusinessDetailPage() {
                 </button>
                 <button
                   onClick={() => setRandevuOpen(true)}
-                  className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-bold text-black shadow-lg hover:bg-brand-600 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                  className="rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-brand-600 hover:-translate-y-0.5 transition-all flex items-center gap-2"
                 >
                   <CalendarCheck className="h-4 w-4" /> Randevu Al
                 </button>
@@ -306,7 +306,7 @@ export default function BusinessDetailPage() {
                         {e.avatarUrl ? (
                           <img src={e.avatarUrl} alt={e.name} className="h-10 w-10 rounded-full object-cover" />
                         ) : (
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-emerald-500 text-sm font-bold text-black">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-emerald-500 text-sm font-bold text-white">
                             {e.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
                         )}
@@ -429,7 +429,7 @@ export default function BusinessDetailPage() {
                           setSubmitting(false)
                         }
                       }}
-                      className="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                       {submitting ? 'Gönderiliyor...' : 'Gönder'}
                     </button>
                   </div>
@@ -454,7 +454,7 @@ export default function BusinessDetailPage() {
                 )}
                 <button
                   onClick={() => setRandevuOpen(true)}
-                  className="w-full rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                  className="w-full rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
                 >
                   <CalendarCheck className="h-4 w-4" /> Randevu Al
                 </button>

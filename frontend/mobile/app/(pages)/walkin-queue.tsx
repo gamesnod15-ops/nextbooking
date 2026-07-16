@@ -44,7 +44,7 @@ export default function WalkinQueueScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Sıra Takibi" subtitle={`${queue.filter(e => e.status !== 'completed').length} aktif müşteri`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',serviceName:'',employeeName:''}); setModal({open:true}); }}><Ionicons name="person-add" size={18} color={COLORS.black} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',serviceName:'',employeeName:''}); setModal({open:true}); }}><Ionicons name="person-add" size={18} color={COLORS.white} /></TouchableOpacity>}
       />
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: SPACE[4], gap: SPACE[3] }}>

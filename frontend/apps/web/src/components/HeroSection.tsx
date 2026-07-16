@@ -68,7 +68,7 @@ export function HeroSection() {
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/register"
-            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-black shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5 hover:shadow-xl"
+            className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-brand-600 transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             14 Gün Ücretsiz Dene <ArrowRight className="h-4 w-4" />
           </Link>
@@ -97,7 +97,7 @@ export function HeroSection() {
               {['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'].map((day, i) => (
                 <div
                   key={day}
-                  className={`rounded-lg px-3 py-2 text-center text-xs font-medium border ${i === 2 ? 'bg-brand-500 text-black border-brand-500' : 'bg-white/10 text-gray-300 border-white/10'}`}
+                  className={`rounded-lg px-3 py-2 text-center text-xs font-medium border ${i === 2 ? 'bg-brand-500 text-white border-brand-500' : 'bg-white/10 text-gray-300 border-white/10'}`}
                 >
                   {day}
                 </div>

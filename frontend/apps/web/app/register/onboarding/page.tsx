@@ -148,7 +148,7 @@ export default function OnboardingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-              <CalendarCheck className="h-4 w-4 text-black" />
+              <CalendarCheck className="h-4 w-4 text-white" />
             </div>
             <span className="text-base font-bold text-gray-900">NextBooking</span>
           </Link>
@@ -269,7 +269,7 @@ function StepFooter({ onBack, onNext, nextLabel = 'Devam Et', skippable, busy }:
           </button>
         )}
         <button type="button" onClick={onNext} disabled={busy}
-          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5">
+          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5">
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {nextLabel} <ChevronRight className="h-4 w-4" />
         </button>
@@ -341,7 +341,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₺</span>
           </div>
           <button type="button" onClick={add} disabled={loading || !form.name.trim()} aria-label="Hizmet ekle"
-            className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
+            className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           </button>
         </div>
@@ -457,7 +457,7 @@ function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         </div>
 
         <button type="button" onClick={add} disabled={loading || !form.name.trim() || form.serviceIds.length === 0}
-          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
+          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Paketi Ekle
         </button>
@@ -552,7 +552,7 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
         )}
 
         <button type="button" onClick={add} disabled={loading || !form.name.trim()}
-          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
+          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Çalışanı Ekle
         </button>
@@ -676,7 +676,7 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           <PhoneInput value={form.phone} onChange={v => setForm(f => ({ ...f, phone: v }))} placeholder="555 000 00 00" />
         </div>
         <button type="button" onClick={add} disabled={loading || !form.name.trim()}
-          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
+          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Şubeyi Ekle
         </button>
@@ -801,7 +801,7 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
             <ChevronLeft className="h-4 w-4" /> Plan Seçimine Dön
           </button>
           <button type="button" onClick={pay} disabled={paying}
-            className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-60 transition-all hover:-translate-y-0.5">
+            className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-60 transition-all hover:-translate-y-0.5">
             {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
             Ödemeyi Tamamla
           </button>
@@ -823,7 +823,7 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
                 {plan.badgeLabel}
               </span>
               {selected === plan.id && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-black">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-white">
                   <Check className="h-3 w-3" />
                 </span>
               )}
@@ -847,7 +847,7 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
           <ChevronLeft className="h-4 w-4" /> Geri
         </button>
         <button type="button" onClick={proceed}
-          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-brand-600 transition-all hover:-translate-y-0.5">
+          className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5">
           {selected === 'custom' ? 'Satış Ekibine İlet' : 'Ödemeye Geç'} <ChevronRight className="h-4 w-4" />
         </button>
       </div>

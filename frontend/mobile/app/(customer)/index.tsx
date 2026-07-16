@@ -131,7 +131,7 @@ export default function CustomerHomeScreen() {
                 <Text style={styles.priceFrom}>₺{b.priceFrom}'den</Text>
                 <TouchableOpacity style={styles.bookBtn}>
                   <Text style={styles.bookBtnText}>{b.nextSlot}</Text>
-                  <Ionicons name="chevron-forward" size={14} color={COLORS.black} />
+                  <Ionicons name="chevron-forward" size={14} color={COLORS.white} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   catChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.surface },
   catChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   catText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  catTextActive: { color: COLORS.black },
+  catTextActive: { color: COLORS.white },
   sectionTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text, paddingHorizontal: SPACE[5], marginBottom: SPACE[3] },
   featuredCard: { width: 200, height: 130, borderRadius: RADIUS.xl, backgroundColor: COLORS.surfaceAlt, justifyContent: 'space-between', padding: SPACE[4], overflow: 'hidden', ...SHADOW.sm },
   featuredOverlay: { ...StyleSheet.absoluteFill, borderRadius: RADIUS.xl },
@@ -178,6 +178,6 @@ const styles = StyleSheet.create({
   listFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
   priceFrom: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   bookBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 6, borderRadius: RADIUS.full, ...SHADOW.primary },
-  bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.black },
+  bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
 });
 

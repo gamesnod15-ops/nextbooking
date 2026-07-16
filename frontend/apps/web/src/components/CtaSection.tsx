@@ -4,7 +4,7 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 export function CtaSection() {
   return (
     <section className="relative overflow-hidden bg-black py-24">
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(207,242,30,0.06),transparent_60%)]" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(206,13,30,0.06),transparent_60%)]" />
       {/* Decorative geometric shapes */}
       <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
         <svg className="absolute -top-16 right-1/4 h-72 w-72 opacity-[0.04]" viewBox="0 0 200 200" fill="none">
@@ -36,7 +36,7 @@ export function CtaSection() {
             <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-black hover:bg-brand-600 transition-all shadow-lg hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-white hover:bg-brand-600 transition-all shadow-lg hover:-translate-y-0.5"
               >
                 Hemen Başla <ArrowRight className="h-4 w-4" />
               </Link>
@@ -70,8 +70,8 @@ export function CtaSection() {
               </div>
               {/* Floating badge */}
               <div className="absolute -bottom-3 -right-3 rounded-2xl bg-brand-500 px-4 py-3 shadow-xl">
-                <p className="text-sm font-bold text-black">14 Gün Ücretsiz</p>
-                <p className="text-xs text-black/70">Kredi kartı gerekmez</p>
+                <p className="text-sm font-bold text-white">14 Gün Ücretsiz</p>
+                <p className="text-xs text-white/70">Kredi kartı gerekmez</p>
               </div>
             </div>
           </div>

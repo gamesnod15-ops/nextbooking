@@ -55,7 +55,7 @@ export function Footer() {
                 <Link
                   key={s.name}
                   href={s.href}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-brand-500 hover:text-black hover:border-brand-500 transition-all"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all"
                   aria-label={s.name}
                 >
                   <s.icon className="h-4 w-4" />
@@ -77,6 +77,7 @@ export function Footer() {
               <li><Link href="/features" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Özellikler</Link></li>
               <li><Link href="/pricing" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Fiyatlandırma</Link></li>
               <li><Link href="/demo" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Demo</Link></li>
+              <li><Link href="/isletmeler" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">İşletmeler</Link></li>
               <li><Link href="/reklamveren" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Reklamveren Ol</Link></li>
               <li><Link href="/sponsorlu" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Sponsorlu Öne Çıkan</Link></li>
             </ul>
@@ -95,6 +96,8 @@ export function Footer() {
               <li><Link href="/faq" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Sık Sorulan Sorular</Link></li>
               <li><Link href="/docs" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Dokümantasyon</Link></li>
               <li><Link href="/iletisim" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Destek Merkezi</Link></li>
+              <li><Link href="/login" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Giriş Yap</Link></li>
+              <li><Link href="/register" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Kayıt Ol</Link></li>
             </ul>
           </div>
           <div>
