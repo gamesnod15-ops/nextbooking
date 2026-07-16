@@ -42,6 +42,7 @@ public interface IApplicationDbContext
     DbSet<Deposit> Deposits { get; }
     DbSet<CustomerRecommendation> CustomerRecommendations { get; }
     DbSet<SalesLead> SalesLeads { get; }
+    DbSet<Feedback> Feedbacks { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

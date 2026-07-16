@@ -51,6 +51,7 @@ import { DepositsPage } from '@/pages/deposits/DepositsPage'
 import { SmartSchedulePage } from '@/pages/smart-schedule/SmartSchedulePage'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { GlobalSearch } from '@/components/search/GlobalSearch'
+import { FeedbackWidget } from '@/components/feedback/FeedbackWidget'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { accessToken, role } = useSelector((s: RootState) => s.auth)
@@ -140,6 +141,7 @@ export default function App() {
         <OnboardingGate />
         <GlobalSearch />
         <ToastContainer />
+        <FeedbackWidget />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/oauth/callback" element={<OAuthCallbackPage />} />

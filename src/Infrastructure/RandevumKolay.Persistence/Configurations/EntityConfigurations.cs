@@ -619,3 +619,15 @@ public class SalesLeadConfiguration : IEntityTypeConfiguration<SalesLead>
         builder.HasIndex(l => l.CreatedAt);
     }
 }
+
+public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
+{
+    public void Configure(EntityTypeBuilder<Feedback> builder)
+    {
+        builder.HasKey(f => f.Id);
+        builder.Property(f => f.Category).HasConversion<string>().HasMaxLength(20);
+        builder.Property(f => f.Message).HasMaxLength(2000).IsRequired();
+        builder.HasIndex(f => f.TenantId);
+        builder.HasIndex(f => f.CreatedAt);
+    }
+}

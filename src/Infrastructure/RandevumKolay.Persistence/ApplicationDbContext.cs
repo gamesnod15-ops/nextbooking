@@ -62,6 +62,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Deposit> Deposits => Set<Deposit>();
     public DbSet<CustomerRecommendation> CustomerRecommendations => Set<CustomerRecommendation>();
     public DbSet<SalesLead> SalesLeads => Set<SalesLead>();
+    public DbSet<Feedback> Feedbacks => Set<Feedback>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
