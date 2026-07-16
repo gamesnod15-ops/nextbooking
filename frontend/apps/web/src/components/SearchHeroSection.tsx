@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   Search, MapPin, ArrowRight, Sparkles, X, History, ChevronDown,
   Smartphone, Store, User, Users, Star, CheckCircle, MessageCircle, Bell, Calendar,
-  MessageSquare, Share2, Clock, Shield, PlayCircle, MousePointerClick, Headphones,
+  MessageSquare, Share2, Clock, Shield, PlayCircle, PauseCircle, MousePointerClick, Headphones,
   BarChart3, Plus, CheckCheck,
 } from 'lucide-react'
 import { DemoBookingModal } from './DemoBookingModal'
@@ -1068,6 +1068,7 @@ function SlideDashboard() {
 export function SearchHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [userPaused, setUserPaused] = useState(false)
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const goToSlide = useCallback((index: number) => {
@@ -1087,17 +1088,18 @@ export function SearchHeroSection() {
   }, [])
 
   useEffect(() => {
-    if (!isAutoPlaying) return
+    if (!isAutoPlaying || userPaused) return
     autoPlayRef.current = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % SLIDE_COUNT)
     }, 8000)
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current)
     }
-  }, [isAutoPlaying])
+  }, [isAutoPlaying, userPaused])
 
   const pauseAutoPlay = useCallback(() => setIsAutoPlaying(false), [])
   const resumeAutoPlay = useCallback(() => setIsAutoPlaying(true), [])
+  const toggleUserPaused = useCallback(() => setUserPaused((v) => !v), [])
 
   const slides = [
     { id: 'search', label: 'Hizmet Ara' },
@@ -1154,6 +1156,8 @@ export function SearchHeroSection() {
         <div className="absolute left-5 right-5 top-1/2 hidden -translate-y-1/2 justify-between lg:flex">
           <button
             onClick={prevSlide}
+            onFocus={pauseAutoPlay}
+            onBlur={resumeAutoPlay}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white/60 backdrop-blur-sm hover:bg-white/10 hover:text-white transition-all"
             aria-label="Önceki slayt"
           >
@@ -1161,6 +1165,8 @@ export function SearchHeroSection() {
           </button>
           <button
             onClick={nextSlide}
+            onFocus={pauseAutoPlay}
+            onBlur={resumeAutoPlay}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white/60 backdrop-blur-sm hover:bg-white/10 hover:text-white transition-all"
             aria-label="Sonraki slayt"
           >
@@ -1174,6 +1180,8 @@ export function SearchHeroSection() {
             <button
               key={slide.id}
               onClick={() => goToSlide(i)}
+              onFocus={pauseAutoPlay}
+              onBlur={resumeAutoPlay}
               aria-label={`${slide.label} slaytına git`}
               aria-current={currentSlide === i}
               className={`group relative flex items-center gap-2 transition-all ${
@@ -1189,6 +1197,14 @@ export function SearchHeroSection() {
               />
             </button>
           ))}
+          <button
+            onClick={toggleUserPaused}
+            aria-pressed={userPaused}
+            aria-label={userPaused ? 'Slayt gösterisini oynat' : 'Slayt gösterisini duraklat'}
+            className="ml-1 flex h-6 w-6 items-center justify-center text-white/40 hover:text-white transition-colors"
+          >
+            {userPaused ? <PlayCircle className="h-4 w-4" /> : <PauseCircle className="h-4 w-4" />}
+          </button>
         </div>
 
         {/* Slide Labels (mobile) */}
@@ -1198,7 +1214,7 @@ export function SearchHeroSection() {
               key={slide.id}
               onClick={() => goToSlide(i)}
               className={`text-[11px] font-medium transition-all ${
-                currentSlide === i ? 'text-brand-500' : 'text-gray-600'
+                currentSlide === i ? 'text-brand-500' : 'text-gray-400'
               }`}
             >
               {slide.label}

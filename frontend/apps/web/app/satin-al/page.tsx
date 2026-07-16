@@ -104,9 +104,12 @@ function CheckoutForm() {
       <div className="grid gap-6 md:grid-cols-[1fr_320px]">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="rounded-2xl border border-gray-100 bg-white p-6">
-            <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
               <CreditCard className="h-4 w-4 text-brand-500" /> Kart Bilgileri
             </h2>
+            <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              Bu bölüm test aşamasındadır. Gerçek kart bilgisi girmenize gerek yok — herhangi bir kart numarası, isim ve güvenlik kodu (CVC) kullanabilirsiniz.
+            </p>
             <div className="space-y-4">
               <div>
                 <label htmlFor="satinal-cardname" className="mb-1 block text-xs font-medium text-gray-600">Kart Üzerindeki İsim</label>

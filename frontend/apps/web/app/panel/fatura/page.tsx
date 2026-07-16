@@ -347,6 +347,9 @@ export default function FaturaPage() {
             <h2 className="text-lg font-bold text-gray-900">
               {editingId ? 'Adresi Düzenle' : 'Yeni Fatura Adresi'}
             </h2>
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              Bu bölüm test aşamasındadır. Gerçek fatura bilgilerinizi girmenize gerek yok — dilediğiniz bilgileri kullanabilirsiniz.
+            </p>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

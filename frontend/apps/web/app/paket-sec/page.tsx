@@ -80,7 +80,7 @@ const plans = [
     badgeClass: 'bg-blue-100 text-blue-700',
     iconBg: 'bg-blue-100',
     iconColor: 'text-blue-600',
-    btnClass: 'bg-blue-600 hover:bg-blue-700 text-black',
+    btnClass: 'bg-blue-600 hover:bg-blue-700 text-white',
   },
   {
     id: 'custom',
@@ -167,7 +167,7 @@ function PaketSecContent() {
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black text-xs font-bold">2</span>
             <span className="font-semibold text-gray-800">Paket</span>
             <span className="text-gray-300">›</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-400 text-xs font-bold">3</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs font-bold">3</span>
             <span className="text-gray-400">Ödeme</span>
           </div>
         </div>

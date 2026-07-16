@@ -504,7 +504,7 @@ export default function BusinessDetailPage() {
                     </MapContainer>
                   </div>
                 ) : (
-                  <div className="rounded-xl bg-gray-100 h-48 flex items-center justify-center text-gray-400 text-xs">
+                  <div className="rounded-xl bg-gray-100 h-48 flex items-center justify-center text-gray-600 text-xs">
                     <MapPin className="h-5 w-5 mr-1" /> Konum belirtilmemiş
                   </div>
                 )}

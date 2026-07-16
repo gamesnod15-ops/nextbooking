@@ -118,7 +118,7 @@ export default function SifreSifirlaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-sm font-bold text-black hover:bg-brand-600 transition-colors disabled:opacity-50"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 Şifreyi Sıfırla
@@ -157,7 +157,7 @@ export default function SifreSifirlaPage() {
             <div className="mt-6">
               <Link
                 href="/sifre-unuttum"
-                className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-brand-600 transition-colors"
               >
                 Şifre Sıfırla
               </Link>
@@ -175,7 +175,7 @@ export default function SifreSifirlaPage() {
             <div className="mt-6">
               <Link
                 href="/sifre-unuttum"
-                className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-brand-600 transition-colors"
               >
                 Tekrar Dene
               </Link>

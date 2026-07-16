@@ -774,6 +774,9 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            Bu bölüm test aşamasındadır. Gerçek kart bilgisi girmenize gerek yok — herhangi bir kart numarası, isim ve güvenlik kodu (CVV) kullanabilirsiniz.
+          </p>
           <input className={inputCls} placeholder="Kart üzerindeki isim" value={payForm.cardHolder}
             onChange={e => setPayForm(f => ({ ...f, cardHolder: e.target.value }))} />
           <input className={inputCls} placeholder="Kart numarası" inputMode="numeric" value={payForm.cardNumber}

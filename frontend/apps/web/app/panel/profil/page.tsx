@@ -350,7 +350,7 @@ export default function ProfilPage() {
         <button
           type="submit"
           disabled={passwordSaving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gray-800 hover:bg-gray-900 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-black text-sm font-bold rounded-lg transition-colors"
         >
           <KeyRound className="h-4 w-4" />
           {passwordSaving ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}

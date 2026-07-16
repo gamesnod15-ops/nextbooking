@@ -240,7 +240,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                 const s = i + 1
                 return (
                   <div key={s} className="flex items-center gap-2">
-                    <div className={'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ' + (step >= s ? 'bg-brand-500 text-black' : 'bg-gray-100 text-gray-400')}>
+                    <div className={'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ' + (step >= s ? 'bg-brand-500 text-black' : 'bg-gray-100 text-gray-600')}>
                       {s}
                     </div>
                     <span className={'text-xs font-medium ' + (step >= s ? 'text-brand-600' : 'text-gray-400')}>

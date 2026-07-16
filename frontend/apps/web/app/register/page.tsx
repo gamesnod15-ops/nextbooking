@@ -319,7 +319,7 @@ export default function RegisterPage() {
           <div>
             <h1 className="text-4xl font-extrabold leading-tight text-white">
               İşletmenizi<br />
-              <span className="text-brand-500">dijştirmenin</span><br />
+              <span className="text-brand-500">dijitalleştirmenin</span><br />
               en kolay yolu.
             </h1>
             <p className="mt-4 text-base text-gray-400 leading-relaxed max-w-sm">
@@ -408,20 +408,22 @@ export default function RegisterPage() {
           </div>
 
           {/* Tab switcher */}
-          <div className="mb-6 flex rounded-xl bg-gray-100 p-1">
+          <div className="mb-6 flex gap-2 rounded-xl bg-gray-100 p-1">
             <button
               type="button"
               onClick={() => { setTab('customer'); setForm(INITIAL); setErrors({}) }}
-              className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${tab === 'customer' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 rounded-lg px-3 py-2.5 text-center transition-colors ${tab === 'customer' ? 'bg-white shadow-sm' : 'hover:bg-white/60'}`}
             >
-              Müşteri
+              <span className={`block text-sm font-semibold ${tab === 'customer' ? 'text-gray-900' : 'text-gray-500'}`}>Müşteri</span>
+              <span className={`block text-[11px] mt-0.5 ${tab === 'customer' ? 'text-gray-500' : 'text-gray-400'}`}>Randevu almak istiyorum</span>
             </button>
             <button
               type="button"
               onClick={() => { setTab('business'); setForm(INITIAL); setErrors({}) }}
-              className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${tab === 'business' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 rounded-lg px-3 py-2.5 text-center transition-colors ${tab === 'business' ? 'bg-white shadow-sm' : 'hover:bg-white/60'}`}
             >
-              İşletme
+              <span className={`block text-sm font-semibold ${tab === 'business' ? 'text-gray-900' : 'text-gray-500'}`}>İşletme</span>
+              <span className={`block text-[11px] mt-0.5 ${tab === 'business' ? 'text-gray-500' : 'text-gray-400'}`}>İşletme sahibiyim, randevu kabul edeceğim</span>
             </button>
           </div>
 

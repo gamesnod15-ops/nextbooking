@@ -263,6 +263,9 @@ export default function OdemeYontemleriPage() {
               <X className="h-5 w-5" />
             </button>
             <h2 className="text-lg font-bold text-gray-900">Yeni Kart Ekle</h2>
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              Bu bölüm test aşamasındadır. Gerçek kart bilgisi girmenize gerek yok — herhangi bir kart numarası, isim ve güvenlik kodu (CVV) kullanabilirsiniz.
+            </p>
 
             {/* Kart Görseli */}
             <div

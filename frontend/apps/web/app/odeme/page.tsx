@@ -375,9 +375,12 @@ function OdemeInner() {
             {/* Billing info section */}
             {mode === 'form' ? (
               <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-gray-900">
+                <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
                   <MapPin className="h-4 w-4 text-brand-500" /> Fatura Adresi
                 </h2>
+                <p className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                  Bu bölüm test aşamasındadır. Gerçek fatura bilgilerinizi girmenize gerek yok — dilediğiniz bilgileri kullanabilirsiniz.
+                </p>
                 <form id="billing-form" onSubmit={handleBillingSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
@@ -496,9 +499,12 @@ function OdemeInner() {
 
                 {/* Payment method */}
                 <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-gray-900">
+                  <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
                     <CreditCard className="h-4 w-4 text-brand-500" /> Ödeme Yöntemi
                   </h2>
+                  <p className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                    Bu bölüm test aşamasındadır. Gerçek kart bilgisi girmenize gerek yok — herhangi bir kart numarası, isim ve güvenlik kodu (CVV) kullanabilirsiniz.
+                  </p>
 
                   {/* Saved cards */}
                   {savedCards.length > 0 && !showNewCardForm && (
@@ -619,7 +625,7 @@ function OdemeInner() {
                     )}
 
                     <button type="submit" disabled={paying}
-                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-4 text-base font-bold text-black shadow-lg hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl">
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-4 text-base font-bold text-black shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl">
                       <Lock className="h-4 w-4" />
                       {paying ? 'İşleniyor…' : plan.id === 'custom' ? 'Ödeme Yap' : `\u20BA${getGrandTotal().toLocaleString('tr-TR')} Öde`}
                     </button>
