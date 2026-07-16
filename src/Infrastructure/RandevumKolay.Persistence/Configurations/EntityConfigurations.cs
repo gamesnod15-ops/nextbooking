@@ -602,3 +602,20 @@ public class FormSubmissionConfiguration : IEntityTypeConfiguration<FormSubmissi
         builder.HasIndex(s => s.TenantId);
     }
 }
+
+public class SalesLeadConfiguration : IEntityTypeConfiguration<SalesLead>
+{
+    public void Configure(EntityTypeBuilder<SalesLead> builder)
+    {
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.CompanyName).HasMaxLength(200).IsRequired();
+        builder.Property(l => l.ContactName).HasMaxLength(200).IsRequired();
+        builder.Property(l => l.Phone).HasMaxLength(20).IsRequired();
+        builder.Property(l => l.Email).HasMaxLength(200).IsRequired();
+        builder.Property(l => l.Message).HasMaxLength(2000);
+        builder.Property(l => l.PlanRequested).HasMaxLength(50);
+        builder.Property(l => l.Status).HasConversion<string>().HasMaxLength(20);
+        builder.HasIndex(l => l.Status);
+        builder.HasIndex(l => l.CreatedAt);
+    }
+}

@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { CalendarCheck, Check, Zap, Star, Building2, ArrowRight, Sparkles } from 'lucide-react'
+import { CalendarCheck, Check, Zap, Star, Building2, ArrowRight, Sparkles, X, Send, CheckCircle, Loader2 } from 'lucide-react'
+import { api, type ApiError } from '@/lib/api'
 
 const plans = [
   {
@@ -113,6 +114,7 @@ function PaketSecContent() {
   const searchParams = useSearchParams()
   const [selected, setSelected] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [leadModalOpen, setLeadModalOpen] = useState(false)
 
   useEffect(() => {
     const planFromUrl = searchParams.get('plan')
@@ -130,6 +132,14 @@ function PaketSecContent() {
 
   function handleContinue() {
     if (!selected) return
+
+    // The Kurumsal (custom) plan has no fixed price — there's nothing to
+    // charge a card for. Collect the lead instead of routing to checkout.
+    if (selected === 'custom') {
+      setLeadModalOpen(true)
+      return
+    }
+
     setLoading(true)
     // Store selection and navigate to payment
     if (typeof window !== 'undefined') {
@@ -184,7 +194,7 @@ function PaketSecContent() {
               <button
                 key={plan.id}
                 type="button"
-                onClick={() => setSelected(plan.id)}
+                onClick={() => plan.id === 'custom' ? setLeadModalOpen(true) : setSelected(plan.id)}
                 className={[
                   'relative flex flex-col rounded-2xl border-2 text-left transition-all focus:outline-none',
                   isPopular
@@ -297,6 +307,153 @@ function PaketSecContent() {
           ))}
         </div>
       </main>
+
+      {leadModalOpen && <SalesLeadModal onClose={() => setLeadModalOpen(false)} />}
+    </div>
+  )
+}
+
+// ─── Sales lead modal (Kurumsal / custom plan) ───────────────────────────────
+
+function SalesLeadModal({ onClose }: { onClose: () => void }) {
+  const [form, setForm] = useState({ companyName: '', contactName: '', phone: '', email: '', branchCount: '', message: '' })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [generalError, setGeneralError] = useState('')
+
+  function set(field: keyof typeof form) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value }))
+      if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+    }
+  }
+
+  function validate(): boolean {
+    const errs: Record<string, string> = {}
+    if (!form.companyName.trim()) errs.companyName = 'İşletme adı gereklidir.'
+    if (!form.contactName.trim()) errs.contactName = 'Yetkili adı gereklidir.'
+    if (!form.phone.trim()) errs.phone = 'Telefon gereklidir.'
+    if (!form.email.trim()) errs.email = 'E-posta gereklidir.'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Geçerli bir e-posta girin.'
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setGeneralError('')
+    if (!validate()) return
+
+    setSubmitting(true)
+    try {
+      await api.post('/api/v1/sales-leads', {
+        companyName: form.companyName.trim(),
+        contactName: form.contactName.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim(),
+        branchCount: form.branchCount ? parseInt(form.branchCount, 10) : null,
+        message: form.message.trim() || null,
+      })
+      setSent(true)
+    } catch (err) {
+      const apiErr = err as ApiError
+      setGeneralError(apiErr.message || 'Talebiniz gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const inputCls = (err?: string) => [
+    'w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition-colors',
+    err
+      ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20'
+      : 'border-gray-200 bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20',
+  ].join(' ')
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        {sent ? (
+          <div className="flex flex-col items-center gap-4 p-10 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+              <CheckCircle className="h-8 w-8 text-emerald-500" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900">Talebiniz Alındı!</h3>
+            <p className="max-w-sm text-sm text-gray-600">
+              Satış ekibimiz talebinizi inceleyip en kısa sürede <strong>{form.phone}</strong> numarasından
+              veya <strong>{form.email}</strong> adresinden sizinle iletişime geçecek.
+            </p>
+            <button onClick={onClose} className="mt-2 text-sm font-medium text-brand-600 hover:underline">
+              Kapat
+            </button>
+          </div>
+        ) : (
+          <div className="p-8">
+            <div className="mb-1 flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-brand-500" />
+              <h2 className="text-xl font-bold text-gray-900">Kurumsal Plan — Satış Ekibiyle Görüş</h2>
+            </div>
+            <p className="mb-6 text-sm text-gray-500">
+              İhtiyaçlarınızı bize iletin, size özel fiyat teklifiyle en kısa sürede dönelim.
+            </p>
+
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700">İşletme Adı *</label>
+                <input value={form.companyName} onChange={set('companyName')} placeholder="Örn. Elit Güzellik Merkezi" className={inputCls(errors.companyName)} />
+                {errors.companyName && <p className="mt-1 text-xs text-red-500">{errors.companyName}</p>}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Yetkili Ad Soyad *</label>
+                  <input value={form.contactName} onChange={set('contactName')} placeholder="Ahmet Yılmaz" className={inputCls(errors.contactName)} />
+                  {errors.contactName && <p className="mt-1 text-xs text-red-500">{errors.contactName}</p>}
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Şube Sayısı</label>
+                  <input value={form.branchCount} onChange={set('branchCount')} type="number" min={1} placeholder="Örn. 5" className={inputCls()} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefon *</label>
+                  <input value={form.phone} onChange={set('phone')} placeholder="0555 000 00 00" className={inputCls(errors.phone)} />
+                  {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta *</label>
+                  <input value={form.email} onChange={set('email')} type="email" placeholder="ornek@email.com" className={inputCls(errors.email)} />
+                  {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700">İhtiyaçlarınız (isteğe bağlı)</label>
+                <textarea value={form.message} onChange={set('message')} rows={3} placeholder="Kaç personel, hangi entegrasyonlar, özel akışlar…" className={`${inputCls()} resize-none`} />
+              </div>
+
+              {generalError && <p className="text-sm text-red-500">{generalError}</p>}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-black shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {submitting ? 'Gönderiliyor…' : 'Talebi Gönder'}
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
