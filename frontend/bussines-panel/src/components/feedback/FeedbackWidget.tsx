@@ -49,9 +49,13 @@ export function FeedbackWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Geri bildirim gönder"
-        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-800 hover:-translate-y-0.5 transition-all"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-2xl bg-gray-900 pl-3.5 pr-4 py-3 text-white shadow-lg hover:bg-gray-800 hover:-translate-y-0.5 transition-all"
       >
-        <MessageSquareHeart className="h-5 w-5" />
+        <MessageSquareHeart className="h-5 w-5 shrink-0" />
+        <span className="text-left leading-tight">
+          <span className="block text-xs font-semibold">Bize Geri Bildirimde</span>
+          <span className="block text-xs font-semibold">Bulunun</span>
+        </span>
       </button>
 
       {open && (
@@ -68,7 +72,7 @@ export function FeedbackWidget() {
             <div className="p-6">
               <h2 className="text-lg font-bold text-gray-900">Geri Bildirim Gönder</h2>
               <p className="mt-1 text-sm text-gray-500">
-                Uygulamayı kullanırken neyi rahat kullandınız, ne anlaşılmadı ya da ne olsa iyi olur?
+                Uygulamayla ilgili deneyiminizi bizimle paylaşın; görüşleriniz NextBooking'i sizin için daha iyi hale getirmemize yardımcı olur.
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-2">

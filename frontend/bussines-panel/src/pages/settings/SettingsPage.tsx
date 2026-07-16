@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '@/store'
 import { updateProfile, logout } from '@/store/slices/authSlice'
 import { updateBusiness } from '@/store/slices/businessSlice'
+import { connectIntegration, disconnectIntegration } from '@/store/slices/integrationsSlice'
+import { INTEGRATIONS } from '@/config/integrations'
 import { PLAN_CONFIGS, getPlanConfig, normalizePlanId, planAllows, splitModulesByPlan } from '@/config/plans'
 import { useBusiness, useUpdateBusiness } from '@/hooks/useBusiness'
 import type { Business } from '@/types'
@@ -2211,14 +2213,25 @@ function SecuritySettings() {
   )
 }
 
+function RequirementsChecklist({ requirements }: { requirements: string[] }) {
+  return (
+    <div className="rounded-lg border bg-background px-4 py-3">
+      <p className="mb-2 text-xs font-semibold text-foreground">Başlamadan önce gerekenler:</p>
+      <ul className="space-y-1.5">
+        {requirements.map((r) => (
+          <li key={r} className="flex items-start gap-2 text-xs text-muted-foreground">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 mt-0.5 text-muted-foreground/60" />
+            {r}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function IntegrationsSettings() {
-  const [connected, setConnected] = useState<Record<string, boolean>>({
-    'google-cal': false,
-    'whatsapp': false,
-    'iyzico': true,
-    'zoom': false,
-    'slack': false,
-  })
+  const dispatch = useAppDispatch()
+  const connected = useAppSelector((s) => s.integrations.connected)
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const [whatsappPhone, setWhatsappPhone] = useState('')
   const [whatsappToken, setWhatsappToken] = useState('')
@@ -2242,23 +2255,17 @@ function IntegrationsSettings() {
   }
 
   function connect(key: string, msg?: string) {
-    setConnected(prev => ({ ...prev, [key]: true }))
+    dispatch(connectIntegration(key))
     setExpandedKey(null)
     showToast(msg ?? 'Bağlantı kuruldu')
   }
 
   function disconnect(key: string) {
-    setConnected(prev => ({ ...prev, [key]: false }))
+    dispatch(disconnectIntegration(key))
     showToast('Bağlantı kesildi')
   }
 
-  const integrations = [
-    { key: 'google-cal', name: 'Google Takvim', desc: 'Randevularınızı Google Takvim ile otomatik senkronize edin', type: 'oauth', logo: '📅', docsUrl: 'https://developers.google.com/calendar' },
-    { key: 'whatsapp', name: 'WhatsApp Business', desc: 'WhatsApp Cloud API ile randevu hatırlatması ve bildirim gönderin', type: 'api-key', logo: '💬', docsUrl: 'https://developers.facebook.com/docs/whatsapp/cloud-api' },
-    { key: 'iyzico', name: 'Iyzico', desc: 'Online ödeme alın — kredi kartı, 3D Secure ve taksit desteği', type: 'api-key', logo: '💳', docsUrl: 'https://dev.iyzipay.com' },
-    { key: 'zoom', name: 'Zoom', desc: 'Online hizmetler için otomatik Zoom toplantısı oluşturun', type: 'oauth', logo: '📹', docsUrl: 'https://marketplace.zoom.us/docs/api-reference' },
-    { key: 'slack', name: 'Slack', desc: 'Yeni randevu ve önemli olayları Slack kanalınıza bildirin', type: 'webhook', logo: '💼', docsUrl: 'https://api.slack.com/messaging/webhooks' },
-  ]
+  const integrations = INTEGRATIONS
 
   function renderConfig(key: string) {
     if (key === 'google-cal') return (
@@ -2267,6 +2274,7 @@ function IntegrationsSettings() {
           <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
           <p className="text-xs text-blue-800">Google Takvim OAuth 2.0 yetkilendirmesi gerektirir. Yalnızca takvim okuma/yazma izni istenir; diğer Google hizmetlerine erişilmez.</p>
         </div>
+        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'google-cal')!.requirements} />
         <div>
           <label className="mb-1.5 block text-xs font-medium">Google Client ID <span className="text-muted-foreground">(kurumsal, opsiyonel)</span></label>
           <input value={googleClientId} onChange={e => setGoogleClientId(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="xxxxxx.apps.googleusercontent.com" />
@@ -2291,9 +2299,10 @@ function IntegrationsSettings() {
           <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
           <p className="text-xs text-amber-800">WhatsApp Cloud API için Meta Business hesabı ve onaylı iş telefonu gereklidir. Meta Developers portalında uygulama oluşturun.</p>
         </div>
+        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'whatsapp')!.requirements} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium">Telefon Numarası ID</label>
+            <label className="mb-1.5 block text-xs font-medium">Telefon Numarası ID <span className="text-muted-foreground">— Meta Developers &gt; Uygulamanız &gt; WhatsApp &gt; API Setup sayfasında</span></label>
             <input value={whatsappPhone} onChange={e => setWhatsappPhone(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="1234567890" />
           </div>
           <div>
@@ -2319,9 +2328,10 @@ function IntegrationsSettings() {
             <a href="https://merchant.iyzipay.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">Iyzico Merchant Portal</a>'dan alabilirsiniz.
           </p>
         </div>
+        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'iyzico')!.requirements} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium">API Anahtarı</label>
+            <label className="mb-1.5 block text-xs font-medium">API Anahtarı <span className="text-muted-foreground">— Ayarlar &gt; API Anahtarları'nda</span></label>
             <input value={iyzicoApiKey} onChange={e => setIyzicoApiKey(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="sandbox-xxxxxxxxxxxxxxxxxxxxxxxx" />
           </div>
           <div>
@@ -2354,6 +2364,7 @@ function IntegrationsSettings() {
           <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
           <p className="text-xs text-blue-800">Zoom Marketplace'de bir OAuth uygulaması oluşturun. Client ID ve Secret bilgilerini girin, ardından yetkilendirin.</p>
         </div>
+        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'zoom')!.requirements} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="mb-1.5 block text-xs font-medium">Client ID</label>
@@ -2379,6 +2390,7 @@ function IntegrationsSettings() {
           <AlertCircle className="h-4 w-4 text-purple-600 mt-0.5 shrink-0" />
           <p className="text-xs text-purple-800">Slack Workspace ayarlarınızda Apps → Incoming Webhooks kısmından kanal bazlı webhook URL alın.</p>
         </div>
+        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'slack')!.requirements} />
         <div>
           <label className="mb-1.5 block text-xs font-medium">Webhook URL</label>
           <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="https://hooks.slack.com/services/..." />
@@ -2410,7 +2422,10 @@ function IntegrationsSettings() {
       <Card>
         <CardHeader>
           <CardTitle>Entegrasyonlar</CardTitle>
-          <CardDescription>Üçüncü taraf servislerle bağlantı kurun. Gerçek bir ortamda OAuth akışları backend üzerinden yürütülür.</CardDescription>
+          <CardDescription>
+            Takvim, ödeme, WhatsApp ve bildirim gibi üçüncü taraf servislerle bağlantı kurun.{' '}
+            {Object.values(connected).filter(Boolean).length} / {integrations.length} entegrasyon bağlı.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">

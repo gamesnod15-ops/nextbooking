@@ -13,6 +13,7 @@ import waitingListReducer from './slices/waitingListSlice'
 import surveysReducer from './slices/surveysSlice'
 import socialMediaReducer from './slices/socialMediaSlice'
 import whatsappBotReducer from './slices/whatsappBotSlice'
+import integrationsReducer from './slices/integrationsSlice'
 import type { AuthState } from './slices/authSlice'
 import type { UiState } from './slices/uiSlice'
 import type { BusinessState } from './slices/businessSlice'
@@ -36,6 +37,7 @@ export const store = configureStore({
     surveys: surveysReducer,
     socialMedia: socialMediaReducer,
     whatsappBot: whatsappBotReducer,
+    integrations: integrationsReducer,
   },
 })
 
@@ -53,6 +55,7 @@ export interface RootState {
   surveys: ReturnType<typeof surveysReducer>
   socialMedia: ReturnType<typeof socialMediaReducer>
   whatsappBot: ReturnType<typeof whatsappBotReducer>
+  integrations: ReturnType<typeof integrationsReducer>
 }
 export type AppDispatch = typeof store.dispatch
 

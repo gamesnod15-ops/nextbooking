@@ -31,11 +31,13 @@ import {
   AlertTriangle,
   FileText,
   MessageCircle,
+  Plug,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useDashboardStats } from '@/hooks/useDashboard'
 import api from '@/lib/api'
 import { useEffect, useState } from 'react'
+import { INTEGRATIONS } from '@/config/integrations'
 
 function useBillingCompleteness() {
   const [hasBilling, setHasBilling] = useState(false)
@@ -137,6 +139,8 @@ export function DashboardPage() {
   const { data: stats, isLoading } = useDashboardStats()
   const { hasBilling, hasCard } = useBillingCompleteness()
   const missingItems = [...(!hasBilling ? ['Fatura adresi'] : []), ...(!hasCard ? ['Ödeme yöntemi'] : [])]
+  const integrationsConnected = useAppSelector((s) => s.integrations.connected)
+  const pendingIntegrations = INTEGRATIONS.filter((i) => !integrationsConnected[i.key])
 
   const greeting = () => {
     const h = new Date().getHours()
@@ -198,6 +202,24 @@ export function DashboardPage() {
           >
             <FileText className="h-3.5 w-3.5" />
             Profili Tamamla
+          </Link>
+        </div>
+      )}
+
+      {/* Missing integrations warning — disappears once every integration is connected */}
+      {pendingIntegrations.length > 0 && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div className="flex-1 text-sm">
+            <span className="font-medium text-amber-900">Bağlı olmayan entegrasyonlar: </span>
+            <span className="text-amber-800">{pendingIntegrations.map((i) => i.name).join(', ')} henüz bağlanmadı.</span>
+          </div>
+          <Link
+            to="/settings/integrations"
+            className="flex shrink-0 items-center gap-1 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100"
+          >
+            <Plug className="h-3.5 w-3.5" />
+            Entegrasyonları Yönet
           </Link>
         </div>
       )}

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, Package, CheckCircle2, Zap } from 'lucide-react'
+import { ArrowLeft, Package, CheckCircle2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import axios from '@/lib/axios'
 
@@ -152,53 +152,6 @@ export default function PaketPage() {
           </ul>
         </div>
       )}
-
-      {/* Plan karşılaştırma */}
-      <div>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">Diğer Planlar</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {PACKAGE_LIST.map((plan) => (
-            <div
-              key={plan.id}
-              className={`rounded-2xl border p-5 space-y-3 ${plan.id === activePackageId ? 'border-brand-300 bg-brand-50/30 ring-2 ring-brand-200' : 'border-gray-100 bg-white'}`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-gray-900">{plan.name}</p>
-                  {plan.badge && <p className="text-[10px] text-gray-400">{plan.badge}</p>}
-                </div>
-                {plan.id === activePackageId && <span className="text-xs bg-brand-500 text-black px-2 py-0.5 rounded-full">Mevcut</span>}
-                {plan.popular && <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full ml-2">En Popüler</span>}
-              </div>
-              <p className="text-2xl font-extrabold text-gray-900">{plan.price}</p>
-              <ul className="space-y-1.5">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              {plan.id !== activePackageId && (
-                <button
-                  className="w-full flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg bg-brand-500 text-black hover:bg-brand-600 transition-colors"
-                  onClick={async () => {
-                    try {
-                      await axios.patch('/api/v1/Business/me/plan', { plan: plan.id, months: 1 });
-                      setActivePackageId(plan.id);
-                    } catch {
-                      alert('Paket değiştirilemedi.');
-                    }
-                  }}
-                >
-                  <Zap className="h-3.5 w-3.5" />
-                  {plan.id === 'custom' ? 'Teklif Al' : 'Ücretsiz Başla'}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }
