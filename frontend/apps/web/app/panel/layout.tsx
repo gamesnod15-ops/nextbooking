@@ -168,7 +168,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
         <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-white border-b border-gray-100">
-          <button onClick={() => setMobileOpen(true)} className="text-gray-600">
+          <button onClick={() => setMobileOpen(true)} aria-label="Menüyü aç" className="text-gray-600">
             <Menu className="h-5 w-5" />
           </button>
           <span className="text-sm font-bold text-gray-900">Hesap Paneli</span>

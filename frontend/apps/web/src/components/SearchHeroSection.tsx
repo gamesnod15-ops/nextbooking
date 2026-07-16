@@ -235,6 +235,7 @@ function SlideSearch() {
                 onFocus={() => { setIsFocused(true); setShowSuggestions(true) }}
                 onBlur={() => setIsFocused(false)}
                 placeholder=""
+                aria-label="Hizmet veya işletme ara"
                 className="flex-1 bg-transparent py-4 text-base text-white placeholder-gray-500 outline-none min-w-0"
               />
               {!query && <RotatingPlaceholder inputRef={inputRef} />}
@@ -242,6 +243,7 @@ function SlideSearch() {
                 <button
                   type="button"
                   onClick={() => { setQuery(''); inputRef.current?.focus() }}
+                  aria-label="Aramayı temizle"
                   className="mr-1 rounded-full p-1 text-gray-500 hover:bg-white/10 hover:text-white transition-colors"
                 >
                   <X className="h-4 w-4" />
@@ -1172,6 +1174,8 @@ export function SearchHeroSection() {
             <button
               key={slide.id}
               onClick={() => goToSlide(i)}
+              aria-label={`${slide.label} slaytına git`}
+              aria-current={currentSlide === i}
               className={`group relative flex items-center gap-2 transition-all ${
                 currentSlide === i ? 'scale-100' : 'scale-90'
               }`}

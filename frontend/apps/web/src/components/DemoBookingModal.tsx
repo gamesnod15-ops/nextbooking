@@ -117,7 +117,7 @@ export function DemoBookingModal({ open, onClose }: DemoBookingModalProps) {
               <p className="text-xs text-gray-500">Ücretsiz demo randevu deneyimi</p>
             </div>
           </div>
-          <button onClick={handleClose} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+          <button onClick={handleClose} aria-label="Kapat" className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>

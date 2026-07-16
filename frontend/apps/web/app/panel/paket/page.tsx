@@ -106,7 +106,7 @@ export default function PaketPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/panel" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link href="/panel" aria-label="Panele dön" className="text-gray-400 hover:text-gray-600 transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-xl font-bold text-gray-900">Paket Bilgisi</h1>

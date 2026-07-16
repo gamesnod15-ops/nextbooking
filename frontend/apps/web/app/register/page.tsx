@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useId } from 'react'
+import { useState, useEffect, useId, cloneElement, isValidElement } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CalendarCheck, CalendarClock, MessageSquareText, ChartNoAxesColumn, Eye, EyeOff, CheckCircle, AlertCircle, ArrowRight, Loader2 } from 'lucide-react'
@@ -466,6 +466,7 @@ export default function RegisterPage() {
                     🇹🇷 +90
                   </span>
                   <input
+                    aria-label="Telefon Numarası"
                     type="tel"
                     value={formatPhoneDisplay(form.phone)}
                     onChange={handlePhoneChange}
@@ -510,6 +511,7 @@ export default function RegisterPage() {
                       nextbooking.com/
                     </span>
                     <input
+                      aria-label="Firma Kullanıcı Adı (Subdomain)"
                       type="text"
                       value={form.subdomain}
                       onChange={set('subdomain')}
@@ -543,10 +545,11 @@ export default function RegisterPage() {
             <div className="space-y-4">
               <Field label="Şifre" error={errors.password}>
                 <div className="relative">
-                  <input type={showPass ? 'text' : 'password'} value={form.password} onChange={set('password')}
+                  <input aria-label="Şifre" type={showPass ? 'text' : 'password'} value={form.password} onChange={set('password')}
                     placeholder="En az 8 karakter" autoComplete="new-password"
                     className={`${inputClass(!!errors.password)} pr-10`} />
                   <button type="button" onClick={() => setShowPass(!showPass)}
+                    aria-label={showPass ? 'Şifreyi gizle' : 'Şifreyi göster'}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -556,10 +559,11 @@ export default function RegisterPage() {
 
               <Field label="Şifre Tekrar" error={errors.confirmPassword}>
                 <div className="relative">
-                  <input type={showConfirm ? 'text' : 'password'} value={form.confirmPassword} onChange={set('confirmPassword')}
+                  <input aria-label="Şifre Tekrar" type={showConfirm ? 'text' : 'password'} value={form.confirmPassword} onChange={set('confirmPassword')}
                     placeholder="Şifrenizi tekrar girin" autoComplete="new-password"
                     className={`${inputClass(!!errors.confirmPassword)} pr-10`} />
                   <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                    aria-label={showConfirm ? 'Şifreyi gizle' : 'Şifreyi göster'}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -647,10 +651,15 @@ function Field({
   hint?: string
   children: React.ReactNode
 }) {
+  const id = useId()
+  // Only clone a direct input/select/textarea — compound fields (e.g. the
+  // phone field's flag-prefix wrapper div) render their own labelled control.
+  const isFormControl = isValidElement(children) && typeof children.type === 'string' && ['input', 'select', 'textarea'].includes(children.type)
+  const control = isFormControl ? cloneElement(children as React.ReactElement<{ id?: string }>, { id }) : children
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium text-gray-700">{label}</label>
-      {children}
+      <label htmlFor={isFormControl ? id : undefined} className="mb-1.5 block text-sm font-medium text-gray-700">{label}</label>
+      {control}
       {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>

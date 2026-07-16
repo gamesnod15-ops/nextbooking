@@ -226,7 +226,7 @@ function DocModal({ id, onClose }: { id: string; onClose: () => void }) {
           <h2 className="text-lg font-bold text-gray-900">
             {Object.values(categories).flatMap(c => c.items).find(i => i.id === id)?.title || id}
           </h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} aria-label="Kapat" className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>

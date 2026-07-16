@@ -381,41 +381,41 @@ function OdemeInner() {
                 <form id="billing-form" onSubmit={handleBillingSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Ad Soyad *</label>
-                      <input value={billing.fullName} onChange={e => setBilling(p => ({ ...p, fullName: e.target.value }))}
+                      <label htmlFor="billing-fullname" className="mb-1.5 block text-sm font-medium text-gray-700">Ad Soyad *</label>
+                      <input id="billing-fullname" value={billing.fullName} onChange={e => setBilling(p => ({ ...p, fullName: e.target.value }))}
                         placeholder="Ahmet Yılmaz" className={inputCls(!!billingErrors.fullName)} />
                       {billingErrors.fullName && <p className="mt-1 text-xs text-red-500">{billingErrors.fullName}</p>}
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Şirket Adı</label>
-                      <input value={billing.company} onChange={e => setBilling(p => ({ ...p, company: e.target.value }))}
+                      <label htmlFor="billing-company" className="mb-1.5 block text-sm font-medium text-gray-700">Şirket Adı</label>
+                      <input id="billing-company" value={billing.company} onChange={e => setBilling(p => ({ ...p, company: e.target.value }))}
                         placeholder="Yılmaz Kuaför Ltd." className={inputCls()} />
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Vergi No</label>
-                      <input value={billing.taxId} onChange={e => setBilling(p => ({ ...p, taxId: e.target.value }))}
+                      <label htmlFor="billing-taxid" className="mb-1.5 block text-sm font-medium text-gray-700">Vergi No</label>
+                      <input id="billing-taxid" value={billing.taxId} onChange={e => setBilling(p => ({ ...p, taxId: e.target.value }))}
                         placeholder="1234567890" className={inputCls()} />
                     </div>
                     <div className="col-span-2">
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Adres *</label>
-                      <input value={billing.address} onChange={e => setBilling(p => ({ ...p, address: e.target.value }))}
+                      <label htmlFor="billing-address" className="mb-1.5 block text-sm font-medium text-gray-700">Adres *</label>
+                      <input id="billing-address" value={billing.address} onChange={e => setBilling(p => ({ ...p, address: e.target.value }))}
                         placeholder="Bağdat Cad. No:1, Kadıköy" className={inputCls(!!billingErrors.address)} />
                       {billingErrors.address && <p className="mt-1 text-xs text-red-500">{billingErrors.address}</p>}
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Şehir *</label>
-                      <input value={billing.city} onChange={e => setBilling(p => ({ ...p, city: e.target.value }))}
+                      <label htmlFor="billing-city" className="mb-1.5 block text-sm font-medium text-gray-700">Şehir *</label>
+                      <input id="billing-city" value={billing.city} onChange={e => setBilling(p => ({ ...p, city: e.target.value }))}
                         placeholder="İstanbul" className={inputCls(!!billingErrors.city)} />
                       {billingErrors.city && <p className="mt-1 text-xs text-red-500">{billingErrors.city}</p>}
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Posta Kodu</label>
-                      <input value={billing.zip} onChange={e => setBilling(p => ({ ...p, zip: e.target.value }))}
+                      <label htmlFor="billing-zip" className="mb-1.5 block text-sm font-medium text-gray-700">Posta Kodu</label>
+                      <input id="billing-zip" value={billing.zip} onChange={e => setBilling(p => ({ ...p, zip: e.target.value }))}
                         placeholder="34000" className={inputCls()} />
                     </div>
                     <div className="col-span-2">
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Ülke</label>
-                      <select value={billing.country} onChange={e => setBilling(p => ({ ...p, country: e.target.value }))}
+                      <label htmlFor="billing-country" className="mb-1.5 block text-sm font-medium text-gray-700">Ülke</label>
+                      <select id="billing-country" value={billing.country} onChange={e => setBilling(p => ({ ...p, country: e.target.value }))}
                         className={inputCls()}>
                         <option value="Türkiye">Türkiye</option>
                         <option value="Almanya">Almanya</option>
@@ -456,34 +456,34 @@ function OdemeInner() {
                     <form onSubmit={handleBillingSubmit} noValidate className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-2">
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Ad Soyad *</label>
-                          <input value={billing.fullName} onChange={e => setBilling(p => ({ ...p, fullName: e.target.value }))}
+                          <label htmlFor="billing-edit-fullname" className="mb-1.5 block text-sm font-medium text-gray-700">Ad Soyad *</label>
+                          <input id="billing-edit-fullname" value={billing.fullName} onChange={e => setBilling(p => ({ ...p, fullName: e.target.value }))}
                             className={inputCls(!!billingErrors.fullName)} />
                           {billingErrors.fullName && <p className="mt-1 text-xs text-red-500">{billingErrors.fullName}</p>}
                         </div>
                         <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Şirket</label>
-                          <input value={billing.company} onChange={e => setBilling(p => ({ ...p, company: e.target.value }))}
+                          <label htmlFor="billing-edit-company" className="mb-1.5 block text-sm font-medium text-gray-700">Şirket</label>
+                          <input id="billing-edit-company" value={billing.company} onChange={e => setBilling(p => ({ ...p, company: e.target.value }))}
                             className={inputCls()} />
                         </div>
                         <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Vergi No</label>
-                          <input value={billing.taxId} onChange={e => setBilling(p => ({ ...p, taxId: e.target.value }))}
+                          <label htmlFor="billing-edit-taxid" className="mb-1.5 block text-sm font-medium text-gray-700">Vergi No</label>
+                          <input id="billing-edit-taxid" value={billing.taxId} onChange={e => setBilling(p => ({ ...p, taxId: e.target.value }))}
                             className={inputCls()} />
                         </div>
                         <div className="col-span-2">
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Adres *</label>
-                          <input value={billing.address} onChange={e => setBilling(p => ({ ...p, address: e.target.value }))}
+                          <label htmlFor="billing-edit-address" className="mb-1.5 block text-sm font-medium text-gray-700">Adres *</label>
+                          <input id="billing-edit-address" value={billing.address} onChange={e => setBilling(p => ({ ...p, address: e.target.value }))}
                             className={inputCls(!!billingErrors.address)} />
                         </div>
                         <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Şehir *</label>
-                          <input value={billing.city} onChange={e => setBilling(p => ({ ...p, city: e.target.value }))}
+                          <label htmlFor="billing-edit-city" className="mb-1.5 block text-sm font-medium text-gray-700">Şehir *</label>
+                          <input id="billing-edit-city" value={billing.city} onChange={e => setBilling(p => ({ ...p, city: e.target.value }))}
                             className={inputCls(!!billingErrors.city)} />
                         </div>
                         <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Posta Kodu</label>
-                          <input value={billing.zip} onChange={e => setBilling(p => ({ ...p, zip: e.target.value }))}
+                          <label htmlFor="billing-edit-zip" className="mb-1.5 block text-sm font-medium text-gray-700">Posta Kodu</label>
+                          <input id="billing-edit-zip" value={billing.zip} onChange={e => setBilling(p => ({ ...p, zip: e.target.value }))}
                             className={inputCls()} />
                         </div>
                       </div>
@@ -573,30 +573,30 @@ function OdemeInner() {
                     {(savedCards.length === 0 || showNewCardForm) && (
                       <>
                         <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Kart Üzerindeki İsim</label>
-                          <input type="text" placeholder="AD SOYAD"
+                          <label htmlFor="pay-cardname" className="mb-1.5 block text-sm font-medium text-gray-700">Kart Üzerindeki İsim</label>
+                          <input id="pay-cardname" type="text" placeholder="AD SOYAD"
                             value={cardName} onChange={e => setCardName(e.target.value.toUpperCase())}
                             className={`${inputCls(!!payErrors.cardName)} tracking-[1px]`} />
                           {payErrors.cardName && <p className="mt-1 text-xs text-red-500">{payErrors.cardName}</p>}
                         </div>
                         <div>
-                          <label className="mb-1.5 block text-sm font-medium text-gray-700">Kart Numarası</label>
-                          <input type="text" inputMode="numeric" placeholder="1234 5678 9012 3456"
+                          <label htmlFor="pay-cardnumber" className="mb-1.5 block text-sm font-medium text-gray-700">Kart Numarası</label>
+                          <input id="pay-cardnumber" type="text" inputMode="numeric" placeholder="1234 5678 9012 3456"
                             value={cardNumber} onChange={e => setCardNumber(formatCardNum(e.target.value))}
                             className={`${inputCls(!!payErrors.cardNumber)} tracking-[2px] font-mono`} />
                           {payErrors.cardNumber && <p className="mt-1 text-xs text-red-500">{payErrors.cardNumber}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="mb-1.5 block text-sm font-medium text-gray-700">Son Kullanma</label>
-                            <input type="text" inputMode="numeric" placeholder="AA/YY"
+                            <label htmlFor="pay-expiry" className="mb-1.5 block text-sm font-medium text-gray-700">Son Kullanma</label>
+                            <input id="pay-expiry" type="text" inputMode="numeric" placeholder="AA/YY"
                               value={expiry} onChange={e => setExpiry(formatExp(e.target.value))}
                               className={`${inputCls(!!payErrors.expiry)} font-mono`} />
                             {payErrors.expiry && <p className="mt-1 text-xs text-red-500">{payErrors.expiry}</p>}
                           </div>
                           <div>
-                            <label className="mb-1.5 block text-sm font-medium text-gray-700">CVV</label>
-                            <input type="password" inputMode="numeric" placeholder="•••"
+                            <label htmlFor="pay-cvv" className="mb-1.5 block text-sm font-medium text-gray-700">CVV</label>
+                            <input id="pay-cvv" type="password" inputMode="numeric" placeholder="•••"
                               value={cvv} onChange={e => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                               className={`${inputCls(!!payErrors.cvv)} font-mono max-w-[100px]`} />
                             {payErrors.cvv && <p className="mt-1 text-xs text-red-500">{payErrors.cvv}</p>}
@@ -609,8 +609,8 @@ function OdemeInner() {
                     {/* Saved card CVV field */}
                     {savedCards.length > 0 && !showNewCardForm && selectedCardId && (
                       <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">CVV</label>
-                        <input type="password" inputMode="numeric" placeholder="•••"
+                        <label htmlFor="pay-cvv-saved" className="mb-1.5 block text-sm font-medium text-gray-700">CVV</label>
+                        <input id="pay-cvv-saved" type="password" inputMode="numeric" placeholder="•••"
                           value={cvv} onChange={e => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                           className={`${inputCls(!!payErrors.cvv)} max-w-[100px] font-mono`} />
                         {payErrors.cvv && <p className="mt-1 text-xs text-red-500">{payErrors.cvv}</p>}

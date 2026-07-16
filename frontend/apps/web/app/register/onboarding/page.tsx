@@ -340,7 +340,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
               onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} onKeyDown={e => e.key === 'Enter' && add()} />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₺</span>
           </div>
-          <button type="button" onClick={add} disabled={loading || !form.name.trim()}
+          <button type="button" onClick={add} disabled={loading || !form.name.trim()} aria-label="Hizmet ekle"
             className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-black hover:bg-brand-600 disabled:opacity-50 transition-colors">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           </button>
@@ -358,7 +358,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
               <span className="font-semibold text-gray-900">{s.name}</span>
               <span className="flex items-center gap-3">
                 <span className="text-gray-500">{s.durationMinutes} dk · ₺{s.price}</span>
-                <button type="button" onClick={() => remove(s.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                <button type="button" onClick={() => remove(s.id)} aria-label={`${s.name} hizmetini sil`} className="text-gray-400 hover:text-red-500 transition-colors">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </span>

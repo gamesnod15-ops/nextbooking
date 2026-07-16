@@ -92,36 +92,37 @@ export default function MusteriProfilPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Ad</label>
+            <label htmlFor="profil-firstname" className="mb-1.5 block text-sm font-medium text-gray-700">Ad</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input value={form.firstName} onChange={e => setForm(p => ({ ...p, firstName: e.target.value }))}
+              <input id="profil-firstname" value={form.firstName} onChange={e => setForm(p => ({ ...p, firstName: e.target.value }))}
                 className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
             </div>
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Soyad</label>
-            <input value={form.lastName} onChange={e => setForm(p => ({ ...p, lastName: e.target.value }))}
+            <label htmlFor="profil-lastname" className="mb-1.5 block text-sm font-medium text-gray-700">Soyad</label>
+            <input id="profil-lastname" value={form.lastName} onChange={e => setForm(p => ({ ...p, lastName: e.target.value }))}
               className="w-full rounded-xl border border-gray-200 py-2.5 px-4 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
           </div>
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta</label>
+          <label htmlFor="profil-email" className="mb-1.5 block text-sm font-medium text-gray-700">E-posta</label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+            <input id="profil-email" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
               className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
           </div>
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefon</label>
+          <label htmlFor="profil-phone" className="mb-1.5 block text-sm font-medium text-gray-700">Telefon</label>
           <div className="flex w-full overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-colors">
             <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
               +90
             </span>
             <input
+              id="profil-phone"
               type="tel"
               value={formatPhoneDisplay(form.phone)}
               onChange={e => {

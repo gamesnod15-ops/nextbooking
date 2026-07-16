@@ -395,6 +395,7 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
+          aria-label="Kapat"
           className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         >
           <X className="h-4 w-4" />
@@ -427,34 +428,35 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Ad *</label>
-                  <input value={form.firstName} onChange={set('firstName')} placeholder="Ahmet" autoComplete="given-name" className={inputCls(errors.firstName)} />
+                  <label htmlFor="lead-firstname" className="mb-1.5 block text-sm font-medium text-gray-700">Ad *</label>
+                  <input id="lead-firstname" value={form.firstName} onChange={set('firstName')} placeholder="Ahmet" autoComplete="given-name" className={inputCls(errors.firstName)} />
                   {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
-                  <input value={form.lastName} onChange={set('lastName')} placeholder="Yılmaz" autoComplete="family-name" className={inputCls(errors.lastName)} />
+                  <label htmlFor="lead-lastname" className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
+                  <input id="lead-lastname" value={form.lastName} onChange={set('lastName')} placeholder="Yılmaz" autoComplete="family-name" className={inputCls(errors.lastName)} />
                   {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">İşletme Adı *</label>
-                <input value={form.companyName} onChange={set('companyName')} placeholder="Örn. Elit Güzellik Merkezi" autoComplete="organization" className={inputCls(errors.companyName)} />
+                <label htmlFor="lead-company" className="mb-1.5 block text-sm font-medium text-gray-700">İşletme Adı *</label>
+                <input id="lead-company" value={form.companyName} onChange={set('companyName')} placeholder="Örn. Elit Güzellik Merkezi" autoComplete="organization" className={inputCls(errors.companyName)} />
                 {errors.companyName && <p className="mt-1 text-xs text-red-500">{errors.companyName}</p>}
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta Adresi *</label>
-                <input value={form.email} onChange={set('email')} type="email" placeholder="ornek@email.com" autoComplete="email" className={inputCls(errors.email)} />
+                <label htmlFor="lead-email" className="mb-1.5 block text-sm font-medium text-gray-700">E-posta Adresi *</label>
+                <input id="lead-email" value={form.email} onChange={set('email')} type="email" placeholder="ornek@email.com" autoComplete="email" className={inputCls(errors.email)} />
                 {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Telefon Numarası *</label>
+                  <label htmlFor="lead-phone" className="mb-1.5 block text-sm font-medium text-gray-700">Telefon Numarası *</label>
                   <div className={`flex w-full overflow-hidden rounded-xl border bg-white focus-within:ring-2 focus-within:ring-brand-500/40 transition-shadow ${errors.phone ? 'border-red-400' : 'border-gray-200'}`}>
                     <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
                       🇹🇷 +90
                     </span>
                     <input
+                      id="lead-phone"
                       type="tel"
                       value={formatPhoneDisplay(form.phone)}
                       onChange={handlePhoneChange}
@@ -466,13 +468,13 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
                   {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">Şube Sayısı</label>
-                  <input value={form.branchCount} onChange={set('branchCount')} type="number" min={1} placeholder="Örn. 5" className={inputCls()} />
+                  <label htmlFor="lead-branchcount" className="mb-1.5 block text-sm font-medium text-gray-700">Şube Sayısı</label>
+                  <input id="lead-branchcount" value={form.branchCount} onChange={set('branchCount')} type="number" min={1} placeholder="Örn. 5" className={inputCls()} />
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">İhtiyaçlarınız (isteğe bağlı)</label>
-                <textarea value={form.message} onChange={set('message')} rows={3} placeholder="Kaç personel, hangi entegrasyonlar, özel akışlar…" className={`${inputCls()} resize-none`} />
+                <label htmlFor="lead-message" className="mb-1.5 block text-sm font-medium text-gray-700">İhtiyaçlarınız (isteğe bağlı)</label>
+                <textarea id="lead-message" value={form.message} onChange={set('message')} rows={3} placeholder="Kaç personel, hangi entegrasyonlar, özel akışlar…" className={`${inputCls()} resize-none`} />
               </div>
 
               {generalError && <p className="text-sm text-red-500">{generalError}</p>}

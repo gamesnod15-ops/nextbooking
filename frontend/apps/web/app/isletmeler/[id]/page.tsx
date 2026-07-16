@@ -396,17 +396,17 @@ export default function BusinessDetailPage() {
                 <div className="border-t border-gray-100 pt-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4">Değerlendirme Yap</h3>
                   <div className="space-y-3">
-                    <input type="text" placeholder="Adınız" value={authorName} onChange={(e) => setAuthorName(e.target.value)}
+                    <input type="text" placeholder="Adınız" aria-label="Adınız" value={authorName} onChange={(e) => setAuthorName(e.target.value)}
                       className="w-full rounded-lg border-2 border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-colors" />
                     <div className="flex items-center gap-1">
                       <span className="text-xs text-gray-500 mr-2">Puan:</span>
                       {[1,2,3,4,5].map((s) => (
-                        <button key={s} type="button" onClick={() => setRating(s)}>
+                        <button key={s} type="button" onClick={() => setRating(s)} aria-label={`${s} yıldız`} aria-pressed={s === rating}>
                           <Star className={`h-6 w-6 ${s <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'} hover:fill-yellow-400 hover:text-yellow-400 transition-colors`} />
                         </button>
                       ))}
                     </div>
-                    <textarea placeholder="Yorumunuz (isteğe bağlı)" value={comment} onChange={(e) => setComment(e.target.value)}
+                    <textarea placeholder="Yorumunuz (isteğe bağlı)" aria-label="Yorumunuz" value={comment} onChange={(e) => setComment(e.target.value)}
                       className="w-full rounded-lg border-2 border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-colors resize-none" rows={3} />
                     <button disabled={submitting || !authorName.trim() || rating === 0}
                       onClick={async () => {
@@ -551,17 +551,17 @@ export default function BusinessDetailPage() {
 
       {selectedImage !== null && biz.galleryImages[selectedImage] && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedImage(null)}>
-          <button className="absolute top-4 right-4 text-white/70 hover:text-white text-2xl" onClick={() => setSelectedImage(null)}>✕</button>
+          <button aria-label="Kapat" className="absolute top-4 right-4 text-white/70 hover:text-white text-2xl" onClick={() => setSelectedImage(null)}>✕</button>
           <div className="flex items-center gap-4 max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
             {selectedImage > 0 && (
-              <button onClick={() => setSelectedImage(selectedImage - 1)}
+              <button onClick={() => setSelectedImage(selectedImage - 1)} aria-label="Önceki fotoğraf"
                       className="shrink-0 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors">
                 <ChevronRight className="h-6 w-6 rotate-180" />
               </button>
             )}
-            <img src={biz.galleryImages[selectedImage]} alt="" className="max-h-[80vh] w-full rounded-2xl object-contain" />
+            <img src={biz.galleryImages[selectedImage]} alt={`${biz.name} galeri fotoğrafı ${selectedImage + 1}`} className="max-h-[80vh] w-full rounded-2xl object-contain" />
             {selectedImage < biz.galleryImages.length - 1 && (
-              <button onClick={() => setSelectedImage(selectedImage + 1)}
+              <button onClick={() => setSelectedImage(selectedImage + 1)} aria-label="Sonraki fotoğraf"
                       className="shrink-0 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors">
                 <ChevronRight className="h-6 w-6" />
               </button>

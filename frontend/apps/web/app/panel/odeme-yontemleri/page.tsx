@@ -166,7 +166,7 @@ export default function OdemeYontemleriPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/panel" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link href="/panel" aria-label="Panele dön" className="text-gray-400 hover:text-gray-600 transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-xl font-bold text-gray-900">Ödeme Yöntemleri</h1>
@@ -207,6 +207,7 @@ export default function OdemeYontemleriPage() {
               <button
                 onClick={() => openEdit(card)}
                 title="Kartı düzenle"
+                aria-label={`**** ${card.lastFour} kartını düzenle`}
                 className="text-gray-300 hover:text-brand-500 transition-colors"
               >
                 <Pencil className="h-4 w-4" />
@@ -214,6 +215,7 @@ export default function OdemeYontemleriPage() {
               <button
                 onClick={() => setDeleteId(card.id)}
                 title="Kartı sil"
+                aria-label={`**** ${card.lastFour} kartını sil`}
                 className="text-gray-300 hover:text-red-500 transition-colors"
               >
                 <Trash2 className="h-4 w-4" />
@@ -255,6 +257,7 @@ export default function OdemeYontemleriPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6 space-y-5 relative" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setAddOpen(false)}
+              aria-label="Kapat"
               className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X className="h-5 w-5" />
@@ -304,8 +307,9 @@ export default function OdemeYontemleriPage() {
 
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Kart Üzerindeki İsim</label>
+                <label htmlFor="odeme-add-cardholder" className="block text-xs font-medium text-gray-600 mb-1.5">Kart Üzerindeki İsim</label>
                 <input
+                  id="odeme-add-cardholder"
                   type="text"
                   value={addForm.cardHolder}
                   onChange={(e) => setAddForm((p) => ({ ...p, cardHolder: e.target.value }))}
@@ -318,8 +322,9 @@ export default function OdemeYontemleriPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Kart Numarası</label>
+                <label htmlFor="odeme-add-cardnumber" className="block text-xs font-medium text-gray-600 mb-1.5">Kart Numarası</label>
                 <input
+                  id="odeme-add-cardnumber"
                   type="text"
                   value={addForm.cardNumber}
                   onChange={(e) => handleCardNumberChange(e.target.value)}
@@ -334,8 +339,9 @@ export default function OdemeYontemleriPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Son Kullanma</label>
+                  <label htmlFor="odeme-add-expiry" className="block text-xs font-medium text-gray-600 mb-1.5">Son Kullanma</label>
                   <input
+                    id="odeme-add-expiry"
                     type="text"
                     value={addForm.expiry}
                     onChange={(e) => handleExpiryChange(e.target.value)}
@@ -348,8 +354,9 @@ export default function OdemeYontemleriPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">CVV</label>
+                  <label htmlFor="odeme-add-cvv" className="block text-xs font-medium text-gray-600 mb-1.5">CVV</label>
                   <input
+                    id="odeme-add-cvv"
                     type="text"
                     value={addForm.cvv}
                     onChange={(e) => handleCvvChange(e.target.value)}
@@ -416,6 +423,7 @@ export default function OdemeYontemleriPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 space-y-5 relative" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => { setEditOpen(false); setEditCard(null) }}
+              aria-label="Kapat"
               className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X className="h-5 w-5" />
@@ -425,8 +433,9 @@ export default function OdemeYontemleriPage() {
 
             <form onSubmit={handleEditSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Kart Üzerindeki İsim</label>
+                <label htmlFor="odeme-edit-cardholder" className="block text-xs font-medium text-gray-600 mb-1.5">Kart Üzerindeki İsim</label>
                 <input
+                  id="odeme-edit-cardholder"
                   type="text"
                   value={editForm.cardHolder}
                   onChange={(e) => setEditForm((p) => ({ ...p, cardHolder: e.target.value }))}
@@ -435,8 +444,9 @@ export default function OdemeYontemleriPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Son Kullanma</label>
+                <label htmlFor="odeme-edit-expiry" className="block text-xs font-medium text-gray-600 mb-1.5">Son Kullanma</label>
                 <input
+                  id="odeme-edit-expiry"
                   type="text"
                   value={editForm.expiry}
                   onChange={(e) => setEditForm((p) => ({ ...p, expiry: e.target.value }))}

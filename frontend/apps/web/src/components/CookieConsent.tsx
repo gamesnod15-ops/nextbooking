@@ -64,7 +64,7 @@ export function CookieConsent() {
               <p className="text-sm text-gray-400">Deneyiminizi iyileştirmek için çerezler kullanıyoruz.</p>
             </div>
           </div>
-          <button onClick={rejectAll} className="rounded-lg p-1.5 text-gray-500 hover:bg-white/10 hover:text-white transition-colors">
+          <button onClick={rejectAll} aria-label="Kapat ve sadece zorunlu çerezlere izin ver" className="rounded-lg p-1.5 text-gray-500 hover:bg-white/10 hover:text-white transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>

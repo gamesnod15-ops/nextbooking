@@ -172,8 +172,9 @@ function LoginForm() {
             <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta Adresi</label>
+                <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-gray-700">E-posta Adresi</label>
                 <input
+                  id="login-email"
                   type="email"
                   name="email"
                   value={form.email}
@@ -185,9 +186,10 @@ function LoginForm() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">Şifre</label>
+                <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-gray-700">Şifre</label>
                 <div className="relative">
                   <input
+                    id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={form.password}
@@ -199,6 +201,7 @@ function LoginForm() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -241,11 +244,11 @@ function LoginForm() {
             </div>
 
               <div className="flex justify-center gap-4">
-                <button type="button" onClick={() => handleSocialLogin('google')}
+                <button type="button" onClick={() => handleSocialLogin('google')} aria-label="Google ile giriş yap"
                   className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300">
                   <GoogleIcon size={20} />
                 </button>
-                <button type="button" onClick={() => handleSocialLogin('apple')}
+                <button type="button" onClick={() => handleSocialLogin('apple')} aria-label="Apple ile giriş yap"
                   className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300">
                   <AppleIcon size={20} className="text-gray-900" />
                 </button>

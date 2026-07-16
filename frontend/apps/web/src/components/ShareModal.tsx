@@ -64,7 +64,7 @@ export function ShareModal({ open, onClose, url, title }: ShareModalProps) {
          onClick={onClose}>
       <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-2xl p-6"
            onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-4 right-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+        <button onClick={onClose} aria-label="Kapat" className="absolute top-4 right-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
           <X className="h-5 w-5" />
         </button>
         <h3 className="text-lg font-bold text-gray-900 mb-1">Paylaş</h3>

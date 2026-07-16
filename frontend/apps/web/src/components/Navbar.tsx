@@ -82,12 +82,12 @@ export function Navbar() {
             </a>
             <span className="text-gray-300 text-[10px]">|</span>
             <div className="flex items-center gap-2">
-              <a href="#" className="hover:text-brand-500 transition-colors"><InstagramIcon size={13} /></a>
-              <a href="#" className="hover:text-brand-500 transition-colors"><FacebookIcon size={13} /></a>
-              <a href="#" className="hover:text-brand-500 transition-colors"><XIcon size={13} /></a>
-              <a href="#" className="hover:text-brand-500 transition-colors"><YouTubeIcon size={13} /></a>
-              <a href="#" className="hover:text-brand-500 transition-colors"><LinkedInIcon size={13} /></a>
-              <a href="#" className="hover:text-brand-500 transition-colors"><TikTokIcon size={13} /></a>
+              <a href="#" aria-label="Instagram" className="hover:text-brand-500 transition-colors"><InstagramIcon size={13} /></a>
+              <a href="#" aria-label="Facebook" className="hover:text-brand-500 transition-colors"><FacebookIcon size={13} /></a>
+              <a href="#" aria-label="X (Twitter)" className="hover:text-brand-500 transition-colors"><XIcon size={13} /></a>
+              <a href="#" aria-label="YouTube" className="hover:text-brand-500 transition-colors"><YouTubeIcon size={13} /></a>
+              <a href="#" aria-label="LinkedIn" className="hover:text-brand-500 transition-colors"><LinkedInIcon size={13} /></a>
+              <a href="#" aria-label="TikTok" className="hover:text-brand-500 transition-colors"><TikTokIcon size={13} /></a>
             </div>
           </div>
         </div>
@@ -219,7 +219,12 @@ export function Navbar() {
         </div>
 
         {/* Mobile burger */}
-        <button onClick={() => setOpen(!open)} className="md:hidden rounded-md p-2 text-gray-600">
+        <button
+          onClick={() => setOpen(!open)}
+          aria-label={open ? 'Menüyü kapat' : 'Menüyü aç'}
+          aria-expanded={open}
+          className="md:hidden rounded-md p-2 text-gray-600"
+        >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>

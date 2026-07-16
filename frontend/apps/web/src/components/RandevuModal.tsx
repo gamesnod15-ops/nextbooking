@@ -215,7 +215,7 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
             <h2 className="text-lg font-bold text-gray-900">Randevu Al</h2>
             <p className="text-xs text-gray-500">{businessName}</p>
           </div>
-          <button onClick={handleClose} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+          <button onClick={handleClose} aria-label="Kapat" className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -293,12 +293,12 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
 
                 {/* Calendar navigation */}
                 <div className="flex items-center justify-between">
-                  <button onClick={prevMonth} disabled={!canMonthGoBack()}
+                  <button onClick={prevMonth} disabled={!canMonthGoBack()} aria-label="Önceki ay"
                     className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                     <ChevronLeft className="h-4 w-4" />
                   </button>
                   <span className="text-sm font-bold text-gray-900">{MONTHS[calendarMonth]} {calendarYear}</span>
-                  <button onClick={nextMonth}
+                  <button onClick={nextMonth} aria-label="Sonraki ay"
                     className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
                     <ChevronRight className="h-4 w-4" />
                   </button>
@@ -415,37 +415,37 @@ export function RandevuModal({ open, onClose, businessName, businessId, services
                 <p className="text-sm font-medium text-gray-700">Kişisel Bilgiler</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">Ad *</label>
-                    <input name="ad" value={form.ad} onChange={handleFormChange} placeholder="Ad"
+                    <label htmlFor="randevu-ad" className="mb-1 block text-xs font-medium text-gray-600">Ad *</label>
+                    <input id="randevu-ad" name="ad" value={form.ad} onChange={handleFormChange} placeholder="Ad"
                       className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">Soyad *</label>
-                    <input name="soyad" value={form.soyad} onChange={handleFormChange} placeholder="Soyad"
+                    <label htmlFor="randevu-soyad" className="mb-1 block text-xs font-medium text-gray-600">Soyad *</label>
+                    <input id="randevu-soyad" name="soyad" value={form.soyad} onChange={handleFormChange} placeholder="Soyad"
                       className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Telefon *</label>
+                  <label htmlFor="randevu-telefon" className="mb-1 block text-xs font-medium text-gray-600">Telefon *</label>
                   <div className="flex w-full overflow-hidden rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-brand-500/20 focus-within:border-brand-500 transition-shadow">
                     <span className="flex shrink-0 items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500">+90</span>
-                    <input name="telefon" value={formatPhoneDisplay(form.telefon)} onChange={handlePhoneChange} placeholder="5XX XXX XX XX" type="tel"
+                    <input id="randevu-telefon" name="telefon" value={formatPhoneDisplay(form.telefon)} onChange={handlePhoneChange} placeholder="5XX XXX XX XX" type="tel"
                       className="flex-1 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none" />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">E-posta *</label>
-                  <input name="email" type="email" value={form.email} onChange={handleFormChange} placeholder="ornek@email.com"
+                  <label htmlFor="randevu-email" className="mb-1 block text-xs font-medium text-gray-600">E-posta *</label>
+                  <input id="randevu-email" name="email" type="email" value={form.email} onChange={handleFormChange} placeholder="ornek@email.com"
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Şehir *</label>
-                  <input name="sehir" value={form.sehir} onChange={handleFormChange} placeholder="Şehir"
+                  <label htmlFor="randevu-sehir" className="mb-1 block text-xs font-medium text-gray-600">Şehir *</label>
+                  <input id="randevu-sehir" name="sehir" value={form.sehir} onChange={handleFormChange} placeholder="Şehir"
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Açıklama</label>
-                  <textarea name="aciklama" value={form.aciklama} onChange={handleFormChange} rows={3} placeholder="Randevu ile ilgili eklemek istedikleriniz..."
+                  <label htmlFor="randevu-aciklama" className="mb-1 block text-xs font-medium text-gray-600">Açıklama</label>
+                  <textarea id="randevu-aciklama" name="aciklama" value={form.aciklama} onChange={handleFormChange} rows={3} placeholder="Randevu ile ilgili eklemek istedikleriniz..."
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 resize-none" />
                 </div>
 

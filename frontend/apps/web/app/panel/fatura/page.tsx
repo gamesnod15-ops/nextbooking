@@ -237,7 +237,7 @@ export default function FaturaPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/panel" className="text-gray-400 hover:text-gray-600 transition-colors">
+          <Link href="/panel" aria-label="Panele dön" className="text-gray-400 hover:text-gray-600 transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-xl font-bold text-gray-900">Fatura Bilgisi</h1>
@@ -299,12 +299,12 @@ export default function FaturaPage() {
               <div className="flex shrink-0 gap-1 pt-0.5">
                 <button onClick={(e) => { e.stopPropagation(); openEdit(addr) }}
                   className="rounded-md p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-                  title="Düzenle">
+                  title="Düzenle" aria-label={`${addr.name} adresini düzenle`}>
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); handleDelete(addr.id) }}
                   className="rounded-md p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                  title="Sil">
+                  title="Sil" aria-label={`${addr.name} adresini sil`}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -339,7 +339,7 @@ export default function FaturaPage() {
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setFormOpen(false)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6 space-y-5 relative max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setFormOpen(false)}
+            <button onClick={() => setFormOpen(false)} aria-label="Kapat"
               className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors">
               <X className="h-5 w-5" />
             </button>
@@ -351,38 +351,38 @@ export default function FaturaPage() {
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Ad Soyad <span className="text-red-500">*</span></label>
-                  <input required value={form.name}
+                  <label htmlFor="fatura-name" className="block text-xs font-medium text-gray-600 mb-1.5">Ad Soyad <span className="text-red-500">*</span></label>
+                  <input id="fatura-name" required value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Adres Satırı 1</label>
-                  <input value={form.addressLine1}
+                  <label htmlFor="fatura-address1" className="block text-xs font-medium text-gray-600 mb-1.5">Adres Satırı 1</label>
+                  <input id="fatura-address1" value={form.addressLine1}
                     onChange={e => setForm(f => ({ ...f, addressLine1: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Adres Satırı 2</label>
-                  <input value={form.addressLine2}
+                  <label htmlFor="fatura-address2" className="block text-xs font-medium text-gray-600 mb-1.5">Adres Satırı 2</label>
+                  <input id="fatura-address2" value={form.addressLine2}
                     onChange={e => setForm(f => ({ ...f, addressLine2: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Şehir</label>
-                  <input value={form.city}
+                  <label htmlFor="fatura-city" className="block text-xs font-medium text-gray-600 mb-1.5">Şehir</label>
+                  <input id="fatura-city" value={form.city}
                     onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Posta Kodu</label>
-                  <input value={form.postalCode}
+                  <label htmlFor="fatura-postalcode" className="block text-xs font-medium text-gray-600 mb-1.5">Posta Kodu</label>
+                  <input id="fatura-postalcode" value={form.postalCode}
                     onChange={e => setForm(f => ({ ...f, postalCode: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Ülke</label>
-                  <select value={form.country}
+                  <label htmlFor="fatura-country" className="block text-xs font-medium text-gray-600 mb-1.5">Ülke</label>
+                  <select id="fatura-country" value={form.country}
                     onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300 bg-white">
                     <option value="">Seçiniz</option>
@@ -390,8 +390,8 @@ export default function FaturaPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Fatura Tipi</label>
-                  <select value={form.invoiceType}
+                  <label htmlFor="fatura-invoicetype" className="block text-xs font-medium text-gray-600 mb-1.5">Fatura Tipi</label>
+                  <select id="fatura-invoicetype" value={form.invoiceType}
                     onChange={e => setForm(f => ({ ...f, invoiceType: e.target.value as 'bireysel' | 'kurumsal' }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300 bg-white">
                     <option value="bireysel">Bireysel</option>
@@ -399,14 +399,14 @@ export default function FaturaPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Vergi No</label>
-                  <input value={form.taxNumber}
+                  <label htmlFor="fatura-taxnumber" className="block text-xs font-medium text-gray-600 mb-1.5">Vergi No</label>
+                  <input id="fatura-taxnumber" value={form.taxNumber}
                     onChange={e => setForm(f => ({ ...f, taxNumber: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Vergi Dairesi</label>
-                  <input value={form.taxOffice}
+                  <label htmlFor="fatura-taxoffice" className="block text-xs font-medium text-gray-600 mb-1.5">Vergi Dairesi</label>
+                  <input id="fatura-taxoffice" value={form.taxOffice}
                     onChange={e => setForm(f => ({ ...f, taxOffice: e.target.value }))}
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300" />
                 </div>

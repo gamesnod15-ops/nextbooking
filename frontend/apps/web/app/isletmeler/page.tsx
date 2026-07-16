@@ -163,6 +163,7 @@ export default function BusinessListPage() {
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); onFilter() }}
                     placeholder="İşletme adı, kategori veya şehir ara..."
+                    aria-label="İşletme adı, kategori veya şehir ara"
                     className="flex-1 bg-transparent py-4 text-base text-white placeholder-gray-500 outline-none min-w-0"
                   />
                   {allCities.length > 0 && (
@@ -171,6 +172,7 @@ export default function BusinessListPage() {
                       <select
                         value={city}
                         onChange={(e) => { setCity(e.target.value); onFilter() }}
+                        aria-label="Şehir filtrele"
                         className="bg-transparent py-4 pr-1 text-sm text-gray-300 outline-none cursor-pointer hover:text-white transition-colors max-w-[110px] appearance-none"
                       >
                         <option value="">Tüm Şehirler</option>

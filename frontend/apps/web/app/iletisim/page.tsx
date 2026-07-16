@@ -182,24 +182,24 @@ export default function IletisimPage() {
                   <form onSubmit={handleSubmit} noValidate className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">Ad *</label>
-                        <input name="ad" type="text" placeholder="Ahmet" value={form.ad} onChange={handleChange} className={inputCls(errors.ad)} />
+                        <label htmlFor="iletisim-ad" className="mb-1.5 block text-sm font-medium text-gray-700">Ad *</label>
+                        <input id="iletisim-ad" name="ad" type="text" placeholder="Ahmet" value={form.ad} onChange={handleChange} className={inputCls(errors.ad)} />
                         {errors.ad && <p className="mt-1 text-xs text-red-500">{errors.ad}</p>}
                       </div>
                       <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
-                        <input name="soyad" type="text" placeholder="Yılmaz" value={form.soyad} onChange={handleChange} className={inputCls(errors.soyad)} />
+                        <label htmlFor="iletisim-soyad" className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
+                        <input id="iletisim-soyad" name="soyad" type="text" placeholder="Yılmaz" value={form.soyad} onChange={handleChange} className={inputCls(errors.soyad)} />
                         {errors.soyad && <p className="mt-1 text-xs text-red-500">{errors.soyad}</p>}
                       </div>
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">E-posta *</label>
-                      <input name="email" type="email" placeholder="ornek@email.com" value={form.email} onChange={handleChange} className={inputCls(errors.email)} />
+                      <label htmlFor="iletisim-email" className="mb-1.5 block text-sm font-medium text-gray-700">E-posta *</label>
+                      <input id="iletisim-email" name="email" type="email" placeholder="ornek@email.com" value={form.email} onChange={handleChange} className={inputCls(errors.email)} />
                       {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Konu *</label>
-                      <select name="konu" value={form.konu} onChange={handleChange} className={inputCls(errors.konu)}>
+                      <label htmlFor="iletisim-konu" className="mb-1.5 block text-sm font-medium text-gray-700">Konu *</label>
+                      <select id="iletisim-konu" name="konu" value={form.konu} onChange={handleChange} className={inputCls(errors.konu)}>
                         <option value="">Konu seçin…</option>
                         <option value="teknik">Teknik Destek</option>
                         <option value="fatura">Fatura & Ödeme</option>
@@ -210,8 +210,8 @@ export default function IletisimPage() {
                       {errors.konu && <p className="mt-1 text-xs text-red-500">{errors.konu}</p>}
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-700">Mesajınız *</label>
-                      <textarea name="mesaj" rows={5} placeholder="Nasıl yardımcı olabiliriz?" value={form.mesaj} onChange={handleChange}
+                      <label htmlFor="iletisim-mesaj" className="mb-1.5 block text-sm font-medium text-gray-700">Mesajınız *</label>
+                      <textarea id="iletisim-mesaj" name="mesaj" rows={5} placeholder="Nasıl yardımcı olabiliriz?" value={form.mesaj} onChange={handleChange}
                         className={`${inputCls(errors.mesaj)} resize-none`} />
                       {errors.mesaj && <p className="mt-1 text-xs text-red-500">{errors.mesaj}</p>}
                     </div>

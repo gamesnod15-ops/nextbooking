@@ -95,7 +95,7 @@ function CheckoutForm() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Link href={`/${type === 'ad' ? 'reklamveren' : 'sponsorlu'}`} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link href={`/${type === 'ad' ? 'reklamveren' : 'sponsorlu'}`} aria-label="Geri dön" className="text-gray-400 hover:text-gray-600 transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-xl font-bold text-gray-900">Satın Al</h1>
@@ -109,24 +109,24 @@ function CheckoutForm() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Kart Üzerindeki İsim</label>
-                <input value={cardName} onChange={e => setCardName(e.target.value)} placeholder="Ad Soyad"
+                <label htmlFor="satinal-cardname" className="mb-1 block text-xs font-medium text-gray-600">Kart Üzerindeki İsim</label>
+                <input id="satinal-cardname" value={cardName} onChange={e => setCardName(e.target.value)} placeholder="Ad Soyad"
                   className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Kart Numarası</label>
-                <input value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim())} placeholder="0000 0000 0000 0000" maxLength={19}
+                <label htmlFor="satinal-cardnumber" className="mb-1 block text-xs font-medium text-gray-600">Kart Numarası</label>
+                <input id="satinal-cardnumber" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim())} placeholder="0000 0000 0000 0000" maxLength={19}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Son Kullanma</label>
-                  <input value={cardExpiry} onChange={e => { const v = e.target.value.replace(/\D/g, ''); setCardExpiry(v.length > 2 ? v.slice(0,2) + '/' + v.slice(2,4) : v) }} placeholder="AA/YY" maxLength={5}
+                  <label htmlFor="satinal-expiry" className="mb-1 block text-xs font-medium text-gray-600">Son Kullanma</label>
+                  <input id="satinal-expiry" value={cardExpiry} onChange={e => { const v = e.target.value.replace(/\D/g, ''); setCardExpiry(v.length > 2 ? v.slice(0,2) + '/' + v.slice(2,4) : v) }} placeholder="AA/YY" maxLength={5}
                     className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">CVC</label>
-                  <input value={cardCvc} onChange={e => setCardCvc(e.target.value.replace(/\D/g, '').slice(0,4))} placeholder="000" maxLength={4}
+                  <label htmlFor="satinal-cvc" className="mb-1 block text-xs font-medium text-gray-600">CVC</label>
+                  <input id="satinal-cvc" value={cardCvc} onChange={e => setCardCvc(e.target.value.replace(/\D/g, '').slice(0,4))} placeholder="000" maxLength={4}
                     className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500" />
                 </div>
               </div>

@@ -191,7 +191,7 @@ export default function ProfilPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/panel" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link href="/panel" aria-label="Panele dön" className="text-gray-400 hover:text-gray-600 transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-xl font-bold text-gray-900">Profil Bilgileri</h1>
@@ -210,6 +210,7 @@ export default function ProfilPage() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
+            aria-label="Profil fotoğrafını değiştir"
             className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-black shadow hover:bg-brand-600 transition-colors disabled:opacity-60"
           >
             {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Camera className="h-3 w-3" />}
@@ -218,6 +219,7 @@ export default function ProfilPage() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            aria-label="Profil fotoğrafı yükle"
             className="hidden"
             onChange={handlePhotoUpload}
           />
@@ -234,10 +236,11 @@ export default function ProfilPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1.5">Ad</label>
+            <label htmlFor="panelprofil-firstname" className="block text-xs font-medium text-gray-600 mb-1.5">Ad</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
+                id="panelprofil-firstname"
                 type="text"
                 value={form.firstName}
                 onChange={(e) => setForm((p) => ({ ...p, firstName: e.target.value }))}
@@ -246,10 +249,11 @@ export default function ProfilPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1.5">Soyad</label>
+            <label htmlFor="panelprofil-lastname" className="block text-xs font-medium text-gray-600 mb-1.5">Soyad</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
+                id="panelprofil-lastname"
                 type="text"
                 value={form.lastName}
                 onChange={(e) => setForm((p) => ({ ...p, lastName: e.target.value }))}
@@ -258,10 +262,11 @@ export default function ProfilPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1.5">E-posta</label>
+            <label htmlFor="panelprofil-email" className="block text-xs font-medium text-gray-600 mb-1.5">E-posta</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
+                id="panelprofil-email"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
@@ -270,12 +275,13 @@ export default function ProfilPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1.5">Telefon</label>
+            <label htmlFor="panelprofil-phone" className="block text-xs font-medium text-gray-600 mb-1.5">Telefon</label>
             <div className="flex w-full overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-colors">
               <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
                 +90
               </span>
               <input
+                id="panelprofil-phone"
                 type="tel"
                 value={formatPhoneDisplay(form.phone)}
                 onChange={(e) => {
@@ -312,10 +318,11 @@ export default function ProfilPage() {
             { name: 'confirm', label: 'Yeni Şifre (Tekrar)' },
           ].map(({ name, label }) => (
             <div key={name}>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">{label}</label>
+              <label htmlFor={`panelprofil-pass-${name}`} className="block text-xs font-medium text-gray-600 mb-1.5">{label}</label>
               <div className="relative">
                 <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
+                  id={`panelprofil-pass-${name}`}
                   type={showPass ? 'text' : 'password'}
                   value={passwordForm[name as keyof typeof passwordForm]}
                   onChange={(e) => setPasswordForm((p) => ({ ...p, [name]: e.target.value }))}
@@ -326,6 +333,7 @@ export default function ProfilPage() {
                   <button
                     type="button"
                     onClick={() => setShowPass((v) => !v)}
+                    aria-label={showPass ? 'Şifreyi gizle' : 'Şifreyi göster'}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -371,11 +379,12 @@ export default function ProfilPage() {
       {showDeactivateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm space-y-5 relative">
-            <button className="absolute right-3 top-3 text-gray-400 hover:text-gray-600" onClick={() => { setShowDeactivateModal(false); setDeactivatePassword(''); setDeactivateError(null); }}>&times;</button>
+            <button aria-label="Kapat" className="absolute right-3 top-3 text-gray-400 hover:text-gray-600" onClick={() => { setShowDeactivateModal(false); setDeactivatePassword(''); setDeactivateError(null); }}>&times;</button>
             <h2 className="text-lg font-bold text-gray-900 mb-2">Hesabı Kapat</h2>
             <p className="text-sm text-gray-600 mb-2">Hesabınızı kapatmak için şifrenizi girin. Bu işlem hesabınızı pasifleştirir, tekrar giriş yaparak hesabınızı yeniden aktif edebilirsiniz.</p>
             <input
               type="password"
+              aria-label="Şifreniz"
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
               placeholder="Şifreniz"
               value={deactivatePassword}
