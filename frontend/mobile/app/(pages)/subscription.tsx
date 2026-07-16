@@ -10,20 +10,27 @@ import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import api from '@/lib/api';
 
+/** Plan ids must match the backend's ChangePlanCommand validator:
+ *  starter | business | professional | custom. */
 const PLANS = [
   {
-    id: 'starter', name: 'Starter', price: 299, period: '/ay',
-    features: ['1 Şube', '3 Personel', 'Temel Randevu', 'E-posta Bildirimi'],
+    id: 'starter', name: 'Starter', priceLabel: '₺299', period: '/ay',
+    features: ['Temel randevu, takvim ve müşteri yönetimi', 'Ödeme takibi ve temel raporlar', 'Formlar ve paket satışı', 'Tek şube ile hızlı başlangıç'],
     isPopular: false,
   },
   {
-    id: 'professional', name: 'Professional', price: 599, period: '/ay',
-    features: ['3 Şube', '10 Personel', 'WhatsApp Bot', 'Sadakat Programı', 'Raporlar', 'SMS Bildirimi'],
+    id: 'business', name: 'Business', priceLabel: '₺599', period: '/ay',
+    features: ['Kampanya, kupon ve indirim yönetimi', 'Online rezervasyon ve bekleme listesi', 'Sadakat programı ve yorum toplama', 'Çoklu şube yönetimi'],
     isPopular: true,
   },
   {
-    id: 'enterprise', name: 'Enterprise', price: 1299, period: '/ay',
-    features: ['Sınırsız Şube', 'Sınırsız Personel', 'AI Chatbot', 'Özel Entegrasyon', 'Öncelikli Destek', 'White Label'],
+    id: 'professional', name: 'Professional', priceLabel: '₺999', period: '/ay',
+    features: ['Ürün satışı ve stok yönetimi', 'Cari alacak ve taksit takibi', 'Personel performans takibi', 'Gelişmiş analitik & raporlar'],
+    isPopular: false,
+  },
+  {
+    id: 'custom', name: 'Kurumsal', priceLabel: 'Özel fiyat', period: '',
+    features: ['Tüm Professional özellikleri', 'Canlı chatbot ve sıra yönetimi', 'Özel entegrasyon ve onboarding', 'SLA garantisi & 7/24 destek'],
     isPopular: false,
   },
 ];
@@ -36,6 +43,7 @@ export default function SubscriptionScreen() {
     queryFn: async () => { const res = await api.get('/business/me'); return res.data; },
   });
   const currentPlanId = sub?.plan;
+  const currentPlan = PLANS.find(p => p.id === currentPlanId);
   const nextBilling = sub?.subscriptionEndsAt
     ? new Date(sub.subscriptionEndsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
     : undefined;
@@ -48,12 +56,12 @@ export default function SubscriptionScreen() {
         <LinearGradient colors={[COLORS.black, '#1A1A1A']} style={styles.currentBanner} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <View style={styles.currentLeft}>
             <Text style={styles.currentLabel}>Mevcut Plan</Text>
-            <Text style={styles.currentPlan}>{currentPlanId ? (PLANS.find(p => p.id === currentPlanId)?.name ?? 'Professional') : 'Yükleniyor...'}</Text>
+            <Text style={styles.currentPlan}>{currentPlan?.name ?? (currentPlanId ? currentPlanId : 'Yükleniyor...')}</Text>
             {nextBilling && <Text style={styles.currentBilling}>Sonraki ödeme: {nextBilling}</Text>}
           </View>
           <View style={styles.currentRight}>
-            <Text style={styles.currentPrice}>₺{currentPlanId ? (PLANS.find(p => p.id === currentPlanId)?.price ?? '—') : '—'}</Text>
-            <Text style={styles.currentPeriod}>/ay</Text>
+            <Text style={styles.currentPrice}>{currentPlan?.priceLabel ?? '—'}</Text>
+            <Text style={styles.currentPeriod}>{currentPlan?.period}</Text>
           </View>
         </LinearGradient>
 
@@ -71,7 +79,7 @@ export default function SubscriptionScreen() {
               <View style={styles.planHeader}>
                 <Text style={styles.planName}>{plan.name}</Text>
                 <View style={styles.priceRow}>
-                  <Text style={[styles.planPrice, plan.isPopular && { color: COLORS.primaryDark }]}>₺{plan.price}</Text>
+                  <Text style={[styles.planPrice, plan.isPopular && { color: COLORS.primaryDark }]}>{plan.priceLabel}</Text>
                   <Text style={styles.planPeriod}>{plan.period}</Text>
                 </View>
               </View>

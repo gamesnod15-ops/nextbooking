@@ -24,7 +24,7 @@ export default function FormsScreen() {
   const [form, setForm] = useState({ title: '', fields: '' });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/forms', { title: form.title, fields: Number(form.fields) || 0, responses: 0, isActive: true }),
+    mutationFn: async () => api.post('/forms', { title: form.title, fieldCount: Number(form.fields) || 0 }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['forms'] }); setModal({ open: false }); },
     onError: () => Alert.alert('Hata', 'Form eklenemedi.'),
   });

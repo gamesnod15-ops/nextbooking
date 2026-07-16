@@ -156,7 +156,7 @@ export interface WaitingListEntry {
   serviceId?: string;
   serviceName?: string;
   employeeId?: string;
-  status: 'waiting' | 'notified' | 'confirmed' | 'booked';
+  status: 'waiting' | 'notified' | 'confirmed' | 'booked' | 'cancelled';
   notes?: string;
   createdAt: string;
 }
@@ -168,19 +168,20 @@ export interface QueueEntry {
   serviceName?: string;
   employeeName?: string;
   waitingMinutes: number;
-  status: 'waiting' | 'in_service' | 'completed';
+  status: 'waiting' | 'in_service' | 'completed' | 'cancelled' | 'no_show';
   estimatedWait?: number;
   calledAt?: string;
 }
 
+/** One customer's post-appointment satisfaction feedback. */
 export interface Survey {
   id: string;
-  title: string;
-  description?: string;
-  questions: number;
-  responses: number;
-  avgRating: number;
-  isActive: boolean;
+  customerName?: string;
+  rating: number;
+  comment?: string;
+  isApproved: boolean;
+  appointmentId?: string;
+  serviceName?: string;
   createdAt: string;
 }
 
