@@ -16,6 +16,7 @@ public class TenantResolutionMiddleware
     // Routes that don't require tenant context
     private static readonly string[] TenantFreeRoutes =
     [
+        "/api/v1/admin",
         "/api/v1/tenants/register",
         "/api/v1/auth/login",
         "/api/v1/auth/register",
