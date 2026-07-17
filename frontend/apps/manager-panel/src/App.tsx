@@ -4,6 +4,7 @@ import { RootState } from '@/store'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
+import { BusinessesPage } from '@/pages/businesses/BusinessesPage'
 import { PaymentsPage } from '@/pages/payments/PaymentsPage'
 import { FeedbackPage } from '@/pages/feedback/FeedbackPage'
 import { UsersPage } from '@/pages/users/UsersPage'
@@ -30,6 +31,7 @@ export default function App() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="businesses" element={<BusinessesPage />} />
           <Route path="payments" element={<PaymentsPage />} />
           <Route path="feedback" element={<FeedbackPage />} />
           <Route path="users" element={<UsersPage />} />

@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { navigationConfig } from '@/config/navigation'
-import { LayoutDashboard, CreditCard, MessageSquare, Users, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, CreditCard, MessageSquare, Users, Building2, type LucideIcon } from 'lucide-react'
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
   CreditCard,
   MessageSquare,
   Users,
+  Building2,
 }
 
 interface SidebarProps {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using RandevumKolay.Application.Features.Admin.Dashboard;
 using RandevumKolay.Application.Features.Admin.Feedback;
 using RandevumKolay.Application.Features.Admin.Payments;
+using RandevumKolay.Application.Features.Admin.Tenants;
 using RandevumKolay.Application.Features.Admin.Users;
 using RandevumKolay.Domain.Entities;
 
@@ -58,6 +59,30 @@ public class AdminController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         await _sender.Send(new SetUserActiveStatusCommand(id, request.IsActive), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpGet("tenants")]
+    public async Task<IActionResult> GetTenants(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
+        [FromQuery] string? plan = null,
+        [FromQuery] bool? isActive = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetPlatformTenantsQuery(pageNumber, pageSize, search, plan, isActive), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPatch("tenants/{id:guid}/status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SetTenantStatus(
+        Guid id,
+        [FromBody] SetUserStatusRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new SetTenantActiveStatusCommand(id, request.IsActive), cancellationToken);
         return NoContent();
     }
 
