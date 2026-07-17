@@ -43,6 +43,7 @@ public interface IApplicationDbContext
     DbSet<CustomerRecommendation> CustomerRecommendations { get; }
     DbSet<SalesLead> SalesLeads { get; }
     DbSet<Feedback> Feedbacks { get; }
+    DbSet<PlatformPayment> PlatformPayments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

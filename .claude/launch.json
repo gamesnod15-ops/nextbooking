@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "frontend/apps/web"],
+      "port": 3004
+    },
+    {
+      "name": "panel",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "frontend/bussines-panel"],
+      "port": 3000
+    },
+    {
+      "name": "manager-panel",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "frontend/apps/manager-panel"],
+      "port": 3010
+    }
+  ]
+}

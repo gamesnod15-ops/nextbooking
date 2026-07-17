@@ -63,6 +63,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<CustomerRecommendation> CustomerRecommendations => Set<CustomerRecommendation>();
     public DbSet<SalesLead> SalesLeads => Set<SalesLead>();
     public DbSet<Feedback> Feedbacks => Set<Feedback>();
+    public DbSet<PlatformPayment> PlatformPayments => Set<PlatformPayment>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

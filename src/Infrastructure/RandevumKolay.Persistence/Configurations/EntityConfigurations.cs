@@ -631,3 +631,21 @@ public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
         builder.HasIndex(f => f.CreatedAt);
     }
 }
+
+public class PlatformPaymentConfiguration : IEntityTypeConfiguration<PlatformPayment>
+{
+    public void Configure(EntityTypeBuilder<PlatformPayment> builder)
+    {
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Type).HasConversion<string>().HasMaxLength(20);
+        builder.Property(p => p.Status).HasConversion<string>().HasMaxLength(20);
+        builder.Property(p => p.PayerName).HasMaxLength(200).IsRequired();
+        builder.Property(p => p.Description).HasMaxLength(500);
+        builder.Property(p => p.Currency).HasMaxLength(10).IsRequired();
+        builder.Property(p => p.Amount).HasColumnType("decimal(18,2)");
+        builder.HasIndex(p => p.TenantId);
+        builder.HasIndex(p => p.Type);
+        builder.HasIndex(p => p.Status);
+        builder.HasIndex(p => p.CreatedAt);
+    }
+}
