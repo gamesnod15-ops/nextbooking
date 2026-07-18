@@ -11,4 +11,5 @@ export const navigationConfig: NavItem[] = [
   { id: 'payments', label: 'Ödemeler', to: '/payments', icon: 'CreditCard' },
   { id: 'feedback', label: 'Geri Bildirimler', to: '/feedback', icon: 'MessageSquare' },
   { id: 'users', label: 'Kullanıcılar', to: '/users', icon: 'Users' },
+  { id: 'customers', label: 'Müşteriler', to: '/customers', icon: 'UserRound' },
 ]

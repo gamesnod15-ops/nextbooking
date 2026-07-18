@@ -2,6 +2,7 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RandevumKolay.Application.Features.Admin.Customers;
 using RandevumKolay.Application.Features.Admin.Dashboard;
 using RandevumKolay.Application.Features.Admin.Feedback;
 using RandevumKolay.Application.Features.Admin.Payments;
@@ -84,6 +85,18 @@ public class AdminController : ControllerBase
     {
         await _sender.Send(new SetTenantActiveStatusCommand(id, request.IsActive), cancellationToken);
         return NoContent();
+    }
+
+    [HttpGet("customers")]
+    public async Task<IActionResult> GetCustomers(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
+        [FromQuery] Guid? tenantId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetPlatformCustomersQuery(pageNumber, pageSize, search, tenantId), cancellationToken);
+        return Ok(result);
     }
 
     [HttpGet("feedback")]
