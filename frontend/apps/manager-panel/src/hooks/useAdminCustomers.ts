@@ -2,6 +2,8 @@ import api from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import type { PaginatedList } from '@/types'
 
+export type PlatformCustomerSort = 'Recent' | 'MostVisits' | 'MostSpent' | 'Name'
+
 export interface PlatformCustomer {
   id: string
   name: string
@@ -22,6 +24,9 @@ export interface GetCustomersParams {
   pageSize?: number
   search?: string
   tenantId?: string
+  isBlocked?: boolean
+  minTotalVisits?: number
+  sort?: PlatformCustomerSort
 }
 
 export function useAdminCustomers(params: GetCustomersParams) {

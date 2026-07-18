@@ -6,6 +6,8 @@ using RandevumKolay.Domain.Entities;
 
 namespace RandevumKolay.Application.Features.Admin.Customers;
 
+public enum PlatformCustomerSort { Recent, MostVisits, MostSpent, Name }
+
 /// <summary>
 /// Every business's end-customers (the appointment/booking client records they
 /// manage themselves), across every tenant. These are not login accounts —
@@ -16,7 +18,10 @@ public record GetPlatformCustomersQuery(
     int PageNumber = 1,
     int PageSize = 20,
     string? SearchTerm = null,
-    Guid? TenantId = null) : IRequest<PaginatedList<PlatformCustomerDto>>;
+    Guid? TenantId = null,
+    bool? IsBlocked = null,
+    int? MinTotalVisits = null,
+    PlatformCustomerSort Sort = PlatformCustomerSort.Recent) : IRequest<PaginatedList<PlatformCustomerDto>>;
 
 public record PlatformCustomerDto(
     Guid Id,
@@ -45,6 +50,12 @@ public sealed class GetPlatformCustomersQueryHandler : IRequestHandler<GetPlatfo
         if (request.TenantId.HasValue)
             customerQuery = customerQuery.Where(c => c.TenantId == request.TenantId.Value);
 
+        if (request.IsBlocked.HasValue)
+            customerQuery = customerQuery.Where(c => c.IsBlocked == request.IsBlocked.Value);
+
+        if (request.MinTotalVisits.HasValue)
+            customerQuery = customerQuery.Where(c => c.TotalVisits >= request.MinTotalVisits.Value);
+
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var term = request.SearchTerm.ToLower();
@@ -55,7 +66,13 @@ public sealed class GetPlatformCustomersQueryHandler : IRequestHandler<GetPlatfo
                 _context.Tenants.Any(t => t.Id == c.TenantId && t.Name.ToLower().Contains(term)));
         }
 
-        customerQuery = customerQuery.OrderByDescending(c => c.CreatedAt);
+        customerQuery = request.Sort switch
+        {
+            PlatformCustomerSort.MostVisits => customerQuery.OrderByDescending(c => c.TotalVisits),
+            PlatformCustomerSort.MostSpent => customerQuery.OrderByDescending(c => c.TotalSpent),
+            PlatformCustomerSort.Name => customerQuery.OrderBy(c => c.Name),
+            _ => customerQuery.OrderByDescending(c => c.CreatedAt),
+        };
 
         var page = await PaginatedList<Customer>.CreateAsync(customerQuery, request.PageNumber, request.PageSize, cancellationToken);
 

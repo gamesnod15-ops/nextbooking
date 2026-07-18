@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RandevumKolay.Application.Features.Admin.Customers;
 using RandevumKolay.Application.Features.Admin.Dashboard;
+using RandevumKolay.Application.Features.Admin.Employees;
 using RandevumKolay.Application.Features.Admin.Feedback;
 using RandevumKolay.Application.Features.Admin.Payments;
 using RandevumKolay.Application.Features.Admin.Tenants;
 using RandevumKolay.Application.Features.Admin.Users;
 using RandevumKolay.Domain.Entities;
+using RandevumKolay.Domain.Enums;
 
 namespace RandevumKolay.API.Controllers.v1;
 
@@ -70,9 +72,13 @@ public class AdminController : ControllerBase
         [FromQuery] string? search = null,
         [FromQuery] string? plan = null,
         [FromQuery] bool? isActive = null,
+        [FromQuery] BusinessCategory? category = null,
+        [FromQuery] string? city = null,
+        [FromQuery] PlatformTenantSort sort = PlatformTenantSort.Recent,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetPlatformTenantsQuery(pageNumber, pageSize, search, plan, isActive), cancellationToken);
+        var result = await _sender.Send(
+            new GetPlatformTenantsQuery(pageNumber, pageSize, search, plan, isActive, category, city, sort), cancellationToken);
         return Ok(result);
     }
 
@@ -93,9 +99,26 @@ public class AdminController : ControllerBase
         [FromQuery] int pageSize = 20,
         [FromQuery] string? search = null,
         [FromQuery] Guid? tenantId = null,
+        [FromQuery] bool? isBlocked = null,
+        [FromQuery] int? minTotalVisits = null,
+        [FromQuery] PlatformCustomerSort sort = PlatformCustomerSort.Recent,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetPlatformCustomersQuery(pageNumber, pageSize, search, tenantId), cancellationToken);
+        var result = await _sender.Send(
+            new GetPlatformCustomersQuery(pageNumber, pageSize, search, tenantId, isBlocked, minTotalVisits, sort), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("employees")]
+    public async Task<IActionResult> GetEmployees(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
+        [FromQuery] Guid? tenantId = null,
+        [FromQuery] bool? isActive = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetPlatformEmployeesQuery(pageNumber, pageSize, search, tenantId, isActive), cancellationToken);
         return Ok(result);
     }
 

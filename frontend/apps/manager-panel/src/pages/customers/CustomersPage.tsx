@@ -3,27 +3,92 @@ import { Loader2, Search, Phone, Mail, Calendar, Building2 } from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Badge } from '@/components/ui/Badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { useAdminCustomers } from '@/hooks/useAdminCustomers'
+import { useAdminCustomers, type PlatformCustomerSort } from '@/hooks/useAdminCustomers'
+import { useAdminTenants } from '@/hooks/useAdminTenants'
+
+const sortLabels: Record<PlatformCustomerSort, string> = {
+  Recent: 'En Yeni',
+  MostVisits: 'En Çok Ziyaret',
+  MostSpent: 'En Çok Harcama',
+  Name: 'İsme Göre (A-Z)',
+}
 
 export function CustomersPage() {
   const [search, setSearch] = useState('')
+  const [tenantId, setTenantId] = useState('')
+  const [blocked, setBlocked] = useState('')
+  const [minVisits, setMinVisits] = useState('')
+  const [sort, setSort] = useState<PlatformCustomerSort>('Recent')
   const [page, setPage] = useState(1)
 
-  const { data, isLoading } = useAdminCustomers({ pageNumber: page, pageSize: 20, search: search || undefined })
+  const { data: tenantsData } = useAdminTenants({ pageNumber: 1, pageSize: 100, sort: 'Name' })
+  const { data, isLoading } = useAdminCustomers({
+    pageNumber: page,
+    pageSize: 20,
+    search: search || undefined,
+    tenantId: tenantId || undefined,
+    isBlocked: blocked === '' ? undefined : blocked === 'true',
+    minTotalVisits: minVisits ? Number(minVisits) : undefined,
+    sort,
+  })
   const customers = data?.items ?? []
+
+  function resetPage<T>(setter: (v: T) => void) {
+    return (v: T) => { setter(v); setPage(1) }
+  }
 
   return (
     <div className="space-y-5">
       <PageHeader title="Müşteriler" description={`İşletmelerin randevu/müşteri kayıtları${data ? ` (${data.totalCount})` : ''}`} />
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="relative lg:col-span-2">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="İsim, telefon, e-posta veya işletme ara..."
+            value={search}
+            onChange={(e) => resetPage(setSearch)(e.target.value)}
+            className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          />
+        </div>
+        <select
+          value={tenantId}
+          onChange={(e) => resetPage(setTenantId)(e.target.value)}
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          <option value="">Tüm İşletmeler</option>
+          {tenantsData?.items.map((t) => (
+            <option key={t.tenantId} value={t.tenantId}>{t.businessName ?? t.tenantName}</option>
+          ))}
+        </select>
+        <select
+          value={blocked}
+          onChange={(e) => resetPage(setBlocked)(e.target.value)}
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          <option value="">Tüm Durumlar</option>
+          <option value="false">Aktif</option>
+          <option value="true">Engelli</option>
+        </select>
+        <select
+          value={sort}
+          onChange={(e) => resetPage(setSort)(e.target.value as PlatformCustomerSort)}
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          {Object.entries(sortLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <label className="text-xs font-medium text-gray-600">Min. ziyaret sayısı:</label>
         <input
-          type="text"
-          placeholder="İsim, telefon, e-posta veya işletme ara..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-          className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          type="number"
+          min="0"
+          value={minVisits}
+          onChange={(e) => resetPage(setMinVisits)(e.target.value)}
+          placeholder="0"
+          className="w-24 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
       </div>
 

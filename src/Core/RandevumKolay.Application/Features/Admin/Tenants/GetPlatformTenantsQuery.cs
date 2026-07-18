@@ -6,6 +6,8 @@ using RandevumKolay.Domain.Enums;
 
 namespace RandevumKolay.Application.Features.Admin.Tenants;
 
+public enum PlatformTenantSort { Recent, Name, MostEmployees, MostCustomers }
+
 /// <summary>Every registered business across the platform, for the manager
 /// panel's business directory.</summary>
 public record GetPlatformTenantsQuery(
@@ -13,7 +15,10 @@ public record GetPlatformTenantsQuery(
     int PageSize = 20,
     string? SearchTerm = null,
     string? Plan = null,
-    bool? IsActive = null) : IRequest<PaginatedList<PlatformTenantDto>>;
+    bool? IsActive = null,
+    BusinessCategory? Category = null,
+    string? City = null,
+    PlatformTenantSort Sort = PlatformTenantSort.Recent) : IRequest<PaginatedList<PlatformTenantDto>>;
 
 public record PlatformTenantDto(
     Guid TenantId,
@@ -64,7 +69,24 @@ public sealed class GetPlatformTenantsQueryHandler : IRequestHandler<GetPlatform
         if (request.IsActive.HasValue)
             tenantQuery = tenantQuery.Where(t => t.IsActive == request.IsActive.Value);
 
-        tenantQuery = tenantQuery.OrderByDescending(t => t.CreatedAt);
+        if (request.Category.HasValue)
+            tenantQuery = tenantQuery.Where(t =>
+                _context.Businesses.Any(b => b.TenantId == t.Id && b.Category == request.Category.Value));
+
+        if (!string.IsNullOrWhiteSpace(request.City))
+        {
+            var city = request.City.ToLower();
+            tenantQuery = tenantQuery.Where(t =>
+                _context.Businesses.Any(b => b.TenantId == t.Id && b.City != null && b.City.ToLower().Contains(city)));
+        }
+
+        tenantQuery = request.Sort switch
+        {
+            PlatformTenantSort.Name => tenantQuery.OrderBy(t => t.Name),
+            PlatformTenantSort.MostEmployees => tenantQuery.OrderByDescending(t => _context.Employees.Count(e => e.TenantId == t.Id)),
+            PlatformTenantSort.MostCustomers => tenantQuery.OrderByDescending(t => _context.Customers.Count(c => c.TenantId == t.Id)),
+            _ => tenantQuery.OrderByDescending(t => t.CreatedAt),
+        };
 
         var page = await PaginatedList<RandevumKolay.Domain.Entities.Tenant>.CreateAsync(
             tenantQuery, request.PageNumber, request.PageSize, cancellationToken);

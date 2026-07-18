@@ -4,7 +4,8 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { Badge } from '@/components/ui/Badge'
 import { showToast } from '@/components/ui/Toast'
 import { formatDate } from '@/lib/utils'
-import { useAdminTenants, useSetTenantActiveStatus, type PlatformTenant } from '@/hooks/useAdminTenants'
+import { businessCategoryLabels } from '@/config/businessCategories'
+import { useAdminTenants, useSetTenantActiveStatus, type PlatformTenant, type PlatformTenantSort } from '@/hooks/useAdminTenants'
 
 const planLabels: Record<string, string> = {
   starter: 'Starter',
@@ -13,14 +14,38 @@ const planLabels: Record<string, string> = {
   custom: 'Custom',
 }
 
+const sortLabels: Record<PlatformTenantSort, string> = {
+  Recent: 'En Yeni',
+  Name: 'İsme Göre (A-Z)',
+  MostEmployees: 'En Çok Personel',
+  MostCustomers: 'En Çok Müşteri',
+}
+
 export function BusinessesPage() {
   const [search, setSearch] = useState('')
   const [plan, setPlan] = useState('')
+  const [category, setCategory] = useState('')
+  const [city, setCity] = useState('')
+  const [isActive, setIsActive] = useState('')
+  const [sort, setSort] = useState<PlatformTenantSort>('Recent')
   const [page, setPage] = useState(1)
   const [detail, setDetail] = useState<PlatformTenant | null>(null)
 
-  const { data, isLoading } = useAdminTenants({ pageNumber: page, pageSize: 20, search: search || undefined, plan: plan || undefined })
+  const { data, isLoading } = useAdminTenants({
+    pageNumber: page,
+    pageSize: 20,
+    search: search || undefined,
+    plan: plan || undefined,
+    category: category ? Number(category) : undefined,
+    city: city || undefined,
+    isActive: isActive === '' ? undefined : isActive === 'true',
+    sort,
+  })
   const statusMutation = useSetTenantActiveStatus()
+
+  function resetPage<T>(setter: (v: T) => void) {
+    return (v: T) => { setter(v); setPage(1) }
+  }
 
   const tenants = data?.items ?? []
 
@@ -38,24 +63,59 @@ export function BusinessesPage() {
     <div className="space-y-5">
       <PageHeader title="İşletmeler" description={`Platformdaki tüm kayıtlı işletmeler${data ? ` (${data.totalCount})` : ''}`} />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="relative lg:col-span-2">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="İşletme adı, alt alan adı ara..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            onChange={(e) => resetPage(setSearch)(e.target.value)}
             className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
         <select
           value={plan}
-          onChange={(e) => { setPlan(e.target.value); setPage(1) }}
+          onChange={(e) => resetPage(setPlan)(e.target.value)}
           className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           <option value="">Tüm Planlar</option>
           {Object.entries(planLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <select
+          value={category}
+          onChange={(e) => resetPage(setCategory)(e.target.value)}
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          <option value="">Tüm Kategoriler</option>
+          {Object.entries(businessCategoryLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <input
+          type="text"
+          placeholder="Şehir"
+          value={city}
+          onChange={(e) => resetPage(setCity)(e.target.value)}
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+        <select
+          value={isActive}
+          onChange={(e) => resetPage(setIsActive)(e.target.value)}
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          <option value="">Tüm Durumlar</option>
+          <option value="true">Aktif</option>
+          <option value="false">Askıda</option>
+        </select>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <label className="text-xs font-medium text-gray-600">Sırala:</label>
+        <select
+          value={sort}
+          onChange={(e) => resetPage(setSort)(e.target.value as PlatformTenantSort)}
+          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          {Object.entries(sortLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
       </div>
 
@@ -149,6 +209,7 @@ export function BusinessesPage() {
                 {detail.ownerEmail && <div className="flex items-center gap-2 text-gray-600"><Mail className="h-4 w-4 shrink-0 text-gray-400" />{detail.ownerFullName ? `${detail.ownerFullName} (${detail.ownerEmail})` : detail.ownerEmail}</div>}
                 {detail.phone && <div className="flex items-center gap-2 text-gray-600"><Phone className="h-4 w-4 shrink-0 text-gray-400" />{detail.phone}</div>}
                 {detail.city && <div className="flex items-center gap-2 text-gray-600"><MapPin className="h-4 w-4 shrink-0 text-gray-400" />{detail.city}</div>}
+                {detail.category != null && <div className="text-gray-600">Kategori: {businessCategoryLabels[detail.category] ?? detail.category}</div>}
                 <div className="flex items-center gap-2 text-gray-600"><Users className="h-4 w-4 shrink-0 text-gray-400" />{detail.subdomain}.randevumkolay.com</div>
               </div>
               <div className="rounded-xl bg-gray-50 p-3 text-xs text-gray-500 space-y-1">

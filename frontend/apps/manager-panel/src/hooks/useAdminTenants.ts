@@ -2,6 +2,8 @@ import api from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PaginatedList } from '@/types'
 
+export type PlatformTenantSort = 'Recent' | 'Name' | 'MostEmployees' | 'MostCustomers'
+
 export interface PlatformTenant {
   tenantId: string
   tenantName: string
@@ -29,6 +31,9 @@ export interface GetTenantsParams {
   search?: string
   plan?: string
   isActive?: boolean
+  category?: number
+  city?: string
+  sort?: PlatformTenantSort
 }
 
 export function useAdminTenants(params: GetTenantsParams) {
