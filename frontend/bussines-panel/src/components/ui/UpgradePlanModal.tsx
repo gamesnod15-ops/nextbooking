@@ -2,6 +2,7 @@ import { X, Check, Zap, Briefcase, Star, Crown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { getNextPlan, getPlanConfig } from '@/config/plans'
+import { usePricingPlans } from '@/hooks/usePricingPlans'
 import type { PlanId } from '@/types'
 
 interface UpgradePlanModalProps {
@@ -12,7 +13,21 @@ interface UpgradePlanModalProps {
 }
 
 export function UpgradePlanModal({ currentPlan, moduleName, requiredPlan, onClose }: UpgradePlanModalProps) {
-  const targetPlan = getPlanConfig(requiredPlan) ?? getNextPlan(currentPlan)
+  const localPlan = getPlanConfig(requiredPlan) ?? getNextPlan(currentPlan)
+  const { data: apiPlans } = usePricingPlans()
+  const apiPlan = apiPlans?.find((p) => p.planKey === requiredPlan)
+
+  // API content (managed via the manager panel) takes precedence; the local
+  // config is only a fallback while it loads or if it's unreachable.
+  const targetPlan = apiPlan
+    ? {
+        id: requiredPlan,
+        name: apiPlan.name,
+        price: apiPlan.isCustomPricing ? 'Özel fiyat' : `₺${apiPlan.price} / ay`,
+        features: apiPlan.features,
+        ctaLabel: apiPlan.buttonText,
+      }
+    : localPlan
   if (!targetPlan) return null
 
   const planVisuals: Record<PlanId, { icon: React.ReactNode; color: string; ringColor: string }> = {

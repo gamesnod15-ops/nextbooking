@@ -1,86 +1,47 @@
 import Link from 'next/link'
-import { Check } from 'lucide-react'
+import { Check, Minus } from 'lucide-react'
 
-const plans = [
-  {
-    id: 'starter',
-    name: 'Başlangıç',
-    badge: 'Başlangıç',
-    price: '₺299',
-    period: '/ay',
-    desc: 'Temel operasyonları hızlıca başlatın.',
-    features: [
-      'Temel randevu, takvim ve müşteri yönetimi',
-      'Ödeme takibi ve temel raporlar',
-      'Formlar ve paket satışı',
-      'Tek şube ile hızlı başlangıç',
-      '14 gün ücretsiz deneme',
-    ],
-    cta: 'Ücretsiz Başla',
-    popular: false,
-    accentClass: 'border-slate-200',
-    badgeClass: 'bg-slate-100 text-slate-700',
-  },
-  {
-    id: 'business',
-    name: 'Büyüme',
-    badge: 'Büyüme',
-    price: '₺599',
-    period: '/ay',
-    desc: 'Pazarlama akışlarını ve çoklu şube operasyonlarını yönetin.',
-    features: [
-      'Kampanya, kupon ve indirim yönetimi',
-      'Online rezervasyon ve bekleme listesi',
-      'Sadakat programı ve yorum toplama',
-      'Çoklu şube yönetimi',
-      'SMS & e-posta hatırlatma',
-    ],
-    cta: 'Ücretsiz Başla',
-    popular: true,
-    accentClass: 'border-brand-300',
-    badgeClass: 'bg-cyan-50 text-cyan-700',
-  },
-  {
-    id: 'professional',
-    name: 'Profesyonel',
-    badge: 'Otomasyon',
-    price: '₺999',
-    period: '/ay',
-    desc: 'Stok, finans ve ekip performansını tek yerden yönetin.',
-    features: [
-      'Ürün satışı ve stok yönetimi',
-      'Cari alacak ve taksit takibi',
-      'Personel performans takibi',
-      'Prim, hak ediş, borç ve ödeme takibi',
-      'Gelişmiş analitik & raporlar',
-    ],
-    cta: 'Ücretsiz Başla',
-    popular: false,
-    accentClass: 'border-blue-200',
-    badgeClass: 'bg-blue-50 text-blue-700',
-  },
-  {
-    id: 'custom',
-    name: 'Kurumsal',
-    badge: 'Kurumsal',
-    price: 'Özel',
-    period: ' fiyat',
-    desc: 'Kuruma özel kurgu, özel akışlar ve genişleme paketi.',
-    features: [
-      'Tüm Professional özellikleri',
-      'Canlı chatbot ve walk-in sıra yönetimi',
-      'Özel entegrasyon ve onboarding',
-      'Kuruma özel modül kurgusu',
-      'SLA garantisi & 7/24 destek',
-    ],
-    cta: 'Satış Ekibiyle Görüş',
-    popular: false,
-    accentClass: 'border-amber-200',
-    badgeClass: 'bg-amber-50 text-amber-700',
-  },
-]
+interface ApiPlan {
+  name: string
+  badgeLabel: string
+  description: string
+  price: number | null
+  isCustomPricing: boolean
+  buttonText: string
+  features: string[]
+  isHighlighted: boolean
+  highlightLabel: string | null
+  planKey: string | null
+}
 
-export function PricingSection() {
+const accentClasses = ['border-slate-200 bg-slate-100 text-slate-700', 'border-blue-200 bg-blue-50 text-blue-700', 'border-amber-200 bg-amber-50 text-amber-700']
+
+async function getPlans(): Promise<ApiPlan[]> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280'
+  try {
+    const res = await fetch(`${apiUrl}/api/v1/pricing-plans`, { next: { revalidate: 300 } })
+    if (!res.ok) return []
+    return res.json()
+  } catch {
+    return []
+  }
+}
+
+export async function PricingSection() {
+  const plans = await getPlans()
+  if (plans.length === 0) return null
+
+  // Union of every feature across plans, in first-seen order — used for the
+  // comparison table below the cards.
+  const allFeatures: string[] = []
+  for (const plan of plans) {
+    for (const feature of plan.features) {
+      if (!allFeatures.includes(feature)) allFeatures.push(feature)
+    }
+  }
+
+  let accentIdx = 0
+
   return (
     <section id="pricing" className="bg-gray-50 py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
@@ -90,66 +51,119 @@ export function PricingSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative flex flex-col rounded-2xl border-2 p-6 ${
-                plan.popular
-                  ? 'bg-brand-500 text-white border-brand-300 shadow-2xl scale-[1.03]'
-                  : `bg-white ${plan.accentClass} shadow-sm`
-              }`}
-            >
-                {plan.popular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-black px-3 py-1 text-xs font-bold text-brand-500 shadow">
-                    En Popüler
-                  </span>
-                </div>
-              )}
+          {plans.map((plan, i) => {
+            const accentClass = plan.isHighlighted ? '' : accentClasses[accentIdx++ % accentClasses.length]
+            const [borderClass, ...badgeClassParts] = accentClass.split(' ')
+            const badgeClass = badgeClassParts.join(' ')
 
-              {/* Badge */}
-              <div className="mb-3">
-                <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${plan.popular ? 'bg-white/20 text-white' : plan.badgeClass}`}>
-                  {plan.badge}
-                </span>
-              </div>
-
-              <h3 className={`text-xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
-              <p className={`mt-1 text-xs leading-relaxed ${plan.popular ? 'text-white/70' : 'text-gray-500'}`}>{plan.desc}</p>
-
-              <div className="mt-5 flex items-baseline gap-0.5">
-                <span className={`text-4xl font-extrabold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.price}</span>
-                <span className={`text-sm font-medium ${plan.popular ? 'text-white/70' : 'text-gray-500'}`}>{plan.period}</span>
-              </div>
-
-              <ul className="mt-6 flex-1 space-y-3">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.popular ? 'text-white/60' : 'text-gray-900'}`} />
-                    <span className={plan.popular ? 'text-white/80' : 'text-gray-700'}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={plan.id === 'custom' ? '/iletisim' : '/register'}
-                className={`mt-8 block rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all hover:-translate-y-0.5 ${
-                  plan.popular
-                    ? 'bg-black text-brand-500 hover:bg-gray-900 shadow'
-                    : 'bg-brand-500 text-white hover:bg-brand-600'
+            return (
+              <div
+                key={i}
+                className={`relative flex flex-col rounded-2xl border-2 p-6 ${
+                  plan.isHighlighted
+                    ? 'bg-brand-500 text-white border-brand-300 shadow-2xl scale-[1.03]'
+                    : `bg-white ${borderClass} shadow-sm`
                 }`}
               >
-                {plan.cta}
-              </Link>
-            </div>
-          ))}
+                {plan.isHighlighted && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span className="rounded-full bg-black px-3 py-1 text-xs font-bold text-brand-500 shadow">
+                      {plan.highlightLabel || 'En Popüler'}
+                    </span>
+                  </div>
+                )}
+
+                <div className="mb-3">
+                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${plan.isHighlighted ? 'bg-white/20 text-white' : badgeClass}`}>
+                    {plan.badgeLabel}
+                  </span>
+                </div>
+
+                <h3 className={`text-xl font-bold ${plan.isHighlighted ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+                <p className={`mt-1 text-xs leading-relaxed ${plan.isHighlighted ? 'text-white/70' : 'text-gray-500'}`}>{plan.description}</p>
+
+                <div className="mt-5 flex items-baseline gap-0.5">
+                  {plan.isCustomPricing ? (
+                    <>
+                      <span className={`text-4xl font-extrabold ${plan.isHighlighted ? 'text-white' : 'text-gray-900'}`}>Özel</span>
+                      <span className={`text-sm font-medium ${plan.isHighlighted ? 'text-white/70' : 'text-gray-500'}`}> fiyat</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className={`text-4xl font-extrabold ${plan.isHighlighted ? 'text-white' : 'text-gray-900'}`}>₺{plan.price}</span>
+                      <span className={`text-sm font-medium ${plan.isHighlighted ? 'text-white/70' : 'text-gray-500'}`}>/ay</span>
+                    </>
+                  )}
+                </div>
+
+                <ul className="mt-6 flex-1 space-y-3">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.isHighlighted ? 'text-white/60' : 'text-gray-900'}`} />
+                      <span className={plan.isHighlighted ? 'text-white/80' : 'text-gray-700'}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={plan.planKey === 'custom' ? '/iletisim' : '/register'}
+                  className={`mt-8 block rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all hover:-translate-y-0.5 ${
+                    plan.isHighlighted
+                      ? 'bg-black text-brand-500 hover:bg-gray-900 shadow'
+                      : 'bg-brand-500 text-white hover:bg-brand-600'
+                  }`}
+                >
+                  {plan.buttonText}
+                </Link>
+              </div>
+            )
+          })}
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
           Tüm planlar 14 gün ücretsiz deneme ile başlar. İstediğiniz zaman plan değiştirin veya iptal edin.
         </p>
+
+        {allFeatures.length > 0 && (
+          <div className="mt-20">
+            <h3 className="mb-6 text-center text-2xl font-bold text-gray-900">Paket Karşılaştırma</h3>
+            <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+              <table className="w-full min-w-[640px] text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="px-5 py-4 text-left font-semibold text-gray-500">Özellik</th>
+                    {plans.map((plan, i) => (
+                      <th key={i} className="px-5 py-4 text-center font-bold text-gray-900">{plan.name}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {allFeatures.map((feature) => (
+                    <tr key={feature}>
+                      <td className="px-5 py-3 text-gray-700">{feature}</td>
+                      {plans.map((plan, i) => (
+                        <td key={i} className="px-5 py-3 text-center">
+                          {plan.features.includes(feature)
+                            ? <Check className="mx-auto h-4 w-4 text-emerald-500" />
+                            : <Minus className="mx-auto h-4 w-4 text-gray-300" />}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                  <tr className="bg-gray-50/60">
+                    <td className="px-5 py-3 font-semibold text-gray-900">Aylık Fiyat</td>
+                    {plans.map((plan, i) => (
+                      <td key={i} className="px-5 py-3 text-center font-bold text-gray-900">
+                        {plan.isCustomPricing ? 'Özel fiyat' : `₺${plan.price}/ay`}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )
 }
-

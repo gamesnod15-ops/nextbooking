@@ -7,6 +7,7 @@ import { connectIntegration, disconnectIntegration } from '@/store/slices/integr
 import { INTEGRATIONS } from '@/config/integrations'
 import { PLAN_CONFIGS, getPlanConfig, normalizePlanId, planAllows, splitModulesByPlan } from '@/config/plans'
 import { useBusiness, useUpdateBusiness } from '@/hooks/useBusiness'
+import { usePricingPlans } from '@/hooks/usePricingPlans'
 import type { Business } from '@/types'
 import { useBusinessSettings, useSaveBusinessSettings } from '@/hooks/useSettings'
 import { PageHeader } from '@/components/ui/PageHeader'
@@ -1523,7 +1524,24 @@ export function BillingSettings() {
   const modules = useAppSelector((s) => s.modules.modules)
   const { tenantId: _tenantId } = useAppSelector((s) => s.auth)
   const currentPlan = normalizePlanId(business?.plan)
-  const currentPlanConfig = getPlanConfig(currentPlan)
+  const { data: apiPlans } = usePricingPlans()
+  const apiPlanByKey = Object.fromEntries((apiPlans ?? []).filter((p) => p.planKey).map((p) => [p.planKey as string, p]))
+
+  function displayPlan(plan: ReturnType<typeof getPlanConfig>) {
+    const api = apiPlanByKey[plan.id]
+    if (!api) return plan
+    return {
+      ...plan,
+      name: api.name,
+      badgeLabel: api.badgeLabel,
+      description: api.description,
+      price: api.isCustomPricing ? 'Özel fiyat' : `₺${api.price} / ay`,
+      features: api.features,
+      ctaLabel: api.buttonText,
+    }
+  }
+
+  const currentPlanConfig = displayPlan(getPlanConfig(currentPlan))
   const { available, unavailable } = splitModulesByPlan(modules, currentPlan)
 
   const accessToken = useAppSelector((s) => s.auth.accessToken)
@@ -1833,7 +1851,8 @@ export function BillingSettings() {
         <CardContent className="px-0 pb-6">
           <div className="billing-scrollbar overflow-x-auto px-1 pb-4">
             <div className="flex min-w-max gap-4 px-5 snap-x snap-mandatory">
-              {PLAN_CONFIGS.map((plan) => {
+              {PLAN_CONFIGS.map((planConfig) => {
+                const plan = displayPlan(planConfig)
                 const isActive = plan.id === currentPlan
                 const availableCount = modules.filter((module) => planAllows(plan.id, module.requiredPlan)).length
                 const borderClass = plan.accentClassName.split(' ').find((item) => item.startsWith('border-'))

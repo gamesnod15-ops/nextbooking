@@ -6,121 +6,66 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { CalendarCheck, Check, Zap, Star, Building2, ArrowRight, Sparkles, X, Send, CheckCircle, Loader2 } from 'lucide-react'
 import { api, type ApiError } from '@/lib/api'
 
-const plans = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    badge: 'Başlangıç',
-    price: '₺299',
-    period: '/ay',
-    desc: 'Temel operasyonları hızlıca başlatın.',
-    icon: Zap,
-    color: 'slate',
-    features: [
-      'Temel randevu ve takvim yönetimi',
-      'Müşteri yönetimi',
-      'Ödeme takibi ve temel raporlar',
-      'Formlar ve paket satışı',
-      'Tek şube',
-      '14 gün ücretsiz deneme',
-    ],
-    popular: false,
-    accentBorder: 'border-slate-200',
-    accentBg: 'bg-slate-50',
-    badgeClass: 'bg-slate-100 text-slate-700',
-    iconBg: 'bg-slate-100',
-    iconColor: 'text-slate-600',
-    btnClass: 'bg-slate-700 hover:bg-slate-800 text-white',
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    badge: 'En Popüler',
-    price: '₺599',
-    period: '/ay',
-    desc: 'Pazarlama ve çoklu şube operasyonları.',
-    icon: Star,
-    color: 'brand',
-    features: [
-      'Tüm Starter özellikleri',
-      'Kampanya, kupon ve indirim yönetimi',
-      'Online rezervasyon ve bekleme listesi',
-      'Sadakat programı ve yorum toplama',
-      'Çoklu şube yönetimi',
-      'SMS & e-posta hatırlatma',
-    ],
-    popular: true,
-    accentBorder: 'border-brand-300',
-    accentBg: 'bg-brand-500',
-    badgeClass: 'bg-white/20 text-white',
-    iconBg: 'bg-white/20',
-    iconColor: 'text-white',
-    btnClass: 'bg-white text-brand-600 hover:bg-brand-50 font-bold',
-  },
-  {
-    id: 'professional',
-    name: 'Professional',
-    badge: 'Otomasyon',
-    price: '₺999',
-    period: '/ay',
-    desc: 'Stok, finans ve ekip performansı.',
-    icon: Building2,
-    color: 'blue',
-    features: [
-      'Tüm Business özellikleri',
-      'Ürün satışı ve stok yönetimi',
-      'Cari alacak ve taksit takibi',
-      'Personel performans takibi',
-      'Prim, hak ediş ve borç takibi',
-      'Gelişmiş analitik & raporlar',
-    ],
-    popular: false,
-    accentBorder: 'border-blue-200',
-    accentBg: 'bg-blue-50',
-    badgeClass: 'bg-blue-100 text-blue-700',
-    iconBg: 'bg-blue-100',
-    iconColor: 'text-blue-600',
-    btnClass: 'bg-blue-600 hover:bg-blue-700 text-white',
-  },
-  {
-    id: 'custom',
-    name: 'Custom',
-    badge: 'Kurumsal',
-    price: 'Özel',
-    period: ' fiyat',
-    desc: 'Kuruma özel akışlar ve SLA garantisi.',
-    icon: Sparkles,
-    color: 'amber',
-    features: [
-      'Tüm Professional özellikleri',
-      'Canlı chatbot ve walk-in sıra yönetimi',
-      'Özel entegrasyon ve onboarding',
-      'Kuruma özel modül kurgusu',
-      'SLA garantisi',
-      '7/24 öncelikli destek',
-    ],
-    popular: false,
-    accentBorder: 'border-amber-200',
-    accentBg: 'bg-amber-50',
-    badgeClass: 'bg-amber-100 text-amber-700',
-    iconBg: 'bg-amber-100',
-    iconColor: 'text-amber-600',
-    btnClass: 'bg-amber-500 hover:bg-amber-600 text-black',
-  },
+interface ApiPlan {
+  name: string
+  badgeLabel: string
+  description: string
+  price: number | null
+  isCustomPricing: boolean
+  buttonText: string
+  features: string[]
+  isHighlighted: boolean
+  highlightLabel: string | null
+  planKey: string | null
+}
+
+// Visuals aren't stored in the DB — cycle through a fixed style per card
+// position, with the highlighted plan always getting the brand treatment.
+const STYLE_BY_POSITION = [
+  { icon: Zap, color: 'slate', accentBorder: 'border-slate-200', accentBg: 'bg-slate-50', badgeClass: 'bg-slate-100 text-slate-700', iconBg: 'bg-slate-100', iconColor: 'text-slate-600', btnClass: 'bg-slate-700 hover:bg-slate-800 text-white' },
+  { icon: Building2, color: 'blue', accentBorder: 'border-blue-200', accentBg: 'bg-blue-50', badgeClass: 'bg-blue-100 text-blue-700', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', btnClass: 'bg-blue-600 hover:bg-blue-700 text-white' },
+  { icon: Sparkles, color: 'amber', accentBorder: 'border-amber-200', accentBg: 'bg-amber-50', badgeClass: 'bg-amber-100 text-amber-700', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', btnClass: 'bg-amber-500 hover:bg-amber-600 text-black' },
 ]
+const HIGHLIGHT_STYLE = { icon: Star, color: 'brand', accentBorder: 'border-brand-300', accentBg: 'bg-brand-500', badgeClass: 'bg-white/20 text-white', iconBg: 'bg-white/20', iconColor: 'text-white', btnClass: 'bg-white text-brand-600 hover:bg-brand-50 font-bold' }
+
+function usePlans() {
+  const [plans, setPlans] = useState<(ApiPlan & typeof HIGHLIGHT_STYLE & { key: string })[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<ApiPlan[]>('/api/v1/pricing-plans')
+      .then((data) => {
+        if (cancelled) return
+        let styleIdx = 0
+        setPlans(data.map((p, i) => ({
+          ...p,
+          ...(p.isHighlighted ? HIGHLIGHT_STYLE : STYLE_BY_POSITION[styleIdx++ % STYLE_BY_POSITION.length]),
+          key: p.planKey || `plan-${i}`,
+        })))
+      })
+      .catch(() => { if (!cancelled) setPlans([]) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  return { plans, loading }
+}
 
 function PaketSecContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { plans, loading: plansLoading } = usePlans()
   const [selected, setSelected] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [leadModalOpen, setLeadModalOpen] = useState(false)
 
   useEffect(() => {
+    if (plans.length === 0) return
     const planFromUrl = searchParams.get('plan')
     const planFromStorage = localStorage.getItem('selectedPlan')
     const plan = planFromUrl || planFromStorage
-    if (plan && plans.some((p) => p.id === plan)) {
+    if (plan && plans.some((p) => p.key === plan)) {
       setSelected(plan)
     }
 
@@ -128,7 +73,7 @@ function PaketSecContent() {
     if (tokenFromUrl) {
       localStorage.setItem('accessToken', tokenFromUrl)
     }
-  }, [])
+  }, [plans])
 
   function handleContinue() {
     if (!selected) return
@@ -184,17 +129,21 @@ function PaketSecContent() {
         </div>
 
         {/* Plan cards */}
+        {plansLoading ? (
+          <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-brand-500" /></div>
+        ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {plans.map((plan) => {
             const Icon = plan.icon
-            const isSelected = selected === plan.id
-            const isPopular = plan.popular
+            const isSelected = selected === plan.key
+            const isPopular = plan.isHighlighted
+            const isCustom = plan.key === 'custom'
 
             return (
               <button
-                key={plan.id}
+                key={plan.key}
                 type="button"
-                onClick={() => plan.id === 'custom' ? setLeadModalOpen(true) : setSelected(plan.id)}
+                onClick={() => isCustom ? setLeadModalOpen(true) : setSelected(plan.key)}
                 className={[
                   'relative flex flex-col rounded-2xl border-2 text-left transition-all focus:outline-none',
                   isPopular
@@ -206,7 +155,7 @@ function PaketSecContent() {
                 {/* Popular badge */}
                 {isPopular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 px-4 py-1 text-xs font-bold text-amber-900 shadow">
-                    ⭐ En Popüler
+                    ⭐ {plan.highlightLabel || 'En Popüler'}
                   </div>
                 )}
 
@@ -224,19 +173,28 @@ function PaketSecContent() {
                       <Icon className={`h-5 w-5 ${plan.iconColor}`} />
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${plan.badgeClass}`}>
-                      {plan.badge}
+                      {plan.badgeLabel}
                     </span>
                   </div>
 
                   {/* Name + desc */}
                   <h3 className={`text-lg font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
-                  <p className={`mt-1 text-xs leading-relaxed ${isPopular ? 'text-white/75' : 'text-gray-500'}`}>{plan.desc}</p>
+                  <p className={`mt-1 text-xs leading-relaxed ${isPopular ? 'text-white/75' : 'text-gray-500'}`}>{plan.description}</p>
 
                   {/* Price */}
                   <div className="mt-4 mb-5">
-                    <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.price}</span>
-                    <span className={`text-sm ${isPopular ? 'text-white/70' : 'text-gray-500'}`}>{plan.period}</span>
-                    {plan.id !== 'custom' && (
+                    {plan.isCustomPricing ? (
+                      <>
+                        <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>Özel</span>
+                        <span className={`text-sm ${isPopular ? 'text-white/70' : 'text-gray-500'}`}> fiyat</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>₺{plan.price}</span>
+                        <span className={`text-sm ${isPopular ? 'text-white/70' : 'text-gray-500'}`}>/ay</span>
+                      </>
+                    )}
+                    {!isCustom && (
                       <p className={`text-xs mt-0.5 ${isPopular ? 'text-white/60' : 'text-gray-400'}`}>+ KDV • 14 gün ücretsiz</p>
                     )}
                   </div>
@@ -253,7 +211,7 @@ function PaketSecContent() {
 
                   {/* Select button */}
                   <div className={`mt-6 w-full rounded-xl py-2.5 text-center text-sm font-semibold transition-all ${
-                    plan.id === 'custom'
+                    isCustom
                       ? plan.btnClass
                       : isSelected
                         ? isPopular
@@ -263,13 +221,14 @@ function PaketSecContent() {
                           ? plan.btnClass
                           : `border-2 ${plan.accentBorder} text-gray-700 hover:border-brand-300`
                   }`}>
-                    {plan.id === 'custom' ? 'Satış Ekibiyle Görüş' : isSelected ? '✓ Seçildi' : 'Seç'}
+                    {isCustom ? plan.buttonText : isSelected ? '✓ Seçildi' : 'Seç'}
                   </div>
                 </div>
               </button>
             )
           })}
         </div>
+        )}
 
         {/* Money-back note */}
         <div className="mt-8 text-center">

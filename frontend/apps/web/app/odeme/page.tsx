@@ -5,14 +5,53 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CalendarCheck, CreditCard, MapPin, Lock, ArrowRight, CheckCircle, ChevronDown, ChevronUp, Sparkles, X } from 'lucide-react'
 import axios from '@/lib/axios'
+import { api } from '@/lib/api'
 
 interface PlanMeta { id: string; name: string; price: string; period: string; color: string; monthlyPrice: number }
 
-const PLAN_META: Record<string, PlanMeta> = {
-  starter:      { id: 'starter',      name: 'Starter',      price: '\u20BA299', period: '/ay', color: 'bg-slate-600', monthlyPrice: 299 },
-  business:     { id: 'business',     name: 'Business',     price: '\u20BA599', period: '/ay', color: 'bg-brand-500', monthlyPrice: 599 },
-  professional: { id: 'professional', name: 'Professional', price: '\u20BA999', period: '/ay', color: 'bg-blue-600', monthlyPrice: 999 },
-  custom:       { id: 'custom',       name: 'Custom',       price: 'Özel', period: ' fiyat', color: 'bg-amber-500', monthlyPrice: 0 },
+interface ApiPlan {
+  name: string
+  price: number | null
+  isCustomPricing: boolean
+  planKey: string | null
+}
+
+const COLOR_BY_KEY: Record<string, string> = {
+  starter: 'bg-slate-600',
+  business: 'bg-brand-500',
+  professional: 'bg-blue-600',
+  custom: 'bg-amber-500',
+}
+
+function usePlanMeta() {
+  const [planMeta, setPlanMeta] = useState<Record<string, PlanMeta>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<ApiPlan[]>('/api/v1/pricing-plans')
+      .then((data) => {
+        if (cancelled) return
+        const map: Record<string, PlanMeta> = {}
+        for (const p of data) {
+          const key = p.planKey || p.name.toLowerCase()
+          map[key] = {
+            id: key,
+            name: p.name,
+            price: p.isCustomPricing ? 'Özel' : `₺${p.price}`,
+            period: p.isCustomPricing ? ' fiyat' : '/ay',
+            color: COLOR_BY_KEY[key] || 'bg-slate-600',
+            monthlyPrice: p.isCustomPricing ? 0 : (p.price ?? 0),
+          }
+        }
+        setPlanMeta(map)
+      })
+      .catch(() => { if (!cancelled) setPlanMeta({}) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  return { planMeta, loading }
 }
 
 const DURATIONS = [
@@ -92,7 +131,8 @@ function OdemeInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planId = searchParams.get('plan') ?? 'starter'
-  const plan = PLAN_META[planId] ?? PLAN_META['starter']
+  const { planMeta, loading: planMetaLoading } = usePlanMeta()
+  const plan = planMeta[planId] ?? planMeta['starter'] ?? { id: planId, name: '', price: '', period: '', color: 'bg-slate-600', monthlyPrice: 0 }
 
   const [existingBilling, setExistingBilling] = useState<BillingInfo | null>(null)
   const [mode, setMode] = useState<'loading' | 'form' | 'cart'>('loading')
@@ -311,7 +351,7 @@ function OdemeInner() {
     }
   }
 
-  if (mode === 'loading') return null
+  if (mode === 'loading' || planMetaLoading) return null
 
   if (paid) {
     return (
