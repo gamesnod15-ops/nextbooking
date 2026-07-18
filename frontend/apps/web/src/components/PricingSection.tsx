@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Check, Minus } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 
 interface ApiPlan {
   name: string
@@ -35,13 +35,21 @@ export async function PricingSection() {
   if (plans.length === 0) return null
 
   // Union of every feature across plans, in first-seen order — used for the
-  // comparison table below the cards.
+  // comparison table below the cards. Slot order runs cheapest → richest, so
+  // this also groups the rows by the tier each feature is introduced in.
   const allFeatures: string[] = []
   for (const plan of plans) {
     for (const feature of plan.features) {
       if (!allFeatures.includes(feature)) allFeatures.push(feature)
     }
   }
+
+  // Tiers are cumulative: each plan includes everything from the plans below
+  // it, so a feature counts as present if it's listed on this plan or any
+  // cheaper one — only genuinely higher-tier features show as missing.
+  const includedFeatures = plans.map(
+    (_, i) => new Set(plans.slice(0, i + 1).flatMap((p) => p.features))
+  )
 
   let accentIdx = 0
 
@@ -142,11 +150,11 @@ export async function PricingSection() {
                 {allFeatures.map((feature) => (
                   <tr key={feature}>
                     <td className="border border-gray-300 px-5 py-3 text-gray-700">{feature}</td>
-                    {plans.map((plan, i) => (
+                    {plans.map((_, i) => (
                       <td key={i} className="border border-gray-300 px-5 py-3 text-center">
-                        {plan.features.includes(feature)
+                        {includedFeatures[i].has(feature)
                           ? <Check className="mx-auto h-4 w-4 text-emerald-500" />
-                          : <Minus className="mx-auto h-4 w-4 text-gray-300" />}
+                          : <X className="mx-auto h-4 w-4 text-red-300" />}
                       </td>
                     ))}
                   </tr>
