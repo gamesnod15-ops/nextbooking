@@ -115,6 +115,7 @@ builder.Services.AddCors(opts =>
                   "https://*.randevumkolay.com",
                   "https://next-bussines-ten.vercel.app",
                   "https://nextbooking-six.vercel.app",
+                  "https://nextbooking-manager.vercel.app",
                   "http://localhost:3000",
                   "http://localhost:3001",
                   "http://localhost:3002",
