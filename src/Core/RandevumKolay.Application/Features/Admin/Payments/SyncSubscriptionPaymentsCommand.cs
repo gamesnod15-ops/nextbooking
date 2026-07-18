@@ -8,12 +8,13 @@ namespace RandevumKolay.Application.Features.Admin.Payments;
 
 /// <summary>
 /// There is no automated billing job yet — <c>ChangePlanCommand</c> only updates
-/// the tenant's <c>Plan</c>/<c>SubscriptionEndsAt</c> fields, no money actually
-/// moves anywhere. This command backfills/refreshes the platform payment ledger
-/// from that plan state: for every tenant that has gone through checkout (has a
-/// <c>SubscriptionEndsAt</c>, i.e. isn't just sitting on the free trial) and is
-/// on a priced plan, it records one "Paid" subscription entry per calendar month
-/// so the manager panel's payments list and dashboard revenue reflect reality.
+/// the tenant's <c>Plan</c> field, no money actually moves anywhere, and most
+/// tenants pick their plan directly at registration rather than through the
+/// separate checkout flow, so <c>SubscriptionEndsAt</c> is unreliable as a
+/// "did they pay" signal. This command backfills/refreshes the platform payment
+/// ledger from plan state instead: every active tenant not on the free/default
+/// "starter" plan gets one "Paid" subscription entry per calendar month, so the
+/// manager panel's payments list and dashboard revenue reflect reality.
 /// Safe to run repeatedly — skips tenants that already have an entry this month.
 /// </summary>
 public record SyncSubscriptionPaymentsCommand : IRequest<SyncSubscriptionPaymentsResult>;
@@ -23,10 +24,10 @@ public record SyncSubscriptionPaymentsResult(int Created, int Skipped);
 public sealed class SyncSubscriptionPaymentsCommandHandler : IRequestHandler<SyncSubscriptionPaymentsCommand, SyncSubscriptionPaymentsResult>
 {
     // Mirrors frontend/bussines-panel/src/config/plans.ts — no backend pricing table exists yet.
-    // "custom" has no fixed price (negotiated per deal) so it's excluded from auto-sync.
+    // "starter" is the free/default plan every tenant starts on, so it's excluded.
+    // "custom" has no fixed price (negotiated per deal), also excluded from auto-sync.
     private static readonly Dictionary<string, decimal> PlanPrices = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["starter"] = 299m,
         ["business"] = 599m,
         ["professional"] = 999m,
     };
@@ -41,7 +42,7 @@ public sealed class SyncSubscriptionPaymentsCommandHandler : IRequestHandler<Syn
         var monthStart = new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero);
 
         var tenants = await _context.Tenants.AsNoTracking()
-            .Where(t => t.IsActive && t.SubscriptionEndsAt != null)
+            .Where(t => t.IsActive)
             .ToListAsync(cancellationToken);
 
         var tenantIds = tenants.Select(t => t.Id).ToList();
