@@ -17,6 +17,7 @@ public class TenantResolutionMiddleware
     private static readonly string[] TenantFreeRoutes =
     [
         "/api/v1/admin",
+        "/api/v1/pricing-plans",
         "/api/v1/tenants/register",
         "/api/v1/auth/login",
         "/api/v1/auth/register",
