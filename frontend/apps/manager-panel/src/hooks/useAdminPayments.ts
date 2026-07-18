@@ -17,6 +17,11 @@ export interface PlatformPayment {
   status: PlatformPaymentStatus
   paidAt: string | null
   createdAt: string
+  billingAddress: string | null
+  billingCity: string | null
+  billingCountry: string | null
+  taxNumber: string | null
+  taxOffice: string | null
 }
 
 export interface PlatformPaymentsSummary {
@@ -75,6 +80,23 @@ export function useUpdateAdminPaymentStatus() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: PlatformPaymentStatus }) =>
       api.patch(`/admin/payments/${id}/status`, { status }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'payments'] })
+      qc.invalidateQueries({ queryKey: ['admin', 'dashboard'] })
+    },
+  })
+}
+
+export interface SyncSubscriptionPaymentsResult {
+  created: number
+  skipped: number
+}
+
+export function useSyncSubscriptionPayments() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      api.post<SyncSubscriptionPaymentsResult>('/admin/payments/sync-subscriptions').then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'payments'] })
       qc.invalidateQueries({ queryKey: ['admin', 'dashboard'] })

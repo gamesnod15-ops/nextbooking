@@ -643,6 +643,11 @@ public class PlatformPaymentConfiguration : IEntityTypeConfiguration<PlatformPay
         builder.Property(p => p.Description).HasMaxLength(500);
         builder.Property(p => p.Currency).HasMaxLength(10).IsRequired();
         builder.Property(p => p.Amount).HasColumnType("decimal(18,2)");
+        builder.Property(p => p.BillingAddress).HasMaxLength(500);
+        builder.Property(p => p.BillingCity).HasMaxLength(100);
+        builder.Property(p => p.BillingCountry).HasMaxLength(100);
+        builder.Property(p => p.TaxNumber).HasMaxLength(50);
+        builder.Property(p => p.TaxOffice).HasMaxLength(100);
         builder.HasIndex(p => p.TenantId);
         builder.HasIndex(p => p.Type);
         builder.HasIndex(p => p.Status);

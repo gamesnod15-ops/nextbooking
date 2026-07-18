@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Loader2, Plus, X, Wallet, Clock } from 'lucide-react'
+import { Loader2, Plus, X, Wallet, Clock, RefreshCw, FileText, Building2, Hash } from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { StatCard } from '@/components/ui/StatCard'
 import { Badge } from '@/components/ui/Badge'
@@ -10,6 +10,8 @@ import {
   useAdminPaymentsSummary,
   useCreateAdminPayment,
   useUpdateAdminPaymentStatus,
+  useSyncSubscriptionPayments,
+  type PlatformPayment,
   type PlatformPaymentType,
   type PlatformPaymentStatus,
 } from '@/hooks/useAdminPayments'
@@ -43,12 +45,17 @@ const emptyForm = {
   status: 'Paid' as PlatformPaymentStatus,
 }
 
+function hasBillingInfo(p: PlatformPayment) {
+  return !!(p.billingAddress || p.billingCity || p.billingCountry || p.taxNumber || p.taxOffice)
+}
+
 export function PaymentsPage() {
   const [page, setPage] = useState(1)
   const [typeFilter, setTypeFilter] = useState<PlatformPaymentType | ''>('')
   const [statusFilter, setStatusFilter] = useState<PlatformPaymentStatus | ''>('')
   const [modalOpen, setModalOpen] = useState(false)
   const [form, setForm] = useState(emptyForm)
+  const [detail, setDetail] = useState<PlatformPayment | null>(null)
 
   const { data, isLoading } = useAdminPayments({
     pageNumber: page,
@@ -59,6 +66,7 @@ export function PaymentsPage() {
   const { data: summary } = useAdminPaymentsSummary()
   const createMutation = useCreateAdminPayment()
   const updateStatusMutation = useUpdateAdminPaymentStatus()
+  const syncMutation = useSyncSubscriptionPayments()
 
   const payments = data?.items ?? []
 
@@ -94,9 +102,27 @@ export function PaymentsPage() {
     }
   }
 
+  async function syncSubscriptions() {
+    try {
+      const result = await syncMutation.mutateAsync()
+      showToast('success', 'Senkronize edildi', `${result.created} yeni abonelik ödemesi oluşturuldu, ${result.skipped} atlandı.`)
+    } catch {
+      showToast('error', 'Hata', 'Abonelik ödemeleri senkronize edilemedi.')
+    }
+  }
+
   return (
     <div className="space-y-5">
       <PageHeader title="Ödemeler" description="Abonelik, reklamveren ve sponsorluk gelirleri">
+        <button
+          onClick={syncSubscriptions}
+          disabled={syncMutation.isPending}
+          className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          title="Ücretli plan seçen işletmelerin bu ayki abonelik ödemesini oluşturur"
+        >
+          {syncMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          Abonelik Ödemelerini Senkronize Et
+        </button>
         <button
           onClick={() => setModalOpen(true)}
           className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
@@ -152,11 +178,12 @@ export function PaymentsPage() {
                 <th className="px-4 py-3 text-left font-semibold text-gray-600">Tutar</th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-600">Durum</th>
                 <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 lg:table-cell">Tarih</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-600">Fatura</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {payments.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-10 text-center text-gray-400">Ödeme kaydı bulunamadı</td></tr>
+                <tr><td colSpan={7} className="px-4 py-10 text-center text-gray-400">Ödeme kaydı bulunamadı</td></tr>
               ) : payments.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3"><Badge variant="info">{typeLabels[p.type]}</Badge></td>
@@ -174,6 +201,15 @@ export function PaymentsPage() {
                     <Badge variant={statusVariant[p.status]} className="ml-1 hidden sm:inline-flex">{statusLabels[p.status]}</Badge>
                   </td>
                   <td className="hidden px-4 py-3 text-gray-500 lg:table-cell">{formatDate(p.paidAt ?? p.createdAt)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => setDetail(p)}
+                      className={`rounded-md p-1.5 hover:bg-gray-100 ${hasBillingInfo(p) ? 'text-primary' : 'text-gray-300'}`}
+                      title={hasBillingInfo(p) ? 'Fatura detayını görüntüle' : 'Fatura bilgisi yok'}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -186,6 +222,53 @@ export function PaymentsPage() {
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg border px-3 py-1.5 text-sm disabled:opacity-40">Önceki</button>
           <span className="px-3 py-1.5 text-sm text-gray-600">{page} / {data?.totalPages}</span>
           <button onClick={() => setPage((p) => p + 1)} disabled={page >= (data?.totalPages ?? 1)} className="rounded-lg border px-3 py-1.5 text-sm disabled:opacity-40">Sonraki</button>
+        </div>
+      )}
+
+      {/* Detail drawer */}
+      {detail && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/30" onClick={() => setDetail(null)}>
+          <div className="w-full max-w-sm bg-white shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+              <h2 className="text-base font-bold text-gray-900">Ödeme Detayı</h2>
+              <button onClick={() => setDetail(null)} className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-bold text-gray-900">{formatCurrency(detail.amount, detail.currency)}</div>
+                  <div className="text-xs text-gray-500">{detail.description ?? typeLabels[detail.type]}</div>
+                </div>
+                <Badge variant={statusVariant[detail.status]}>{statusLabels[detail.status]}</Badge>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2 text-gray-600"><Building2 className="h-4 w-4 shrink-0 text-gray-400" />{detail.payerName}{detail.tenantName ? ` (${detail.tenantName})` : ''}</div>
+                <div className="text-gray-500">Tarih: {formatDate(detail.paidAt ?? detail.createdAt)}</div>
+              </div>
+
+              <div className="rounded-xl bg-gray-50 p-3 text-sm space-y-2">
+                <div className="text-xs font-semibold text-gray-500">Fatura Bilgileri</div>
+                {hasBillingInfo(detail) ? (
+                  <>
+                    {(detail.billingAddress || detail.billingCity || detail.billingCountry) && (
+                      <div className="text-gray-700">
+                        {[detail.billingAddress, detail.billingCity, detail.billingCountry].filter(Boolean).join(', ')}
+                      </div>
+                    )}
+                    {(detail.taxNumber || detail.taxOffice) && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Hash className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                        {[detail.taxNumber, detail.taxOffice].filter(Boolean).join(' — ')}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-xs text-gray-400">Bu kayıt için fatura adresi girilmemiş.</p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

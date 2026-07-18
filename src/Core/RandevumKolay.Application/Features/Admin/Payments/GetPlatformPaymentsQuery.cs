@@ -26,7 +26,12 @@ public record PlatformPaymentDto(
     string Currency,
     PlatformPaymentStatus Status,
     DateTimeOffset? PaidAt,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    string? BillingAddress,
+    string? BillingCity,
+    string? BillingCountry,
+    string? TaxNumber,
+    string? TaxOffice);
 
 public sealed class GetPlatformPaymentsQueryHandler : IRequestHandler<GetPlatformPaymentsQuery, PaginatedList<PlatformPaymentDto>>
 {
@@ -69,7 +74,12 @@ public sealed class GetPlatformPaymentsQueryHandler : IRequestHandler<GetPlatfor
                 x.p.Currency,
                 x.p.Status,
                 x.p.PaidAt,
-                x.p.CreatedAt));
+                x.p.CreatedAt,
+                x.p.BillingAddress,
+                x.p.BillingCity,
+                x.p.BillingCountry,
+                x.p.TaxNumber,
+                x.p.TaxOffice));
 
         return await PaginatedList<PlatformPaymentDto>.CreateAsync(projected, request.PageNumber, request.PageSize, cancellationToken);
     }

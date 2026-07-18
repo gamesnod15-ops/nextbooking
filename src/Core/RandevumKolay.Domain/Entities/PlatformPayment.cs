@@ -22,6 +22,14 @@ public class PlatformPayment : AuditableEntity
     public PlatformPaymentStatus Status { get; private set; } = PlatformPaymentStatus.Pending;
     public DateTimeOffset? PaidAt { get; private set; }
 
+    // Billing/invoice details — snapshotted at creation time so the ledger entry
+    // stays accurate even if the tenant later edits their business address.
+    public string? BillingAddress { get; private set; }
+    public string? BillingCity { get; private set; }
+    public string? BillingCountry { get; private set; }
+    public string? TaxNumber { get; private set; }
+    public string? TaxOffice { get; private set; }
+
     private PlatformPayment() { }
 
     public static PlatformPayment Create(
@@ -31,7 +39,12 @@ public class PlatformPayment : AuditableEntity
         string currency = "TRY",
         Guid? tenantId = null,
         string? description = null,
-        PlatformPaymentStatus status = PlatformPaymentStatus.Pending)
+        PlatformPaymentStatus status = PlatformPaymentStatus.Pending,
+        string? billingAddress = null,
+        string? billingCity = null,
+        string? billingCountry = null,
+        string? taxNumber = null,
+        string? taxOffice = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(payerName);
         if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
@@ -45,6 +58,11 @@ public class PlatformPayment : AuditableEntity
             Amount = amount,
             Currency = currency,
             Status = status,
+            BillingAddress = billingAddress,
+            BillingCity = billingCity,
+            BillingCountry = billingCountry,
+            TaxNumber = taxNumber,
+            TaxOffice = taxOffice,
         };
 
         if (status == PlatformPaymentStatus.Paid)

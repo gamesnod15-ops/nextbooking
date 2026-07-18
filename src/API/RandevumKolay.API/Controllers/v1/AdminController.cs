@@ -117,6 +117,13 @@ public class AdminController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("payments/sync-subscriptions")]
+    public async Task<IActionResult> SyncSubscriptionPayments(CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new SyncSubscriptionPaymentsCommand(), cancellationToken);
+        return Ok(result);
+    }
+
     [HttpPost("payments")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreatePayment(

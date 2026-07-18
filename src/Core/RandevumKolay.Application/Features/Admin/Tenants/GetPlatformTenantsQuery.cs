@@ -43,53 +43,86 @@ public sealed class GetPlatformTenantsQueryHandler : IRequestHandler<GetPlatform
 
     public async Task<PaginatedList<PlatformTenantDto>> Handle(GetPlatformTenantsQuery request, CancellationToken cancellationToken)
     {
-        var query =
-            from t in _context.Tenants.AsNoTracking()
-            join b in _context.Businesses.AsNoTracking() on t.Id equals b.TenantId into businesses
-            from b in businesses.OrderBy(x => x.CreatedAt).Take(1).DefaultIfEmpty()
-            select new { t, b };
+        // Kept deliberately simple (no multi-way lateral joins) — Npgsql struggled to
+        // translate a single query combining two "first matching row" left joins plus
+        // scalar count subqueries. Page the tenants first, then batch-load the related
+        // business/owner/counts for just that page in-memory.
+        var tenantQuery = _context.Tenants.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var term = request.SearchTerm.ToLower();
-            query = query.Where(x =>
-                x.t.Name.ToLower().Contains(term) ||
-                x.t.Subdomain.ToLower().Contains(term) ||
-                (x.b != null && x.b.Name.ToLower().Contains(term)));
+            tenantQuery = tenantQuery.Where(t =>
+                t.Name.ToLower().Contains(term) ||
+                t.Subdomain.ToLower().Contains(term) ||
+                _context.Businesses.Any(b => b.TenantId == t.Id && b.Name.ToLower().Contains(term)));
         }
 
         if (!string.IsNullOrWhiteSpace(request.Plan))
-            query = query.Where(x => x.t.Plan == request.Plan);
+            tenantQuery = tenantQuery.Where(t => t.Plan == request.Plan);
 
         if (request.IsActive.HasValue)
-            query = query.Where(x => x.t.IsActive == request.IsActive.Value);
+            tenantQuery = tenantQuery.Where(t => t.IsActive == request.IsActive.Value);
 
-        var projected =
-            from x in query
-            join owner in _context.Users.AsNoTracking().Where(u => u.Role == "tenant_admin")
-                on x.t.Id equals owner.TenantId into owners
-            from owner in owners.OrderBy(o => o.CreatedAt).Take(1).DefaultIfEmpty()
-            orderby x.t.CreatedAt descending
-            select new PlatformTenantDto(
-                x.t.Id,
-                x.t.Name,
-                x.t.Subdomain,
-                x.t.Plan,
-                x.t.IsActive,
-                x.t.TrialEndsAt,
-                x.t.SubscriptionEndsAt,
-                x.t.CreatedAt,
-                x.b != null ? x.b.Id : (Guid?)null,
-                x.b != null ? x.b.Name : null,
-                x.b != null ? x.b.Category : (BusinessCategory?)null,
-                x.b != null ? x.b.City : null,
-                x.b != null ? x.b.Phone : null,
-                x.b != null ? x.b.LogoUrl : null,
-                owner != null ? owner.Email : null,
-                owner != null ? owner.FullName : null,
-                _context.Employees.Count(e => e.TenantId == x.t.Id),
-                _context.Customers.Count(c => c.TenantId == x.t.Id));
+        tenantQuery = tenantQuery.OrderByDescending(t => t.CreatedAt);
 
-        return await PaginatedList<PlatformTenantDto>.CreateAsync(projected, request.PageNumber, request.PageSize, cancellationToken);
+        var page = await PaginatedList<RandevumKolay.Domain.Entities.Tenant>.CreateAsync(
+            tenantQuery, request.PageNumber, request.PageSize, cancellationToken);
+
+        var tenantIds = page.Items.Select(t => t.Id).ToList();
+
+        var businesses = await _context.Businesses.AsNoTracking()
+            .Where(b => tenantIds.Contains(b.TenantId))
+            .OrderBy(b => b.CreatedAt)
+            .ToListAsync(cancellationToken);
+        var businessByTenant = businesses.GroupBy(b => b.TenantId).ToDictionary(g => g.Key, g => g.First());
+
+        var owners = await _context.Users.AsNoTracking()
+            .Where(u => u.Role == "tenant_admin" && u.TenantId != null && tenantIds.Contains(u.TenantId!.Value))
+            .OrderBy(u => u.CreatedAt)
+            .ToListAsync(cancellationToken);
+        var ownerByTenant = owners.GroupBy(u => u.TenantId!.Value).ToDictionary(g => g.Key, g => g.First());
+
+        var employeeCounts = await _context.Employees.AsNoTracking()
+            .Where(e => tenantIds.Contains(e.TenantId))
+            .GroupBy(e => e.TenantId)
+            .Select(g => new { TenantId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TenantId, x => x.Count, cancellationToken);
+
+        var customerCounts = await _context.Customers.AsNoTracking()
+            .Where(c => tenantIds.Contains(c.TenantId))
+            .GroupBy(c => c.TenantId)
+            .Select(g => new { TenantId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TenantId, x => x.Count, cancellationToken);
+
+        var items = page.Items.Select(t =>
+        {
+            businessByTenant.TryGetValue(t.Id, out var b);
+            ownerByTenant.TryGetValue(t.Id, out var owner);
+            employeeCounts.TryGetValue(t.Id, out var employeeCount);
+            customerCounts.TryGetValue(t.Id, out var customerCount);
+
+            return new PlatformTenantDto(
+                t.Id,
+                t.Name,
+                t.Subdomain,
+                t.Plan,
+                t.IsActive,
+                t.TrialEndsAt,
+                t.SubscriptionEndsAt,
+                t.CreatedAt,
+                b?.Id,
+                b?.Name,
+                b?.Category,
+                b?.City,
+                b?.Phone,
+                b?.LogoUrl,
+                owner?.Email,
+                owner?.FullName,
+                employeeCount,
+                customerCount);
+        }).ToList();
+
+        return new PaginatedList<PlatformTenantDto>(items, page.TotalCount, page.PageNumber, page.PageSize);
     }
 }
