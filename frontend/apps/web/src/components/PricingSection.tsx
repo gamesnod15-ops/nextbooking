@@ -125,42 +125,39 @@ export async function PricingSection() {
         </p>
 
         {allFeatures.length > 0 && (
-          <div className="mt-20">
-            <h3 className="mb-6 text-center text-2xl font-bold text-gray-900">Paket Karşılaştırma</h3>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-              <table className="w-full min-w-[640px] text-sm">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="px-5 py-4 text-left font-semibold text-gray-500">Özellik</th>
-                    {plans.map((plan, i) => (
-                      <th key={i} className="px-5 py-4 text-center font-bold text-gray-900">{plan.name}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {allFeatures.map((feature) => (
-                    <tr key={feature}>
-                      <td className="px-5 py-3 text-gray-700">{feature}</td>
-                      {plans.map((plan, i) => (
-                        <td key={i} className="px-5 py-3 text-center">
-                          {plan.features.includes(feature)
-                            ? <Check className="mx-auto h-4 w-4 text-emerald-500" />
-                            : <Minus className="mx-auto h-4 w-4 text-gray-300" />}
-                        </td>
-                      ))}
-                    </tr>
+          <div className="mt-20 overflow-x-auto rounded-2xl border border-gray-300 bg-white shadow-sm">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-300 px-5 py-4 text-left font-semibold text-gray-500">Özellik</th>
+                  {plans.map((plan, i) => (
+                    <th key={i} className="border border-gray-300 px-5 py-4 text-center font-bold text-gray-900">{plan.name}</th>
                   ))}
-                  <tr className="bg-gray-50/60">
-                    <td className="px-5 py-3 font-semibold text-gray-900">Aylık Fiyat</td>
+                </tr>
+              </thead>
+              <tbody>
+                {allFeatures.map((feature) => (
+                  <tr key={feature}>
+                    <td className="border border-gray-300 px-5 py-3 text-gray-700">{feature}</td>
                     {plans.map((plan, i) => (
-                      <td key={i} className="px-5 py-3 text-center font-bold text-gray-900">
-                        {plan.isCustomPricing ? 'Özel fiyat' : `₺${plan.price}/ay`}
+                      <td key={i} className="border border-gray-300 px-5 py-3 text-center">
+                        {plan.features.includes(feature)
+                          ? <Check className="mx-auto h-4 w-4 text-emerald-500" />
+                          : <Minus className="mx-auto h-4 w-4 text-gray-300" />}
                       </td>
                     ))}
                   </tr>
-                </tbody>
-              </table>
-            </div>
+                ))}
+                <tr className="bg-gray-50">
+                  <td className="border border-gray-300 px-5 py-3 font-semibold text-gray-900">Aylık Fiyat</td>
+                  {plans.map((plan, i) => (
+                    <td key={i} className="border border-gray-300 px-5 py-3 text-center font-bold text-gray-900">
+                      {plan.isCustomPricing ? 'Özel fiyat' : `₺${plan.price}/ay`}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
           </div>
         )}
       </div>
