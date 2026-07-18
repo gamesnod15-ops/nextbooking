@@ -2,7 +2,8 @@ import api from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import type { PaginatedList } from '@/types'
 
-export type FeedbackCategory = 'EasyToUse' | 'Confusing' | 'Suggestion' | 'BugReport'
+// Enums are serialized as camelCase strings (JsonStringEnumConverter(CamelCase) in Program.cs)
+export type FeedbackCategory = 'easyToUse' | 'confusing' | 'suggestion' | 'bugReport'
 
 export interface PlatformFeedback {
   id: string

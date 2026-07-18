@@ -15,7 +15,7 @@ export interface PlatformTenant {
   createdAt: string
   businessId: string | null
   businessName: string | null
-  category: number | null
+  category: string | null
   city: string | null
   phone: string | null
   logoUrl: string | null
@@ -31,7 +31,7 @@ export interface GetTenantsParams {
   search?: string
   plan?: string
   isActive?: boolean
-  category?: number
+  category?: string
   city?: string
   sort?: PlatformTenantSort
 }

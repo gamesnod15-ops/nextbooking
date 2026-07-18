@@ -2,8 +2,9 @@ import api from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PaginatedList } from '@/types'
 
-export type PlatformPaymentType = 'Subscription' | 'Advertiser' | 'Sponsorship'
-export type PlatformPaymentStatus = 'Pending' | 'Paid' | 'Failed' | 'Refunded'
+// Enums are serialized as camelCase strings (JsonStringEnumConverter(CamelCase) in Program.cs)
+export type PlatformPaymentType = 'subscription' | 'advertiser' | 'sponsorship'
+export type PlatformPaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded'
 
 export interface PlatformPayment {
   id: string

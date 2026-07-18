@@ -36,7 +36,7 @@ export function BusinessesPage() {
     pageSize: 20,
     search: search || undefined,
     plan: plan || undefined,
-    category: category ? Number(category) : undefined,
+    category: category || undefined,
     city: city || undefined,
     isActive: isActive === '' ? undefined : isActive === 'true',
     sort,

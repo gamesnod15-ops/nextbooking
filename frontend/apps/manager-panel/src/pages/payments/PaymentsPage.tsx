@@ -17,32 +17,32 @@ import {
 } from '@/hooks/useAdminPayments'
 
 const typeLabels: Record<PlatformPaymentType, string> = {
-  Subscription: 'Abonelik',
-  Advertiser: 'Reklamveren',
-  Sponsorship: 'Sponsorluk',
+  subscription: 'Abonelik',
+  advertiser: 'Reklamveren',
+  sponsorship: 'Sponsorluk',
 }
 
 const statusLabels: Record<PlatformPaymentStatus, string> = {
-  Pending: 'Beklemede',
-  Paid: 'Ödendi',
-  Failed: 'Başarısız',
-  Refunded: 'İade Edildi',
+  pending: 'Beklemede',
+  paid: 'Ödendi',
+  failed: 'Başarısız',
+  refunded: 'İade Edildi',
 }
 
 const statusVariant: Record<PlatformPaymentStatus, 'default' | 'success' | 'destructive' | 'warning'> = {
-  Pending: 'warning',
-  Paid: 'success',
-  Failed: 'destructive',
-  Refunded: 'default',
+  pending: 'warning',
+  paid: 'success',
+  failed: 'destructive',
+  refunded: 'default',
 }
 
 const emptyForm = {
-  type: 'Subscription' as PlatformPaymentType,
+  type: 'subscription' as PlatformPaymentType,
   payerName: '',
   amount: '',
   currency: 'TRY',
   description: '',
-  status: 'Paid' as PlatformPaymentStatus,
+  status: 'paid' as PlatformPaymentStatus,
 }
 
 function hasBillingInfo(p: PlatformPayment) {

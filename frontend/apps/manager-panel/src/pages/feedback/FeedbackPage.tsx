@@ -7,17 +7,17 @@ import { formatDateTime } from '@/lib/utils'
 import { useAdminFeedback, type FeedbackCategory } from '@/hooks/useAdminFeedback'
 
 const categoryLabels: Record<FeedbackCategory, string> = {
-  EasyToUse: 'Kullanımı Kolay',
-  Confusing: 'Kafa Karıştırıcı',
-  Suggestion: 'Öneri',
-  BugReport: 'Hata Bildirimi',
+  easyToUse: 'Kullanımı Kolay',
+  confusing: 'Kafa Karıştırıcı',
+  suggestion: 'Öneri',
+  bugReport: 'Hata Bildirimi',
 }
 
 const categoryVariant: Record<FeedbackCategory, 'success' | 'warning' | 'info' | 'destructive'> = {
-  EasyToUse: 'success',
-  Confusing: 'warning',
-  Suggestion: 'info',
-  BugReport: 'destructive',
+  easyToUse: 'success',
+  confusing: 'warning',
+  suggestion: 'info',
+  bugReport: 'destructive',
 }
 
 export function FeedbackPage() {
