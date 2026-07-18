@@ -44,6 +44,8 @@ public interface IApplicationDbContext
     DbSet<SalesLead> SalesLeads { get; }
     DbSet<Feedback> Feedbacks { get; }
     DbSet<PlatformPayment> PlatformPayments { get; }
+    DbSet<PricingPlan> PricingPlans { get; }
+    DbSet<PricingPlanSlot> PricingPlanSlots { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

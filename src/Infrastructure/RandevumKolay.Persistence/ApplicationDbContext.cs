@@ -64,6 +64,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<SalesLead> SalesLeads => Set<SalesLead>();
     public DbSet<Feedback> Feedbacks => Set<Feedback>();
     public DbSet<PlatformPayment> PlatformPayments => Set<PlatformPayment>();
+    public DbSet<PricingPlan> PricingPlans => Set<PricingPlan>();
+    public DbSet<PricingPlanSlot> PricingPlanSlots => Set<PricingPlanSlot>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

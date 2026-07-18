@@ -7,6 +7,7 @@ using RandevumKolay.Application.Features.Admin.Dashboard;
 using RandevumKolay.Application.Features.Admin.Employees;
 using RandevumKolay.Application.Features.Admin.Feedback;
 using RandevumKolay.Application.Features.Admin.Payments;
+using RandevumKolay.Application.Features.Admin.PricingPlans;
 using RandevumKolay.Application.Features.Admin.Tenants;
 using RandevumKolay.Application.Features.Admin.Users;
 using RandevumKolay.Domain.Entities;
@@ -205,7 +206,90 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("pricing-plans")]
+    public async Task<IActionResult> GetPricingPlans(CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetPricingPlansQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("pricing-plans")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreatePricingPlan(
+        [FromBody] CreatePricingPlanCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var id = await _sender.Send(command, cancellationToken);
+        return Created(string.Empty, new { id });
+    }
+
+    [HttpPut("pricing-plans/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdatePricingPlan(
+        Guid id,
+        [FromBody] UpdatePricingPlanRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(
+            new UpdatePricingPlanCommand(
+                id, request.Name, request.BadgeLabel, request.Description, request.Price, request.IsCustomPricing,
+                request.ButtonText, request.Features, request.IsHighlighted, request.HighlightLabel, request.PlanKey),
+            cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPatch("pricing-plans/{id:guid}/status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SetPricingPlanStatus(
+        Guid id,
+        [FromBody] SetUserStatusRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new SetPricingPlanActiveCommand(id, request.IsActive), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("pricing-plans/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeletePricingPlan(Guid id, CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new DeletePricingPlanCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpGet("pricing-plan-slots")]
+    public async Task<IActionResult> GetPricingPlanSlots(CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetPricingPlanSlotsQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("pricing-plan-slots/{slotNumber:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SetPricingPlanSlot(
+        int slotNumber,
+        [FromBody] SetPricingPlanSlotRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new SetPricingPlanSlotCommand(slotNumber, request.PricingPlanId), cancellationToken);
+        return NoContent();
+    }
+
     public record SetUserStatusRequest(bool IsActive);
     public record UpdatePaymentStatusRequest(PlatformPaymentStatus Status);
     public record UpdateAdminRequest(string FirstName, string LastName, string Email, string? Phone);
+
+    public record UpdatePricingPlanRequest(
+        string Name,
+        string BadgeLabel,
+        string Description,
+        decimal? Price,
+        bool IsCustomPricing,
+        string ButtonText,
+        List<string> Features,
+        bool IsHighlighted,
+        string? HighlightLabel,
+        string? PlanKey);
+
+    public record SetPricingPlanSlotRequest(Guid? PricingPlanId);
 }

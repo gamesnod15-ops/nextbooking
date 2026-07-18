@@ -654,3 +654,28 @@ public class PlatformPaymentConfiguration : IEntityTypeConfiguration<PlatformPay
         builder.HasIndex(p => p.CreatedAt);
     }
 }
+
+public class PricingPlanConfiguration : IEntityTypeConfiguration<PricingPlan>
+{
+    public void Configure(EntityTypeBuilder<PricingPlan> builder)
+    {
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
+        builder.Property(p => p.BadgeLabel).HasMaxLength(50).IsRequired();
+        builder.Property(p => p.Description).HasMaxLength(300).IsRequired();
+        builder.Property(p => p.Price).HasColumnType("decimal(10,2)");
+        builder.Property(p => p.ButtonText).HasMaxLength(50).IsRequired();
+        builder.Property(p => p.Features).HasColumnType("text[]");
+        builder.Property(p => p.HighlightLabel).HasMaxLength(50);
+        builder.Property(p => p.PlanKey).HasMaxLength(50);
+    }
+}
+
+public class PricingPlanSlotConfiguration : IEntityTypeConfiguration<PricingPlanSlot>
+{
+    public void Configure(EntityTypeBuilder<PricingPlanSlot> builder)
+    {
+        builder.HasKey(s => s.Id);
+        builder.HasIndex(s => s.SlotNumber).IsUnique();
+    }
+}
