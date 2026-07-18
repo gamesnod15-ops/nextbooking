@@ -40,3 +40,14 @@ export function useUpdateMyProfile() {
     },
   })
 }
+
+export interface ChangePasswordPayload {
+  currentPassword: string
+  newPassword: string
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (payload: ChangePasswordPayload) => api.put('/auth/change-password', payload).then((r) => r.data),
+  })
+}

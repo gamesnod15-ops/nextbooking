@@ -33,7 +33,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         <div className="flex h-16 shrink-0 items-center border-b border-[#EFEFEF] px-5">
           <img src="/logo.png" alt="Logo" className="h-7 w-auto" />
-          <span className="ml-2 text-sm font-semibold text-gray-500">Yönetim Paneli</span>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-3">
