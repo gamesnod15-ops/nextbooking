@@ -19,7 +19,10 @@ const accentClasses = ['border-slate-200 bg-slate-100 text-slate-700', 'border-b
 async function getPlans(): Promise<ApiPlan[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280'
   try {
-    const res = await fetch(`${apiUrl}/api/v1/pricing-plans`, { next: { revalidate: 300 } })
+    // Uncached: a price edited in the manager panel has to show up on the next
+    // page load. ISR here meant an admin saw a stale price for up to 5 minutes
+    // and assumed the change hadn't saved.
+    const res = await fetch(`${apiUrl}/api/v1/pricing-plans`, { cache: 'no-store' })
     if (!res.ok) return []
     return res.json()
   } catch {
