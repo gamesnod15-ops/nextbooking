@@ -93,6 +93,9 @@ export default function BusinessListPage() {
   const [data, setData] = useState<PaginatedResult<BusinessItem> | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  // Filter options come from an unfiltered fetch, not from `data` — otherwise
+  // selecting a category empties the dropdown of every other option.
+  const [filterSource, setFilterSource] = useState<BusinessItem[]>([])
 
   const params = new URLSearchParams()
   if (search) params.set('search', search)
@@ -111,15 +114,25 @@ export default function BusinessListPage() {
       .finally(() => setLoading(false))
   }, [search, categoryId, city, page])
 
+  useEffect(() => {
+    fetch('/api/v1/businesses?pageNumber=1&pageSize=200')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((r: PaginatedResult<BusinessItem> | null) => { if (r) setFilterSource(r.items) })
+      .catch(() => {})
+  }, [])
+
   const allCategories = useMemo(() => {
-    if (!data) return []
-    return Array.from(new Set(data.items.map((b) => b.categoryName))).sort()
-  }, [data])
+    const byId = new Map<number, string>()
+    for (const b of filterSource) byId.set(b.categoryId, b.categoryName)
+    return [...byId.entries()]
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'tr'))
+  }, [filterSource])
 
   const allCities = useMemo(() => {
-    if (!data) return []
-    return Array.from(new Set(data.items.map((b) => b.city).filter(Boolean))).sort() as string[]
-  }, [data])
+    return Array.from(new Set(filterSource.map((b) => b.city).filter(Boolean)))
+      .sort((a, b) => (a as string).localeCompare(b as string, 'tr')) as string[]
+  }, [filterSource])
 
   function onFilter() { setPage(1) }
 
@@ -142,10 +155,6 @@ export default function BusinessListPage() {
           </div>
 
           <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-brand-500" />
-              <span className="text-xs font-semibold text-brand-500">Keşfet</span>
-            </div>
             <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
               İşletmeleri{' '}
               <span className="text-brand-500">Keşfedin</span>
@@ -154,65 +163,59 @@ export default function BusinessListPage() {
               Size en yakın, en iyi işletmeleri bulun ve hemen randevu alın
             </p>
 
-            <div className="mx-auto mt-10 max-w-2xl">
+            <div className="mx-auto mt-10 max-w-3xl">
               <div className="rounded-2xl bg-black/70 backdrop-blur-xl p-2 shadow-2xl ring-1 ring-white/10">
-                <div className="flex items-center gap-2 rounded-xl bg-white/5 pl-4 pr-2">
-                  <Search className="h-5 w-5 shrink-0 text-gray-500" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => { setSearch(e.target.value); onFilter() }}
-                    placeholder="İşletme adı, kategori veya şehir ara..."
-                    aria-label="İşletme adı, kategori veya şehir ara"
-                    className="flex-1 bg-transparent py-4 text-base text-white placeholder-gray-500 outline-none min-w-0"
-                  />
+                <div className="flex flex-col gap-1 rounded-xl bg-white/5 px-4 sm:flex-row sm:items-center sm:gap-2 sm:pr-2">
+                  <div className="flex flex-1 items-center gap-2 min-w-0">
+                    <Search className="h-5 w-5 shrink-0 text-gray-500" />
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => { setSearch(e.target.value); onFilter() }}
+                      placeholder="İşletme adı, kategori veya şehir ara..."
+                      aria-label="İşletme adı, kategori veya şehir ara"
+                      className="flex-1 bg-transparent py-4 text-base text-white placeholder-gray-500 outline-none min-w-0"
+                    />
+                  </div>
+
+                  {allCategories.length > 0 && (
+                    <div className="flex items-center gap-1.5 border-t border-white/10 pt-1 sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0">
+                      <Building2 className="h-4 w-4 shrink-0 text-gray-500" />
+                      <select
+                        value={categoryId ?? ''}
+                        onChange={(e) => { setCategoryId(e.target.value === '' ? null : Number(e.target.value)); onFilter() }}
+                        aria-label="Kategori filtrele"
+                        className="max-w-[150px] appearance-none bg-transparent py-4 pr-1 text-sm text-gray-300 outline-none transition-colors cursor-pointer hover:text-white"
+                      >
+                        <option value="">Tüm Kategoriler</option>
+                        {allCategories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {categoryIcons[c.name] ? `${categoryIcons[c.name]} ${c.name}` : c.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="h-3 w-3 shrink-0 text-gray-500 pointer-events-none" />
+                    </div>
+                  )}
+
                   {allCities.length > 0 && (
-                    <div className="flex items-center gap-1.5 border-l border-white/10 pl-3">
-                      <MapPin className="h-4 w-4 text-gray-500 shrink-0" />
+                    <div className="flex items-center gap-1.5 border-t border-white/10 pt-1 sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0">
+                      <MapPin className="h-4 w-4 shrink-0 text-gray-500" />
                       <select
                         value={city}
                         onChange={(e) => { setCity(e.target.value); onFilter() }}
                         aria-label="Şehir filtrele"
-                        className="bg-transparent py-4 pr-1 text-sm text-gray-300 outline-none cursor-pointer hover:text-white transition-colors max-w-[110px] appearance-none"
+                        className="max-w-[110px] appearance-none bg-transparent py-4 pr-1 text-sm text-gray-300 outline-none transition-colors cursor-pointer hover:text-white"
                       >
                         <option value="">Tüm Şehirler</option>
                         {allCities.map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
-                      <ChevronDown className="h-3 w-3 text-gray-500 pointer-events-none" />
+                      <ChevronDown className="h-3 w-3 shrink-0 text-gray-500 pointer-events-none" />
                     </div>
                   )}
                 </div>
               </div>
             </div>
-
-            {allCategories.length > 0 && (
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                <button
-                  onClick={() => { setCategoryId(null); onFilter() }}
-                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-                    categoryId === null
-                      ? 'bg-brand-500 text-white'
-                      : 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  Tümü
-                </button>
-                {allCategories.slice(0, 8).map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => { setCategoryId(data?.items.find(b => b.categoryName === cat)?.categoryId ?? null); onFilter() }}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-                      categoryId === (data?.items.find(b => b.categoryName === cat)?.categoryId ?? -1)
-                        ? 'bg-brand-500 text-white'
-                        : 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
-                    }`}
-                  >
-                    {categoryIcons[cat] && <span className="mr-1">{categoryIcons[cat]}</span>}
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </section>
 
