@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { RootState } from '@/store'
 import { useLogout } from '@/hooks/useAuth'
-import { Menu, LogOut, ChevronDown, Shield } from 'lucide-react'
+import { Menu, LogOut, ChevronDown, Shield, User } from 'lucide-react'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -57,6 +58,16 @@ export function Header({ onMenuClick }: HeaderProps) {
               <p className="text-xs text-muted-foreground">{email}</p>
             </div>
             <div className="p-1">
+              <Link
+                to="/profile"
+                onClick={() => setUserOpen(false)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent transition-colors"
+              >
+                <User className="h-4 w-4 text-muted-foreground" />
+                Profilim
+              </Link>
+            </div>
+            <div className="border-t p-1">
               <button
                 onClick={() => logoutMutation.mutate()}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"

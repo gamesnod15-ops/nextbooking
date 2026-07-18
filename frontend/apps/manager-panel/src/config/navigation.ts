@@ -10,7 +10,7 @@ export const navigationConfig: NavItem[] = [
   { id: 'businesses', label: 'İşletmeler', to: '/businesses', icon: 'Building2' },
   { id: 'payments', label: 'Ödemeler', to: '/payments', icon: 'CreditCard' },
   { id: 'feedback', label: 'Geri Bildirimler', to: '/feedback', icon: 'MessageSquare' },
-  { id: 'users', label: 'Kullanıcılar', to: '/users', icon: 'Users' },
   { id: 'customers', label: 'Müşteriler', to: '/customers', icon: 'UserRound' },
   { id: 'employees', label: 'Personel', to: '/employees', icon: 'UserCheck' },
+  { id: 'users', label: 'Yöneticiler', to: '/users', icon: 'Users' },
 ]

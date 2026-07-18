@@ -2,6 +2,8 @@ import api from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PaginatedList } from '@/types'
 
+// "PlatformUser" here always means a platform_admin account — the manager
+// panel's own operator accounts, not business owners/staff/customers.
 export interface PlatformUser {
   id: string
   email: string
@@ -29,8 +31,6 @@ export interface GetUsersParams {
   pageNumber?: number
   pageSize?: number
   search?: string
-  role?: string
-  isActive?: boolean
 }
 
 export function useAdminUsers(params: GetUsersParams) {
@@ -53,6 +53,44 @@ export function useSetUserActiveStatus() {
   return useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
       api.patch(`/admin/users/${id}/status`, { isActive }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
+  })
+}
+
+export interface CreateAdminPayload {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+}
+
+export function useCreateAdmin() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: CreateAdminPayload) =>
+      api.post<{ id: string }>('/admin/users', payload).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
+  })
+}
+
+export interface UpdateAdminPayload {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+}
+
+export function useUpdateAdmin() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, ...payload }: UpdateAdminPayload) =>
+      api.put(`/admin/users/${id}`, payload).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'users'] })
     },

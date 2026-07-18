@@ -34,16 +34,17 @@ public class AdminController : ControllerBase
         return Ok(result);
     }
 
+    // "users" here means platform_admin accounts specifically — business owners,
+    // staff and customers are covered by /admin/tenants, /admin/employees and
+    // /admin/customers instead.
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string? search = null,
-        [FromQuery] string? role = null,
-        [FromQuery] bool? isActive = null,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetPlatformUsersQuery(pageNumber, pageSize, search, role, isActive), cancellationToken);
+        var result = await _sender.Send(new GetPlatformUsersQuery(pageNumber, pageSize, search, "platform_admin", null), cancellationToken);
         return Ok(result);
     }
 
@@ -52,6 +53,29 @@ public class AdminController : ControllerBase
     {
         var result = await _sender.Send(new GetPlatformUserDetailQuery(id), cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPost("users")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateAdmin(
+        [FromBody] CreatePlatformAdminCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var id = await _sender.Send(command, cancellationToken);
+        return Created(string.Empty, new { id });
+    }
+
+    [HttpPut("users/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateAdmin(
+        Guid id,
+        [FromBody] UpdateAdminRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(
+            new UpdatePlatformAdminCommand(id, request.FirstName, request.LastName, request.Email, request.Phone),
+            cancellationToken);
+        return NoContent();
     }
 
     [HttpPatch("users/{id:guid}/status")]
@@ -183,4 +207,5 @@ public class AdminController : ControllerBase
 
     public record SetUserStatusRequest(bool IsActive);
     public record UpdatePaymentStatusRequest(PlatformPaymentStatus Status);
+    public record UpdateAdminRequest(string FirstName, string LastName, string Email, string? Phone);
 }
