@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import type { ComponentType, SVGProps } from 'react'
-import { Reveal, StaggerGroup, StaggerItem } from './motion/Reveal'
+import { SlideIn } from './motion/Reveal'
 
 const features = [
   { icon: Calendar,       title: 'Online Randevu',       desc: '7/24 web ve mobil üzerinden randevu. Gerçek zamanlı müsaitlik takvimi.' },
@@ -180,7 +180,6 @@ const integrations: {
   },
 ]
 
-// Split into two rows for marquee
 const row1 = integrations.slice(0, 6)
 const row2 = integrations.slice(6)
 
@@ -189,21 +188,20 @@ export function FeaturesSection() {
     <>
       {/* Core Features Grid */}
       <section id="features" className="relative bg-white py-24 overflow-hidden">
-        {/* Subtle background pattern */}
         <div aria-hidden className="absolute inset-0 opacity-[0.015]"
           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #111 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
         <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="text-center mb-16">
+          <SlideIn direction="left" className="text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 mb-4">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-gray-900">Özellikler</span>
             </div>
             <h2 className="text-4xl font-extrabold text-gray-900">İşletmenizi Büyütecek Her Şey</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              NextBooking'ın güçlü özellikleri ile vaktinizi müşterilerinize harcayın, idari işler için değil.
+              BookingAi&apos;ın güçlü özellikleri ile vaktinizi müşterilerinize harcayın, idari işler için değil.
             </p>
-          </div>
+          </SlideIn>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {features.map(({ icon: Icon, title, desc }, idx) => (
@@ -211,7 +209,6 @@ export function FeaturesSection() {
                 key={title}
                 className="group relative rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1.5 overflow-hidden"
               >
-                {/* Decorative accent bar */}
                 <div aria-hidden className="absolute top-0 left-6 right-6 h-1 rounded-full bg-brand-500/80 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div aria-hidden className="absolute -top-8 -right-8 h-20 w-20 rounded-full bg-brand-500/5 group-hover:bg-brand-500/10 transition-colors" />
 
@@ -237,7 +234,6 @@ export function FeaturesSection() {
 
       {/* How it works */}
       <section className="relative bg-gradient-to-br from-brand-50/50 to-violet-50/50 py-24 overflow-hidden">
-        {/* Light gray decorative shapes */}
         <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
           <svg className="absolute top-20 right-10 h-72 w-72 opacity-[0.03]" viewBox="0 0 200 200" fill="none">
             <polygon points="100,0 200,200 0,200" className="fill-gray-900" />
@@ -249,29 +245,26 @@ export function FeaturesSection() {
 
         <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Steps */}
             <div>
+              <SlideIn direction="right">
               <div className="mb-10">
                 <p className="text-sm font-semibold uppercase tracking-widest text-gray-900">Nasıl Çalışır?</p>
                 <h2 className="mt-2 text-4xl font-extrabold text-gray-900">3 Adımda Hazır</h2>
                 <p className="mt-4 text-lg text-gray-600">Karmaşık kurulum yok. Dakikalar içinde başlayın.</p>
               </div>
+              </SlideIn>
 
               <div className="space-y-8">
                 {steps.map(({ step, title, desc }, idx) => (
                   <div key={step} className="relative flex gap-5">
-                    {/* Step number */}
                     <div className="relative shrink-0">
                       <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-md border-2 border-gray-200">
                         <span className="text-base font-extrabold text-brand-500">{step}</span>
                       </div>
-                      {/* Connector line */}
                       {idx < steps.length - 1 && (
                         <div aria-hidden className="absolute top-12 left-1/2 h-8 w-0.5 -translate-x-1/2 bg-brand-300" />
                       )}
                     </div>
-
-                    {/* Content */}
                     <div className="flex-1 pt-1">
                       <h3 className="text-lg font-bold text-gray-900">{title}</h3>
                       <p className="mt-1 text-sm text-gray-600 leading-relaxed">{desc}</p>
@@ -290,7 +283,6 @@ export function FeaturesSection() {
               </div>
             </div>
 
-            {/* Right: Photo */}
             <div className="hidden lg:block">
               <div className="relative">
                 <div className="relative h-[480px] w-full overflow-hidden rounded-3xl shadow-2xl rotate-1 transition-transform duration-500 hover:rotate-0">
@@ -301,7 +293,6 @@ export function FeaturesSection() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </div>
-                {/* Floating badge */}
                 <div className="absolute -bottom-4 -left-4 rounded-2xl bg-white px-5 py-3 shadow-xl border-2 border-gray-200">
                   <p className="text-sm font-semibold text-gray-900">5 dakikada kurulum</p>
                   <p className="text-xs text-gray-500">Üstelik tamamen ücretsiz</p>
@@ -314,12 +305,11 @@ export function FeaturesSection() {
 
       {/* Advantages */}
       <section className="relative bg-white py-24 overflow-hidden">
-        {/* Large decorative brand circle */}
         <div aria-hidden className="pointer-events-none absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full border-[40px] border-brand-500/5" />
         <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full border-[20px] border-brand-500/5" />
 
         <div className="relative mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
-          <Reveal className="text-center mb-14">
+          <SlideIn direction="left" className="text-center mb-14">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 mb-4">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-gray-900">Avantajlar</span>
@@ -332,36 +322,33 @@ export function FeaturesSection() {
               Müşterileriniz artık telefon beklemiyor. Online randevu sistemiyle hem müşteri memnuniyetini artırın,
               hem de idari yükünüzü azaltın.
             </p>
-          </Reveal>
+          </SlideIn>
 
-          {/* Single unified panel: stat strip + benefit rows, no box clutter */}
-          <Reveal delay={0.1} className="relative overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-gray-50 via-white to-brand-50/40 shadow-xl">
+          <div className="relative overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-gray-50 via-white to-brand-50/40 shadow-xl">
             <div aria-hidden className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-brand-500/10 blur-3xl" />
 
-            {/* Stat strip */}
-            <StaggerGroup className="relative grid grid-cols-2 divide-x divide-y divide-gray-200/80 sm:grid-cols-4 sm:divide-y-0">
+            <div className="relative grid grid-cols-2 divide-x divide-y divide-gray-200/80 sm:grid-cols-4 sm:divide-y-0">
               {[
                 { value: '%70', label: 'Daha Az Hayır-deme' },
                 { value: '%35', label: 'Daha Yüksek Doluluk' },
                 { value: '%80', label: 'Daha Az Telefon' },
                 { value: '5 dk', label: 'Kurulum Süresi' },
               ].map((stat) => (
-                <StaggerItem key={stat.label} className="px-6 py-9 text-center sm:py-11">
+                <div key={stat.label} className="px-6 py-9 text-center sm:py-11">
                   <p className="text-3xl font-extrabold text-brand-600 sm:text-4xl">{stat.value}</p>
                   <p className="mt-1.5 text-xs font-medium uppercase tracking-wide text-gray-500">{stat.label}</p>
-                </StaggerItem>
+                </div>
               ))}
-            </StaggerGroup>
+            </div>
 
-            {/* Benefit rows */}
-            <StaggerGroup className="relative border-t border-gray-200/80 sm:grid sm:grid-cols-2">
+            <div className="relative border-t border-gray-200/80 sm:grid sm:grid-cols-2">
               {[
                 { icon: Bell, text: 'Hayır-deme oranını %70 azaltın', sub: 'Otomatik hatırlatmalar sayesinde', border: 'border-b sm:border-b sm:border-r' },
                 { icon: Calendar, text: 'Doluluk oranınızı %35 artırın', sub: 'Akıllı takvim yönetimiyle', border: 'border-b sm:border-b' },
                 { icon: Smartphone, text: 'Telefon trafiğini %80 azaltın', sub: '7/24 online rezervasyonla', border: 'border-b sm:border-b-0 sm:border-r' },
                 { icon: Star, text: 'Müşteri geri dönüş oranını yükseltin', sub: 'Sadakat programıyla', border: '' },
               ].map(({ icon: Icon, text, sub, border }) => (
-                <StaggerItem
+                <div
                   key={text}
                   className={`group flex items-center gap-4 border-gray-200/80 px-8 py-5 transition-colors hover:bg-brand-50/50 ${border}`}
                 >
@@ -372,22 +359,19 @@ export function FeaturesSection() {
                     <p className="text-sm font-bold text-gray-900">{text}</p>
                     <p className="mt-0.5 text-xs text-gray-500">{sub}</p>
                   </div>
-                </StaggerItem>
+                </div>
               ))}
-            </StaggerGroup>
-          </Reveal>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Integrations */}
       <section className="relative bg-gray-950 py-24 overflow-hidden">
-        {/* Subtle radial glow at top */}
         <div aria-hidden className="pointer-events-none absolute inset-0"
           style={{ background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%)' }} />
-        {/* Faint grid overlay */}
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        {/* Decorative geometric shapes */}
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <svg className="absolute -top-10 -right-10 h-80 w-80 opacity-[0.04]" viewBox="0 0 200 200" fill="none">
             <polygon points="100,0 200,100 100,200 0,100" className="fill-white" />
@@ -402,19 +386,16 @@ export function FeaturesSection() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          {/* Header */}
-          <div className="text-center mb-14">
+          <SlideIn direction="right" className="text-center mb-14">
             <p className="text-sm font-semibold uppercase tracking-widest text-brand-500">Entegrasyonlar</p>
             <h2 className="mt-2 text-4xl font-extrabold text-white">Kullandığınız Araçlarla Çalışır</h2>
             <p className="mt-3 text-gray-400 max-w-xl mx-auto leading-relaxed">
               Ödeme, mesajlaşma, sosyal medya ve muhasebe araçlarıyla sorunsuz entegrasyon.
               Mevcut iş akışınızı değiştirmenize gerek yok.
             </p>
-          </div>
+          </SlideIn>
 
-          {/* Marquee rows */}
           <div className="space-y-4 mb-14">
-            {/* Row 1 — scrolls left */}
             <div className="relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
               <div className="flex gap-4 animate-[marquee_30s_linear_infinite]">
                 {[...row1, ...row1].map((int, i) => {
@@ -434,7 +415,6 @@ export function FeaturesSection() {
               </div>
             </div>
 
-            {/* Row 2 — scrolls right */}
             <div className="relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
               <div className="flex gap-4 animate-[marquee_25s_linear_infinite_reverse]">
                 {[...row2, ...row2].map((int, i) => {
@@ -455,7 +435,6 @@ export function FeaturesSection() {
             </div>
           </div>
 
-          {/* Bottom CTA strip */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold text-white">İhtiyacınız olan entegrasyon listede yok mu?</h3>
@@ -473,4 +452,3 @@ export function FeaturesSection() {
     </>
   )
 }
-

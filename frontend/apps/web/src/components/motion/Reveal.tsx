@@ -67,6 +67,36 @@ export function StaggerGroup({ children, className }: { children: ReactNode; cla
   )
 }
 
+/** Slides an element in from left or right once it scrolls into view. */
+export function SlideIn({
+  children,
+  className,
+  direction = 'left',
+  delay = 0,
+}: {
+  children: ReactNode
+  className?: string
+  direction?: 'left' | 'right'
+  delay?: number
+}) {
+  const shouldReduceMotion = useReducedMotion()
+  const mounted = useMounted()
+
+  if (!mounted) return <div className={className}>{children}</div>
+
+  return (
+    <motion.div
+      className={className}
+      initial={shouldReduceMotion ? undefined : { opacity: 0, x: direction === 'left' ? -60 : 60 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 export function StaggerItem({ children, className }: { children: ReactNode; className?: string }) {
   const shouldReduceMotion = useReducedMotion()
   const mounted = useMounted()

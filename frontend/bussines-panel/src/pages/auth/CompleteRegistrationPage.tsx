@@ -176,7 +176,7 @@ export function CompleteRegistrationPage() {
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <Link to="/" className="inline-flex items-center gap-2">
-            <img src="/logo.png" alt="NextBooking" className="h-8 w-auto" />
+            <img src="/logo-black-last.png" alt="BookingAi" className="h-8 w-auto" />
           </Link>
         </div>
 

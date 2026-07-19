@@ -12,13 +12,14 @@ module.exports = {
           700: 'rgb(var(--brand-700) / <alpha-value>)',
         },
       },
-      fontFamily: { sans: ['Inter', 'sans-serif'] },
+      fontFamily: { sans: ['var(--font-inter)', 'Inter', 'sans-serif'] },
       keyframes: {
         'fade-in':        { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
         'slide-in-right': { from: { opacity: '0', transform: 'translateX(-16px)' }, to: { opacity: '1', transform: 'translateX(0)' } },
         'marquee':        { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
         'marquee-slow':   { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
         'float':          { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
+        'loading-bar':    { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(400%)' } },
       },
       animation: {
         'fade-in':        'fade-in 0.4s ease-out',
@@ -26,6 +27,7 @@ module.exports = {
         'marquee':        'marquee 28s linear infinite',
         'marquee-slow':   'marquee-slow 40s linear infinite',
         'float':          'float 4s ease-in-out infinite',
+        'loading-bar':    'loading-bar 1.1s ease-in-out infinite',
       },
     },
   },

@@ -39,7 +39,7 @@ export default function MusteriLayout({ children }: { children: React.ReactNode 
   const Sidebar = (
     <aside className="flex flex-col h-full w-64 bg-white border-r border-gray-100">
       <div className="flex items-center px-5 h-16 border-b border-gray-100 shrink-0">
-        <img src="/logo.png" alt="Logo" className="h-7 w-auto" />
+        <img src="/logo-black-last.png" alt="Logo" className="h-7 w-auto" />
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">

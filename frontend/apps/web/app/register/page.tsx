@@ -301,7 +301,7 @@ export default function RegisterPage() {
 
         {/* Logo */}
         <Link href="/" className="relative shrink-0">
-          <img src="/logo-white.png" alt="NextBooking" className="h-9 w-auto" />
+          <img src="/logo-white-last.png" alt="BookingAi" className="h-9 w-auto" />
         </Link>
 
         {/* Headline */}
@@ -349,7 +349,7 @@ export default function RegisterPage() {
               {[...Array(5)].map((_, i) => <span key={i} className={`text-sm ${i < 4 ? 'text-brand-500' : 'text-brand-500/30'}`}>&</span>)}
             </div>
             <p className="text-sm text-gray-300 italic leading-relaxed">
-              &ldquo;NextBooking sayesinde telefon trafiğimiz %80 azaldı. Artık müşterilerimizle çok daha fazla ilgilenebiliyoruz.&rdquo;
+              &ldquo;BookingAi sayesinde telefon trafiğimiz %80 azaldı. Artık müşterilerimizle çok daha fazla ilgilenebiliyoruz.&rdquo;
             </p>
             <p className="mt-3 text-xs font-semibold text-brand-500/70">— Zeynep K., Güzellik Salonu Sahibi</p>
           </div>
@@ -366,7 +366,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer note */}
-        <p className="relative mt-8 shrink-0 text-xs text-gray-600">© 2026 NextBooking. Tüm hakları saklıdır.</p>
+        <p className="relative mt-8 shrink-0 text-xs text-gray-600">© 2026 BookingAi. Tüm hakları saklıdır.</p>
       </div>
 
       {/* ——Right panel — form ——*/}
@@ -378,7 +378,7 @@ export default function RegisterPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
                 <CalendarCheck className="h-4 w-4 text-white" />
               </div>
-              <span className="text-base font-bold text-gray-900">NextBooking</span>
+              <span className="text-base font-bold text-gray-900">BookingAi</span>
             </Link>
             <p className="text-sm text-gray-500">
               <Link href="/login" className="font-semibold text-brand-500 hover:text-brand-600 transition-colors">

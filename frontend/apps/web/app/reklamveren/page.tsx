@@ -4,7 +4,7 @@ import CheckoutLink from '@/components/CheckoutLink'
 import Link from 'next/link'
 import { ArrowRight, Check, TrendingUp, Eye, Target, BarChart3, Users, Star, Zap, Shield } from 'lucide-react'
 
-export const metadata = { title: 'Reklamveren Ol — NextBooking' }
+export const metadata = { title: 'Reklamveren Ol — BookingAi' }
 
 const stats = [
   { value: '10M+', label: 'Aylık Gösterim' },
@@ -91,7 +91,7 @@ export default function ReklamverenPage() {
               <span className="bg-gradient-to-r from-brand-500 to-yellow-400 bg-clip-text text-transparent">büyütmeye</span> hazır mısınız?
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-300 mb-10">
-              NextBooking reklam ağı ile işletmenizi hedef kitlenize ulaştırın, müşteri sayınızı katlayın. 
+              BookingAi reklam ağı ile işletmenizi hedef kitlenize ulaştırın, müşteri sayınızı katlayın. 
               Üstelik sadece sonuç alacağınız reklam modeliyle.
             </p>
             <div className="flex items-center justify-center gap-4">
@@ -224,7 +224,7 @@ export default function ReklamverenPage() {
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Müşteri Yorumları</p>
               <h2 className="text-4xl font-extrabold text-white mb-4">Reklamverenler Ne Diyor?</h2>
-              <p className="mx-auto max-w-2xl text-gray-400">Binlerce işletme NextBooking ile büyüyor. Onların başarı hikayelerini keşfedin.</p>
+              <p className="mx-auto max-w-2xl text-gray-400">Binlerce işletme BookingAi ile büyüyor. Onların başarı hikayelerini keşfedin.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
               {testimonials.map((t) => (

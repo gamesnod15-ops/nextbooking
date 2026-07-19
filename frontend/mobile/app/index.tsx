@@ -33,7 +33,7 @@ export default function SplashScreen() {
   return (
     <View style={styles.root}>
       <Image
-        source={require('../assets/images/logo.png')}
+        source={require('../assets/images/logo-black-last.png')}
         style={styles.logo}
         resizeMode="contain"
       />

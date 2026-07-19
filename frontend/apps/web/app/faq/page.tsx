@@ -2,13 +2,13 @@
 import { Footer } from '@/components/Footer'
 import { HelpCircle, Zap, CreditCard, Settings, Shield, Smartphone, Users, Search } from 'lucide-react'
 
-export const metadata = { title: 'Sık Sorulan Sorular — NextBooking', description: 'NextBooking hakkında sık sorulan sorular ve cevapları.' }
+export const metadata = { title: 'Sık Sorulan Sorular — BookingAi', description: 'BookingAi hakkında sık sorulan sorular ve cevapları.' }
 
 const categories = [
   {
     icon: HelpCircle, label: 'Genel',
     items: [
-      { q: 'NextBooking nedir?', a: 'NextBooking, kuaför, güzellik salonu, diş kliniği ve benzeri işletmeler için geliştirilmiş online randevu ve yönetim sistemidir.' },
+      { q: 'BookingAi nedir?', a: 'BookingAi, kuaför, güzellik salonu, diş kliniği ve benzeri işletmeler için geliştirilmiş online randevu ve yönetim sistemidir.' },
       { q: 'Ücretsiz deneme süresi ne kadar?', a: '14 gün ücretsiz deneme süresi sunuyoruz. Kredi kartı gerekmez, dilediğiniz zaman iptal edebilirsiniz.' },
       { q: 'Kurulum ne kadar sürer?', a: 'Ortalama 5 dakika içinde kurulum tamamlanır. Herhangi bir yazılım yüklemenize gerek yoktur.' },
     ],
@@ -66,7 +66,7 @@ export default function FaqPage() {
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Sık Sorulan Sorular</p>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">Merak Edilenler</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">NextBooking hakkında en çok sorulan soruların cevaplarını kategorilere ayrılmış olarak bulabilirsiniz.</p>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">BookingAi hakkında en çok sorulan soruların cevaplarını kategorilere ayrılmış olarak bulabilirsiniz.</p>
           </div>
         </section>
 

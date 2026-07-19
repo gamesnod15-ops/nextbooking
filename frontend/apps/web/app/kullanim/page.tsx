@@ -1,7 +1,7 @@
-﻿﻿import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Kullanım Şartları — NextBooking', description: 'NextBooking kullanım şartları ve koşulları.' }
+export const metadata = { title: 'Kullanım Şartları — BookingAi', description: 'BookingAi kullanım şartları ve koşulları.' }
 
 export default function TermsPage() {
   return (
@@ -26,7 +26,7 @@ export default function TermsPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Taraflar ve Kapsam</h2>
-                <p>İşbu Kullanım Şartları ve Koşulları ("Şartlar"), NextBooking ("Platform", "biz", "bizim") ile platformu kullanan gerçek veya tüzel kişi ("Kullanıcı", "siz") arasındaki ilişkiyi düzenler. Platformu kullanarak, bu şartları tamamen okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz.</p>
+                <p>İşbu Kullanım Şartları ve Koşulları ("Şartlar"), BookingAi ("Platform", "biz", "bizim") ile platformu kullanan gerçek veya tüzel kişi ("Kullanıcı", "siz") arasındaki ilişkiyi düzenler. Platformu kullanarak, bu şartları tamamen okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz.</p>
                 <p className="mt-2">Platform, online randevu yönetimi, müşteri takibi, ödeme işlemleri, pazarlama araçları ve işletme operasyonlarını dijitalleştirmeye yönelik diğer hizmetleri ("Hizmetler") sunmaktadır. Bu şartlar, platformun tüm özellikleri, güncellemeleri ve yeni sürümleri için geçerlidir.</p>
               </div>
 
@@ -46,7 +46,7 @@ export default function TermsPage() {
                   <li>Hesap şifrenizin ve giriş bilgilerinizin gizliliğini korumaktan tamamen siz sorumlusunuz.</li>
                   <li>Hesabınız altında gerçekleşen tüm işlemlerden siz sorumlusunuz.</li>
                   <li>Hesabınızda yetkisiz kullanım veya güvenlik ihlali fark etmeniz durumunda, derhal bize bildirmeniz gerekmektedir.</li>
-                  <li>Hesap güvenliğinin ihlali nedeniyle doğabilecek kayıplardan NextBooking sorumlu tutulamaz.</li>
+                  <li>Hesap güvenliğinin ihlali nedeniyle doğabilecek kayıplardan BookingAi sorumlu tutulamaz.</li>
                 </ul>
               </div>
 
@@ -65,7 +65,7 @@ export default function TermsPage() {
                 </ul>
 
                 <h3 className="text-base font-bold text-gray-900 mt-4">3.2 Platform Sorumlulukları</h3>
-                <p>NextBooking aşağıdaki hususları taahhüt eder:</p>
+                <p>BookingAi aşağıdaki hususları taahhüt eder:</p>
                 <ul className="list-disc pl-5 space-y-1 mt-1">
                   <li>Hizmetleri, sektör standartlarına uygun şekilde sunmak</li>
                   <li>Makul kesinti süreleri dışında (%99,9 uptime hedefi) hizmet erişilebilirliğini sağlamak</li>
@@ -81,7 +81,7 @@ export default function TermsPage() {
                 <ul className="list-disc pl-5 space-y-1 mt-1">
                   <li>Seçtiğiniz abonelik planına göre belirtilen ücretler, aylık veya yıllık olarak faturalandırılır.</li>
                   <li>Ücretler, KDV ve diğer yasal vergiler dahil olarak belirtilir.</li>
-                  <li>NextBooking, ücretlerde değişiklik yapma hakkını saklı tutar. Ücret değişiklikleri, en az 30 gün önceden bildirilir.</li>
+                  <li>BookingAi, ücretlerde değişiklik yapma hakkını saklı tutar. Ücret değişiklikleri, en az 30 gün önceden bildirilir.</li>
                 </ul>
 
                 <h3 className="text-base font-bold text-gray-900 mt-4">4.2 Ödeme Koşulları</h3>
@@ -97,17 +97,17 @@ export default function TermsPage() {
                   <li>14 günlük ücretsiz deneme süresi boyunca herhangi bir ücret alınmaz.</li>
                   <li>Deneme süresi sonunda otomatik olarak ücretli plana geçilmez.</li>
                   <li>Deneme süresi içinde istediğiniz zaman iptal edebilirsiniz.</li>
-                  <li>NextBooking, deneme süresini uzatma veya sonlandırma hakkını saklı tutar.</li>
+                  <li>BookingAi, deneme süresini uzatma veya sonlandırma hakkını saklı tutar.</li>
                 </ul>
               </div>
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">5. Fikri Mülkiyet Hakları</h2>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                  <li><strong>Platform Mülkiyeti:</strong> NextBooking platformuna ait tüm yazılım, kod, tasarım, logo, marka, grafik ve içerikler ("Fikri Mülkiyet"), NextBooking'a aittir ve telif hakkı, ticari marka ve diğer fikri mülkiyet yasalarıyla korunmaktadır.</li>
+                  <li><strong>Platform Mülkiyeti:</strong> BookingAi platformuna ait tüm yazılım, kod, tasarım, logo, marka, grafik ve içerikler ("Fikri Mülkiyet"), BookingAi'a aittir ve telif hakkı, ticari marka ve diğer fikri mülkiyet yasalarıyla korunmaktadır.</li>
                   <li><strong>Kullanım Lisansı:</strong> Size, platformu kullanmanız için sınırlı, kişisel, devredilemez ve münhasır olmayan bir lisans verilmektedir. Bu lisans, platformu kendi işletmeniz için kullanma hakkını içerir.</li>
                   <li><strong>Kısıtlamalar:</strong> Platformun herhangi bir bölümünü kopyalayamaz, değiştiremez, tersine mühendislik yapamaz, dağıtamaz veya ticari olarak yeniden satamazsınız.</li>
-                  <li><strong>Kullanıcı İçeriği:</strong> Platform üzerinden oluşturduğunuz içerikler (müşteri listeleri, randevu verileri, özel ayarlar) size aittir. NextBooking, bu verileri yalnızca hizmet sunumu amacıyla işler.</li>
+                  <li><strong>Kullanıcı İçeriği:</strong> Platform üzerinden oluşturduğunuz içerikler (müşteri listeleri, randevu verileri, özel ayarlar) size aittir. BookingAi, bu verileri yalnızca hizmet sunumu amacıyla işler.</li>
                 </ul>
               </div>
 
@@ -115,8 +115,8 @@ export default function TermsPage() {
                 <h2 className="text-xl font-bold text-gray-900 mb-3">6. Sorumluluk Sınırlamaları</h2>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
                   <li>Platform, "olduğu gibi" ve "mevcut olduğu şekilde" temelinde sunulmaktadır. Açık veya zımni hiçbir garanti verilmemektedir.</li>
-                  <li>NextBooking, hizmetin kesintisiz, hatasız veya güvenli olacağını garanti etmez.</li>
-                  <li>NextBooking, aşağıdaki durumlardan kaynaklanan zararlardan sorumlu değildir:
+                  <li>BookingAi, hizmetin kesintisiz, hatasız veya güvenli olacağını garanti etmez.</li>
+                  <li>BookingAi, aşağıdaki durumlardan kaynaklanan zararlardan sorumlu değildir:
                     <ul className="list-circle pl-5 mt-1 space-y-0.5">
                       <li>Hizmet kullanımından doğan dolaylı, tesadüfi, özel veya cezai zararlar</li>
                       <li>Veri kaybı veya veri bütünlüğünün bozulması</li>
@@ -124,7 +124,7 @@ export default function TermsPage() {
                       <li>Mücbir sebepler (doğal afet, savaş, grev, internet altyapı kesintileri)</li>
                     </ul>
                   </li>
-                  <li>Yürürlükteki yasaların izin verdiği azami ölçüde, NextBooking'ın toplam sorumluluğu, son 12 ayda ödediğiniz toplam ücreti aşamaz.</li>
+                  <li>Yürürlükteki yasaların izin verdiği azami ölçüde, BookingAi'ın toplam sorumluluğu, son 12 ayda ödediğiniz toplam ücreti aşamaz.</li>
                 </ul>
               </div>
 
@@ -133,7 +133,7 @@ export default function TermsPage() {
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
                   <li>İşletmenize randevu alan müşterilerinizin kişisel verilerinin korunmasından siz sorumlusunuz.</li>
                   <li>Müşteri verilerini toplarken ve işlerken KVKK başta olmak üzere ilgili tüm mevzuata uygun hareket etmekle yükümlüsünüz.</li>
-                  <li>NextBooking, bu kapsamda bir veri işleyen (data processor) olarak hareket eder; siz veri sorumlusu (data controller) olarak kabul edilirsiniz.</li>
+                  <li>BookingAi, bu kapsamda bir veri işleyen (data processor) olarak hareket eder; siz veri sorumlusu (data controller) olarak kabul edilirsiniz.</li>
                   <li>Müşteri verilerinizin üçüncü taraflarla paylaşılması durumunda, bu paylaşıma ilişkin yasal yükümlülükler (açık rıza, aydınlatma) size aittir.</li>
                 </ul>
               </div>

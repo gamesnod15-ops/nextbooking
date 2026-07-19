@@ -28,7 +28,6 @@ const dropdownLinks = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const [user, setUser] = useState<{ name: string; avatar: string | null; role: string } | null>(null)
   const pathname = usePathname()
@@ -63,10 +62,6 @@ export function Navbar() {
     setUserDropdownOpen(false)
   }
 
-  const isDropdownActive = dropdownLinks.some(
-    (l) => pathname === l.href || pathname.startsWith(l.href + '/')
-  )
-
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Subheader */}
@@ -95,19 +90,19 @@ export function Navbar() {
       <div className="border-b border-white/10 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="NextBooking" className="h-8 w-auto" />
+        <Link href="/" className="flex items-center">
+          <img src="/logo-black-last.png" alt="BookingAi" className="h-8 w-auto" />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex">
-          {topLinks.map((l) => {
+          {[...topLinks, ...dropdownLinks].map((l) => {
             const isActive = pathname === l.href || pathname.startsWith(l.href + '/')
             return (
               <Link
                 key={l.href}
                 href={l.href}
-                className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
                   isActive
                     ? 'rounded-full bg-[#EFEFEF] text-gray-900'
                     : 'rounded-full text-gray-600 hover:text-gray-900'
@@ -118,49 +113,6 @@ export function Navbar() {
               </Link>
             )
           })}
-
-          {/* Biz Kimiz? dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
-          >
-            <button
-              className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-colors ${
-                isDropdownActive
-                  ? 'rounded-full bg-[#EFEFEF] text-gray-900'
-                  : 'rounded-full text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {isDropdownActive && <Info className="h-4 w-4" />}
-              Biz Kimiz?
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {dropdownOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full w-48 pt-2">
-                <div className="rounded-xl border border-gray-100 bg-white p-1.5 shadow-lg">
-                  {dropdownLinks.map((l) => {
-                    const isActive = pathname === l.href || pathname.startsWith(l.href + '/')
-                    return (
-                      <Link
-                        key={l.href}
-                        href={l.href}
-                        className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                          isActive
-                            ? 'bg-[#EFEFEF] text-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
-                      >
-                        {iconMap[l.href]}
-                        {l.label}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -168,7 +120,7 @@ export function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:border-brand-300 hover:text-gray-900 transition-colors"
               >
                 {user.avatar ? (
                   <img src={user.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
@@ -210,12 +162,11 @@ export function Navbar() {
                 href="/login"
                 aria-label="Giriş Yap"
                 title="Giriş Yap"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900"
               >
-                <User className="h-5 w-5" />
+                <User className="h-4 w-4" />
               </Link>
-              <Link href="/register" className="flex items-center gap-1.5 rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
-                <UserPlus className="h-4 w-4" />
+              <Link href="/register" className="flex items-center rounded-full bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-black transition-colors">
                 Ücretsiz Başla
               </Link>
             </>
@@ -280,8 +231,7 @@ export function Navbar() {
                   <LogIn className="h-4 w-4" />
                   Giriş Yap
                 </Link>
-                <Link href="/register" onClick={() => setOpen(false)} className="flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white">
-                  <UserPlus className="h-4 w-4" />
+                <Link href="/register" onClick={() => setOpen(false)} className="flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white">
                   Ücretsiz Başla
                 </Link>
               </>

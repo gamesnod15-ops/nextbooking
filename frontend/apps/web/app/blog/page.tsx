@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import { ArrowRight, Calendar } from 'lucide-react'
 
-export const metadata = { title: 'Blog — NextBooking', description: 'Randevu sistemi, işletme yönetimi ve dijitalleşme hakkında blog yazıları.' }
+export const metadata = { title: 'Blog — BookingAi', description: 'Randevu sistemi, işletme yönetimi ve dijitalleşme hakkında blog yazıları.' }
 
 const posts = [
   { title: 'Online Randevu Sistemi ile Müşteri Memnuniyetini Artırın', date: '15 Mayıs 2026', slug: 'online-randevu-musteri-memnuniyeti' },

@@ -34,7 +34,7 @@ export default function RoleSelectScreen() {
 
       <View style={[styles.logoBlock, { paddingTop: insets.top + SPACE[10] }]}>
         <Image
-          source={require('../assets/images/logo-white.png')}
+          source={require('../assets/images/logo-white-last.png')}
           style={styles.logo}
           resizeMode="contain"
         />

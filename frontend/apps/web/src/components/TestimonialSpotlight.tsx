@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 
 const testimonials = [
-  { name: 'Ahmet Yılmaz', role: 'Berber Salonu Sahibi, İstanbul', text: 'NextBooking ile müşterilerimiz artık telefon yerine online rezervasyon yapıyor. Hayır-deme oranım %60 düştü!' },
+  { name: 'Ahmet Yılmaz', role: 'Berber Salonu Sahibi, İstanbul', text: 'BookingAi ile müşterilerimiz artık telefon yerine online rezervasyon yapıyor. Hayır-deme oranım %60 düştü!' },
   { name: 'Selin Kaya',   role: 'Güzellik Uzmanı, Ankara',        text: 'Çok kullanışlı ve hızlı. 5 dakikada kurdum, aynı gün ilk rezervasyonum geldi. Kesinlikle tavsiye ederim.' },
   { name: 'Dr. Mehmet Er', role: 'Diş Hekimi, İzmir',             text: 'Hasta kayıt sistemimizi sıfırdan kurmamıza gerek kalmadı. Entegre randevu sistemi mükemmel çalışıyor.' },
 ]

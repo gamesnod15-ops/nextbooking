@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import { ArrowRight, Play, CalendarCheck, Users, BarChart3 } from 'lucide-react'
 
-export const metadata = { title: 'Demo — NextBooking', description: 'NextBooking demosunu deneyin.' }
+export const metadata = { title: 'Demo — BookingAi', description: 'BookingAi demosunu deneyin.' }
 
 export default function DemoPage() {
   return (
@@ -17,7 +17,7 @@ export default function DemoPage() {
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Demo</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">NextBooking&apos;i Keşfedin</h1>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">BookingAi&apos;i Keşfedin</h1>
             <p className="mx-auto max-w-xl text-lg text-gray-300 mb-8">Canlı bir demo talep edin, ekibimiz size özel bir tur düzenlesin.</p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link href="/register" className="flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-base font-bold text-white hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25">

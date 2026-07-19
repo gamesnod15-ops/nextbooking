@@ -62,3 +62,6 @@ src/publish/
 *.zip
 *.deploy.zip
 api-deploy.zip
+
+# Graphify knowledge-graph output (generated, ~38MB)
+graphify-out/

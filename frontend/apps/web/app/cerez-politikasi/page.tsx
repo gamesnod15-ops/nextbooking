@@ -1,7 +1,7 @@
-﻿﻿import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Çerez Politikası — NextBooking', description: 'NextBooking çerez politikası.' }
+export const metadata = { title: 'Çerez Politikası — BookingAi', description: 'BookingAi çerez politikası.' }
 
 export default function CerezPolicyPage() {
   return (

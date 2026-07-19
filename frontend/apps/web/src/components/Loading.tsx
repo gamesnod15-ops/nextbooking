@@ -1,20 +1,21 @@
-'use client'
-
-import { Loader2 } from 'lucide-react'
-
-interface LoadingProps {
-  text?: string
-}
-
-export function Loading({ text = 'Yükleniyor...' }: LoadingProps) {
+/**
+ * Route-level loading indicator (used as the Suspense fallback by the
+ * `loading.tsx` files).
+ *
+ * Deliberately NOT a full-screen overlay: the previous version covered the
+ * whole viewport with a "Yükleniyor..." card, so visitors stared at a blank
+ * white screen even though the server-rendered page was already sitting in
+ * the DOM underneath it. A slim top bar gives the same feedback without
+ * hiding anything.
+ */
+export function Loading() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="flex flex-col items-center gap-3 rounded-2xl bg-white px-8 py-6 shadow-xl border border-gray-100">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50">
-          <Loader2 className="h-6 w-6 animate-spin text-brand-500" />
-        </div>
-        <p className="text-sm font-medium text-gray-600">{text}</p>
-      </div>
+    <div
+      role="status"
+      aria-label="Yükleniyor"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5 overflow-hidden bg-brand-100"
+    >
+      <div className="h-full w-1/3 animate-loading-bar rounded-full bg-brand-500" />
     </div>
   )
 }

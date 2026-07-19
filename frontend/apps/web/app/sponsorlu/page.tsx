@@ -4,7 +4,7 @@ import CheckoutLink from '@/components/CheckoutLink'
 import Link from 'next/link'
 import { ArrowRight, Check, Star, TrendingUp, Search, Zap, Award, Users, Sparkles, Shield } from 'lucide-react'
 
-export const metadata = { title: 'Sponsorlu Öne Çıkan — NextBooking' }
+export const metadata = { title: 'Sponsorlu Öne Çıkan — BookingAi' }
 
 const stats = [
   { value: '%320', label: 'Ortalama Tıklanma Artışı' },

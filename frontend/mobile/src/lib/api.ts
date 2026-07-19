@@ -1,10 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// Use your local IP for development (change to your machine's IP)
-const BASE_URL = __DEV__
-  ? 'http://192.168.1.3:5280/api/v1'  // Change to your dev machine IP
-  : 'https://api-randevumkolay.azurewebsites.net/api/v1';
+const BASE_URL = 'https://api-randevumkolay.azurewebsites.net/api/v1';
 
 // Extract the server origin (scheme + host + port) from BASE_URL
 export const API_ORIGIN = BASE_URL.startsWith('http')

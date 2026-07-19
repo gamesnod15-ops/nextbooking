@@ -1,7 +1,7 @@
-﻿﻿import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Gizlilik Politikası — NextBooking', description: 'NextBooking gizlilik politikası.' }
+export const metadata = { title: 'Gizlilik Politikası — BookingAi', description: 'BookingAi gizlilik politikası.' }
 
 export default function PrivacyPage() {
   return (
@@ -26,8 +26,8 @@ export default function PrivacyPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Giriş ve Kapsam</h2>
-                <p>NextBooking ("biz", "bizim", "platform") olarak, kullanıcılarımızın ve ziyaretçilerimizin gizliliğine büyük önem vermekteyiz. İşbu Gizlilik Politikası, platformumuzu kullanırken hangi bilgilerin toplandığını, bu bilgilerin nasıl kullanıldığını, saklandığını, korunduğunu ve paylaşıldığını açıklamaktadır.</p>
-                <p className="mt-2">Bu politika, NextBooking web sitesini (nextbooking.com), mobil uygulamalarını ve alt alan adlarını kapsamaktadır. Platformumuzu kullanarak, bu politikada belirtilen veri toplama ve kullanım uygulamalarını kabul etmiş sayılırsınız.</p>
+                <p>BookingAi ("biz", "bizim", "platform") olarak, kullanıcılarımızın ve ziyaretçilerimizin gizliliğine büyük önem vermekteyiz. İşbu Gizlilik Politikası, platformumuzu kullanırken hangi bilgilerin toplandığını, bu bilgilerin nasıl kullanıldığını, saklandığını, korunduğunu ve paylaşıldığını açıklamaktadır.</p>
+                <p className="mt-2">Bu politika, BookingAi web sitesini (nextbooking.com), mobil uygulamalarını ve alt alan adlarını kapsamaktadır. Platformumuzu kullanarak, bu politikada belirtilen veri toplama ve kullanım uygulamalarını kabul etmiş sayılırsınız.</p>
               </div>
 
               <div>
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">8. Üçüncü Taraf Bağlantıları</h2>
-                <p>Platformumuz, üçüncü taraf web sitelerine bağlantılar içerebilir (örneğin, sosyal medya butonları, ödeme sayfaları). Bu bağlantılar, üçüncü taraf sitelerin gizlilik uygulamalarını kapsamamaktadır. Bu sitelerin kendi gizlilik politikalarını incelemenizi öneririz. NextBooking, üçüncü taraf sitelerin veri toplama uygulamalarından sorumlu değildir.</p>
+                <p>Platformumuz, üçüncü taraf web sitelerine bağlantılar içerebilir (örneğin, sosyal medya butonları, ödeme sayfaları). Bu bağlantılar, üçüncü taraf sitelerin gizlilik uygulamalarını kapsamamaktadır. Bu sitelerin kendi gizlilik politikalarını incelemenizi öneririz. BookingAi, üçüncü taraf sitelerin veri toplama uygulamalarından sorumlu değildir.</p>
               </div>
 
               <div>

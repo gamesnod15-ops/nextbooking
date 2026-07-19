@@ -89,7 +89,7 @@ function LoginForm() {
         </div>
 
         <Link href="/" className="relative shrink-0">
-          <img src="/logo-white.png" alt="NextBooking" className="h-9 w-auto" />
+          <img src="/logo-white-last.png" alt="BookingAi" className="h-9 w-auto" />
         </Link>
 
         <div className="relative mt-10 flex-1 space-y-8 overflow-y-auto">
@@ -117,7 +117,7 @@ function LoginForm() {
               ))}
             </div>
             <p className="text-sm text-gray-300 italic leading-relaxed">
-              &ldquo;NextBooking sayesinde iş süreçlerimizin tamamını tek panelden yönetiyorum. Zaman kazandırıyor.&rdquo;
+              &ldquo;BookingAi sayesinde iş süreçlerimizin tamamını tek panelden yönetiyorum. Zaman kazandırıyor.&rdquo;
             </p>
             <p className="mt-3 text-xs font-semibold text-brand-500/70">— Mehmet A., Spor Salonu Sahibi</p>
           </div>
@@ -132,7 +132,7 @@ function LoginForm() {
           </div>
         </div>
 
-        <p className="relative mt-8 shrink-0 text-xs text-gray-600">© 2026 NextBooking. Tüm hakları saklıdır.</p>
+        <p className="relative mt-8 shrink-0 text-xs text-gray-600">© 2026 BookingAi. Tüm hakları saklıdır.</p>
       </div>
 
       {/* Right — form panel */}
@@ -143,7 +143,7 @@ function LoginForm() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
                 <CalendarCheck className="h-4 w-4 text-white" />
               </div>
-              <span className="text-base font-bold text-gray-900">NextBooking</span>
+              <span className="text-base font-bold text-gray-900">BookingAi</span>
             </Link>
             <p className="text-sm text-gray-500">
               <Link href="/register" className="font-semibold text-brand-500 hover:text-brand-600 transition-colors">

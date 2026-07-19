@@ -25,11 +25,11 @@ const docContents: Record<string, string> = {
   baslangic: `
 # Başlangıç Kılavuzu
 
-NextBooking ile işletmenizi dijital dünyaya taşımak çok kolay.
+BookingAi ile işletmenizi dijital dünyaya taşımak çok kolay.
 
 ## Hızlı Kurulum
 
-1. **Hesap Oluşturun** — NextBooking'a ücretsiz kaydolun.
+1. **Hesap Oluşturun** — BookingAi'a ücretsiz kaydolun.
 2. **İşletme Profilinizi Oluşturun** — İşletme adı, adres, iletişim bilgilerini ekleyin.
 3. **Hizmetlerinizi Tanımlayın** — Sunduğunuz hizmetleri, sürelerini ve fiyatlarını belirleyin.
 4. **Çalışma Takviminizi Ayarlayın** — Çalışma günleri ve saatlerinizi tanımlayın.
@@ -73,7 +73,7 @@ Video eğitimler için bizi takip etmeye devam edin.
   api: `
 # API Dokümantasyonu
 
-NextBooking REST API ile işletmenizi programatik olarak yönetin.
+BookingAi REST API ile işletmenizi programatik olarak yönetin.
 
 ## Temel Bilgiler
 
@@ -134,14 +134,14 @@ Resmi SDK'lar ile entegrasyonu hızlandırın.
 - **JavaScript/TypeScript** — npm: \\\`nextbooking-sdk\\\`
 - **Python** — pip: \\\`nextbooking\\\`
 - **PHP** — composer: \\\`nextbooking/sdk\\\`
-- **C# (.NET)** — NuGet: \\\`NextBooking.SDK\\\`
+- **C# (.NET)** — NuGet: \\\`BookingAi.SDK\\\`
 
 ## Örnek Kullanım (JS)
 
 \\\`\\\`\\\`javascript
-import NextBooking from 'nextbooking-sdk'
+import BookingAi from 'nextbooking-sdk'
 
-const client = new NextBooking('API_KEY')
+const client = new BookingAi('API_KEY')
 const appointments = await client.appointments.list()
 \\\`\\\`\\\`
   `,
@@ -272,7 +272,7 @@ export default function DocsPage() {
             </div>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">Dokümantasyon</h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-300">
-              Entegrasyon rehberleri, API dokümanları ve kullanım kılavuzları ile NextBooking&apos;ı en verimli şekilde kullanın.
+              Entegrasyon rehberleri, API dokümanları ve kullanım kılavuzları ile BookingAi&apos;ı en verimli şekilde kullanın.
             </p>
           </div>
         </section>

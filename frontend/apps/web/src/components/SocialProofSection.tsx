@@ -1,4 +1,4 @@
-import { Reveal, StaggerGroup, StaggerItem } from './motion/Reveal'
+import { Reveal, SlideIn, StaggerGroup, StaggerItem } from './motion/Reveal'
 import { TestimonialSpotlight } from './TestimonialSpotlight'
 
 const stats = [
@@ -24,7 +24,7 @@ export function SocialProofSection() {
       </div>
 
       <div className="relative mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
-        <Reveal className="mb-12 text-center">
+        <SlideIn direction="left" className="mb-12 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5">
             <span className="h-2 w-2 rounded-full bg-brand-500" />
             <span className="text-xs font-semibold text-gray-900">Müşteri Yorumları</span>
@@ -34,9 +34,9 @@ export function SocialProofSection() {
             <span className="text-brand-500">Ne Diyor?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            Türkiye&apos;nin dört bir yanından binlerce işletme randevu yönetimini NextBooking ile dönüştürüyor
+            Türkiye&apos;nin dört bir yanından binlerce işletme randevu yönetimini BookingAi ile dönüştürüyor
           </p>
-        </Reveal>
+        </SlideIn>
 
         <StaggerGroup className="mx-auto mb-14 grid max-w-3xl grid-cols-2 divide-x divide-y divide-gray-200/80 rounded-2xl border border-gray-200 bg-gray-50/60 sm:grid-cols-4 sm:divide-y-0">
           {stats.map((stat) => (

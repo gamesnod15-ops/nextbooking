@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { ArrowRight, Sparkles } from 'lucide-react'
+import { SlideIn } from './motion/Reveal'
 
 export function CtaSection() {
   return (
     <section className="relative overflow-hidden bg-black py-24">
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(206,13,30,0.06),transparent_60%)]" />
-      {/* Decorative geometric shapes */}
       <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
         <svg className="absolute -top-16 right-1/4 h-72 w-72 opacity-[0.04]" viewBox="0 0 200 200" fill="none">
           <polygon points="100,0 200,200 0,200" className="fill-white" />
@@ -20,8 +20,7 @@ export function CtaSection() {
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Content */}
-          <div>
+          <SlideIn direction="right">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-brand-500">Hemen Başlayın</span>
@@ -55,9 +54,8 @@ export function CtaSection() {
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-500" /> 7/24 destek
               </span>
             </div>
-          </div>
+          </SlideIn>
 
-          {/* Right: Photo */}
           <div className="hidden lg:block">
             <div className="relative">
               <div className="relative h-[400px] w-full overflow-hidden rounded-3xl shadow-2xl -rotate-2 transition-transform duration-500 hover:rotate-0">
@@ -68,7 +66,6 @@ export function CtaSection() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               </div>
-              {/* Floating badge */}
               <div className="absolute -bottom-3 -right-3 rounded-2xl bg-brand-500 px-4 py-3 shadow-xl">
                 <p className="text-sm font-bold text-white">14 Gün Ücretsiz</p>
                 <p className="text-xs text-white/70">Kredi kartı gerekmez</p>

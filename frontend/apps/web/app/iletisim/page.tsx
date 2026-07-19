@@ -1,9 +1,9 @@
-﻿﻿'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
-import { Mail, Phone, MapPin, Clock, Bot, MessageSquare, Send, CheckCircle, ExternalLink } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock, Bot, MessageSquare, Send, CheckCircle } from 'lucide-react'
 import { InstagramIcon, FacebookIcon, XIcon, YouTubeIcon, LinkedInIcon, TikTokIcon } from '@/lib/icons'
 
 export default function IletisimPage() {
@@ -35,10 +35,10 @@ export default function IletisimPage() {
   }
 
   const inputCls = (err?: string) => [
-    'w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition-colors',
+    'w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition-all duration-200',
     err
       ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20'
-      : 'border-gray-200 bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20',
+      : 'border-gray-200 bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 hover:border-gray-300',
   ].join(' ')
 
   return (
@@ -50,8 +50,15 @@ export default function IletisimPage() {
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-40 -right-40 h-[400px] w-[400px] rounded-full bg-brand-500/10 blur-3xl" />
             <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
+            <svg className="absolute top-20 right-1/4 h-48 w-48 opacity-[0.04]" viewBox="0 0 200 200" fill="none">
+              <rect x="10" y="10" width="180" height="180" rx="30" className="stroke-white stroke-[1.5]" fill="none" />
+              <circle cx="100" cy="100" r="70" className="stroke-white stroke-[1.5]" fill="none" />
+            </svg>
+            <svg className="absolute bottom-10 left-1/3 h-36 w-36 opacity-[0.03]" viewBox="0 0 200 200" fill="none">
+              <polygon points="100,0 200,200 0,200" className="fill-white" />
+            </svg>
           </div>
-          <div className="relative mx-auto max-w-3xl px-4 text-center">
+          <div className="relative mx-auto max-w-3xl px-5 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">İletişim</p>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">Nasıl Yardımcı Olabiliriz?</h1>
             <p className="mx-auto max-w-xl text-lg text-gray-300">
@@ -61,82 +68,93 @@ export default function IletisimPage() {
           </div>
         </section>
 
-        {/* Support channels */}
-        <section className="bg-white py-16 border-b border-gray-100">
-          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Support channels - Creative cards */}
+        <section className="bg-white py-20 border-b border-gray-100">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl font-extrabold text-gray-900">Destek Kanallarımız</h2>
+              <p className="text-sm text-gray-500 mt-2">Size en uygun kanaldan ulaşın</p>
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* 7/24 Support */}
-              <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500">
-                  <Clock className="h-6 w-6 text-white" />
+              <div className="group relative rounded-3xl border-2 border-brand-100 bg-gradient-to-br from-brand-50 to-blue-50 p-6 hover:border-brand-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-brand-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-blue-500 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <Clock className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-1">7/24 Destek</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Destek birimimiz haftanın 7 günü, günün 24 saati hizmetinizdedir. Acil durumlar için öncelikli destek hattımızı kullanın.
+                <h3 className="text-base font-bold text-gray-900 mb-2">7/24 Destek</h3>
+                <p className="text-xs text-gray-600 leading-relaxed mb-3">
+                  Destek birimimiz haftanın 7 günü, günün 24 saati hizmetinizdedir.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Çevrimiçi
                 </span>
               </div>
 
               {/* Chatbot */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100">
-                  <Bot className="h-6 w-6 text-violet-600" />
+              <div className="group relative rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:border-violet-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-purple-100 group-hover:from-violet-200 group-hover:to-purple-200 transition-all shadow-sm">
+                  <Bot className="h-7 w-7 text-violet-600" />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-1">AI Chatbot</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Yapay zeka destekli chatbot&apos;umuz sık sorulan sorulara anında yanıt verir. Panel içinde sağ alt köşedeki sohbet simgesinden erişebilirsiniz.
+                <h3 className="text-base font-bold text-gray-900 mb-2">AI Chatbot</h3>
+                <p className="text-xs text-gray-600 leading-relaxed mb-3">
+                  Yapay zeka destekli chatbot&apos;umuz sık sorulan sorulara anında yanıt verir.
                 </p>
-                <a href="#chatbot" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-violet-600 hover:underline">
+                <a href="#chatbot" className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 hover:underline">
                   Chatbot&apos;u Aç ›
                 </a>
               </div>
 
               {/* Live chat */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
-                  <MessageSquare className="h-6 w-6 text-emerald-600" />
+              <div className="group relative rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:border-emerald-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200 transition-all shadow-sm">
+                  <MessageSquare className="h-7 w-7 text-emerald-600" />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-1">Canlı Destek</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <h3 className="text-base font-bold text-gray-900 mb-2">Canlı Destek</h3>
+                <p className="text-xs text-gray-600 leading-relaxed mb-3">
                   Uzman destek ekibimizle gerçek zamanlı sohbet edin. Ortalama yanıt süremiz 2 dakika.
                 </p>
-                <p className="mt-3 text-xs text-gray-400">Pzt–Cum: 09:00–22:00<br />Cts–Paz: 10:00–18:00</p>
+                <p className="text-xs text-gray-400">Pzt–Cum: 09:00–22:00<br />Cts–Paz: 10:00–18:00</p>
               </div>
 
               {/* Contact info */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-                {[
-                  { icon: Mail,   label: 'E-posta', value: 'destek@nextbooking.com' },
-                  { icon: Phone,  label: 'Telefon', value: '+90 (212) 000 00 00' },
-                  { icon: MapPin, label: 'Adres',   value: 'Maslak, İstanbul' },
-                ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50">
-                      <Icon className="h-4 w-4 text-brand-500" />
+              <div className="group relative rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:border-amber-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 group-hover:from-amber-200 group-hover:to-orange-200 transition-all shadow-sm">
+                  <Mail className="h-7 w-7 text-amber-600" />
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { icon: Mail,   label: 'E-posta', value: 'destek@bookingai.com' },
+                    { icon: Phone,  label: 'Telefon', value: '+90 (212) 000 00 00' },
+                    { icon: MapPin, label: 'Adres',   value: 'Maslak, İstanbul' },
+                  ].map(({ icon: Icon, label, value }) => (
+                    <div key={label} className="flex items-center gap-2.5">
+                      <Icon className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                      <div>
+                        <p className="text-[11px] text-gray-400">{label}</p>
+                        <p className="text-xs font-medium text-gray-700">{value}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-gray-900">{label}</p>
-                      <p className="text-xs text-gray-500">{value}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Social Media */}
+        {/* Social Media - Creative */}
         <section className="bg-white py-16 border-b border-gray-100">
-          <div className="mx-auto max-w-3xl px-4 text-center">
+          <div className="mx-auto max-w-3xl px-5 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Sosyal Medya</p>
             <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Bizi Takip Edin</h2>
-            <p className="text-sm text-gray-500 mb-8">Güncelleme ve duyurular için sosyal medya hesaplarımızı takip edin.</p>
-            <div className="flex items-center justify-center gap-5">
+            <p className="text-sm text-gray-500 mb-10">Güncelleme ve duyurular için sosyal medya hesaplarımızı takip edin.</p>
+            <div className="flex items-center justify-center gap-6 flex-wrap">
               {[
-                { icon: InstagramIcon, label: 'Instagram', href: '#', color: 'hover:bg-gradient-to-br from-pink-500 to-orange-500' },
+                { icon: InstagramIcon, label: 'Instagram', href: '#', color: 'hover:bg-gradient-to-br hover:from-pink-500 hover:to-orange-500' },
                 { icon: FacebookIcon, label: 'Facebook', href: '#', color: 'hover:bg-blue-600' },
                 { icon: XIcon, label: 'X (Twitter)', href: '#', color: 'hover:bg-black' },
                 { icon: YouTubeIcon, label: 'YouTube', href: '#', color: 'hover:bg-red-600' },
@@ -144,11 +162,11 @@ export default function IletisimPage() {
                 { icon: TikTokIcon, label: 'TikTok', href: '#', color: 'hover:bg-black' },
               ].map((s) => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                  className="group flex flex-col items-center gap-2">
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-gray-100 bg-white text-gray-700 shadow-sm transition-all group-hover:shadow-lg group-hover:-translate-y-1 ${s.color} group-hover:text-white group-hover:border-transparent`}>
-                    <s.icon size={22} />
+                  className="group flex flex-col items-center gap-2.5">
+                  <div className={`flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-gray-100 bg-white text-gray-700 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-2 group-hover:scale-110 ${s.color} group-hover:text-white group-hover:border-transparent`}>
+                    <s.icon size={24} />
                   </div>
-                  <span className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">{s.label}</span>
+                  <span className="text-xs font-medium text-gray-500 group-hover:text-gray-700 transition-colors">{s.label}</span>
                 </a>
               ))}
             </div>
@@ -157,11 +175,11 @@ export default function IletisimPage() {
 
         {/* Contact form + FAQ */}
         <section className="bg-gray-50 py-20">
-          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl px-5">
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_420px]">
 
               {/* Form */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+              <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
                 <h2 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
                   <Send className="h-5 w-5 text-brand-500" /> Bize Yazın
                 </h2>
@@ -233,7 +251,7 @@ export default function IletisimPage() {
                   { q: 'Teknik sorunlar için ne yapmalıyım?', a: 'Önce AI Chatbot\'u deneyin. Çözüm bulamazsanız canlı destek veya destek formuyla bize ulaşın. Kritik sorunlara 1 saat içinde yanıt veriyoruz.' },
                   { q: 'Demo talep edebilir miyim?', a: 'Evet! Formu kullanarak "Satış & Fiyatlandırma" konusunu seçin, size en uygun zamanda ekibimiz arayacak.' },
                 ].map(({ q, a }) => (
-                  <div key={q} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div key={q} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
                     <p className="text-sm font-semibold text-gray-900 mb-1.5">{q}</p>
                     <p className="text-xs text-gray-600 leading-relaxed">{a}</p>
                   </div>

@@ -1,7 +1,7 @@
-﻿﻿import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Güvenlik Politikası — NextBooking', description: 'NextBooking bilgi güvenliği politikası ve uygulamaları.' }
+export const metadata = { title: 'Güvenlik Politikası — BookingAi', description: 'BookingAi bilgi güvenliği politikası ve uygulamaları.' }
 
 export default function GuvenlikPage() {
   return (
@@ -26,8 +26,8 @@ export default function GuvenlikPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Giriş ve Kapsam</h2>
-                <p>NextBooking (nextbooking.com) olarak, bilgi güvenliğine en üst düzeyde önem vermekteyiz. Bu Güvenlik Politikası, platformumuzda işlenen tüm verilerin gizliliğini, bütünlüğünü ve erişilebilirliğini sağlamak amacıyla uyguladığımız teknik ve idari tedbirleri açıklamaktadır.</p>
-                <p className="mt-2">Bu politika, NextBooking platformunu kullanan tüm işletmeler, çalışanlar, müşteriler ve diğer tüm paydaşlar için geçerlidir. Bilgi güvenliği yönetim sistemimiz, uluslararası standartlar (ISO 27001) ve yerel mevzuat (KVKK, Türk Ticaret Kanunu) çerçevesinde yapılandırılmıştır.</p>
+                <p>BookingAi (nextbooking.com) olarak, bilgi güvenliğine en üst düzeyde önem vermekteyiz. Bu Güvenlik Politikası, platformumuzda işlenen tüm verilerin gizliliğini, bütünlüğünü ve erişilebilirliğini sağlamak amacıyla uyguladığımız teknik ve idari tedbirleri açıklamaktadır.</p>
+                <p className="mt-2">Bu politika, BookingAi platformunu kullanan tüm işletmeler, çalışanlar, müşteriler ve diğer tüm paydaşlar için geçerlidir. Bilgi güvenliği yönetim sistemimiz, uluslararası standartlar (ISO 27001) ve yerel mevzuat (KVKK, Türk Ticaret Kanunu) çerçevesinde yapılandırılmıştır.</p>
               </div>
 
               <div>

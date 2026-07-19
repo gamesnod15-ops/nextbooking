@@ -72,7 +72,7 @@ export function FeedbackWidget() {
             <div className="p-6">
               <h2 className="text-lg font-bold text-gray-900">Geri Bildirim Gönder</h2>
               <p className="mt-1 text-sm text-gray-500">
-                Uygulamayla ilgili deneyiminizi bizimle paylaşın; görüşleriniz NextBooking'i sizin için daha iyi hale getirmemize yardımcı olur.
+                Uygulamayla ilgili deneyiminizi bizimle paylaşın; görüşleriniz BookingAi'i sizin için daha iyi hale getirmemize yardımcı olur.
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-2">

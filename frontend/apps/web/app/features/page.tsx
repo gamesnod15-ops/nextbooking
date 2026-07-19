@@ -1,43 +1,185 @@
 ﻿import { Navbar } from '@/components/Navbar'
-import { FeaturesSection } from '@/components/FeaturesSection'
-import { CtaSection } from '@/components/CtaSection'
 import { Footer } from '@/components/Footer'
-import { Zap, Sparkles, Shield } from 'lucide-react'
+import { CheckCircle, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
-export const metadata = { title: 'Özellikler — NextBooking', description: 'NextBooking\'ın tüm özelliklerini keşfedin.' }
+export const metadata = { title: 'Özellikler — BookingAi', description: 'BookingAi\'ın tüm özelliklerini keşfedin.' }
+
+const features = [
+  {
+    title: 'Online Randevu',
+    subtitle: '7/24 Randevu Yönetimi',
+    desc: 'Müşterileriniz web ve mobil üzerinden 7/24 randevu alabilir. Gerçek zamanlı müsaitlik takvimi sayesinde çifte randevu sorunu artık yok. Randevular otomatik olarak personele atanır.',
+    bullets: ['Gerçek zamanlı müsaitlik takvimi', 'Çifte randevu koruması', 'Mobil ve web uyumlu'],
+    img: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80',
+    bg: 'bg-blue-50',
+    accent: 'text-blue-600',
+    accentBg: 'bg-blue-100',
+    dotColor: '#3b82f6',
+  },
+  {
+    title: 'Otomatik Hatırlatma',
+    subtitle: 'Hayır-deme Oranını %70 Azaltın',
+    desc: 'SMS ve e-posta ile otomatik hatırlatmalar gönderin. Randevusuna gelmeyen müşteriler artık tarih olmayacak. Hatırlatma zamanlarını ve içeriklerini tamamen özelleştirin.',
+    bullets: ['SMS ve e-posta hatırlatma', 'Özelleştirilebilir zamanlama', '%70 daha az hayır-deme'],
+    img: 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=600&q=80',
+    bg: 'bg-emerald-50',
+    accent: 'text-emerald-600',
+    accentBg: 'bg-emerald-100',
+    dotColor: '#10b981',
+  },
+  {
+    title: 'Gelir Analitiği',
+    subtitle: 'Verilerle Yönetin',
+    desc: 'Günlük, haftalık, aylık gelir raporları ve detaylı istatistikler. İşletmenizin performansını gerçek zamanlı takip edin, veri odaklı kararlar alın.',
+    bullets: ['Gerçek zamanlı gelir raporları', 'Personel performans analizi', 'Trend grafikleri ve istatistikler'],
+    img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
+    bg: 'bg-violet-50',
+    accent: 'text-violet-600',
+    accentBg: 'bg-violet-100',
+    dotColor: '#8b5cf6',
+  },
+  {
+    title: 'Çoklu Personel',
+    subtitle: 'Ekibinizi Kolayca Yönetin',
+    desc: 'Birden fazla personel için ayrı takvimler, yetkilendirme seviyeleri ve performans takibi. Her personelin kendi randevularını yönetmesini sağlayın.',
+    bullets: ['Bireysel personel takvimi', 'Rol bazlı yetkilendirme', 'Performans takibi'],
+    img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80',
+    bg: 'bg-amber-50',
+    accent: 'text-amber-600',
+    accentBg: 'bg-amber-100',
+    dotColor: '#f59e0b',
+  },
+  {
+    title: 'Güvenli Ödeme',
+    subtitle: 'PCI DSS Uyumlu Altyapı',
+    desc: 'Stripe ve İyzico entegrasyonu ile güvenli online ödeme alın. Ön ödeme, depozito ve tam ödeme seçenekleri. Tüm işlemler SSL ile şifrelenir.',
+    bullets: ['Stripe & İyzico entegrasyonu', 'SSL şifreleme', 'Ön ödeme ve depozito desteği'],
+    img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
+    bg: 'bg-rose-50',
+    accent: 'text-rose-600',
+    accentBg: 'bg-rose-100',
+    dotColor: '#f43f5e',
+  },
+  {
+    title: 'Sadakat Programı',
+    subtitle: 'Müşteri Bağlılığını Artırın',
+    desc: 'Puan, kupa ve ödüllerle müşterilerinizi tekrar tekrar işletmenize çekin. Sadakat programı ile müşteri yaşam boyu değerini artırın.',
+    bullets: ['Puan ve ödül sistemi', 'Kupa ve seviye takibi', 'Müşteri yaşam boyu değer artışı'],
+    img: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=600&q=80',
+    bg: 'bg-orange-50',
+    accent: 'text-orange-600',
+    accentBg: 'bg-orange-100',
+    dotColor: '#f97316',
+  },
+  {
+    title: 'Hızlı Kurulum',
+    subtitle: '5 Dakikada Hazır Olun',
+    desc: 'Karmaşık kurulum adımları yok. E-posta adresiniz ve işletme bilgilerinizle hesabınızı oluşturun, hemen müşteri kabul etmeye başlayın.',
+    bullets: ['2 dakikada hesap oluşturma', 'Kolay işletme kurulumu', 'Teknik bilgi gerektirmez'],
+    img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&q=80',
+    bg: 'bg-teal-50',
+    accent: 'text-teal-600',
+    accentBg: 'bg-teal-100',
+    dotColor: '#14b8a6',
+  },
+  {
+    title: 'Mobil Uygulama',
+    subtitle: 'Her An, Her Yerde',
+    desc: 'iOS ve Android için optimize edilmiş mobil deneyim. Randevularınızı telefonunuzdan yönetin, bildirimler anında cebinize gelsin.',
+    bullets: ['iOS ve Android uygulama', 'Push bildirimleri', 'Çevrimdışı erişim'],
+    img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80',
+    bg: 'bg-sky-50',
+    accent: 'text-sky-600',
+    accentBg: 'bg-sky-100',
+    dotColor: '#0ea5e9',
+  },
+]
 
 export default function FeaturesPage() {
   return (
     <>
       <Navbar />
       <main>
+        {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-28 text-white">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-500/10 blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-violet-500/10 blur-3xl" />
-            <div className="absolute top-1/3 left-1/4 h-[300px] w-[300px] rounded-full bg-blue-500/5 blur-3xl" />
+            <div className="absolute -top-40 -right-40 h-[400px] w-[400px] rounded-full bg-brand-500/10 blur-3xl" />
+            <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
-          <div className="relative mx-auto max-w-4xl px-4 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-xs font-medium text-brand-500 mb-6">
-              <Sparkles className="h-3 w-3" /> Güçlü Özellikler, Basit Kullanım
+          <div className="relative mx-auto max-w-3xl px-5 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-brand-500" />
+              <span className="text-xs font-semibold">Özellikler</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-              İşletmenizi büyütmek için<br />
-              <span className="bg-gradient-to-r from-brand-500 to-yellow-400 bg-clip-text text-transparent">ihtiyacınız olan her şey</span>
-            </h1>
-            <p className="mx-auto max-w-2xl text-lg text-gray-300">
-              Randevu yönetiminden ödeme altyapısına, müşteri iletişiminden gelir analitiğine kadar 
-              tek bir platformda birleşmiş 20+ güçlü özellik.
+            <h1 className="text-5xl font-extrabold leading-tight mb-6">İşletmenizi Dönüştürecek Her Şey</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">
+              BookingAi ile randevu yönetimi, müşteri ilişkileri ve gelir takibini tek platformda birleştirin.
             </p>
-            <div className="mt-8 flex items-center justify-center gap-6 text-sm text-gray-400">
-              <span className="flex items-center gap-1.5"><Zap className="h-3.5 w-3.5 text-brand-500" /> 5 dk kurulum</span>
-              <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-brand-500" /> PCI DSS uyumlu</span>
-              <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-brand-500" /> 14 gün ücretsiz</span>
-            </div>
           </div>
         </section>
-        <FeaturesSection />
-        <CtaSection />
+
+        {/* Feature Sections */}
+        {features.map((f, i) => {
+          const isReversed = i % 2 === 1
+          return (
+            <section key={f.title} className={`relative ${f.bg} py-20 md:py-28 overflow-hidden`}>
+              <div aria-hidden className="absolute inset-0 opacity-[0.03]"
+                style={{ backgroundImage: `radial-gradient(circle at 1px 1px, ${f.dotColor} 1px, transparent 0)`, backgroundSize: '20px 20px' }} />
+
+              <div className="relative mx-auto max-w-6xl px-5">
+                <div className={`grid gap-12 lg:grid-cols-2 items-center ${isReversed ? 'lg:[direction:rtl]' : ''}`}>
+                  {/* Text */}
+                  <div className={isReversed ? 'lg:[direction:ltr]' : ''}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full ${f.accentBg} px-3 py-1 text-xs font-semibold ${f.accent} mb-4`}>
+                      {f.subtitle}
+                    </span>
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-5">
+                      {f.title}
+                    </h2>
+                    <p className="text-gray-600 leading-relaxed mb-6">{f.desc}</p>
+                    <ul className="space-y-3">
+                      {f.bullets.map((b) => (
+                        <li key={b} className="flex items-center gap-2.5 text-sm text-gray-700">
+                          <CheckCircle className={`h-4 w-4 shrink-0 ${f.accent}`} />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Image */}
+                  <div className={`relative ${isReversed ? 'lg:[direction:ltr]' : ''}`}>
+                    <div className="relative overflow-hidden rounded-3xl shadow-2xl">
+                      <img src={f.img} alt={f.title} className="w-full h-72 md:h-96 object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                    </div>
+                    <div className={`absolute -bottom-4 ${isReversed ? '-left-4' : '-right-4'} rounded-2xl ${f.accentBg} px-5 py-3 shadow-lg`}>
+                      <p className={`text-sm font-bold ${f.accent}`}>{f.title}</p>
+                      <p className="text-xs text-gray-500">BookingAi ile tanışın</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )
+        })}
+
+        {/* CTA */}
+        <section className="bg-[#1a1a1a] py-20 text-center">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+            Tüm Bu Özellikler Sizi Bekliyor
+          </h2>
+          <p className="text-gray-400 max-w-xl mx-auto mb-8">
+            14 gün ücretsiz deneme ile BookingAi&apos;ı keşfedin. Kredi kartı gerekmez.
+          </p>
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5 shadow-lg"
+          >
+            Ücretsiz Başla <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
       </main>
       <Footer />
     </>

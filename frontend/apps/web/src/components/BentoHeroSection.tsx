@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { DemoBookingModal } from './DemoBookingModal'
 import { LiveStatsBanner } from './LiveStatsBanner'
+import { SlideIn } from './motion/Reveal'
 
 const TRENDING = ['Saç Kesimi', 'Manikür', 'Diş Beyazlatma', 'Masaj', 'Cilt Bakımı', 'Spor']
 
@@ -126,6 +127,7 @@ function SearchCard() {
       <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-50" />
 
       <div className="relative">
+        <SlideIn direction="left">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
           <span className="block text-brand-500">Hizmetini ara,</span>
           <span className="block text-gray-900">anında randevu al</span>
@@ -133,6 +135,7 @@ function SearchCard() {
         <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-500">
           Binlerce işletme arasından sana en yakınını bul, uygun saati seç, saniyeler içinde randevunu oluştur.
         </p>
+        </SlideIn>
 
         <div ref={containerRef} className="relative mt-7">
           <form
@@ -289,6 +292,7 @@ function CategoriesCard() {
       </div>
 
       <div className="relative">
+        <SlideIn direction="right">
         <h2 className="text-2xl font-extrabold leading-tight tracking-tight">
           <span className="block text-brand-500">Her kategoride</span>
           <span className="block text-gray-900">binlerce işletme</span>
@@ -296,6 +300,7 @@ function CategoriesCard() {
         <p className="mt-2 text-sm leading-relaxed text-gray-500">
           Kuaförden diş kliniğine, spordan veterinere — aradığın hizmet Türkiye&apos;nin her şehrinde.
         </p>
+        </SlideIn>
         <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600">
           İşletmeleri keşfet
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -329,6 +334,7 @@ function TrustCard() {
       </div>
 
       <div className="relative">
+        <SlideIn direction="left">
         <h2 className="text-2xl font-extrabold leading-tight tracking-tight">
           <span className="block text-brand-500">Gerçek yorumlar,</span>
           <span className="block text-gray-900">güvenilir işletmeler</span>
@@ -336,6 +342,7 @@ function TrustCard() {
         <p className="mt-2 text-sm leading-relaxed text-gray-500">
           Sadece randevusunu tamamlayan müşteriler puan verebilir. Gördüğün her yorum gerçek.
         </p>
+        </SlideIn>
         <div className="mt-4 flex items-center gap-2">
           <div className="flex items-center gap-0.5">
             {[...Array(5)].map((_, i) => (
@@ -358,6 +365,7 @@ function OnlineCard() {
       <div aria-hidden className="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full bg-brand-50" />
 
       <div className="relative flex-1 p-7 sm:p-9">
+        <SlideIn direction="right">
         <h2 className="text-2xl font-extrabold leading-tight tracking-tight">
           <span className="block text-brand-500">%100 online</span>
           <span className="block text-gray-900">randevu deneyimi</span>
@@ -365,6 +373,7 @@ function OnlineCard() {
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-500">
           Telefonla uğraşma, sıra bekleme. Gece yarısı bile randevunu al, hatırlatmanı WhatsApp&apos;tan gönderelim.
         </p>
+        </SlideIn>
 
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
           {['7/24 randevu', 'Anında onay', 'Ücretsiz iptal'].map((t) => (

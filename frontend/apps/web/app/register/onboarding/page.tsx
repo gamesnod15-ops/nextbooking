@@ -150,7 +150,7 @@ export default function OnboardingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
               <CalendarCheck className="h-4 w-4 text-white" />
             </div>
-            <span className="text-base font-bold text-gray-900">NextBooking</span>
+            <span className="text-base font-bold text-gray-900">BookingAi</span>
           </Link>
           <button type="button" onClick={skipAll} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
             Daha sonra tamamla

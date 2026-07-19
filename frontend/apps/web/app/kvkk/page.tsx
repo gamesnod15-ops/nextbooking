@@ -1,7 +1,7 @@
-﻿﻿import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'KVKK — NextBooking', description: 'Kişisel Verilerin Korunması Kanunu kapsamında bilgilendirme.' }
+export const metadata = { title: 'KVKK — BookingAi', description: 'Kişisel Verilerin Korunması Kanunu kapsamında bilgilendirme.' }
 
 export default function KvkkPage() {
   return (
@@ -26,7 +26,7 @@ export default function KvkkPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Veri Sorumlusu ve Temsilcisi</h2>
-                <p>NextBooking (nextbooking.com) olarak, kişisel verilerinizin güvenliğine büyük önem vermekteyiz. 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, işbu aydınlatma metni ile kişisel verilerinizin işlenme amaçları, hukuki sebepleri, aktarımı ve haklarınız hakkında sizleri detaylı şekilde bilgilendirmeyi amaçlıyoruz.</p>
+                <p>BookingAi (nextbooking.com) olarak, kişisel verilerinizin güvenliğine büyük önem vermekteyiz. 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, işbu aydınlatma metni ile kişisel verilerinizin işlenme amaçları, hukuki sebepleri, aktarımı ve haklarınız hakkında sizleri detaylı şekilde bilgilendirmeyi amaçlıyoruz.</p>
                 <p className="mt-2">Veri sorumlusu olarak, kişisel verilerinizin hukuka ve dürüstlük kurallarına uygun şekilde işlenmesi, doğru ve gerektiğinde güncel olması, belirli, açık ve meşru amaçlar için işlenmesi, işlendikleri amaçla bağlantılı, sınırlı ve ölçülü olması, ilgili mevzuatta öngörülen veya işlendikleri amaç için gerekli olan süre kadar muhafaza edilmesi hususlarına azami özen göstermekteyiz.</p>
               </div>
 

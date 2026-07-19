@@ -162,9 +162,9 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
         {/* Logo / Brand */}
         <div className={cn('flex h-16 shrink-0 items-center border-b border-[#EFEFEF]', isCollapsed ? 'justify-center px-2' : 'px-5')}>
           {isCollapsed ? (
-            <img src="/logo.png" alt="Logo" className="h-7 w-auto" />
+            <img src="/logo-black-last.png" alt="Logo" className="h-7 w-auto" />
           ) : (
-            <img src="/logo.png" alt="Logo" className="h-7 w-auto" />
+            <img src="/logo-black-last.png" alt="Logo" className="h-7 w-auto" />
           )}
         </div>
 
