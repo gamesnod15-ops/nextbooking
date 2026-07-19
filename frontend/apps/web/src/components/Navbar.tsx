@@ -68,9 +68,9 @@ export function Navbar() {
   )
 
   return (
-    <header className="sticky top-0 z-50 bg-white">
+    <header className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Subheader */}
-      <div className="hidden md:flex border-b border-gray-200 bg-[#EFEFEF]">
+      <div className="hidden md:flex bg-black text-gray-400">
         <div className="mx-auto flex h-9 w-full max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <div className="flex items-center gap-1.5">
             <Mail className="h-3 w-3" />
@@ -80,7 +80,7 @@ export function Navbar() {
             <a href="tel:+908505555555" className="flex items-center gap-1 text-xs hover:text-brand-500 transition-colors">
               <Phone className="h-3 w-3" /> 0850 555 55 55
             </a>
-            <span className="text-gray-300 text-[10px]">|</span>
+            <span className="text-gray-700 text-[10px]">|</span>
             <div className="flex items-center gap-2">
               <a href="#" aria-label="Instagram" className="hover:text-brand-500 transition-colors"><InstagramIcon size={13} /></a>
               <a href="#" aria-label="Facebook" className="hover:text-brand-500 transition-colors"><FacebookIcon size={13} /></a>

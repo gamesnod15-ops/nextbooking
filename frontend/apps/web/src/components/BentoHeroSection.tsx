@@ -122,7 +122,7 @@ function SearchCard() {
     : []
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md sm:p-9">
+    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:p-9">
       <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-50" />
 
       <div className="relative">
@@ -272,7 +272,7 @@ function CategoriesCard() {
   return (
     <Link
       href="/isletmeler"
-      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md sm:p-9"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:p-9"
     >
       <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-brand-50" />
 
@@ -309,7 +309,7 @@ function CategoriesCard() {
 
 function TrustCard() {
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md sm:p-9">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:p-9">
       <div aria-hidden className="pointer-events-none absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-brand-50" />
 
       <div className="relative mb-6 flex items-center justify-center">
@@ -354,7 +354,7 @@ function TrustCard() {
 
 function OnlineCard() {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md sm:flex-row sm:items-center">
+    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:flex-row sm:items-center">
       <div aria-hidden className="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full bg-brand-50" />
 
       <div className="relative flex-1 p-7 sm:p-9">
