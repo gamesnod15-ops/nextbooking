@@ -10,7 +10,7 @@ export default function PricingPage() {
     <>
       <Navbar />
       <main>
-        <PricingSection />
+        <PricingSection showComparison />
         <CtaSection />
       </main>
       <Footer />

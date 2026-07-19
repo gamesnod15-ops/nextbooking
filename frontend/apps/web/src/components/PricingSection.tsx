@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Check } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import { SlideIn } from './motion/Reveal'
 
 interface ApiPlan {
@@ -28,9 +28,26 @@ async function getPlans(): Promise<ApiPlan[]> {
   }
 }
 
-export async function PricingSection() {
+export async function PricingSection({ showComparison = false }: { showComparison?: boolean } = {}) {
   const plans = await getPlans()
   if (plans.length === 0) return null
+
+  // Union of every feature across plans, in first-seen order. Slot order runs
+  // cheapest → richest, so this also groups the rows by the tier each feature
+  // is introduced in.
+  const allFeatures: string[] = []
+  for (const plan of plans) {
+    for (const feature of plan.features) {
+      if (!allFeatures.includes(feature)) allFeatures.push(feature)
+    }
+  }
+
+  // Tiers are cumulative: each plan includes everything from the plans below
+  // it, so a feature counts as present if it's listed on this plan or any
+  // cheaper one — only genuinely higher-tier features show as missing.
+  const includedFeatures = plans.map(
+    (_, i) => new Set(plans.slice(0, i + 1).flatMap((p) => p.features))
+  )
 
   let accentIdx = 0
 
@@ -115,6 +132,45 @@ export async function PricingSection() {
         <p className="mt-10 text-center text-sm text-gray-500">
           Tüm planlar 14 gün ücretsiz deneme ile başlar. İstediğiniz zaman plan değiştirin veya iptal edin.
         </p>
+
+        {/* Only the dedicated /pricing page shows the full comparison — on the
+            home page it made the section far too long. */}
+        {showComparison && allFeatures.length > 0 && (
+          <div className="mt-20 overflow-x-auto rounded-2xl border border-gray-300 bg-white shadow-sm">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-300 px-5 py-4 text-left font-semibold text-gray-500">Özellik</th>
+                  {plans.map((plan, i) => (
+                    <th key={i} className="border border-gray-300 px-5 py-4 text-center font-bold text-gray-900">{plan.name}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {allFeatures.map((feature) => (
+                  <tr key={feature}>
+                    <td className="border border-gray-300 px-5 py-3 text-gray-700">{feature}</td>
+                    {plans.map((_, i) => (
+                      <td key={i} className="border border-gray-300 px-5 py-3 text-center">
+                        {includedFeatures[i].has(feature)
+                          ? <Check className="mx-auto h-4 w-4 text-emerald-500" />
+                          : <X className="mx-auto h-4 w-4 text-red-300" />}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr className="bg-gray-50">
+                  <td className="border border-gray-300 px-5 py-3 font-semibold text-gray-900">Aylık Fiyat</td>
+                  {plans.map((plan, i) => (
+                    <td key={i} className="border border-gray-300 px-5 py-3 text-center font-bold text-gray-900">
+                      {plan.isCustomPricing ? 'Özel fiyat' : `₺${plan.price}/ay`}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   )
