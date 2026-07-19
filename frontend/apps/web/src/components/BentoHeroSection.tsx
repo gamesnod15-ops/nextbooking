@@ -122,7 +122,7 @@ function SearchCard() {
     : []
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:p-9">
+    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-gray-50 p-7 shadow-sm transition-shadow hover:shadow-md sm:p-9">
       <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-50" />
 
       <div className="relative">
@@ -137,7 +137,7 @@ function SearchCard() {
         <div ref={containerRef} className="relative mt-7">
           <form
             onSubmit={(e) => { e.preventDefault(); handleSearch() }}
-            className="flex flex-col gap-2 rounded-2xl border border-gray-200 bg-gray-50/80 p-2 transition-colors focus-within:border-brand-200 focus-within:bg-white sm:flex-row sm:items-center"
+            className="flex flex-col gap-2 rounded-2xl border border-gray-200 bg-white p-2 transition-colors focus-within:border-brand-300 sm:flex-row sm:items-center"
           >
             <div className="flex flex-1 items-center gap-2 px-2 min-w-0">
               <Search className="h-5 w-5 shrink-0 text-gray-400" />
@@ -272,7 +272,7 @@ function CategoriesCard() {
   return (
     <Link
       href="/isletmeler"
-      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:p-9"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gray-50 p-7 shadow-sm transition-shadow hover:shadow-md sm:p-9"
     >
       <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-brand-50" />
 
@@ -280,7 +280,7 @@ function CategoriesCard() {
         {CATEGORY_TILES.map((c) => (
           <div
             key={c.label}
-            className="flex flex-col items-center gap-1.5 rounded-2xl border border-gray-100 bg-gray-50/80 px-2 py-3 transition-colors group-hover:border-brand-100 group-hover:bg-brand-50/60"
+            className="flex flex-col items-center gap-1.5 rounded-2xl bg-white px-2 py-3 shadow-sm transition-colors group-hover:bg-brand-50/60"
           >
             <span className="text-xl">{c.emoji}</span>
             <span className="text-center text-[10px] font-medium leading-tight text-gray-500">{c.label}</span>
@@ -309,7 +309,7 @@ function CategoriesCard() {
 
 function TrustCard() {
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-7 shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:p-9">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gray-50 p-7 shadow-sm transition-shadow hover:shadow-md sm:p-9">
       <div aria-hidden className="pointer-events-none absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-brand-50" />
 
       <div className="relative mb-6 flex items-center justify-center">
@@ -354,7 +354,7 @@ function TrustCard() {
 
 function OnlineCard() {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-300 transition-shadow hover:shadow-md sm:flex-row sm:items-center">
+    <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-gray-50 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center">
       <div aria-hidden className="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full bg-brand-50" />
 
       <div className="relative flex-1 p-7 sm:p-9">
@@ -390,7 +390,7 @@ function OnlineCard() {
           alt="Telefonuyla randevu alan kişi"
           className="h-full w-full object-cover"
         />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-white via-white/20 to-transparent sm:from-white sm:via-white/40" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-gray-50 via-gray-50/20 to-transparent sm:via-gray-50/40" />
       </div>
     </div>
   )
@@ -400,7 +400,7 @@ function OnlineCard() {
 
 export function BentoHeroSection() {
   return (
-    <section className="bg-gray-50/60 py-10 sm:py-14">
+    <section className="bg-white py-10 sm:py-14">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
           <div className="lg:col-span-7"><SearchCard /></div>
