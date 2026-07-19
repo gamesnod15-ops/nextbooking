@@ -101,24 +101,6 @@ export default function FeaturesPage() {
     <>
       <Navbar />
       <main>
-        {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-28 text-white">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 h-[400px] w-[400px] rounded-full bg-brand-500/10 blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
-          </div>
-          <div className="relative mx-auto max-w-3xl px-5 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-brand-500" />
-              <span className="text-xs font-semibold">Özellikler</span>
-            </div>
-            <h1 className="text-5xl font-extrabold leading-tight mb-6">İşletmenizi Dönüştürecek Her Şey</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">
-              BookingAi ile randevu yönetimi, müşteri ilişkileri ve gelir takibini tek platformda birleştirin.
-            </p>
-          </div>
-        </section>
-
         {/* Feature Sections */}
         {features.map((f, i) => {
           const isReversed = i % 2 === 1
