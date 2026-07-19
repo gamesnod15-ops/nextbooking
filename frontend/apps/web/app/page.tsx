@@ -1,5 +1,5 @@
 import { Navbar }             from '@/components/Navbar'
-import { SearchHeroSection }  from '@/components/SearchHeroSection'
+import { BentoHeroSection }   from '@/components/BentoHeroSection'
 import { ScrollToTop }        from '@/components/ScrollToTop'
 import { FeaturesSection }    from '@/components/FeaturesSection'
 import { PricingSection }     from '@/components/PricingSection'
@@ -12,7 +12,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <main>
-        <SearchHeroSection />
+        <BentoHeroSection />
         <FeaturesSection />
         <SocialProofSection />
         <PricingSection />
