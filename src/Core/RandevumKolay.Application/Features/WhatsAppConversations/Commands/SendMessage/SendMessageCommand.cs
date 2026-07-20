@@ -88,6 +88,7 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
         if (request.Role == MessageRole.Customer && conversation.Status != ConversationStatus.Closed)
         {
             var claudeContext = new ClaudeBotContext(
+                conversation.Id,
                 request.BusinessName,
                 request.WelcomeMessage,
                 request.Services,

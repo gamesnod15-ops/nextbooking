@@ -5,6 +5,7 @@ namespace RandevumKolay.Application.Common.Interfaces;
 public record ClaudeConversationTurn(MessageRole Role, string Text);
 
 public record ClaudeBotContext(
+    Guid ConversationId,
     string BusinessName,
     string? WelcomeMessage,
     IReadOnlyList<string> Services,
