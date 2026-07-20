@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Menu, X, Home, Store, Tag, Sparkles, Info, Phone, LogIn, UserPlus, ChevronDown, Mail, User, LogOut } from 'lucide-react'
 import { InstagramIcon, FacebookIcon, XIcon, YouTubeIcon, LinkedInIcon, TikTokIcon } from '@/lib/icons'
+import { IsletmelerMegaMenu } from './IsletmelerMegaMenu'
 
 const iconMap: Record<string, React.ReactNode> = {
   '/':           <Home className="h-4 w-4" />,
@@ -98,16 +99,18 @@ export function Navbar() {
         <nav className="hidden items-center gap-1 md:flex">
           {[...topLinks, ...dropdownLinks].map((l) => {
             const isActive = pathname === l.href || pathname.startsWith(l.href + '/')
+            const linkClassName = `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
+              isActive
+                ? 'rounded-full bg-[#EFEFEF] text-gray-900'
+                : 'rounded-full text-gray-600 hover:text-gray-900'
+            }`
+
+            if (l.href === '/isletmeler') {
+              return <IsletmelerMegaMenu key={l.href} linkClassName={linkClassName} isActive={isActive} />
+            }
+
             return (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
-                  isActive
-                    ? 'rounded-full bg-[#EFEFEF] text-gray-900'
-                    : 'rounded-full text-gray-600 hover:text-gray-900'
-                }`}
-              >
+              <Link key={l.href} href={l.href} className={linkClassName}>
                 {isActive && iconMap[l.href]}
                 {l.label}
               </Link>

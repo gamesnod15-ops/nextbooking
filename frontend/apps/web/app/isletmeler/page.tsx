@@ -4,10 +4,12 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
+import { useSearchParams } from 'next/navigation'
 import {
   Search, MapPin, ChevronLeft, ChevronRight,
   CalendarCheck, Phone, Megaphone, Building2, Loader2, Star, ChevronDown, ArrowRight,
 } from 'lucide-react'
+import { categoryIcons, categoryColor, initials } from '@/lib/categoryVisuals'
 
 interface BusinessItem {
   id: string
@@ -57,37 +59,13 @@ const ALL_CITIES = [
   'Zonguldak'
 ]
 
-const categoryIcons: Record<string, string> = {
-  'Kuaför': '✂️',
-  'Güzellik Salonu': '💅',
-  'Diş Kliniği': '🦷',
-  'Fizyoterapi': '🏃',
-  'Spor Salonu': '💪',
-  'Spa & Masaj': '🧖',
-  'Tırnak Salonu': '💎',
-  'Dövme Stüdyosu': '🎨',
-  'Veteriner': '🐾',
-  'Klinik': '🏥',
-  'Yoga & Pilates': '🧘',
-}
-
-const categoryColor = (name: string) => {
-  const colors = [
-    'bg-violet-100 text-violet-700', 'bg-pink-100 text-pink-700', 'bg-blue-100 text-blue-700',
-    'bg-emerald-100 text-emerald-700', 'bg-amber-100 text-amber-700', 'bg-teal-100 text-teal-700',
-    'bg-rose-100 text-rose-700', 'bg-orange-100 text-orange-700', 'bg-lime-100 text-lime-700',
-    'bg-sky-100 text-sky-700', 'bg-purple-100 text-purple-700', 'bg-cyan-100 text-cyan-700',
-  ]
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return colors[Math.abs(hash) % colors.length]
-}
-
-const initials = (name: string) => name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-
 export default function BusinessListPage() {
+  const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
-  const [categoryId, setCategoryId] = useState<number | null>(null)
+  const [categoryId, setCategoryId] = useState<number | null>(() => {
+    const fromUrl = searchParams.get('categoryId')
+    return fromUrl ? Number(fromUrl) : null
+  })
   const [city, setCity] = useState('')
   const [page, setPage] = useState(1)
   const [data, setData] = useState<PaginatedResult<BusinessItem> | null>(null)

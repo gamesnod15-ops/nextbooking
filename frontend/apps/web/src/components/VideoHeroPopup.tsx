@@ -3,8 +3,31 @@
 import { useEffect, useRef, useState } from 'react'
 import { Tag, X, ArrowRight } from 'lucide-react'
 
-const SHOW_DELAY_MS = 3000
+const SHOW_DELAY_MS = 600
 const EXIT_DURATION_MS = 300
+const SCROLL_DURATION_MS = 1000
+
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+// A slow eased scroll reads as deliberate/"soft" — the browser's native
+// smooth-scroll (from `scroll-behavior: smooth` in globals.css) is too
+// short and abrupt for a cross-page jump like this.
+function softScrollTo(targetId: string) {
+  const target = document.getElementById(targetId)
+  if (!target) return
+  const startY = window.scrollY
+  const endY = startY + target.getBoundingClientRect().top
+  const startTime = performance.now()
+
+  const step = (now: number) => {
+    const t = Math.min((now - startTime) / SCROLL_DURATION_MS, 1)
+    window.scrollTo(0, startY + (endY - startY) * easeInOutCubic(t))
+    if (t < 1) requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
+}
 
 // Shows a "go to packages" nudge, but only while the video hero section is
 // on screen — scrolling past it (or dismissing) hides it for good.
@@ -88,7 +111,11 @@ export function VideoHeroPopup({ targetId }: { targetId: string }) {
 
           <a
             href="#pricing"
-            onClick={close}
+            onClick={(e) => {
+              e.preventDefault()
+              close()
+              softScrollTo('pricing')
+            }}
             className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg"
           >
             Paketlerimize Git <ArrowRight className="h-4 w-4" />
