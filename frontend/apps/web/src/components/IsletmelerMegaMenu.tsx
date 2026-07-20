@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown, MapPin, ArrowRight, Loader2, Store as StoreIcon } from 'lucide-react'
-import { categoryIcons, categoryColor, initials } from '@/lib/categoryVisuals'
+import { categoryColor, categoryLucideIcon, initials } from '@/lib/categoryVisuals'
 
 interface BusinessItem {
   id: string
@@ -94,21 +94,25 @@ export function IsletmelerMegaMenu({ linkClassName, isActive }: { linkClassName:
             <div className="flex">
               {/* Categories */}
               <div className="max-h-96 w-48 shrink-0 overflow-y-auto border-r border-gray-100 bg-gray-50/60 py-3">
-                {categories.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onMouseEnter={() => setActiveCategoryId(c.id)}
-                    className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm transition-colors ${
-                      activeCategoryId === c.id
-                        ? 'bg-white font-semibold text-brand-600'
-                        : 'text-gray-600 hover:bg-white hover:text-gray-900'
-                    }`}
-                  >
-                    <span className="text-base leading-none">{categoryIcons[c.name] ?? '🏢'}</span>
-                    <span className="truncate">{c.name}</span>
-                  </button>
-                ))}
+                {categories.map((c) => {
+                  const Icon = categoryLucideIcon(c.name)
+                  const active = activeCategoryId === c.id
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onMouseEnter={() => setActiveCategoryId(c.id)}
+                      className={`flex w-full items-center gap-3 border-l-2 px-4 py-2.5 text-left text-sm transition-all ${
+                        active
+                          ? 'border-brand-500 bg-brand-50 font-semibold text-brand-600'
+                          : 'border-transparent text-gray-600 hover:border-brand-100 hover:bg-white hover:text-gray-900'
+                      }`}
+                    >
+                      <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-brand-500' : 'text-gray-400'}`} />
+                      <span className="truncate">{c.name}</span>
+                    </button>
+                  )
+                })}
               </div>
 
               {/* Businesses in the hovered category */}

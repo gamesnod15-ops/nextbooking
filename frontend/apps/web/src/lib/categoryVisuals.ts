@@ -1,3 +1,9 @@
+import type { LucideIcon } from 'lucide-react'
+import {
+  Scissors, Sparkles, Stethoscope, Activity, Dumbbell, Waves, Gem, Brush,
+  PawPrint, HeartPulse, Flower2, MessageSquare, Apple, Camera, Building2,
+} from 'lucide-react'
+
 // Shared between the /isletmeler listing page and the navbar's category
 // mega menu, so both render the same icon/colour for a given category.
 export const categoryIcons: Record<string, string> = {
@@ -29,4 +35,30 @@ export function categoryColor(name: string) {
 
 export function initials(name: string) {
   return name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+}
+
+// Line-icon set for the navbar's category mega menu — Building2 is the
+// fallback for any category name not covered below.
+const CATEGORY_LUCIDE_ICONS: Record<string, LucideIcon> = {
+  'Kuaför': Scissors,
+  'Güzellik Salonu': Sparkles,
+  'Diş Kliniği': Stethoscope,
+  'Diş Hekimi': Stethoscope,
+  'Fizyoterapi': Activity,
+  'Spor Salonu': Dumbbell,
+  'Kişisel Antrenör': Dumbbell,
+  'Spa & Masaj': Waves,
+  'Tırnak Salonu': Gem,
+  'Dövme': Brush,
+  'Dövme Stüdyosu': Brush,
+  'Veteriner': PawPrint,
+  'Klinik': HeartPulse,
+  'Yoga & Pilates': Flower2,
+  'Danışmanlık': MessageSquare,
+  'Diyetisyen': Apple,
+  'Fotoğrafçı': Camera,
+}
+
+export function categoryLucideIcon(name: string): LucideIcon {
+  return CATEGORY_LUCIDE_ICONS[name] ?? Building2
 }
