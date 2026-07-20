@@ -7,7 +7,6 @@ import notificationsReducer from './slices/notificationsSlice'
 import modulesReducer from './slices/modulesSlice'
 import errorReducer from './slices/errorSlice'
 import searchReducer from './slices/searchSlice'
-import loyaltyReducer from './slices/loyaltySlice'
 import queueReducer from './slices/queueSlice'
 import waitingListReducer from './slices/waitingListSlice'
 import surveysReducer from './slices/surveysSlice'
@@ -31,7 +30,6 @@ export const store = configureStore({
     modules: modulesReducer,
     errors: errorReducer,
     search: searchReducer,
-    loyalty: loyaltyReducer,
     queue: queueReducer,
     waitingList: waitingListReducer,
     surveys: surveysReducer,
@@ -49,7 +47,6 @@ export interface RootState {
   modules: ModulesState
   errors: ErrorState
   search: SearchState
-  loyalty: ReturnType<typeof loyaltyReducer>
   queue: ReturnType<typeof queueReducer>
   waitingList: ReturnType<typeof waitingListReducer>
   surveys: ReturnType<typeof surveysReducer>

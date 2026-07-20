@@ -49,9 +49,10 @@ public sealed class GetLoyaltyMembersQueryHandler : IRequestHandler<GetLoyaltyMe
         var query = _context.LoyaltyMembers
             .AsNoTracking()
             .Where(m => m.TenantId == tenantId)
-            .Join(_context.Customers, m => m.CustomerId, c => c.Id, (m, c) => new LoyaltyMemberRow(
-                m.Id, m.CustomerId, c.Name, c.Phone, m.Points, c.TotalSpent, c.TotalVisits, m.CreatedAt, c.LastVisitAt))
-            .OrderByDescending(x => x.Points);
+            .Join(_context.Customers, m => m.CustomerId, c => c.Id, (m, c) => new { m, c })
+            .OrderByDescending(x => x.m.Points)
+            .Select(x => new LoyaltyMemberRow(
+                x.m.Id, x.m.CustomerId, x.c.Name, x.c.Phone, x.m.Points, x.c.TotalSpent, x.c.TotalVisits, x.m.CreatedAt, x.c.LastVisitAt));
 
         var page = await PaginatedList<LoyaltyMemberRow>.CreateAsync(query, request.PageNumber, request.PageSize, cancellationToken);
 

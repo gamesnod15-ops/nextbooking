@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { cn, toLocalDateStr } from '@/lib/utils'
-import { useAppSelector, useAppDispatch } from '@/store'
+import { cn } from '@/lib/utils'
 import {
-  addMember, addReward as addRewardAction,
-  toggleReward as toggleRewardAction, deleteReward as deleteRewardAction,
-} from '@/store/slices/loyaltySlice'
-import type { LoyaltyTier, LoyaltyMember, Reward } from '@/store/slices/loyaltySlice'
+  useLoyaltyOverview, useLoyaltyTiers, useLoyaltyMembers, useCreateLoyaltyMember,
+  useLoyaltyRewards, useCreateLoyaltyReward, useToggleLoyaltyReward, useDeleteLoyaltyReward,
+  useRedeemReward,
+} from '@/hooks/useLoyalty'
+import type { LoyaltyTier, LoyaltyMember, LoyaltyReward, LoyaltyRewardCategory } from '@/hooks/useLoyalty'
 import {
   Award, Star, Gift, Users, TrendingUp, Plus, Trash2,
   Crown, Zap, Heart, ChevronRight, UserPlus,
@@ -16,36 +16,35 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 
-const TIER_ORDER = ['bronze', 'silver', 'gold', 'platinum']
-
 const tierIconMap: Record<string, LucideIcon> = { Star, Zap, Crown, Heart }
 
-function getTierFromTiers(points: number, tiers: LoyaltyTier[]): LoyaltyTier {
-  const sorted = [...tiers].sort((a, b) => b.minPoints - a.minPoints)
-  return sorted.find((t) => points >= t.minPoints) ?? tiers[0]
-}
-
 export function LoyaltyPage() {
-  const dispatch = useAppDispatch()
-  const { members, rewards, tiers } = useAppSelector((s) => s.loyalty)
+  const { data: overview } = useLoyaltyOverview()
+  const { data: tiers = [] } = useLoyaltyTiers()
+  const { data: memberList } = useLoyaltyMembers({ pageNumber: 1, pageSize: 200 })
+  const { data: rewards = [] } = useLoyaltyRewards()
+  const members = memberList?.items ?? []
+
+  const createMember = useCreateLoyaltyMember()
+  const createReward = useCreateLoyaltyReward()
+  const toggleReward = useToggleLoyaltyReward()
+  const deleteReward = useDeleteLoyaltyReward()
+  const redeemReward = useRedeemReward()
 
   const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'rewards' | 'tiers'>('overview')
   const [showAddReward, setShowAddReward] = useState(false)
   const [showAddMember, setShowAddMember] = useState(false)
   const [deleteRewardId, setDeleteRewardId] = useState<string | null>(null)
-  const [rewardForm, setRewardForm] = useState({ name: '', description: '', pointCost: '', category: 'discount' as Reward['category'] })
+  const [rewardForm, setRewardForm] = useState({ name: '', description: '', pointCost: '', category: 'discount' as LoyaltyRewardCategory })
   const [memberForm, setMemberForm] = useState({ name: '', phone: '', points: '' })
   const [selectedMember, setSelectedMember] = useState<LoyaltyMember | null>(null)
+  const [redeemPickerMemberId, setRedeemPickerMemberId] = useState<string | null>(null)
   const [rewardErrors, setRewardErrors] = useState<{ name?: string; pointCost?: string }>({})
   const [memberErrors, setMemberErrors] = useState<{ name?: string; phone?: string }>({})
 
-  const totalPoints = members.reduce((s, m) => s + m.points, 0)
-  const avgPoints = Math.round(totalPoints / (members.length || 1))
-
-  const tierCounts = TIER_ORDER.map((tierId) => ({
-    tier: tiers.find((t) => t.id === tierId)!,
-    count: members.filter((m) => m.tier === tierId).length,
-  })).filter((tc) => !!tc.tier)
+  function tierOf(tierId: string): LoyaltyTier | undefined {
+    return tiers.find((t) => t.id === tierId)
+  }
 
   function handleAddReward() {
     const e: { name?: string; pointCost?: string } = {}
@@ -54,13 +53,12 @@ export function LoyaltyPage() {
     else if (Number(rewardForm.pointCost) <= 0) e.pointCost = 'Puan sıfırdan büyük olmalı.'
     setRewardErrors(e)
     if (Object.keys(e).length > 0) return
-    dispatch(addRewardAction({
+    createReward.mutate({
       name: rewardForm.name,
       description: rewardForm.description,
       pointCost: Number(rewardForm.pointCost),
-      isActive: true,
       category: rewardForm.category,
-    }))
+    })
     setRewardForm({ name: '', description: '', pointCost: '', category: 'discount' })
     setRewardErrors({})
     setShowAddReward(false)
@@ -73,18 +71,11 @@ export function LoyaltyPage() {
     else if (!/^\+905\d{9}$/.test(memberForm.phone)) e.phone = 'Telefon formatı: +90 5XX XXX XX XX'
     setMemberErrors(e)
     if (Object.keys(e).length > 0) return
-    const points = Number(memberForm.points) || 0
-    const tier = getTierFromTiers(points, tiers)
-    dispatch(addMember({
+    createMember.mutate({
       name: memberForm.name,
       phone: memberForm.phone,
-      points,
-      totalSpent: 0,
-      tier: tier.id,
-      joinedAt: toLocalDateStr(),
-      lastVisit: toLocalDateStr(),
-      visits: 0,
-    }))
+      startingPoints: Number(memberForm.points) || 0,
+    })
     setMemberForm({ name: '', phone: '', points: '' })
     setMemberErrors({})
     setShowAddMember(false)
@@ -130,14 +121,14 @@ export function LoyaltyPage() {
       </div>
 
       {/* Overview */}
-      {activeTab === 'overview' && (
+      {activeTab === 'overview' && overview && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Toplam Üye', value: members.length, icon: Users, color: 'text-blue-600 bg-blue-50' },
-              { label: 'Dağıtılan Puan', value: totalPoints.toLocaleString('tr'), icon: Star, color: 'text-amber-600 bg-amber-50' },
-              { label: 'Ort. Puan', value: avgPoints.toLocaleString('tr'), icon: TrendingUp, color: 'text-green-600 bg-green-50' },
-              { label: 'Kullanılan Ödül', value: rewards.reduce((s, r) => s + r.redeemCount, 0), icon: Gift, color: 'text-purple-600 bg-purple-50' },
+              { label: 'Toplam Üye', value: overview.totalMembers, icon: Users, color: 'text-blue-600 bg-blue-50' },
+              { label: 'Dağıtılan Puan', value: overview.totalPointsDistributed.toLocaleString('tr'), icon: Star, color: 'text-amber-600 bg-amber-50' },
+              { label: 'Ort. Puan', value: overview.averagePoints.toLocaleString('tr'), icon: TrendingUp, color: 'text-green-600 bg-green-50' },
+              { label: 'Kullanılan Ödül', value: overview.totalRedemptions, icon: Gift, color: 'text-purple-600 bg-purple-50' },
             ].map((s) => (
               <Card key={s.label}>
                 <CardContent className="pt-5 pb-4">
@@ -155,7 +146,7 @@ export function LoyaltyPage() {
             ))}
           </div>
 
-          {members.length === 0 ? (
+          {overview.totalMembers === 0 ? (
             <Card>
               <CardContent className="py-16 text-center">
                 <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -171,21 +162,21 @@ export function LoyaltyPage() {
               <Card>
                 <CardHeader><CardTitle className="text-sm">Seviye Dağılımı</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  {tierCounts.map(({ tier, count }) => {
-                    const TierIcon = tierIconMap[tier.iconName] ?? Star
+                  {overview.tierDistribution.map((tc) => {
+                    const TierIcon = tierIconMap[tc.iconName] ?? Star
                     return (
-                      <div key={tier.id} className="flex items-center gap-3">
-                        <div className={cn('flex items-center gap-2 rounded-lg border px-3 py-1.5 w-28 shrink-0', tier.color)}>
+                      <div key={tc.tierId} className="flex items-center gap-3">
+                        <div className={cn('flex items-center gap-2 rounded-lg border px-3 py-1.5 w-28 shrink-0', tc.color)}>
                           <TierIcon className="h-3.5 w-3.5" />
-                          <span className="text-xs font-semibold">{tier.name}</span>
+                          <span className="text-xs font-semibold">{tc.tierName}</span>
                         </div>
                         <div className="flex-1 bg-gray-100 rounded-full h-2">
                           <div
                             className="bg-primary h-2 rounded-full transition-all"
-                            style={{ width: `${members.length ? (count / members.length) * 100 : 0}%` }}
+                            style={{ width: `${overview.totalMembers ? (tc.count / overview.totalMembers) * 100 : 0}%` }}
                           />
                         </div>
-                        <span className="text-sm font-medium text-gray-700 w-6 text-right">{count}</span>
+                        <span className="text-sm font-medium text-gray-700 w-6 text-right">{tc.count}</span>
                       </div>
                     )
                   })}
@@ -195,19 +186,19 @@ export function LoyaltyPage() {
               <Card>
                 <CardHeader><CardTitle className="text-sm">En Sadık Üyeler</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
-                  {[...members].sort((a, b) => b.points - a.points).slice(0, 5).map((m, idx) => {
-                    const tier = getTierFromTiers(m.points, tiers)
-                    const TierIcon = tierIconMap[tier.iconName] ?? Star
+                  {overview.topMembers.map((m, idx) => {
+                    const tier = tierOf(m.tierId)
+                    const TierIcon = tier ? (tierIconMap[tier.iconName] ?? Star) : Star
                     return (
-                      <div key={m.id} className="flex items-center gap-3">
+                      <div key={m.memberId} className="flex items-center gap-3">
                         <span className="text-xs text-gray-400 w-4">{idx + 1}.</span>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900">{m.name}</p>
                           <p className="text-xs text-gray-400">{m.visits} ziyaret</p>
                         </div>
-                        <div className={cn('flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border', tier.color)}>
+                        <div className={cn('flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border', tier?.color)}>
                           <TierIcon className="h-3 w-3" />
-                          {tier.name}
+                          {m.tierName}
                         </div>
                         <span className="text-sm font-semibold text-gray-800">{m.points.toLocaleString('tr')} p</span>
                       </div>
@@ -260,12 +251,14 @@ export function LoyaltyPage() {
               </CardContent>
             </Card>
           ) : members.map((m) => {
-            const tier = getTierFromTiers(m.points, tiers)
-            const TierIcon = tierIconMap[tier.iconName] ?? Star
-            const nextTier = tiers[TIER_ORDER.indexOf(m.tier) + 1]
-            const progress = nextTier
+            const tier = tierOf(m.tierId)
+            const TierIcon = tier ? (tierIconMap[tier.iconName] ?? Star) : Star
+            const tierIdx = tiers.findIndex((t) => t.id === m.tierId)
+            const nextTier = tierIdx >= 0 ? tiers[tierIdx + 1] : undefined
+            const progress = nextTier && tier
               ? Math.round(((m.points - tier.minPoints) / (nextTier.minPoints - tier.minPoints)) * 100)
               : 100
+            const activeRewards = rewards.filter((r) => r.isActive)
             return (
               <Card key={m.id} className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => setSelectedMember(selectedMember?.id === m.id ? null : m)}>
                 <CardContent className="py-4">
@@ -276,12 +269,12 @@ export function LoyaltyPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-gray-900 text-sm">{m.name}</p>
-                        <div className={cn('flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border', tier.color)}>
+                        <div className={cn('flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border', tier?.color)}>
                           <TierIcon className="h-3 w-3" />
-                          {tier.name}
+                          {tier?.name}
                         </div>
                       </div>
-                      <p className="text-xs text-gray-400">{m.phone} · {m.visits} ziyaret · Son: {m.lastVisit}</p>
+                      <p className="text-xs text-gray-400">{m.phone} · {m.visits} ziyaret · Son: {m.lastVisit ? new Date(m.lastVisit).toLocaleDateString('tr') : '-'}</p>
                       {nextTier && (
                         <div className="mt-1.5 flex items-center gap-2">
                           <div className="flex-1 bg-gray-100 rounded-full h-1.5">
@@ -298,18 +291,47 @@ export function LoyaltyPage() {
                     <ChevronRight className={cn('h-4 w-4 text-gray-400 transition-transform', selectedMember?.id === m.id && 'rotate-90')} />
                   </div>
                   {selectedMember?.id === m.id && (
-                    <div className="mt-4 pt-4 border-t grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">{m.totalSpent.toLocaleString('tr')} ₺</p>
-                        <p className="text-xs text-gray-400">Toplam Harcama</p>
+                    <div className="mt-4 pt-4 border-t space-y-4">
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{m.totalSpent.toLocaleString('tr')} ₺</p>
+                          <p className="text-xs text-gray-400">Toplam Harcama</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{m.visits}</p>
+                          <p className="text-xs text-gray-400">Ziyaret Sayısı</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{new Date(m.joinedAt).toLocaleDateString('tr')}</p>
+                          <p className="text-xs text-gray-400">Katılım Tarihi</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">{m.visits}</p>
-                        <p className="text-xs text-gray-400">Ziyaret Sayısı</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">{m.joinedAt}</p>
-                        <p className="text-xs text-gray-400">Katılım Tarihi</p>
+
+                      <div onClick={(e) => e.stopPropagation()}>
+                        {redeemPickerMemberId === m.id ? (
+                          <div className="flex flex-wrap items-center gap-2">
+                            {activeRewards.length === 0 ? (
+                              <span className="text-xs text-gray-400">Aktif ödül yok.</span>
+                            ) : activeRewards.map((r) => (
+                              <button
+                                key={r.id}
+                                disabled={m.points < r.pointCost || redeemReward.isPending}
+                                onClick={() => {
+                                  redeemReward.mutate({ rewardId: r.id, memberId: m.id })
+                                  setRedeemPickerMemberId(null)
+                                }}
+                                className="text-xs px-3 py-1.5 rounded-lg border hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                {r.name} <span className="text-gray-400">({r.pointCost}p)</span>
+                              </button>
+                            ))}
+                            <button onClick={() => setRedeemPickerMemberId(null)} className="text-xs text-gray-400 hover:text-gray-600">İptal</button>
+                          </div>
+                        ) : (
+                          <Button size="sm" variant="outline" onClick={() => setRedeemPickerMemberId(m.id)}>
+                            <Gift className="h-3.5 w-3.5 mr-1.5" /> Ödül Kullan
+                          </Button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -340,10 +362,10 @@ export function LoyaltyPage() {
                   </div>
                   <input value={rewardForm.description} onChange={(e) => setRewardForm((f) => ({ ...f, description: e.target.value }))}
                     placeholder="Açıklama" className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                  <select value={rewardForm.category} onChange={(e) => setRewardForm((f) => ({ ...f, category: e.target.value as Reward['category'] }))}
+                  <select value={rewardForm.category} onChange={(e) => setRewardForm((f) => ({ ...f, category: e.target.value as LoyaltyRewardCategory }))}
                     className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
                     <option value="discount">İndirim</option>
-                    <option value="free-service">Ücretsiz Hizmet</option>
+                    <option value="freeService">Ücretsiz Hizmet</option>
                     <option value="gift">Hediye</option>
                   </select>
                 </div>
@@ -368,7 +390,7 @@ export function LoyaltyPage() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {rewards.map((r) => (
+              {rewards.map((r: LoyaltyReward) => (
                 <Card key={r.id} className={cn(!r.isActive && 'opacity-60')}>
                   <CardContent className="pt-5">
                     <div className="flex items-start justify-between gap-2 mb-3">
@@ -377,7 +399,7 @@ export function LoyaltyPage() {
                       </div>
                       <div className="flex items-center gap-2.5">
                         <button
-                          onClick={() => dispatch(toggleRewardAction(r.id))}
+                          onClick={() => toggleReward.mutate(r.id)}
                           title={r.isActive ? 'Pasif yap' : 'Aktif yap'}
                           className={cn('relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors focus-visible:outline-none', r.isActive ? 'bg-primary' : 'bg-gray-200')}
                         >
@@ -453,7 +475,7 @@ export function LoyaltyPage() {
               <button onClick={() => setDeleteRewardId(null)} className="px-4 py-2 border rounded-lg text-sm">İptal</button>
               <button
                 onClick={() => {
-                  dispatch(deleteRewardAction(deleteRewardId))
+                  deleteReward.mutate(deleteRewardId)
                   setDeleteRewardId(null)
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700"
@@ -467,4 +489,3 @@ export function LoyaltyPage() {
     </div>
   )
 }
-
