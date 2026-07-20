@@ -46,6 +46,8 @@ public interface IApplicationDbContext
     DbSet<PlatformPayment> PlatformPayments { get; }
     DbSet<PricingPlan> PricingPlans { get; }
     DbSet<PricingPlanSlot> PricingPlanSlots { get; }
+    DbSet<WhatsAppConversation> WhatsAppConversations { get; }
+    DbSet<WhatsAppMessage> WhatsAppMessages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,10 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store'
 import {
-  updateSettings, resetSimulator, addSimMessage,
-  setSimStep, updateSimDraft, confirmSimAppointment,
-  updateAppointmentStatus, deleteAppointment,
-  type ChatMessage, type BotStep,
+  updateSettings, updateAppointmentStatus, deleteAppointment,
 } from '@/store/slices/whatsappBotSlice'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -18,9 +15,14 @@ import { useServices } from '@/hooks/useServices'
 import { useEmployees } from '@/hooks/useEmployees'
 import type { WhatsAppAppointment } from '@/store/slices/whatsappBotSlice'
 import {
+  useConversations, useConversationMessages, useSendMessage, useResolveConversation,
+  type Conversation, type LeadTier,
+} from '@/hooks/useWhatsAppConversations'
+import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
   RefreshCw, Send, CheckCircle2, XCircle, Bot, Smartphone,
-  Clock, Scissors, Phone, Mail, MapPin, Info,
+  Clock, Scissors, Phone, Mail, MapPin, Info, AlertTriangle,
+  MessagesSquare, Flame, Snowflake, Sun,
 } from 'lucide-react'
 
 // ─── WhatsApp Icon ─────────────────────────────────────────────────────────
@@ -43,12 +45,18 @@ const statusColor: Record<string, string> = {
 }
 
 // ─── Bot Message bubble ────────────────────────────────────────────────────
-function ChatBubble({ msg, onQuickReply }: { msg: ChatMessage; onQuickReply?: (r: string) => void }) {
-  const isBot = msg.role === 'bot'
+type BubbleRole = 'customer' | 'bot' | 'owner'
+
+function ChatBubble({ role, text }: { role: BubbleRole; text: string }) {
+  const isCustomer = role === 'customer'
+  const isOwner = role === 'owner'
   return (
-    <div className={cn('flex gap-2 max-w-xs', isBot ? 'self-start' : 'self-end flex-row-reverse')}>
-      {isBot && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+    <div className={cn('flex gap-2 max-w-xs', isCustomer ? 'self-end flex-row-reverse' : 'self-start')}>
+      {!isCustomer && (
+        <div className={cn(
+          'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
+          isOwner ? 'bg-blue-500' : 'bg-green-500'
+        )}>
           <Bot className="h-4 w-4 text-white" />
         </div>
       )}
@@ -56,173 +64,106 @@ function ChatBubble({ msg, onQuickReply }: { msg: ChatMessage; onQuickReply?: (r
         <div
           className={cn(
             'rounded-2xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap',
-            isBot
-              ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm'
-              : 'bg-green-500 text-white rounded-tr-sm'
+            isCustomer
+              ? 'bg-green-500 text-white rounded-tr-sm'
+              : isOwner
+                ? 'bg-blue-50 border border-blue-200 text-blue-900 rounded-tl-sm'
+                : 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm'
           )}
         >
-          {msg.text}
+          {text}
         </div>
-        {isBot && msg.quickReplies && (
-          <div className="flex flex-col gap-1.5">
-            {msg.quickReplies.map(r => (
-              <button
-                key={r}
-                onClick={() => onQuickReply?.(r)}
-                className="rounded-full border border-green-500 bg-white px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 transition-colors text-left"
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   )
 }
 
 // ─── Simulator Tab ─────────────────────────────────────────────────────────
+interface SimMessage { id: string; role: BubbleRole; text: string }
+
+function randomTestPhone() {
+  return `0500${Math.floor(1000000 + Math.random() * 8999999)}`
+}
+
+const leadTierMeta: Record<LeadTier, { label: string; className: string; icon: typeof Flame }> = {
+  hot: { label: 'Sıcak', className: 'bg-red-50 text-red-700 border-red-200', icon: Flame },
+  warm: { label: 'Ilık', className: 'bg-amber-50 text-amber-700 border-amber-200', icon: Sun },
+  cold: { label: 'Soğuk', className: 'bg-blue-50 text-blue-700 border-blue-200', icon: Snowflake },
+}
+
 function SimulatorTab() {
-  const dispatch = useAppDispatch()
-  const { settings, simMessages, simStep, simDraft } = useAppSelector(s => s.whatsappBot)
+  const settings = useAppSelector(s => s.whatsappBot.settings)
+  const sendMessage = useSendMessage()
+
+  const [testPhone, setTestPhone] = useState(randomTestPhone)
+  const [conversationId, setConversationId] = useState<string | null>(null)
+  const [messages, setMessages] = useState<SimMessage[]>([{
+    id: 'welcome',
+    role: 'bot',
+    text: `${settings.welcomeMessage}\n\n*${settings.businessName}*'e hoş geldiniz! Bir mesaj yazarak başlayabilirsiniz.`,
+  }])
+  const [lastResult, setLastResult] = useState<{ status: string; leadScore: number; leadTier: LeadTier } | null>(null)
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [simMessages])
+  }, [messages])
 
-  function botMsg(text: string, quickReplies?: string[]): ChatMessage {
-    return { id: `bot_${Date.now()}`, role: 'bot', text, timestamp: new Date().toISOString(), quickReplies }
-  }
-  function userMsg(text: string): ChatMessage {
-    return { id: `user_${Date.now()}`, role: 'user', text, timestamp: new Date().toISOString() }
-  }
-
-  function handleQuickReply(reply: string) {
-    dispatch(addSimMessage(userMsg(reply)))
-    processReply(reply, simStep)
+  function handleReset() {
+    setTestPhone(randomTestPhone())
+    setConversationId(null)
+    setLastResult(null)
+    setMessages([{
+      id: 'welcome',
+      role: 'bot',
+      text: `${settings.welcomeMessage}\n\n*${settings.businessName}*'e hoş geldiniz! Bir mesaj yazarak başlayabilirsiniz.`,
+    }])
   }
 
   function handleSend() {
-    const txt = input.trim()
-    if (!txt) return
+    const text = input.trim()
+    if (!text || sendMessage.isPending) return
     setInput('')
-    dispatch(addSimMessage(userMsg(txt)))
-    processInput(txt, simStep)
+    setMessages(prev => [...prev, { id: `local_${Date.now()}`, role: 'customer', text }])
+
+    sendMessage.mutate({
+      conversationId,
+      customerPhone: testPhone,
+      customerName: 'Test Müşteri',
+      text,
+      role: 'customer',
+      businessName: settings.businessName,
+      welcomeMessage: settings.welcomeMessage,
+      services: settings.services,
+      workingHours: settings.workingSlots.map(s => `${s.day}: ${s.hours}`),
+    }, {
+      onSuccess: (result) => {
+        setConversationId(result.conversationId)
+        setLastResult({ status: result.status, leadScore: result.leadScore, leadTier: result.leadTier })
+        const botReply = result.newMessages.find(m => m.role === 'bot')
+        if (botReply) {
+          setMessages(prev => [...prev, { id: botReply.id, role: 'bot', text: botReply.text }])
+        }
+      },
+      onError: () => {
+        showToast('error', 'Yanıt alınamadı', 'Bot şu anda yanıt veremedi, lütfen tekrar deneyin.')
+      },
+    })
   }
 
-  function processReply(reply: string, step: BotStep) {
-    setTimeout(() => {
-      if (step === 'welcome') {
-        const low = reply.toLowerCase()
-        if (reply.includes('Randevu') || low.includes('randevu') || reply.startsWith('1')) {
-          const serviceList = settings.services.map((s, i) => `${i + 1}. ${s}`).join('\n')
-          dispatch(addSimMessage(botMsg(
-            `Harika! Öncelikle hangi hizmeti almak istersiniz?\n\n${serviceList}`,
-            settings.services.map(s => `✂️ ${s}`)
-          )))
-          dispatch(setSimStep('select_service'))
-        } else if (reply.includes('Çalışma') || low.includes('çalışma') || low.includes('saat') || reply.startsWith('2')) {
-          const slotList = settings.workingSlots
-            .map(s => `• ${s.day}: ${s.hours}`)
-            .join('\n')
-          dispatch(addSimMessage(botMsg(
-            `Çalışma saatlerimiz:\n\n${slotList}\n\nBaşka bir konuda yardımcı olabilir miyim?`,
-            ['📅 Randevu almak istiyorum', '✂️ Hizmetler neler?']
-          )))
-          dispatch(setSimStep('welcome'))
-        } else if (reply.includes('Hizmet') || low.includes('hizmet') || reply.startsWith('3')) {
-          const serviceList = settings.services.map(s => `• ${s}`).join('\n')
-          dispatch(addSimMessage(botMsg(
-            `Sunduğumuz hizmetler:\n\n${serviceList}\n\nBaşka bir konuda yardımcı olabilir miyim?`,
-            ['📅 Randevu almak istiyorum', '🕐 Çalışma saatlerini öğrenmek istiyorum']
-          )))
-          dispatch(setSimStep('welcome'))
-        }
-      } else if (step === 'select_service') {
-        const serviceName = reply.replace('✂️ ', '').trim()
-        const matched = settings.services.find(s => s.toLowerCase() === serviceName.toLowerCase())
-          ?? settings.services.find(s => serviceName.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(serviceName.toLowerCase()))
-        if (matched) {
-          dispatch(updateSimDraft({ selectedService: matched }))
-          const slotList = settings.workingSlots
-            .map((s, i) => `${i + 1}. ${s.day}: ${s.hours}`)
-            .join('\n')
-          dispatch(addSimMessage(botMsg(
-            `*${matched}* için uygun günlerimiz:\n\n${slotList}\n\nHangi güne randevu almak istersiniz?`,
-            settings.workingSlots.map(s => `📅 ${s.day}`)
-          )))
-          dispatch(setSimStep('select_slot'))
-        } else {
-          dispatch(addSimMessage(botMsg(
-            'Bu hizmeti bulamadım. Lütfen aşağıdaki seçeneklerden birini seçiniz:',
-            settings.services.map(s => `✂️ ${s}`)
-          )))
-        }
-      } else if (step === 'select_slot') {
-        const dayName = reply.replace('📅 ', '')
-        const slot = settings.workingSlots.find(s => s.day === dayName)
-        if (slot) {
-          dispatch(updateSimDraft({ selectedSlot: `${slot.day} ${slot.hours}` }))
-          dispatch(addSimMessage(botMsg(
-            `${slot.day} günü ${slot.hours} saatleri arasında randevunuzu ayarlayabiliriz.\n\nLütfen adınızı ve soyadınızı yazınız:`
-          )))
-          dispatch(setSimStep('ask_name'))
-        }
-      }
-    }, 600)
-  }
-
-  function processInput(text: string, step: BotStep) {
-    setTimeout(() => {
-      if (step === 'welcome' || step === 'select_option') {
-        // Route typed text through the same option logic as quick replies
-        processReply(text, 'welcome')
-      } else if (step === 'select_service' || step === 'select_slot') {
-        processReply(text, step)
-      } else if (step === 'ask_name') {
-        dispatch(updateSimDraft({ customerName: text }))
-        dispatch(addSimMessage(botMsg('Telefon numaranızı paylaşır mısınız? (örn: 05XX XXX XX XX)')))
-        dispatch(setSimStep('ask_phone'))
-      } else if (step === 'ask_phone') {
-        dispatch(updateSimDraft({ customerPhone: text }))
-        dispatch(addSimMessage(botMsg('Hangi şehirde bulunuyorsunuz?')))
-        dispatch(setSimStep('ask_city'))
-      } else if (step === 'ask_city') {
-        dispatch(updateSimDraft({ customerCity: text }))
-        dispatch(addSimMessage(botMsg('Gmail adresinizi paylaşır mısınız? (onay maili gönderilecek)')))
-        dispatch(setSimStep('ask_email'))
-      } else if (step === 'ask_email') {
-        const updatedDraft = { ...simDraft, customerEmail: text }
-        dispatch(updateSimDraft({ customerEmail: text }))
-        dispatch(addSimMessage(botMsg(
-          `✅ *Randevunuz başarıyla alınmıştır!*\n\n` +
-          `👤 Ad Soyad: ${updatedDraft.customerName}\n` +
-          `📞 Telefon: ${updatedDraft.customerPhone}\n` +
-          `🏙️ Şehir: ${updatedDraft.customerCity}\n` +
-          `📧 E-posta: ${text}\n` +
-          `✂️ Hizmet: ${updatedDraft.selectedService || '—'}\n` +
-          `📅 Tarih: ${updatedDraft.selectedSlot}\n\n` +
-          `Randevunuzu hatırlatmak için size e-posta göndereceğiz. Görüşürüz! 🙏`,
-          ['📅 Yeni randevu almak istiyorum']
-        )))
-        dispatch(confirmSimAppointment())
-        dispatch(setSimStep('confirmed'))
-      }
-    }, 600)
-  }
+  const tier = lastResult ? leadTierMeta[lastResult.leadTier] : null
 
   return (
     <div className="flex gap-6 h-[600px]">
       {/* Phone Frame */}
       <div className="flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-sm text-gray-500">WhatsApp konuşma simülasyonu — botun müşteri ile nasıl iletişim kurduğunu görmek için aşağıdaki seçeneklere tıklayın.</p>
+          <p className="text-sm text-gray-500">Claude destekli bot ile serbest metin yazarak test edin — sabit menü yok, ne yazarsanız yanıtlar.</p>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => dispatch(resetSimulator())}
+            onClick={handleReset}
             className="gap-1.5 text-xs"
           >
             <RefreshCw className="h-3.5 w-3.5" />
@@ -248,13 +189,14 @@ function SimulatorTab() {
             className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3"
             style={{ backgroundImage: 'radial-gradient(#e5ddd5 1px, transparent 1px)', backgroundSize: '20px 20px' }}
           >
-            {simMessages.map(msg => (
-              <ChatBubble
-                key={msg.id}
-                msg={msg}
-                onQuickReply={handleQuickReply}
-              />
+            {messages.map(msg => (
+              <ChatBubble key={msg.id} role={msg.role} text={msg.text} />
             ))}
+            {sendMessage.isPending && (
+              <div className="self-start flex items-center gap-2 text-xs text-gray-400 pl-10">
+                <RefreshCw className="h-3 w-3 animate-spin" /> yazıyor...
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
 
@@ -264,19 +206,12 @@ function SimulatorTab() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
-              placeholder={
-                simStep === 'select_service' ? 'Hizmet adını yazın...' :
-                simStep === 'ask_name' ? 'Adınızı ve soyadınızı yazın...' :
-                simStep === 'ask_phone' ? 'Telefon numaranızı yazın...' :
-                simStep === 'ask_city' ? 'Şehrinizi yazın...' :
-                simStep === 'ask_email' ? 'Gmail adresinizi yazın...' :
-                'Bir mesaj yazın...'
-              }
+              placeholder="Bir mesaj yazın..."
               className="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:border-green-400"
             />
             <button
               onClick={handleSend}
-              disabled={!input.trim()}
+              disabled={!input.trim() || sendMessage.isPending}
               className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center disabled:opacity-40 hover:bg-green-600 transition-colors"
             >
               <Send className="h-4 w-4 text-white" />
@@ -289,33 +224,24 @@ function SimulatorTab() {
       <div className="w-56 flex-shrink-0 space-y-4">
         <Card>
           <CardContent className="p-4 space-y-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bot Akışı</p>
-            {[
-              { step: 'welcome', label: '1. Karşılama & Seçenekler' },
-              { step: 'select_service', label: '2. Hizmet Seçimi' },
-              { step: 'select_slot', label: '3. Gün Seçimi' },
-              { step: 'ask_name', label: '4. Ad Soyad' },
-              { step: 'ask_phone', label: '5. Telefon' },
-              { step: 'ask_city', label: '6. Şehir' },
-              { step: 'ask_email', label: '7. Gmail' },
-              { step: 'confirmed', label: '8. Onay' },
-            ].map(item => (
-              <div
-                key={item.step}
-                className={cn(
-                  'flex items-center gap-2 text-xs rounded-lg px-2 py-1.5',
-                  simStep === item.step
-                    ? 'bg-green-50 text-green-700 font-semibold'
-                    : 'text-gray-500'
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bu Konuşma</p>
+            {tier ? (
+              <>
+                <div className={cn('flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-semibold', tier.className)}>
+                  <tier.icon className="h-3.5 w-3.5" />
+                  {tier.label} müşteri adayı
+                </div>
+                <p className="text-xs text-gray-500">Lead skoru: <span className="font-semibold text-gray-700">{lastResult?.leadScore}/100</span></p>
+                {lastResult?.status === 'escalated' && (
+                  <div className="flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1.5 text-xs font-medium text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    İnsan devraldı bekliyor
+                  </div>
                 )}
-              >
-                <div className={cn(
-                  'w-2 h-2 rounded-full',
-                  simStep === item.step ? 'bg-green-500' : 'bg-gray-300'
-                )} />
-                {item.label}
-              </div>
-            ))}
+              </>
+            ) : (
+              <p className="text-xs text-gray-400">Bir mesaj gönderince burada AI değerlendirmesi görünecek.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -323,7 +249,7 @@ function SimulatorTab() {
           <CardContent className="p-4 space-y-2">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">İpucu</p>
             <p className="text-xs text-gray-500 leading-relaxed">
-              Simülatörde hızlı yanıt butonlarına tıklayarak veya alt kısma yazarak bot akışını test edebilirsiniz.
+              Bot, işletme bilgilerinizin (Ayarlar sekmesi) dışına çıkan bir talep (fiyat pazarlığı, şikayet vb.) gelirse otomatik olarak "İnsan devralsın" durumuna geçer — bu konuşmalar Konuşmalar sekmesinde görünür.
             </p>
           </CardContent>
         </Card>
@@ -746,19 +672,176 @@ function DetailItem({ icon, label }: { icon: React.ReactNode; label: string }) {
   )
 }
 
+// ─── Conversations Tab ──────────────────────────────────────────────────────
+function ConversationRow({ conv, active, onClick }: { conv: Conversation; active: boolean; onClick: () => void }) {
+  const tier = leadTierMeta[conv.leadTier]
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'w-full text-left rounded-xl border p-3 transition-colors',
+        active ? 'border-green-300 bg-green-50/50' : 'border-gray-100 bg-white hover:border-gray-200'
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-sm font-semibold text-gray-900 truncate">{conv.customerName || conv.customerPhone}</span>
+        <span className={cn('flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-semibold shrink-0', tier.className)}>
+          <tier.icon className="h-2.5 w-2.5" />
+          {tier.label}
+        </span>
+      </div>
+      <p className="mt-1 text-xs text-gray-500 truncate">{conv.lastMessagePreview || '—'}</p>
+      {conv.status === 'escalated' && (
+        <div className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-amber-700">
+          <AlertTriangle className="h-3 w-3" /> İnsan devralması bekleniyor
+        </div>
+      )}
+    </button>
+  )
+}
+
+function ConversationsTab() {
+  const settings = useAppSelector(s => s.whatsappBot.settings)
+  const [statusFilter, setStatusFilter] = useState<'all' | 'escalated'>('all')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [ownerReply, setOwnerReply] = useState('')
+
+  const { data, isLoading } = useConversations({
+    pageSize: 50,
+    status: statusFilter === 'escalated' ? 'escalated' : undefined,
+  })
+  const { data: messages } = useConversationMessages(selectedId)
+  const sendMessage = useSendMessage()
+  const resolveConversation = useResolveConversation()
+
+  const conversations = data?.items ?? []
+  const selected = conversations.find(c => c.id === selectedId) ?? null
+
+  function handleOwnerReply() {
+    const text = ownerReply.trim()
+    if (!text || !selected || sendMessage.isPending) return
+    setOwnerReply('')
+    sendMessage.mutate({
+      conversationId: selected.id,
+      customerPhone: selected.customerPhone,
+      customerName: selected.customerName,
+      text,
+      role: 'owner',
+      businessName: settings.businessName,
+      welcomeMessage: settings.welcomeMessage,
+      services: settings.services,
+      workingHours: settings.workingSlots.map(s => `${s.day}: ${s.hours}`),
+    })
+  }
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[320px_1fr] h-[600px]">
+      {/* List */}
+      <div className="flex flex-col gap-3 overflow-hidden">
+        <div className="flex gap-1.5">
+          {(['all', 'escalated'] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setStatusFilter(f)}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-xs font-medium border transition-colors',
+                statusFilter === f ? 'bg-green-500 text-white border-green-500' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              )}
+            >
+              {f === 'all' ? 'Tümü' : 'İnsan bekleyenler'}
+            </button>
+          ))}
+        </div>
+        <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <RefreshCw className="h-5 w-5 animate-spin text-gray-300" />
+            </div>
+          ) : conversations.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-16 text-gray-400">
+              <MessagesSquare className="h-8 w-8" />
+              <p className="text-sm">Henüz konuşma yok</p>
+            </div>
+          ) : (
+            conversations.map(conv => (
+              <ConversationRow
+                key={conv.id}
+                conv={conv}
+                active={conv.id === selectedId}
+                onClick={() => setSelectedId(conv.id)}
+              />
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Thread */}
+      <div className="flex flex-col border rounded-2xl overflow-hidden shadow-sm bg-gray-50">
+        {!selected ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-2 text-gray-400">
+            <MessagesSquare className="h-8 w-8" />
+            <p className="text-sm">Bir konuşma seçin</p>
+          </div>
+        ) : (
+          <>
+            <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{selected.customerName || selected.customerPhone}</p>
+                <p className="text-xs text-gray-400">{selected.customerPhone}</p>
+              </div>
+              {selected.status === 'escalated' && (
+                <Button size="sm" onClick={() => resolveConversation.mutate(selected.id)} className="gap-1.5 text-xs">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Çözüldü
+                </Button>
+              )}
+            </div>
+            <div
+              className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3"
+              style={{ backgroundImage: 'radial-gradient(#e5ddd5 1px, transparent 1px)', backgroundSize: '20px 20px' }}
+            >
+              {(messages ?? []).map(m => (
+                <ChatBubble key={m.id} role={m.role} text={m.text} />
+              ))}
+            </div>
+            <div className="bg-white border-t px-3 py-2 flex items-center gap-2">
+              <input
+                value={ownerReply}
+                onChange={e => setOwnerReply(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleOwnerReply()}
+                placeholder="İşletme sahibi olarak yanıtla..."
+                className="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:border-blue-400"
+              />
+              <button
+                onClick={handleOwnerReply}
+                disabled={!ownerReply.trim() || sendMessage.isPending}
+                className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center disabled:opacity-40 hover:bg-blue-600 transition-colors"
+              >
+                <Send className="h-4 w-4 text-white" />
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Page ──────────────────────────────────────────────────────────────
-type Tab = 'settings' | 'simulator' | 'appointments'
+type Tab = 'settings' | 'simulator' | 'appointments' | 'conversations'
 
 export function WhatsAppBotPage() {
   const [tab, setTab] = useState<Tab>(() => {
     const param = new URLSearchParams(window.location.search).get('tab')
-    return param === 'appointments' || param === 'settings' ? param : 'simulator'
+    return param === 'appointments' || param === 'settings' || param === 'conversations' ? param : 'simulator'
   })
   const isEnabled = useAppSelector(s => s.whatsappBot.settings.isEnabled)
   const pendingCount = useAppSelector(s => s.whatsappBot.appointments.filter(a => a.status === 'pending').length)
+  const { data: escalatedData } = useConversations({ status: 'escalated', pageSize: 1 })
+  const escalatedCount = escalatedData?.totalCount ?? 0
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'simulator', label: 'Konuşma Simülatörü', icon: <Smartphone className="h-4 w-4" /> },
+    { id: 'conversations', label: 'Konuşmalar', icon: <MessagesSquare className="h-4 w-4" /> },
     { id: 'appointments', label: 'WhatsApp Randevuları', icon: <CalendarCheck className="h-4 w-4" /> },
     { id: 'settings', label: 'Bot Ayarları', icon: <Settings2 className="h-4 w-4" /> },
   ]
@@ -784,6 +867,12 @@ export function WhatsAppBotPage() {
               {pendingCount} bekleyen randevu
             </div>
           )}
+          {escalatedCount > 0 && (
+            <div className="flex items-center gap-1.5 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-xs font-medium text-red-700">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {escalatedCount} kişi insana devredildi
+            </div>
+          )}
         </div>
       </PageHeader>
 
@@ -807,12 +896,18 @@ export function WhatsAppBotPage() {
                 {pendingCount}
               </span>
             )}
+            {t.id === 'conversations' && escalatedCount > 0 && (
+              <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold text-white leading-none">
+                {escalatedCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
       {/* Content */}
       {tab === 'simulator' && <SimulatorTab />}
+      {tab === 'conversations' && <ConversationsTab />}
       {tab === 'appointments' && <AppointmentsTab />}
       {tab === 'settings' && <SettingsTab />}
     </div>

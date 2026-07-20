@@ -3,6 +3,7 @@ using Hangfire.PostgreSql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RandevumKolay.Application.Common.Interfaces;
+using RandevumKolay.Infrastructure.AI;
 using RandevumKolay.Infrastructure.BackgroundJobs;
 using RandevumKolay.Infrastructure.Cache;
 using RandevumKolay.Infrastructure.Identity;
@@ -68,6 +69,12 @@ public static class DependencyInjection
         services.AddScoped<INoShowPredictionService, NoShowPredictionService>();
         services.AddScoped<ISmartNotificationService, SmartNotificationService>();
         services.AddScoped<IScheduleOptimizationService, ScheduleOptimizationService>();
+
+        services.Configure<AnthropicSettings>(configuration.GetSection("Anthropic"));
+        services.AddHttpClient<IClaudeService, ClaudeService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
         // Hangfire
         services.AddHangfire(config =>

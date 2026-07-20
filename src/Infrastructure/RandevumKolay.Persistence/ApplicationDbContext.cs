@@ -66,6 +66,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PlatformPayment> PlatformPayments => Set<PlatformPayment>();
     public DbSet<PricingPlan> PricingPlans => Set<PricingPlan>();
     public DbSet<PricingPlanSlot> PricingPlanSlots => Set<PricingPlanSlot>();
+    public DbSet<WhatsAppConversation> WhatsAppConversations => Set<WhatsAppConversation>();
+    public DbSet<WhatsAppMessage> WhatsAppMessages => Set<WhatsAppMessage>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
