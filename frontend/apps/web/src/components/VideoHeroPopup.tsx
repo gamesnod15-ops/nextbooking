@@ -62,34 +62,38 @@ export function VideoHeroPopup({ targetId }: { targetId: string }) {
   if (!mounted) return null
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center px-4">
+    <div className="pointer-events-none fixed inset-y-0 left-0 z-40 flex items-center pl-4 sm:pl-6">
       <div
-        className={`pointer-events-auto relative flex max-w-sm flex-col items-center gap-3 rounded-3xl bg-white/95 px-8 py-7 text-center shadow-2xl ring-1 ring-black/5 backdrop-blur-md transition-all duration-300 ease-out ${
-          shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-4 scale-90 opacity-0'
+        className={`pointer-events-auto relative w-72 overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5 transition-all duration-500 ease-out ${
+          shown ? 'translate-x-0 opacity-100' : '-translate-x-[140%] opacity-0'
         }`}
       >
+        <div className="h-1.5 w-full bg-gradient-to-r from-brand-500 to-amber-400" />
+
         <button
           onClick={close}
           aria-label="Kapat"
-          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          className="absolute right-3 top-4 flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50">
-          <Tag className="h-6 w-6 text-brand-500" />
+        <div className="p-6">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-500/30">
+            <Tag className="h-6 w-6 text-white" />
+          </div>
+
+          <p className="text-lg font-extrabold leading-snug text-gray-900">Size Uygun Paketi Bulun</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-gray-500">14 gün ücretsiz deneyin, kredi kartı gerekmez.</p>
+
+          <a
+            href="#pricing"
+            onClick={close}
+            className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg"
+          >
+            Paketlerimize Git <ArrowRight className="h-4 w-4" />
+          </a>
         </div>
-
-        <p className="text-base font-bold text-gray-900">Size Uygun Paketi Bulun</p>
-        <p className="text-sm text-gray-500">14 gün ücretsiz deneyin, kredi kartı gerekmez.</p>
-
-        <a
-          href="#pricing"
-          onClick={close}
-          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
-        >
-          Paketlerimize Git <ArrowRight className="h-4 w-4" />
-        </a>
       </div>
     </div>
   )
