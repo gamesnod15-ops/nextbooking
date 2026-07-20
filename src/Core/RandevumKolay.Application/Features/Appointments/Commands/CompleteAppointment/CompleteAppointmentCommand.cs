@@ -12,11 +12,13 @@ public sealed class CompleteAppointmentCommandHandler : IRequestHandler<Complete
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentTenantService _tenantService;
+    private readonly IPublisher _publisher;
 
-    public CompleteAppointmentCommandHandler(IApplicationDbContext context, ICurrentTenantService tenantService)
+    public CompleteAppointmentCommandHandler(IApplicationDbContext context, ICurrentTenantService tenantService, IPublisher publisher)
     {
         _context = context;
         _tenantService = tenantService;
+        _publisher = publisher;
     }
 
     public async Task Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
@@ -27,5 +29,10 @@ public sealed class CompleteAppointmentCommandHandler : IRequestHandler<Complete
 
         appointment.Complete();
         await _context.SaveChangesAsync(cancellationToken);
+
+        foreach (var domainEvent in appointment.DomainEvents)
+            await _publisher.Publish(domainEvent, cancellationToken);
+
+        appointment.ClearDomainEvents();
     }
 }

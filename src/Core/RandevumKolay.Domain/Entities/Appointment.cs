@@ -87,6 +87,7 @@ public class Appointment : AuditableEntity, ITenantEntity
             throw new InvalidOperationException("Only confirmed appointments can be completed.");
 
         Status = AppointmentStatus.Completed;
+        _domainEvents.Add(new AppointmentCompletedEvent(this));
     }
 
     public void MarkReminderSent() => ReminderSent = true;

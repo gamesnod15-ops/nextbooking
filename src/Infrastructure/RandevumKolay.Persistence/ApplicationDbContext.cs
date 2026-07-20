@@ -71,6 +71,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WhatsAppBookingDraft> WhatsAppBookingDrafts => Set<WhatsAppBookingDraft>();
     public DbSet<WinBackRule> WinBackRules => Set<WinBackRule>();
     public DbSet<WinBackSendLog> WinBackSendLogs => Set<WinBackSendLog>();
+    public DbSet<LoyaltyTier> LoyaltyTiers => Set<LoyaltyTier>();
+    public DbSet<LoyaltyMember> LoyaltyMembers => Set<LoyaltyMember>();
+    public DbSet<LoyaltyReward> LoyaltyRewards => Set<LoyaltyReward>();
+    public DbSet<LoyaltyRedemption> LoyaltyRedemptions => Set<LoyaltyRedemption>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

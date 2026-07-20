@@ -51,6 +51,10 @@ public interface IApplicationDbContext
     DbSet<WhatsAppBookingDraft> WhatsAppBookingDrafts { get; }
     DbSet<WinBackRule> WinBackRules { get; }
     DbSet<WinBackSendLog> WinBackSendLogs { get; }
+    DbSet<LoyaltyTier> LoyaltyTiers { get; }
+    DbSet<LoyaltyMember> LoyaltyMembers { get; }
+    DbSet<LoyaltyReward> LoyaltyRewards { get; }
+    DbSet<LoyaltyRedemption> LoyaltyRedemptions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
