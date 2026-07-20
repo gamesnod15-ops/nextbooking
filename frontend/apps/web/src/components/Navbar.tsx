@@ -169,8 +169,11 @@ export function Navbar() {
               >
                 <User className="h-4 w-4" />
               </Link>
-              <Link href="/register" className="flex items-center rounded-full bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-black transition-colors">
-                Ücretsiz Başla
+              <Link
+                href="/register"
+                className="flex items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/40"
+              >
+                Ücretsiz Başlayın
               </Link>
             </>
           )}
@@ -234,8 +237,12 @@ export function Navbar() {
                   <LogIn className="h-4 w-4" />
                   Giriş Yap
                 </Link>
-                <Link href="/register" onClick={() => setOpen(false)} className="flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white">
-                  Ücretsiz Başla
+                <Link
+                  href="/register"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/30"
+                >
+                  Ücretsiz Başlayın
                 </Link>
               </>
             )}
