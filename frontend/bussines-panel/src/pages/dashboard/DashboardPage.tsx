@@ -1,4 +1,5 @@
 import { useAppSelector } from '@/store'
+import { useBookingDrafts } from '@/hooks/useWhatsAppConversations'
 import { StatCard } from '@/components/ui/StatCard'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -72,13 +73,18 @@ const statusConfig: Record<string, { label: string; variant: 'success' | 'warnin
   completed: { label: 'Tamamlandı', variant: 'info' },
 }
 
-/** WhatsApp bookings on the dashboard: 4 per row, at most 8 (2 rows) — the
- *  rest live on the WhatsApp bot page's appointments tab. */
-function WhatsAppBookingsSection() {
-  const appointments = useAppSelector((s) => s.whatsappBot.appointments)
-  if (appointments.length === 0) return null
+const draftStatusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'destructive' | 'info' }> = {
+  approved: { label: 'Onaylandı', variant: 'success' },
+  pendingApproval: { label: 'Onay Bekliyor', variant: 'warning' },
+  rejected: { label: 'Reddedildi', variant: 'destructive' },
+}
 
-  const visible = appointments.slice(0, 8)
+/** WhatsApp booking drafts on the dashboard: 4 per row, at most 8 (2 rows) —
+ *  the rest live on the WhatsApp bot page's appointments tab. */
+function WhatsAppBookingsSection() {
+  const { data } = useBookingDrafts({ pageSize: 8 })
+  const drafts = data?.items ?? []
+  if (drafts.length === 0) return null
 
   return (
     <Card>
@@ -94,32 +100,32 @@ function WhatsAppBookingsSection() {
         </div>
         <Button variant="ghost" size="sm" asChild>
           <Link to="/whatsapp-bot?tab=appointments" className="flex items-center gap-1">
-            {appointments.length > 8 ? `Tümünü Gör (${appointments.length})` : 'Tümü'}
+            {(data?.totalCount ?? 0) > 8 ? `Tümünü Gör (${data?.totalCount})` : 'Tümü'}
             <ChevronRight className="h-4 w-4" />
           </Link>
         </Button>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {visible.map((apt) => {
-            const status = statusConfig[apt.status] ?? { label: apt.status, variant: 'info' as const }
+          {drafts.map((draft) => {
+            const status = draftStatusConfig[draft.status] ?? { label: draft.status, variant: 'info' as const }
             return (
-              <div key={apt.id} className="rounded-xl border p-3.5 transition-colors hover:bg-accent/50">
+              <div key={draft.id} className="rounded-xl border p-3.5 transition-colors hover:bg-accent/50">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
-                    {apt.customerName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || 'W'}
+                    {draft.customerName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || 'W'}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{apt.customerName}</p>
-                    <p className="truncate text-xs text-muted-foreground">{apt.customerPhone}</p>
+                    <p className="truncate text-sm font-medium">{draft.customerName}</p>
+                    <p className="truncate text-xs text-muted-foreground">{draft.customerPhone}</p>
                   </div>
                 </div>
                 <div className="mt-2.5 space-y-1 text-xs text-muted-foreground">
                   <p className="flex items-center gap-1.5 truncate">
-                    <Scissors className="h-3 w-3 shrink-0" /> {apt.selectedService || '—'}
+                    <Scissors className="h-3 w-3 shrink-0" /> {draft.serviceName}
                   </p>
                   <p className="flex items-center gap-1.5 truncate">
-                    <Clock className="h-3 w-3 shrink-0" /> {apt.selectedSlot || '—'}
+                    <Clock className="h-3 w-3 shrink-0" /> {draft.date} {draft.time.slice(0, 5)}
                   </p>
                 </div>
                 <div className="mt-2.5">

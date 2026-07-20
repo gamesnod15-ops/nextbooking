@@ -103,3 +103,63 @@ export function useResolveConversation() {
     onSuccess: () => qc.invalidateQueries({ queryKey: [CONVERSATIONS_KEY] }),
   })
 }
+
+// ─── Booking drafts (Claude's propose_booking tool, pending owner approval) ─
+
+export type BookingDraftStatus = 'pendingApproval' | 'approved' | 'rejected'
+
+export interface BookingDraft {
+  id: string
+  conversationId: string
+  serviceName: string
+  date: string // YYYY-MM-DD
+  time: string // HH:mm:ss
+  customerName: string
+  customerPhone: string
+  customerEmail: string | null
+  status: BookingDraftStatus
+  rejectionReason: string | null
+  createdAppointmentId: string | null
+  createdAt: string
+}
+
+export interface BookingDraftsFilter {
+  pageNumber?: number
+  pageSize?: number
+  status?: BookingDraftStatus
+}
+
+const BOOKING_DRAFTS_KEY = 'whatsapp-booking-drafts'
+
+export function useBookingDrafts(filter: BookingDraftsFilter = {}) {
+  return useQuery({
+    queryKey: [BOOKING_DRAFTS_KEY, filter],
+    queryFn: () =>
+      api.get<{ items: BookingDraft[]; totalCount: number; totalPages: number }>(
+        '/whatsapp-booking-drafts',
+        { params: filter }
+      ).then((r) => r.data),
+  })
+}
+
+export function useApproveBookingDraft() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.post<{ appointmentId: string }>(`/whatsapp-booking-drafts/${id}/approve`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [BOOKING_DRAFTS_KEY] })
+      qc.invalidateQueries({ queryKey: ['appointments'] })
+      qc.invalidateQueries({ queryKey: ['customers'] })
+      qc.invalidateQueries({ queryKey: ['dashboard-stats'] })
+    },
+  })
+}
+
+export function useRejectBookingDraft() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      api.post(`/whatsapp-booking-drafts/${id}/reject`, { reason }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [BOOKING_DRAFTS_KEY] }),
+  })
+}

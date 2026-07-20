@@ -1,27 +1,21 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store'
-import {
-  updateSettings, updateAppointmentStatus, deleteAppointment,
-} from '@/store/slices/whatsappBotSlice'
+import { updateSettings } from '@/store/slices/whatsappBotSlice'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { showToast } from '@/components/ui/Toast'
 import { cn } from '@/lib/utils'
-import api from '@/lib/api'
-import { useQueryClient } from '@tanstack/react-query'
-import { useServices } from '@/hooks/useServices'
-import { useEmployees } from '@/hooks/useEmployees'
-import type { WhatsAppAppointment } from '@/store/slices/whatsappBotSlice'
 import {
   useConversations, useConversationMessages, useSendMessage, useResolveConversation,
-  type Conversation, type LeadTier,
+  useBookingDrafts, useApproveBookingDraft, useRejectBookingDraft,
+  type Conversation, type LeadTier, type BookingDraft, type BookingDraftStatus,
 } from '@/hooks/useWhatsAppConversations'
 import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
   RefreshCw, Send, CheckCircle2, XCircle, Bot, Smartphone,
-  Clock, Scissors, Phone, Mail, MapPin, Info, AlertTriangle,
+  Clock, Scissors, Phone, Mail, Info, AlertTriangle,
   MessagesSquare, Flame, Snowflake, Sun,
 } from 'lucide-react'
 
@@ -32,16 +26,16 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-// ─── Status Labels ──────────────────────────────────────────────────────────
-const statusLabel: Record<string, string> = {
-  pending: 'Beklemede',
-  confirmed: 'Onaylandı',
-  cancelled: 'İptal',
+// ─── Booking draft status labels ────────────────────────────────────────────
+const draftStatusLabel: Record<BookingDraftStatus, string> = {
+  pendingApproval: 'Onay Bekliyor',
+  approved: 'Onaylandı',
+  rejected: 'Reddedildi',
 }
-const statusColor: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700 border-amber-200',
-  confirmed: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  cancelled: 'bg-red-100 text-red-700 border-red-200',
+const draftStatusColor: Record<BookingDraftStatus, string> = {
+  pendingApproval: 'bg-amber-100 text-amber-700 border-amber-200',
+  approved: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  rejected: 'bg-red-100 text-red-700 border-red-200',
 }
 
 // ─── Bot Message bubble ────────────────────────────────────────────────────
@@ -437,128 +431,47 @@ function SettingsTab() {
   )
 }
 
-// ─── Sync helpers: turn a WhatsApp booking into a real customer + appointment ─
-
-const TR_DAY_INDEX: Record<string, number> = {
-  'pazar': 0, 'pazartesi': 1, 'salı': 2, 'sali': 2, 'çarşamba': 3, 'carsamba': 3,
-  'perşembe': 4, 'persembe': 4, 'cuma': 5, 'cumartesi': 6,
-}
-
-/** "Pazartesi 09:00 – 18:00" → next occurrence of that weekday at the slot's
- *  start hour. Falls back to tomorrow 09:00 when the slot can't be parsed. */
-function slotToDate(selectedSlot: string): Date {
-  const now = new Date()
-  const lower = selectedSlot.toLowerCase()
-  // Longest names first: "pazartesi" must not match its prefix "pazar",
-  // and "cumartesi" must not match "cuma".
-  const dayEntry = Object.entries(TR_DAY_INDEX)
-    .sort((a, b) => b[0].length - a[0].length)
-    .find(([name]) => lower.includes(name))
-  const timeMatch = selectedSlot.match(/(\d{1,2}):(\d{2})/)
-  const hour = timeMatch ? parseInt(timeMatch[1]) : 9
-  const minute = timeMatch ? parseInt(timeMatch[2]) : 0
-
-  const result = new Date(now)
-  result.setHours(hour, minute, 0, 0)
-  if (dayEntry) {
-    const target = dayEntry[1]
-    let diff = (target - now.getDay() + 7) % 7
-    if (diff === 0 && result <= now) diff = 7
-    result.setDate(now.getDate() + diff)
-  } else if (result <= now) {
-    result.setDate(now.getDate() + 1)
-  }
-  return result
-}
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-// ─── Appointments Tab ───────────────────────────────────────────────────────
+// ─── Appointments Tab (WhatsApp booking drafts awaiting owner approval) ────
 function AppointmentsTab() {
-  const dispatch = useAppDispatch()
-  const qc = useQueryClient()
-  const appointments = useAppSelector(s => s.whatsappBot.appointments)
-  const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all')
-  const [approving, setApproving] = useState<string | null>(null)
-  const { data: svcData } = useServices({ pageNumber: 1, pageSize: 100 })
-  const { data: empData } = useEmployees({ pageNumber: 1, pageSize: 100 })
+  const [filter, setFilter] = useState<'all' | BookingDraftStatus>('all')
+  const [actingId, setActingId] = useState<string | null>(null)
+  const { data, isLoading } = useBookingDrafts({ pageSize: 100, status: filter === 'all' ? undefined : filter })
+  const approveDraft = useApproveBookingDraft()
+  const rejectDraft = useRejectBookingDraft()
 
-  /** Approve = create the real appointment via the booking API (the backend
-   *  finds or creates the customer by phone itself), so the booking shows up
-   *  in Randevular, Takvim and Müşteriler — then mark the WhatsApp card confirmed. */
-  async function approveAppointment(apt: WhatsAppAppointment) {
-    const services = svcData?.items ?? []
-    const employees = (empData?.items ?? []).filter(e => e.isActive)
-
-    const service =
-      services.find(s => s.name.toLowerCase().trim() === apt.selectedService.toLowerCase().trim()) ??
-      services.find(s => s.isActive) ?? services[0]
-    if (!service) {
-      showToast('error', 'Hizmet bulunamadı', 'Randevuyu aktarabilmek için önce Hizmetler sayfasından bir hizmet ekleyin.')
-      return
-    }
-
-    // Prefer an employee who offers this service; the backend can also
-    // auto-assign (or create the owner employee) when null is sent.
-    const employee = employees.find(e => e.serviceIds.includes(service.id)) ?? employees[0] ?? null
-
-    setApproving(apt.id)
-    try {
-      const d = slotToDate(apt.selectedSlot)
-      const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-      const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-
-      const nameParts = apt.customerName.trim().split(/\s+/)
-      const firstName = nameParts[0] || 'Müşteri'
-      const lastName = nameParts.slice(1).join(' ') || '-'
-      const phone = apt.customerPhone.replace(/[\s-]/g, '')
-      // Email is required by the booking API — fall back to a per-customer
-      // placeholder when the bot collected an invalid/missing address.
-      const email = EMAIL_RE.test(apt.customerEmail.trim())
-        ? apt.customerEmail.trim()
-        : `wa${phone.replace(/\D/g, '') || Date.now()}@nextbooking.app`
-
-      const { data: created } = await api.post<{ id: string }>('/appointments', {
-        serviceId: service.id,
-        employeeId: employee?.id ?? null,
-        date,
-        time,
-        firstName,
-        lastName,
-        phone,
-        email,
-        city: apt.customerCity || null,
-        notes: `WhatsApp bot randevusu · ${apt.selectedService || service.name} · ${apt.selectedSlot}`,
-        source: 'whatsapp',
-      })
-
-      qc.invalidateQueries({ queryKey: ['appointments'] })
-      qc.invalidateQueries({ queryKey: ['customers'] })
-      qc.invalidateQueries({ queryKey: ['dashboard-stats'] })
-
-      dispatch(updateAppointmentStatus({ id: apt.id, status: 'confirmed', syncedAppointmentId: created?.id }))
-      showToast('success', 'Randevu onaylandı', `${date} ${time} için randevu oluşturuldu — Randevular ve Takvim sayfalarında görünür.`)
-    } catch (err: unknown) {
-      const anyErr = err as { response?: { status?: number; data?: { message?: string; detail?: string; errors?: Record<string, string[]> } } }
-      const valErrors = anyErr?.response?.data?.errors
-      const firstValError = valErrors ? Object.values(valErrors).flat()[0] : undefined
-      showToast(
-        'error',
-        anyErr?.response?.status === 409 ? 'Saat dolu' : 'Randevu aktarılamadı',
-        firstValError ?? anyErr?.response?.data?.message ?? anyErr?.response?.data?.detail ?? 'Lütfen tekrar deneyin.'
-      )
-    } finally {
-      setApproving(null)
-    }
-  }
-
-  const filtered = filter === 'all' ? appointments : appointments.filter(a => a.status === filter)
+  const drafts = data?.items ?? []
 
   const counts = {
-    all: appointments.length,
-    pending: appointments.filter(a => a.status === 'pending').length,
-    confirmed: appointments.filter(a => a.status === 'confirmed').length,
-    cancelled: appointments.filter(a => a.status === 'cancelled').length,
+    all: data?.totalCount ?? drafts.length,
+    pendingApproval: drafts.filter(d => d.status === 'pendingApproval').length,
+    approved: drafts.filter(d => d.status === 'approved').length,
+    rejected: drafts.filter(d => d.status === 'rejected').length,
+  }
+
+  async function handleApprove(draft: BookingDraft) {
+    setActingId(draft.id)
+    try {
+      await approveDraft.mutateAsync(draft.id)
+      showToast('success', 'Randevu onaylandı', `${draft.serviceName} için randevu oluşturuldu — Randevular ve Takvim sayfalarında görünür.`)
+    } catch (err: unknown) {
+      const anyErr = err as { response?: { status?: number; data?: { message?: string; detail?: string } } }
+      showToast(
+        'error',
+        anyErr?.response?.status === 409 ? 'Saat dolu' : 'Randevu onaylanamadı',
+        anyErr?.response?.data?.message ?? anyErr?.response?.data?.detail ?? 'Lütfen tekrar deneyin.'
+      )
+    } finally {
+      setActingId(null)
+    }
+  }
+
+  async function handleReject(draft: BookingDraft) {
+    setActingId(draft.id)
+    try {
+      await rejectDraft.mutateAsync({ id: draft.id })
+    } finally {
+      setActingId(null)
+    }
   }
 
   return (
@@ -567,9 +480,9 @@ function AppointmentsTab() {
       <div className="grid grid-cols-4 gap-3">
         {[
           { key: 'all', label: 'Toplam', color: 'text-gray-700', bg: 'bg-gray-50 border-gray-200' },
-          { key: 'pending', label: 'Beklemede', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
-          { key: 'confirmed', label: 'Onaylandı', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-          { key: 'cancelled', label: 'İptal', color: 'text-red-700', bg: 'bg-red-50 border-red-200' },
+          { key: 'pendingApproval', label: 'Onay Bekliyor', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+          { key: 'approved', label: 'Onaylandı', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
+          { key: 'rejected', label: 'Reddedildi', color: 'text-red-700', bg: 'bg-red-50 border-red-200' },
         ].map(item => (
           <button
             key={item.key}
@@ -587,16 +500,20 @@ function AppointmentsTab() {
       </div>
 
       {/* List */}
-      {filtered.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <RefreshCw className="h-6 w-6 animate-spin text-gray-300" />
+        </div>
+      ) : drafts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-3">
           <MessageCircle className="h-10 w-10" />
-          <p className="text-sm">Henüz WhatsApp randevusu yok</p>
+          <p className="text-sm">Henüz WhatsApp randevu talebi yok</p>
           <p className="text-xs text-gray-400">Simülatör sekmesinden test randevusu oluşturabilirsiniz.</p>
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map(apt => (
-            <Card key={apt.id} className="overflow-hidden">
+          {drafts.map(draft => (
+            <Card key={draft.id} className="overflow-hidden">
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
@@ -604,55 +521,46 @@ function AppointmentsTab() {
                   </div>
                   <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-gray-900 text-sm">{apt.customerName}</span>
-                      <span className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium', statusColor[apt.status])}>
-                        {statusLabel[apt.status]}
+                      <span className="font-semibold text-gray-900 text-sm">{draft.customerName}</span>
+                      <span className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium', draftStatusColor[draft.status])}>
+                        {draftStatusLabel[draft.status]}
                       </span>
                       <span className="ml-auto text-xs text-gray-400">
-                        {new Date(apt.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                        {new Date(draft.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                      <DetailItem icon={<Phone className="h-3.5 w-3.5" />} label={apt.customerPhone} />
-                      <DetailItem icon={<MapPin className="h-3.5 w-3.5" />} label={apt.customerCity || '—'} />
-                      <DetailItem icon={<Mail className="h-3.5 w-3.5" />} label={apt.customerEmail || '—'} />
-                      <DetailItem icon={<CalendarCheck className="h-3.5 w-3.5" />} label={apt.selectedSlot || '—'} />
-                      <DetailItem icon={<Scissors className="h-3.5 w-3.5" />} label={apt.selectedService || '—'} />
+                      <DetailItem icon={<Phone className="h-3.5 w-3.5" />} label={draft.customerPhone} />
+                      <DetailItem icon={<Mail className="h-3.5 w-3.5" />} label={draft.customerEmail || '—'} />
+                      <DetailItem icon={<CalendarCheck className="h-3.5 w-3.5" />} label={`${draft.date} ${draft.time.slice(0, 5)}`} />
+                      <DetailItem icon={<Scissors className="h-3.5 w-3.5" />} label={draft.serviceName} />
                     </div>
-                    {apt.syncedAppointmentId && (
+                    {draft.createdAppointmentId && (
                       <p className="text-[11px] text-emerald-600">✓ Randevular &amp; Takvim sayfalarına kaydedildi</p>
                     )}
                   </div>
-                  <div className="flex gap-2 flex-shrink-0">
-                    {apt.status === 'pending' && (
+                  {draft.status === 'pendingApproval' && (
+                    <div className="flex gap-2 flex-shrink-0">
                       <button
-                        onClick={() => approveAppointment(apt)}
-                        disabled={approving === apt.id}
+                        onClick={() => handleApprove(draft)}
+                        disabled={actingId === draft.id}
                         title="Onayla ve sisteme kaydet"
                         className="rounded-lg border border-emerald-200 bg-emerald-50 p-1.5 text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
                       >
-                        {approving === apt.id
+                        {actingId === draft.id
                           ? <RefreshCw className="h-4 w-4 animate-spin" />
                           : <CheckCircle2 className="h-4 w-4" />}
                       </button>
-                    )}
-                    {apt.status !== 'cancelled' && (
                       <button
-                        onClick={() => dispatch(updateAppointmentStatus({ id: apt.id, status: 'cancelled' }))}
-                        title="İptal Et"
-                        className="rounded-lg border border-red-200 bg-red-50 p-1.5 text-red-600 hover:bg-red-100"
+                        onClick={() => handleReject(draft)}
+                        disabled={actingId === draft.id}
+                        title="Reddet"
+                        className="rounded-lg border border-red-200 bg-red-50 p-1.5 text-red-600 hover:bg-red-100 disabled:opacity-50"
                       >
                         <XCircle className="h-4 w-4" />
                       </button>
-                    )}
-                    <button
-                      onClick={() => dispatch(deleteAppointment(apt.id))}
-                      title="Sil"
-                      className="rounded-lg border border-gray-200 bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -835,7 +743,8 @@ export function WhatsAppBotPage() {
     return param === 'appointments' || param === 'settings' || param === 'conversations' ? param : 'simulator'
   })
   const isEnabled = useAppSelector(s => s.whatsappBot.settings.isEnabled)
-  const pendingCount = useAppSelector(s => s.whatsappBot.appointments.filter(a => a.status === 'pending').length)
+  const { data: pendingDrafts } = useBookingDrafts({ status: 'pendingApproval', pageSize: 1 })
+  const pendingCount = pendingDrafts?.totalCount ?? 0
   const { data: escalatedData } = useConversations({ status: 'escalated', pageSize: 1 })
   const escalatedCount = escalatedData?.totalCount ?? 0
 
@@ -864,7 +773,7 @@ export function WhatsAppBotPage() {
           </div>
           {pendingCount > 0 && (
             <div className="flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-medium text-amber-700">
-              {pendingCount} bekleyen randevu
+              {pendingCount} onay bekleyen randevu talebi
             </div>
           )}
           {escalatedCount > 0 && (
