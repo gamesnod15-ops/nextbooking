@@ -171,7 +171,7 @@ export function Navbar() {
               </Link>
               <Link
                 href="/register"
-                className="flex items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/40"
+                className="flex items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/40"
               >
                 Ücretsiz Başlayın
               </Link>
