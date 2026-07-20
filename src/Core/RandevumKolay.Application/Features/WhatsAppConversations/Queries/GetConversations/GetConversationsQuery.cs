@@ -60,7 +60,7 @@ public sealed class GetConversationsQueryHandler : IRequestHandler<GetConversati
                 c.LeadTier,
                 c.EscalationReason,
                 c.Messages
-                    .OrderByDescending(m => m.CreatedAt)
+                    .OrderByDescending(m => m.Sequence)
                     .Select(m => m.Text)
                     .FirstOrDefault(),
                 c.LastMessageAt));

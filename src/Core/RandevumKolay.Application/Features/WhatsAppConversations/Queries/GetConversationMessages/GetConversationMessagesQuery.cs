@@ -34,7 +34,7 @@ public sealed class GetConversationMessagesQueryHandler
         return await _context.WhatsAppMessages
             .AsNoTracking()
             .Where(m => m.ConversationId == request.ConversationId && m.TenantId == _tenantService.TenantId)
-            .OrderBy(m => m.CreatedAt)
+            .OrderBy(m => m.Sequence)
             .Select(m => new ConversationMessageDto(m.Id, m.Role, m.Text, m.CreatedAt))
             .ToListAsync(cancellationToken);
     }

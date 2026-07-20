@@ -14,6 +14,7 @@ public class WhatsAppMessageConfiguration : IEntityTypeConfiguration<WhatsAppMes
 
         builder.Property(m => m.TenantId).IsRequired();
         builder.Property(m => m.ConversationId).IsRequired();
+        builder.Property(m => m.Sequence).IsRequired();
         builder.Property(m => m.Role).HasConversion<string>().HasMaxLength(10).IsRequired();
         builder.Property(m => m.Text).HasMaxLength(4000).IsRequired();
         builder.Property(m => m.ExtractedDataJson).HasColumnType("jsonb");

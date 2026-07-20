@@ -73,13 +73,14 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
         // Snapshot history before appending the new message, so Claude sees
         // prior turns only — the incoming message is passed separately.
         var history = conversation.Messages
-            .OrderBy(m => m.CreatedAt)
+            .OrderBy(m => m.Sequence)
             .Select(m => new ClaudeConversationTurn(m.Role, m.Text))
             .ToList();
+        var nextSequence = conversation.Messages.Count;
 
         var newMessages = new List<MessageDto>();
 
-        var incomingMessage = WhatsAppMessage.Create(tenantId, conversation.Id, request.Role, request.Text);
+        var incomingMessage = WhatsAppMessage.Create(tenantId, conversation.Id, nextSequence++, request.Role, request.Text);
         _context.WhatsAppMessages.Add(incomingMessage);
         newMessages.Add(new MessageDto(incomingMessage.Id, incomingMessage.Role, incomingMessage.Text, incomingMessage.CreatedAt));
         conversation.TouchLastMessage();
@@ -96,7 +97,7 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
 
             var reply = await _claudeService.GetBotReplyAsync(claudeContext, cancellationToken);
 
-            var botMessage = WhatsAppMessage.Create(tenantId, conversation.Id, MessageRole.Bot, reply.ReplyText, reply.ExtractedFieldsJson);
+            var botMessage = WhatsAppMessage.Create(tenantId, conversation.Id, nextSequence++, MessageRole.Bot, reply.ReplyText, reply.ExtractedFieldsJson);
             _context.WhatsAppMessages.Add(botMessage);
             newMessages.Add(new MessageDto(botMessage.Id, botMessage.Role, botMessage.Text, botMessage.CreatedAt));
 
