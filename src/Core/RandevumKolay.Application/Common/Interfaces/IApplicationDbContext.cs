@@ -49,6 +49,8 @@ public interface IApplicationDbContext
     DbSet<WhatsAppConversation> WhatsAppConversations { get; }
     DbSet<WhatsAppMessage> WhatsAppMessages { get; }
     DbSet<WhatsAppBookingDraft> WhatsAppBookingDrafts { get; }
+    DbSet<WinBackRule> WinBackRules { get; }
+    DbSet<WinBackSendLog> WinBackSendLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

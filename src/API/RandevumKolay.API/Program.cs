@@ -229,4 +229,11 @@ if (!await db.Tenants.AnyAsync())
 
 await DemoSeedData.SeedAsync(db);
 
+// First recurring Hangfire job in this codebase — daily win-back scan.
+// 06:00 UTC ≈ 09:00 Turkey time; IJobService has no timezone parameter,
+// a fixed UTC hour is precise enough for a once-a-day scan.
+scope.ServiceProvider.GetRequiredService<RandevumKolay.Application.Common.Interfaces.IJobService>()
+    .AddOrUpdateRecurring<RandevumKolay.Application.Common.Interfaces.IWinBackScanJob>(
+        "winback-daily-scan", j => j.RunAsync(CancellationToken.None), "0 6 * * *");
+
 await app.RunAsync();

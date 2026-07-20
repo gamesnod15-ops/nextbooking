@@ -12,11 +12,12 @@ import {
   useBookingDrafts, useApproveBookingDraft, useRejectBookingDraft,
   type Conversation, type LeadTier, type BookingDraft, type BookingDraftStatus,
 } from '@/hooks/useWhatsAppConversations'
+import { useWinBackRules, useCreateWinBackRule, useUpdateWinBackRule, useDeleteWinBackRule } from '@/hooks/useWinBackRules'
 import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
   RefreshCw, Send, CheckCircle2, XCircle, Bot, Smartphone,
   Clock, Scissors, Phone, Mail, Info, AlertTriangle,
-  MessagesSquare, Flame, Snowflake, Sun,
+  MessagesSquare, Flame, Snowflake, Sun, Heart,
 } from 'lucide-react'
 
 // ─── WhatsApp Icon ─────────────────────────────────────────────────────────
@@ -259,6 +260,20 @@ function SettingsTab() {
   const [newService, setNewService] = useState('')
   const [newSlotDay, setNewSlotDay] = useState('')
   const [newSlotHours, setNewSlotHours] = useState('')
+  const [newRuleDays, setNewRuleDays] = useState('')
+  const [newRuleMessage, setNewRuleMessage] = useState('')
+  const { data: winBackRules } = useWinBackRules()
+  const createWinBackRule = useCreateWinBackRule()
+  const updateWinBackRule = useUpdateWinBackRule()
+  const deleteWinBackRule = useDeleteWinBackRule()
+
+  function addWinBackRule() {
+    const days = parseInt(newRuleDays, 10)
+    if (!days || days <= 0 || !newRuleMessage.trim()) return
+    createWinBackRule.mutate({ daysSinceLastVisit: days, messageTemplate: newRuleMessage.trim() })
+    setNewRuleDays('')
+    setNewRuleMessage('')
+  }
 
   function addService() {
     if (!newService.trim()) return
@@ -424,6 +439,73 @@ function SettingsTab() {
               <Plus className="h-4 w-4" />
               Ekle
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Win-back rules */}
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Heart className="h-4 w-4 text-green-600" />
+            Otomatik Geri Kazanım Mesajları
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-gray-500">
+            Belirli bir süre randevu almayan müşterilere otomatik olarak SMS/e-posta ile hatırlatma gönderilir. Mesajınızda <code className="rounded bg-gray-100 px-1">{'{customerName}'}</code> yazarsanız müşteri adıyla değiştirilir.
+          </p>
+          <div className="space-y-2">
+            {(winBackRules ?? []).map((rule) => (
+              <div key={rule.id} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5">
+                <span className="shrink-0 rounded-full bg-white border border-gray-200 px-2.5 py-1 text-xs font-semibold text-gray-700">
+                  {rule.daysSinceLastVisit} gün
+                </span>
+                <span className="flex-1 truncate text-xs text-gray-600">{rule.messageTemplate}</span>
+                <button
+                  onClick={() => updateWinBackRule.mutate({ id: rule.id, daysSinceLastVisit: rule.daysSinceLastVisit, messageTemplate: rule.messageTemplate, isActive: !rule.isActive })}
+                  className={cn(
+                    'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors',
+                    rule.isActive ? 'bg-green-500' : 'bg-gray-300'
+                  )}
+                  title={rule.isActive ? 'Aktif' : 'Pasif'}
+                >
+                  <span className={cn(
+                    'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
+                    rule.isActive ? 'translate-x-4' : 'translate-x-1'
+                  )} />
+                </button>
+                <button onClick={() => deleteWinBackRule.mutate(rule.id)} className="shrink-0 text-red-400 hover:text-red-600">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            {(winBackRules ?? []).length === 0 && (
+              <p className="text-xs text-gray-400 py-2">Henüz bir kural eklenmedi.</p>
+            )}
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <input
+              value={newRuleDays}
+              onChange={e => setNewRuleDays(e.target.value.replace(/\D/g, ''))}
+              placeholder="Gün (örn: 30)"
+              className="w-28 rounded-lg border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-green-400"
+            />
+            <input
+              value={newRuleMessage}
+              onChange={e => setNewRuleMessage(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addWinBackRule()}
+              placeholder="Mesaj (örn: Merhaba {customerName}, sizi özledik!)"
+              className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-green-400"
+            />
+            <button
+              onClick={addWinBackRule}
+              disabled={createWinBackRule.isPending}
+              className="rounded-lg bg-green-500 px-3 text-white hover:bg-green-600 disabled:opacity-50"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
           </div>
         </CardContent>
       </Card>

@@ -69,6 +69,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WhatsAppConversation> WhatsAppConversations => Set<WhatsAppConversation>();
     public DbSet<WhatsAppMessage> WhatsAppMessages => Set<WhatsAppMessage>();
     public DbSet<WhatsAppBookingDraft> WhatsAppBookingDrafts => Set<WhatsAppBookingDraft>();
+    public DbSet<WinBackRule> WinBackRules => Set<WinBackRule>();
+    public DbSet<WinBackSendLog> WinBackSendLogs => Set<WinBackSendLog>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

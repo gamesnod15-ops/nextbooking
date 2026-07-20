@@ -108,6 +108,27 @@ public class NotificationService : INotificationService
         await _smsService.SendAsync(customer.Phone, message, cancellationToken);
     }
 
+    public async Task SendWinBackMessageAsync(
+        Guid customerId,
+        string messageText,
+        CancellationToken cancellationToken = default)
+    {
+        var customer = await _context.Customers
+            .FirstOrDefaultAsync(c => c.Id == customerId, cancellationToken);
+
+        if (customer is null) return;
+
+        var message = messageText.Replace("{customerName}", customer.Name);
+        await _smsService.SendAsync(customer.Phone, message, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(customer.Email))
+        {
+            await _emailService.SendAsync(
+                new EmailMessage(customer.Email, "Sizi Özledik!", $"<p>{message}</p>"),
+                cancellationToken);
+        }
+    }
+
     public async Task SendRealtimeNotificationAsync(
         Guid tenantId,
         string eventName,

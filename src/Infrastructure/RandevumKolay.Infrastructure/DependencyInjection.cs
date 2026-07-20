@@ -84,6 +84,7 @@ public static class DependencyInjection
         });
         services.AddHangfireServer();
         services.AddScoped<IJobService, HangfireJobService>();
+        services.AddScoped<IWinBackScanJob, WinBackScanJob>();
 
         return services;
     }
