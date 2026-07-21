@@ -25,5 +25,10 @@ public record ClaudeBotReply(
 
 public interface IClaudeService
 {
+    /// False when no Anthropic API key is configured — callers should skip
+    /// straight to the fallback automation instead of making a call that's
+    /// guaranteed to fail.
+    bool IsConfigured { get; }
+
     Task<ClaudeBotReply> GetBotReplyAsync(ClaudeBotContext context, CancellationToken cancellationToken = default);
 }

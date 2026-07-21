@@ -98,9 +98,9 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
             // even if the monthly quota resets mid-conversation — to avoid
             // switching "brains" partway through. Fresh conversations always
             // re-check quota.
-            var useAi = conversation.AutomationStep != AutomationStep.None
-                ? false
-                : await _aiUsageService.HasQuotaRemainingAsync(tenantId, cancellationToken);
+            var useAi = conversation.AutomationStep == AutomationStep.None
+                && _claudeService.IsConfigured
+                && await _aiUsageService.HasQuotaRemainingAsync(tenantId, cancellationToken);
 
             ClaudeBotReply reply;
             if (useAi)

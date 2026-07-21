@@ -42,6 +42,8 @@ public class ClaudeService : IClaudeService
         _logger = logger;
     }
 
+    public bool IsConfigured => !string.IsNullOrWhiteSpace(_settings.ApiKey);
+
     public async Task<ClaudeBotReply> GetBotReplyAsync(ClaudeBotContext context, CancellationToken cancellationToken = default)
     {
         var totalInputTokens = 0;
