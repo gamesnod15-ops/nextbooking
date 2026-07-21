@@ -9,7 +9,7 @@ namespace RandevumKolay.Application.Features.Feedbacks;
 /// Product feedback submitted from the business panel's feedback widget.
 /// Authenticated — tenant and author are taken from the current request context.
 /// </summary>
-public record CreateFeedbackCommand(FeedbackCategory Category, string Message) : IRequest<Guid>;
+public record CreateFeedbackCommand(FeedbackCategory Category, string Message, string? ImageUrls = null) : IRequest<Guid>;
 
 public sealed class CreateFeedbackCommandHandler : IRequestHandler<CreateFeedbackCommand, Guid>
 {
@@ -29,7 +29,7 @@ public sealed class CreateFeedbackCommandHandler : IRequestHandler<CreateFeedbac
 
     public async Task<Guid> Handle(CreateFeedbackCommand request, CancellationToken cancellationToken)
     {
-        var feedback = Feedback.Create(_tenantService.TenantId, _userService.UserId, request.Category, request.Message);
+        var feedback = Feedback.Create(_tenantService.TenantId, _userService.UserId, request.Category, request.Message, request.ImageUrls);
 
         _context.Feedbacks.Add(feedback);
         await _context.SaveChangesAsync(cancellationToken);

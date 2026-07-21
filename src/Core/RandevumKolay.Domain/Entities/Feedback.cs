@@ -15,10 +15,11 @@ public class Feedback : AuditableEntity
     public Guid? UserId { get; private set; }
     public FeedbackCategory Category { get; private set; }
     public string Message { get; private set; } = string.Empty;
+    public string? ImageUrls { get; private set; }
 
     private Feedback() { }
 
-    public static Feedback Create(Guid tenantId, Guid? userId, FeedbackCategory category, string message)
+    public static Feedback Create(Guid tenantId, Guid? userId, FeedbackCategory category, string message, string? imageUrls = null)
     {
         return new Feedback
         {
@@ -26,6 +27,7 @@ public class Feedback : AuditableEntity
             UserId = userId,
             Category = category,
             Message = message,
+            ImageUrls = imageUrls,
         };
     }
 }

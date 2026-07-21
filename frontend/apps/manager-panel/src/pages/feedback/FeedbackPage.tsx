@@ -64,6 +64,15 @@ export function FeedbackPage() {
                     <span className="text-xs text-gray-400">{formatDateTime(f.createdAt)}</span>
                   </div>
                   <p className="mt-2 text-sm text-gray-800">{f.message}</p>
+                  {f.imageUrls && (
+                    <div className="mt-2 flex gap-2 flex-wrap">
+                      {f.imageUrls.split(',').filter(Boolean).map((url, i) => (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                          <img src={url} alt="" className="h-16 w-16 rounded-lg object-cover border border-gray-200 hover:opacity-80 transition-opacity" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                   <div className="mt-2 text-xs text-gray-500">
                     {f.tenantName ?? 'Bilinmeyen işletme'}
                     {f.userName && ` · ${f.userName}`}

@@ -627,6 +627,7 @@ public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
         builder.HasKey(f => f.Id);
         builder.Property(f => f.Category).HasConversion<string>().HasMaxLength(20);
         builder.Property(f => f.Message).HasMaxLength(2000).IsRequired();
+        builder.Property(f => f.ImageUrls).HasMaxLength(4000);
         builder.HasIndex(f => f.TenantId);
         builder.HasIndex(f => f.CreatedAt);
     }

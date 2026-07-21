@@ -9,6 +9,7 @@ export interface PlatformFeedback {
   id: string
   category: FeedbackCategory
   message: string
+  imageUrls: string | null
   tenantId: string
   tenantName: string | null
   userId: string | null
