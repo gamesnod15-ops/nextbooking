@@ -224,23 +224,31 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
   const { data } = useServices({ pageNumber: 1, pageSize: 50 })
   const createService = useCreateService()
   const [form, setForm] = useState({ name: '', durationMinutes: 30, price: 0 })
-  const services = data?.items ?? []
+  const [added, setAdded] = useState<Array<{ id: string; name: string; durationMinutes: number; price: number }>>([])
+  const fetched = data?.items ?? []
+  // Show newly created services immediately instead of waiting on the
+  // invalidateQueries → refetch round trip; once the refetch lands, the
+  // fetched copy (with real sortOrder etc.) takes over by matching id.
+  const services = [...added.filter(a => !fetched.some(s => s.id === a.id)), ...fetched]
 
   async function add() {
     if (!form.name.trim()) { showToast('error', 'Hizmet adı gereklidir'); return }
     try {
-      await createService.mutateAsync({
+      const durationMinutes = form.durationMinutes || 30
+      const price = form.price || 0
+      const result = await createService.mutateAsync({
         name: form.name.trim(),
         description: null,
-        durationMinutes: form.durationMinutes || 30,
+        durationMinutes,
         bufferMinutes: 0,
-        price: form.price || 0,
+        price,
         color: null,
         imageUrl: null,
         isActive: true,
         requiresConfirmation: false,
         maxCapacity: null,
       })
+      setAdded(a => [...a, { id: result.id, name: form.name.trim(), durationMinutes, price }])
       setForm({ name: '', durationMinutes: 30, price: 0 })
       showToast('success', 'Hizmet eklendi')
     } catch {

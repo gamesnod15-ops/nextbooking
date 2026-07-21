@@ -39,7 +39,7 @@ export function useCreateService() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: Omit<Service, 'id' | 'createdAt' | 'sortOrder'>) =>
-      api.post('/services', data).then((r) => r.data),
+      api.post<{ id: string }>('/services', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['services'] }),
   })
 }

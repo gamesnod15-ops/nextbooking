@@ -33,7 +33,7 @@ export function BranchesPage() {
   function validate(form: BranchForm) {
     const e: { name?: string; phone?: string; email?: string } = {}
     if (!form.name || !form.name.trim()) e.name = 'Bu bölüm boş bırakılamaz.'
-    if (form.phone && !/^\+905\d{9}$/.test(form.phone.replace(/\D/g, '').replace(/^0/, '+90'))) e.phone = 'Telefon formatı: +90 5XX XXX XX XX'
+    if (form.phone && !/^\+90[2-9]\d{9}$/.test(form.phone)) e.phone = 'Telefon formatı: +90 XXX XXX XX XX'
     if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Geçerli bir e-posta girin.'
     setErrors(e)
     return Object.keys(e).length === 0
