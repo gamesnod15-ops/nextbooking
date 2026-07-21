@@ -18,6 +18,7 @@ import { ServicesPage } from '@/pages/services/ServicesPage'
 import { EmployeesPage } from '@/pages/employees/EmployeesPage'
 import { CustomersPage } from '@/pages/customers/CustomersPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { SupportPage } from '@/pages/support/SupportPage'
 import { CalendarPage } from '@/pages/calendar/CalendarPage'
 import { PaymentsPage } from '@/pages/payments/PaymentsPage'
 import { ReportsPage } from '@/pages/reports/ReportsPage'
@@ -174,6 +175,7 @@ export default function App() {
             <Route path="reports" element={<ModuleRoute moduleId="reports"><ReportsPage /></ModuleRoute>} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="plugins" element={<PluginsPage />} />
+            <Route path="support" element={<SupportPage />} />
             <Route path="subscription" element={<SubscriptionPage />} />
             <Route path="settings/billing" element={<Navigate to="/subscription" replace />} />
             <Route path="settings/*" element={<SettingsPage />} />

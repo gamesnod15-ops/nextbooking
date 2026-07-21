@@ -129,7 +129,7 @@ public sealed class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountC
                     <h2 style="margin-top:0;color:#111827;">Hesabiniz Kapatildi</h2>
                     <p style="color:#6b7280;line-height:1.6;">
                         Merhaba <strong>{user.FirstName}</strong>,<br>
-                        RandevumKolay hesabiniz basariyla kapatilmistir. Tum verileriniz sistemden kaldirilmistir.
+                        BookingAi hesabiniz basariyla kapatilmistir. Tum verileriniz sistemden kaldirilmistir.
                     </p>
                     <p style="color:#9ca3af;font-size:12px;line-height:1.5;">
                         Tekrar aramiza bekleriz.
@@ -141,7 +141,7 @@ public sealed class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountC
 
         await _emailService.SendAsync(new EmailMessage(
             userEmail,
-            "RandevumKolay — Hesabiniz Kapatildi",
+            "BookingAi — Hesabiniz Kapatildi",
             htmlBody), cancellationToken);
     }
 }

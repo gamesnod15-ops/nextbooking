@@ -38,41 +38,4 @@ export const INTEGRATIONS: IntegrationConfig[] = [
       'Kalıcı erişim token\'ı (System User üzerinden oluşturulmalı — geçici token\'lar 24 saatte sona erer)',
     ],
   },
-  {
-    key: 'iyzico',
-    name: 'Iyzico',
-    desc: 'Online ödeme alın — kredi kartı, 3D Secure ve taksit desteği',
-    type: 'api-key',
-    logo: '💳',
-    docsUrl: 'https://dev.iyzipay.com',
-    requirements: [
-      'Onaylı bir Iyzico Merchant (üye işyeri) hesabı',
-      'Merchant Portal > Ayarlar > API Anahtarları sayfasından alınan API Anahtarı ve Gizli Anahtar',
-    ],
-  },
-  {
-    key: 'zoom',
-    name: 'Zoom',
-    desc: 'Online hizmetler için otomatik Zoom toplantısı oluşturun',
-    type: 'oauth',
-    logo: '📹',
-    docsUrl: 'https://marketplace.zoom.us/docs/api-reference',
-    requirements: [
-      'Bir Zoom hesabı (Pro plan ve üzeri önerilir)',
-      'Zoom App Marketplace\'te oluşturulmuş bir OAuth uygulaması',
-      'Uygulamanın Client ID ve Client Secret bilgileri',
-    ],
-  },
-  {
-    key: 'slack',
-    name: 'Slack',
-    desc: 'Yeni randevu ve önemli olayları Slack kanalınıza bildirin',
-    type: 'webhook',
-    logo: '💼',
-    docsUrl: 'https://api.slack.com/messaging/webhooks',
-    requirements: [
-      'Bir Slack workspace\'inde yönetici izni (webhook eklemek için)',
-      'Apps > Incoming Webhooks üzerinden oluşturulmuş bir webhook URL\'i',
-    ],
-  },
 ]

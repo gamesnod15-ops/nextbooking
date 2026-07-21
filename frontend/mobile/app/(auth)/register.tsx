@@ -23,7 +23,7 @@ const TERMS_TEXT = `
 KULLANICI SÖZLEŞMESİ
 
 1. Taraflar
-İşbu sözleşme, RandevumKolay uygulaması ("Uygulama") ile kullanıcı ("Kullanıcı") arasında akdedilmiştir.
+İşbu sözleşme, BookingAi uygulaması ("Uygulama") ile kullanıcı ("Kullanıcı") arasında akdedilmiştir.
 
 2. Hizmet Tanımı
 Uygulama, işletme ve müşteri kullanıcılarına randevu yönetimi, takip ve bildirim hizmetleri sunar.
@@ -45,7 +45,7 @@ const PRIVACY_TEXT = `
 AYDINLATMA METNİ
 
 Veri Sorumlusu
-RandevumKolay ("Şirket"), 6698 sayılı KVKK kapsamında veri sorumlusudur.
+BookingAi ("Şirket"), 6698 sayılı KVKK kapsamında veri sorumlusudur.
 
 İşlenen Kişisel Veriler
 - Kimlik bilgileri (ad, soyad)

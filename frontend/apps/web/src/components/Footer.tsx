@@ -108,6 +108,7 @@ export function Footer() {
               <li><Link href="/guvenlik-politikasi" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Güvenlik Politikası</Link></li>
               <li><Link href="/gizlilik" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Gizlilik Politikası</Link></li>
               <li><Link href="/kullanim" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">Kullanım Şartları</Link></li>
+              <li><Link href="/iptal-ve-iade" className="text-sm text-gray-500 hover:text-brand-500 transition-colors">İptal ve İade Koşulları</Link></li>
             </ul>
           </div>
         </div>

@@ -8,7 +8,7 @@ import { PhoneInput } from '@/components/ui/PhoneInput'
 import { showToast } from '@/components/ui/Toast'
 import { cn } from '@/lib/utils'
 import {
-  useConversations, useConversationMessages, useSendMessage, useResolveConversation,
+  useConversations, useConversationMessages, useSendMessage, useResolveConversation, useDeleteConversation,
   useBookingDrafts, useApproveBookingDraft, useRejectBookingDraft,
   type Conversation, type LeadTier, type BookingDraft, type BookingDraftStatus,
 } from '@/hooks/useWhatsAppConversations'
@@ -20,7 +20,7 @@ import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
   RefreshCw, Send, CheckCircle2, XCircle, Bot, Smartphone,
   Clock, Scissors, Phone, Mail, Info, AlertTriangle,
-  MessagesSquare, Flame, Snowflake, Sun, Heart, Lock, Loader2,
+  MessagesSquare, Flame, Snowflake, Sun, Heart, Lock, Loader2, MoreVertical,
 } from 'lucide-react'
 
 // ─── WhatsApp Icon ─────────────────────────────────────────────────────────
@@ -740,22 +740,34 @@ function DetailItem({ icon, label }: { icon: React.ReactNode; label: string }) {
 }
 
 // ─── Conversations Tab ──────────────────────────────────────────────────────
-function ConversationRow({ conv, active, onClick }: { conv: Conversation; active: boolean; onClick: () => void }) {
+function ConversationRow({ conv, active, onClick, onRequestDelete }: {
+  conv: Conversation; active: boolean; onClick: () => void; onRequestDelete: () => void
+}) {
   const tier = leadTierMeta[conv.leadTier]
+  const [menuOpen, setMenuOpen] = useState(false)
   return (
-    <button
+    <div
       onClick={onClick}
       className={cn(
-        'w-full text-left rounded-xl border p-3 transition-colors',
+        'relative w-full cursor-pointer rounded-xl border p-3 transition-colors',
         active ? 'border-green-300 bg-green-50/50' : 'border-gray-100 bg-white hover:border-gray-200'
       )}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-semibold text-gray-900 truncate">{conv.customerName || conv.customerPhone}</span>
-        <span className={cn('flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-semibold shrink-0', tier.className)}>
-          <tier.icon className="h-2.5 w-2.5" />
-          {tier.label}
-        </span>
+        <div className="flex items-center gap-1 shrink-0">
+          <span className={cn('flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-semibold', tier.className)}>
+            <tier.icon className="h-2.5 w-2.5" />
+            {tier.label}
+          </span>
+          <button
+            onClick={e => { e.stopPropagation(); setMenuOpen(o => !o) }}
+            className="rounded p-0.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            aria-label="Konuşma seçenekleri"
+          >
+            <MoreVertical className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
       <p className="mt-1 text-xs text-gray-500 truncate">{conv.lastMessagePreview || '—'}</p>
       {conv.status === 'escalated' && (
@@ -763,7 +775,20 @@ function ConversationRow({ conv, active, onClick }: { conv: Conversation; active
           <AlertTriangle className="h-3 w-3" /> İnsan devralması bekleniyor
         </div>
       )}
-    </button>
+      {menuOpen && (
+        <div
+          onClick={e => e.stopPropagation()}
+          className="absolute right-2 top-9 z-10 w-32 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+        >
+          <button
+            onClick={() => { setMenuOpen(false); onRequestDelete() }}
+            className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Sil
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -772,6 +797,7 @@ function ConversationsTab() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'escalated'>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [ownerReply, setOwnerReply] = useState('')
+  const [deleteConversationId, setDeleteConversationId] = useState<string | null>(null)
 
   const { data, isLoading } = useConversations({
     pageSize: 50,
@@ -780,6 +806,7 @@ function ConversationsTab() {
   const { data: messages } = useConversationMessages(selectedId)
   const sendMessage = useSendMessage()
   const resolveConversation = useResolveConversation()
+  const deleteConversation = useDeleteConversation()
 
   const conversations = data?.items ?? []
   const selected = conversations.find(c => c.id === selectedId) ?? null
@@ -836,6 +863,7 @@ function ConversationsTab() {
                 conv={conv}
                 active={conv.id === selectedId}
                 onClick={() => setSelectedId(conv.id)}
+                onRequestDelete={() => setDeleteConversationId(conv.id)}
               />
             ))
           )}
@@ -889,6 +917,32 @@ function ConversationsTab() {
           </>
         )}
       </div>
+
+      {deleteConversationId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+            <h3 className="font-semibold mb-2">Konuşma silinsin mi?</h3>
+            <p className="text-sm text-gray-600 mb-4">Bu konuşma ve tüm mesajları kalıcı olarak silinecek. Bu işlem geri alınamaz.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setDeleteConversationId(null)} className="px-4 py-2 border rounded-lg text-sm">İptal</button>
+              <button
+                onClick={() => {
+                  deleteConversation.mutate(deleteConversationId, {
+                    onSuccess: () => {
+                      if (selectedId === deleteConversationId) setSelectedId(null)
+                    },
+                  })
+                  setDeleteConversationId(null)
+                }}
+                disabled={deleteConversation.isPending}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 disabled:opacity-50"
+              >
+                Sil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

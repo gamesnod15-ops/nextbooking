@@ -78,6 +78,6 @@ public class SmtpSettings
     public string UserName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string FromEmail { get; set; } = string.Empty;
-    public string FromName { get; set; } = "RandevumKolay";
+    public string FromName { get; set; } = "BookingAi";
     public bool UseSsl { get; set; } = true;
 }

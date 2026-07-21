@@ -86,6 +86,7 @@ export const navigationConfig: NavGroup[] = [
       { id: 'branches', label: 'Şube Yönetimi', to: '/branches', icon: 'Building2', moduleId: 'branches' },
       { id: 'subscription', label: 'Abonelik', to: '/subscription', icon: 'CreditCard' },
       { id: 'plugins', label: 'Eklentiler', to: '/plugins', icon: 'Puzzle' },
+      { id: 'support', label: 'Destek', to: '/support', icon: 'LifeBuoy' },
       { id: 'settings', label: 'Ayarlar', to: '/settings', icon: 'Settings' },
     ],
   },

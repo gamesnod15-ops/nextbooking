@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RandevumKolay.Application.Features.AiUsage.Queries.GetAiUsage;
+using RandevumKolay.Application.Features.WhatsAppConversations.Commands.DeleteConversation;
 using RandevumKolay.Application.Features.WhatsAppConversations.Commands.EscalateConversation;
 using RandevumKolay.Application.Features.WhatsAppConversations.Commands.ResolveConversation;
 using RandevumKolay.Application.Features.WhatsAppConversations.Commands.SendMessage;
@@ -70,6 +71,15 @@ public class WhatsAppConversationsController : ControllerBase
     public async Task<IActionResult> Resolve(Guid id, CancellationToken cancellationToken)
     {
         await _sender.Send(new ResolveConversationCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteConversation(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteConversationCommand(id), cancellationToken);
         return NoContent();
     }
 

@@ -1782,6 +1782,12 @@ export function BillingSettings() {
                     <li>• Verileriniz <strong>30 gün</strong> saklandıktan sonra silinecektir</li>
                   </ul>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Ödenen abonelik ücretleri, faturalama dönemi başladıktan sonra iade edilmez. Detaylar için{' '}
+                  <a href="https://randevumkolay.com/iptal-ve-iade" target="_blank" rel="noopener noreferrer" className="underline">
+                    İptal ve İade Koşulları
+                  </a>'nı inceleyebilirsiniz.
+                </p>
                 {cancelError && (
                   <p className="text-sm text-red-600">{cancelError}</p>
                 )}
@@ -2263,13 +2269,6 @@ function IntegrationsSettings() {
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const [whatsappPhone, setWhatsappPhone] = useState('')
   const [whatsappToken, setWhatsappToken] = useState('')
-  const [iyzicoApiKey, setIyzicoApiKey] = useState('')
-  const [iyzicoSecretKey, setIyzicoSecretKey] = useState('')
-  const [iyzicoSandbox, setIyzicoSandbox] = useState(true)
-  const [slackWebhook, setSlackWebhook] = useState('')
-  const [slackChannel, setSlackChannel] = useState('')
-  const [zoomClientId, setZoomClientId] = useState('')
-  const [zoomClientSecret, setZoomClientSecret] = useState('')
   const [googleClientId, setGoogleClientId] = useState('')
   const [toast, setToast] = useState('')
 
@@ -2353,95 +2352,6 @@ function IntegrationsSettings() {
           <Button variant="outline" size="sm" onClick={() => setExpandedKey(null)}>İptal</Button>
           <Button size="sm" onClick={() => connect('whatsapp', 'WhatsApp yapılandırması kaydedildi')} disabled={!whatsappPhone || !whatsappToken || connectWhatsApp.isPending}>
             <Phone className="h-3.5 w-3.5 mr-1" /> Kaydet & Bağlan
-          </Button>
-        </div>
-      </div>
-    )
-
-    if (key === 'iyzico') return (
-      <div className="border-t bg-muted/30 p-4 space-y-4">
-        <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 p-3">
-          <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-amber-800">
-            API anahtarlarınızı{' '}
-            <a href="https://merchant.iyzipay.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">Iyzico Merchant Portal</a>'dan alabilirsiniz.
-          </p>
-        </div>
-        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'iyzico')!.requirements} />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium">API Anahtarı <span className="text-muted-foreground">— Ayarlar &gt; API Anahtarları'nda</span></label>
-            <input value={iyzicoApiKey} onChange={e => setIyzicoApiKey(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="sandbox-xxxxxxxxxxxxxxxxxxxxxxxx" />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-medium">Gizli Anahtar</label>
-            <input type="password" value={iyzicoSecretKey} onChange={e => setIyzicoSecretKey(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="sandbox-xxxxxxxxxxxxxxxxxxxxxxxx" />
-          </div>
-        </div>
-        <div className="flex items-center justify-between rounded-lg border bg-background px-3 py-2.5">
-          <div>
-            <p className="text-sm font-medium">Sandbox Modu</p>
-            <p className="text-xs text-muted-foreground">Test ödemeleri için sandbox ortamını kullan</p>
-          </div>
-          <label className="relative flex shrink-0 cursor-pointer items-center">
-            <input type="checkbox" checked={iyzicoSandbox} onChange={e => setIyzicoSandbox(e.target.checked)} className="sr-only peer" />
-            <div className="peer h-5 w-9 rounded-full bg-gray-200 transition-colors peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-4" />
-          </label>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={() => setExpandedKey(null)}>İptal</Button>
-          <Button size="sm" onClick={() => connect('iyzico', 'Iyzico ödeme entegrasyonu aktif')} disabled={!iyzicoApiKey || !iyzicoSecretKey}>
-            Kaydet & Bağlan
-          </Button>
-        </div>
-      </div>
-    )
-
-    if (key === 'zoom') return (
-      <div className="border-t bg-muted/30 p-4 space-y-4">
-        <div className="flex items-start gap-2 rounded-lg bg-blue-50 border border-blue-200 p-3">
-          <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-blue-800">Zoom Marketplace'de bir OAuth uygulaması oluşturun. Client ID ve Secret bilgilerini girin, ardından yetkilendirin.</p>
-        </div>
-        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'zoom')!.requirements} />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium">Client ID</label>
-            <input value={zoomClientId} onChange={e => setZoomClientId(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Zoom Client ID" />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-medium">Client Secret</label>
-            <input type="password" value={zoomClientSecret} onChange={e => setZoomClientSecret(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Zoom Client Secret" />
-          </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={() => setExpandedKey(null)}>İptal</Button>
-          <Button size="sm" onClick={() => connect('zoom', 'Zoom bağlandı')} disabled={!zoomClientId || !zoomClientSecret}>
-            <ExternalLink className="h-3.5 w-3.5 mr-1" /> Zoom ile Yetkilendir
-          </Button>
-        </div>
-      </div>
-    )
-
-    if (key === 'slack') return (
-      <div className="border-t bg-muted/30 p-4 space-y-4">
-        <div className="flex items-start gap-2 rounded-lg bg-purple-50 border border-purple-200 p-3">
-          <AlertCircle className="h-4 w-4 text-purple-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-purple-800">Slack Workspace ayarlarınızda Apps → Incoming Webhooks kısmından kanal bazlı webhook URL alın.</p>
-        </div>
-        <RequirementsChecklist requirements={INTEGRATIONS.find(i => i.key === 'slack')!.requirements} />
-        <div>
-          <label className="mb-1.5 block text-xs font-medium">Webhook URL</label>
-          <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="https://hooks.slack.com/services/..." />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-medium">Kanal <span className="text-muted-foreground">(opsiyonel)</span></label>
-          <input value={slackChannel} onChange={e => setSlackChannel(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="#randevular" />
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={() => setExpandedKey(null)}>İptal</Button>
-          <Button size="sm" onClick={() => connect('slack', 'Slack webhook kaydedildi')} disabled={!slackWebhook}>
-            Kaydet & Bağlan
           </Button>
         </div>
       </div>

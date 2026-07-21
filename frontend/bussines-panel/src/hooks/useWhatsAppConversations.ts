@@ -105,6 +105,14 @@ export function useResolveConversation() {
   })
 }
 
+export function useDeleteConversation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/whatsapp-conversations/${id}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [CONVERSATIONS_KEY] }),
+  })
+}
+
 // ─── Booking drafts (Claude's propose_booking tool, pending owner approval) ─
 
 export type BookingDraftStatus = 'pendingApproval' | 'approved' | 'rejected'

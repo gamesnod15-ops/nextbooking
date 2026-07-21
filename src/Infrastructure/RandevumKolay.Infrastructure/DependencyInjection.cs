@@ -47,6 +47,9 @@ public static class DependencyInjection
         services.Configure<SmtpSettings>(configuration.GetSection("Smtp"));
         services.AddScoped<IEmailService, SmtpEmailService>();
 
+        services.Configure<RandevumKolay.Infrastructure.Support.SupportSettings>(configuration.GetSection("Support"));
+        services.AddScoped<ISupportSettingsProvider, RandevumKolay.Infrastructure.Support.SupportSettingsProvider>();
+
         // Email verification toggle
         services.Configure<EmailVerificationSettings>(configuration.GetSection("EmailVerification"));
         services.AddScoped<IEmailVerificationConfiguration, EmailVerificationConfiguration>();

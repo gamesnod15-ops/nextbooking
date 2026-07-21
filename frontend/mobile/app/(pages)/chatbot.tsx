@@ -81,7 +81,7 @@ export default function ChatbotScreen() {
             <TextInput
               style={styles.textArea}
               multiline
-              defaultValue="Merhaba! Ben RandevumKolay AI asistanıyım. Randevu almak, hizmetlerimiz veya fiyatlar hakkında bilgi almak için buradayım. Size nasıl yardımcı olabilirim?"
+              defaultValue="Merhaba! Ben BookingAi asistanıyım. Randevu almak, hizmetlerimiz veya fiyatlar hakkında bilgi almak için buradayım. Size nasıl yardımcı olabilirim?"
               placeholderTextColor={COLORS.textMuted}
               textAlignVertical="top"
             />
