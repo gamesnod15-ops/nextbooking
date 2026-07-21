@@ -232,10 +232,11 @@ public class FallbackBookingService : IFallbackBookingService
     private static TimeOnly? MatchTimeSlot(string message, List<TimeSlotDto> slots)
     {
         var trimmed = message.Trim();
-        var digits = Regex.Match(trimmed, @"^\d+");
-        if (digits.Success && int.TryParse(digits.Value, out var index) && index >= 1 && index <= slots.Count)
-            return TimeOnly.FromDateTime(slots[index - 1].StartTime.DateTime);
 
+        // Check for an explicit clock time (button values are always "HH:mm")
+        // before the bare-index shortcut below — otherwise "14:00" would match
+        // the index regex on its leading "14" and resolve to the 14th slot
+        // instead of the 14:00 slot.
         var timeMatch = Regex.Match(trimmed, @"(\d{1,2})[:.](\d{2})");
         if (timeMatch.Success)
         {
@@ -245,6 +246,10 @@ public class FallbackBookingService : IFallbackBookingService
             if (candidate is not null)
                 return TimeOnly.FromDateTime(candidate.StartTime.DateTime);
         }
+
+        var digits = Regex.Match(trimmed, @"^\d+$");
+        if (digits.Success && int.TryParse(digits.Value, out var index) && index >= 1 && index <= slots.Count)
+            return TimeOnly.FromDateTime(slots[index - 1].StartTime.DateTime);
 
         return null;
     }
