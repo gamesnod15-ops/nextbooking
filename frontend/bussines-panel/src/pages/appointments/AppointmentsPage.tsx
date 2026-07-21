@@ -112,7 +112,7 @@ function AppointmentDrawer({ apt, onClose, onConfirm, onComplete, onCancel }: {
                 <BadgeCheck className="h-4 w-4" /> Ödeme alındı
               </div>
             ) : showPaymentForm ? (
-              <RecordPaymentForm apt={apt} onDone={() => setShowPaymentForm(false)} />
+              <RecordPaymentForm apt={apt} onDone={onClose} />
             ) : (
               <button onClick={() => setShowPaymentForm(true)}
                 className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
