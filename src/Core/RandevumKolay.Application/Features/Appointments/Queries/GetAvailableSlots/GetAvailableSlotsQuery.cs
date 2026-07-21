@@ -45,6 +45,11 @@ public sealed class GetAvailableSlotsQueryHandler
             service, tenantId, request.Date, cancellationToken);
     }
 
+    // Falls back to when no per-employee shift is configured — a missing
+    // Schedule row shouldn't make a day look fully booked out.
+    private static readonly TimeOnly DefaultWorkStart = new(9, 0);
+    private static readonly TimeOnly DefaultWorkEnd = new(20, 0);
+
     private async Task<List<TimeSlotDto>> GetSlotsForEmployeeAsync(
         Guid employeeId, Service service, Guid tenantId, DateOnly date,
         CancellationToken cancellationToken)
@@ -62,10 +67,8 @@ public sealed class GetAvailableSlotsQueryHandler
                                    && s.DayOfWeek == date.DayOfWeek
                                    && s.IsActive, cancellationToken);
 
-        if (schedule is null) return [];
-
-        var workStart = exception?.StartTime ?? schedule.StartTime;
-        var workEnd = exception?.EndTime ?? schedule.EndTime;
+        var workStart = exception?.StartTime ?? schedule?.StartTime ?? DefaultWorkStart;
+        var workEnd = exception?.EndTime ?? schedule?.EndTime ?? DefaultWorkEnd;
 
         var busySlots = await GetBusySlotsAsync(employeeId, service, date, tenantId, cancellationToken);
 
@@ -129,10 +132,9 @@ public sealed class GetAvailableSlotsQueryHandler
             if (exception?.IsClosed == true) continue;
 
             var schedule = allSchedules.FirstOrDefault(s => s.EmployeeId == empId);
-            if (schedule is null) continue;
 
-            var workStart = exception?.StartTime ?? schedule.StartTime;
-            var workEnd = exception?.EndTime ?? schedule.EndTime;
+            var workStart = exception?.StartTime ?? schedule?.StartTime ?? DefaultWorkStart;
+            var workEnd = exception?.EndTime ?? schedule?.EndTime ?? DefaultWorkEnd;
 
             var empBusySlots = allBusySlots
                 .Where(b => b.EmployeeId == empId)
