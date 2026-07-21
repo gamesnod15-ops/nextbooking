@@ -43,7 +43,11 @@ public class Receivable : AuditableEntity, ITenantEntity
     public void AddPayment(decimal amount)
     {
         PaidAmount = Math.Min(TotalAmount, PaidAmount + amount);
-        if (PaidAmount >= TotalAmount) Status = ReceivableStatus.Paid;
+        Status = PaidAmount >= TotalAmount
+            ? ReceivableStatus.Paid
+            : PaidAmount > 0
+                ? ReceivableStatus.PartiallyPaid
+                : ReceivableStatus.Open;
     }
 
     public void Update(string customerName, decimal totalAmount, DateOnly dueDate,

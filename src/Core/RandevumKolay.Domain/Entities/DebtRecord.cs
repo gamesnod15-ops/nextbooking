@@ -40,7 +40,11 @@ public class DebtRecord : AuditableEntity, ITenantEntity
     public void AddPayment(decimal amount)
     {
         PaidAmount = Math.Min(TotalAmount, PaidAmount + amount);
-        if (PaidAmount >= TotalAmount) Status = DebtStatus.Paid;
+        Status = PaidAmount >= TotalAmount
+            ? DebtStatus.Paid
+            : PaidAmount > 0
+                ? DebtStatus.PartiallyPaid
+                : DebtStatus.Open;
     }
 
     public void Update(string title, decimal totalAmount, DateOnly dueDate,

@@ -7,6 +7,7 @@ using RandevumKolay.Application.Features.PaymentCards.Commands.DeletePaymentCard
 using RandevumKolay.Application.Features.PaymentCards.Commands.SetDefaultPaymentCard;
 using RandevumKolay.Application.Features.PaymentCards.Commands.UpdatePaymentCard;
 using RandevumKolay.Application.Features.PaymentCards.Queries.GetPaymentCards;
+using RandevumKolay.Application.Features.Payments.Commands.RecordPayment;
 using RandevumKolay.Application.Features.Payments.Queries.GetPayments;
 using RandevumKolay.Domain.Entities;
 
@@ -35,6 +36,16 @@ public class PaymentsController : ControllerBase
         var result = await _sender.Send(
             new GetPaymentsQuery(pageNumber, pageSize, status, startDate, endDate, search), cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> RecordPayment(
+        [FromBody] RecordPaymentCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var id = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetPayments), new { id }, new { id });
     }
 
     [HttpGet("cards")]

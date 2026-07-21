@@ -1,5 +1,5 @@
 import api from '@/lib/api'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 export interface Payment {
   id: string
@@ -31,5 +31,17 @@ export function usePayments(filter: PaymentsFilter = {}) {
         '/payments',
         { params: filter }
       ).then((r) => r.data),
+  })
+}
+
+export function useRecordPayment() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { appointmentId: string; amount: number; provider: string }) =>
+      api.post<{ id: string }>('/payments', data).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['payments'] })
+      qc.invalidateQueries({ queryKey: ['appointments'] })
+    },
   })
 }

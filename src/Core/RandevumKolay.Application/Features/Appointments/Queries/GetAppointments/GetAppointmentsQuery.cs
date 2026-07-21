@@ -30,6 +30,7 @@ public record AppointmentDto(
     decimal Price,
     string? Notes,
     string Source,
+    bool HasPayment,
     DateTimeOffset CreatedAt);
 
 public sealed class GetAppointmentsQueryHandler
@@ -98,6 +99,7 @@ public sealed class GetAppointmentsQueryHandler
                 a.Price,
                 a.Notes,
                 a.Source,
+                _context.Payments.Any(p => p.AppointmentId == a.Id && p.Status == PaymentStatus.Completed),
                 a.CreatedAt));
 
         return await PaginatedList<AppointmentDto>.CreateAsync(

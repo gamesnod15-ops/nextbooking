@@ -6,13 +6,60 @@ import {
 import { useEmployees } from '@/hooks/useEmployees'
 import { useServices } from '@/hooks/useServices'
 import { useCustomers } from '@/hooks/useCustomers'
+import { useRecordPayment } from '@/hooks/usePayments'
 import { formatDate, formatTime, cn } from '@/lib/utils'
 import {
   Calendar, RefreshCw, Plus, X, Loader2, CheckCircle2, XCircle,
   Clock, User, Scissors, ChevronLeft, ChevronRight, Search,
-  MessageCircle,
+  MessageCircle, Wallet, BadgeCheck,
 } from 'lucide-react'
 import type { Appointment } from '@/hooks/useAppointments'
+
+// ─── Record Payment Form ───────────────────────────────────────────────────
+function RecordPaymentForm({ apt, onDone }: { apt: Appointment; onDone: () => void }) {
+  const [amount, setAmount] = useState(String(apt.price))
+  const [provider, setProvider] = useState('cash')
+  const [error, setError] = useState<string | null>(null)
+  const recordPayment = useRecordPayment()
+
+  async function submit() {
+    setError(null)
+    const value = Number(amount)
+    if (!value || value <= 0) { setError('Tutar sıfırdan büyük olmalı.'); return }
+    try {
+      await recordPayment.mutateAsync({ appointmentId: apt.id, amount: value, provider })
+      onDone()
+    } catch {
+      setError('Ödeme kaydedilemedi. Bu randevu için zaten bir ödeme olabilir.')
+    }
+  }
+
+  return (
+    <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Tutar</label>
+          <input type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Yöntem</label>
+          <select value={provider} onChange={e => setProvider(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+            <option value="cash">Nakit</option>
+            <option value="card">Kart</option>
+            <option value="transfer">Havale</option>
+          </select>
+        </div>
+      </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+      <button onClick={submit} disabled={recordPayment.isPending}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+        {recordPayment.isPending && <Loader2 className="h-4 w-4 animate-spin" />} Ödemeyi Kaydet
+      </button>
+    </div>
+  )
+}
 
 const statusLabels: Record<string, string> = {
   pending: 'Beklemede', confirmed: 'Onaylandı', cancelled: 'İptal',
@@ -34,6 +81,8 @@ function AppointmentDrawer({ apt, onClose, onConfirm, onComplete, onCancel }: {
   onComplete: (id: string) => void
   onCancel: (id: string) => void
 }) {
+  const [showPaymentForm, setShowPaymentForm] = useState(false)
+
   return (
     <div className="fixed inset-0 z-50 flex" onClick={onClose}>
       <div className="flex-1 bg-black/30" />
@@ -55,6 +104,21 @@ function AppointmentDrawer({ apt, onClose, onConfirm, onComplete, onCancel }: {
             <DetailRow icon={<Scissors className="h-4 w-4" />} label="Ücret" value={`₺${apt.price.toLocaleString('tr-TR')}`} />
             {apt.notes && <DetailRow icon={<Scissors className="h-4 w-4" />} label="Not" value={apt.notes} />}
             <DetailRow icon={<Scissors className="h-4 w-4" />} label="Kaynak" value={apt.source} />
+          </div>
+
+          <div>
+            {apt.hasPayment ? (
+              <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700">
+                <BadgeCheck className="h-4 w-4" /> Ödeme alındı
+              </div>
+            ) : showPaymentForm ? (
+              <RecordPaymentForm apt={apt} onDone={() => setShowPaymentForm(false)} />
+            ) : (
+              <button onClick={() => setShowPaymentForm(true)}
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <Wallet className="h-4 w-4" /> Ödeme Al
+              </button>
+            )}
           </div>
         </div>
         <div className="flex gap-2 border-t px-5 py-4">
@@ -311,7 +375,14 @@ export function AppointmentsPage() {
                     <div className="font-medium">{formatDate(apt.startTime)}</div>
                     <div className="text-xs text-gray-400">{formatTime(apt.startTime)} – {formatTime(apt.endTime)}</div>
                   </td>
-                  <td className="px-4 py-3 hidden lg:table-cell font-medium">₺{apt.price.toLocaleString('tr-TR')}</td>
+                  <td className="px-4 py-3 hidden lg:table-cell font-medium">
+                    <div className="flex items-center gap-1.5">
+                      ₺{apt.price.toLocaleString('tr-TR')}
+                      {apt.hasPayment && (
+                        <span title="Ödeme alındı"><BadgeCheck className="h-3.5 w-3.5 text-emerald-600" /></span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span className={cn('inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium', statusColors[apt.status])}>
                       {statusLabels[apt.status] ?? apt.status}

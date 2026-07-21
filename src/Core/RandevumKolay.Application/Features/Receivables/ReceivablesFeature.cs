@@ -25,14 +25,26 @@ public sealed class GetReceivablesQueryHandler : IRequestHandler<GetReceivablesQ
 
     public async Task<PaginatedList<ReceivableDto>> Handle(GetReceivablesQuery request, CancellationToken ct)
     {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
         var q = _context.Receivables.AsNoTracking()
             .Include(r => r.Installments)
             .Where(r => r.TenantId == _tenant.TenantId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
             q = q.Where(r => r.CustomerName.Contains(request.Search));
+
+        // Overdue/Open/PartiallyPaid are derived from persisted Status + DueDate —
+        // Overdue itself is never persisted, it's computed at read time.
         if (request.Status.HasValue)
-            q = q.Where(r => r.Status == request.Status.Value);
+        {
+            q = request.Status.Value switch
+            {
+                ReceivableStatus.Overdue => q.Where(r => r.Status != ReceivableStatus.Paid && r.DueDate < today),
+                ReceivableStatus.Paid => q.Where(r => r.Status == ReceivableStatus.Paid),
+                _ => q.Where(r => r.Status == request.Status.Value && r.DueDate >= today),
+            };
+        }
 
         q = q.OrderByDescending(r => r.CreatedAt);
         var total = await q.CountAsync(ct);
@@ -41,11 +53,14 @@ public sealed class GetReceivablesQueryHandler : IRequestHandler<GetReceivablesQ
 
         return new PaginatedList<ReceivableDto>(items.Select(r => new ReceivableDto(
             r.Id, r.CustomerName, r.CustomerPhone, r.Description, r.TotalAmount, r.PaidAmount,
-            r.RemainingAmount, r.DueDate, r.Status, r.InstallmentCount,
+            r.RemainingAmount, r.DueDate, EffectiveStatus(r.Status, r.DueDate, today), r.InstallmentCount,
             r.Installments.Select(i => new InstallmentDto(i.Id, i.InstallmentNumber, i.Amount,
                 i.DueDate, i.IsPaid, i.PaidAt)).ToList(), r.CreatedAt)
         ).ToList(), total, request.PageNumber, request.PageSize);
     }
+
+    private static ReceivableStatus EffectiveStatus(ReceivableStatus status, DateOnly dueDate, DateOnly today) =>
+        status != ReceivableStatus.Paid && dueDate < today ? ReceivableStatus.Overdue : status;
 }
 
 // ─── Commands ──────────────────────────────────────────────────────────────
@@ -66,18 +81,18 @@ public sealed class CreateReceivableCommandHandler : IRequestHandler<CreateRecei
         _context.Receivables.Add(rec);
         await _context.SaveChangesAsync(ct);
 
-        // Create installments if more than 1
-        if (request.InstallmentCount > 1)
+        // Always create at least one installment (covering the full amount when
+        // InstallmentCount == 1) so every receivable has a way to be paid/closed —
+        // the "pay" action only exists at the installment level.
+        var installmentAmount = Math.Round(request.TotalAmount / request.InstallmentCount, 2);
+        for (int i = 1; i <= request.InstallmentCount; i++)
         {
-            var installmentAmount = Math.Round(request.TotalAmount / request.InstallmentCount, 2);
-            for (int i = 1; i <= request.InstallmentCount; i++)
-            {
-                var dueDate = new DateOnly(request.DueDate.Year, request.DueDate.Month, request.DueDate.Day)
-                    .AddMonths(i - 1);
-                _context.Installments.Add(Installment.Create(_tenant.TenantId, rec.Id, i, installmentAmount, dueDate));
-            }
-            await _context.SaveChangesAsync(ct);
+            var dueDate = request.InstallmentCount == 1
+                ? request.DueDate
+                : new DateOnly(request.DueDate.Year, request.DueDate.Month, request.DueDate.Day).AddMonths(i - 1);
+            _context.Installments.Add(Installment.Create(_tenant.TenantId, rec.Id, i, installmentAmount, dueDate));
         }
+        await _context.SaveChangesAsync(ct);
 
         return rec.Id;
     }

@@ -22,12 +22,25 @@ public sealed class GetDebtsQueryHandler : IRequestHandler<GetDebtsQuery, Pagina
 
     public async Task<PaginatedList<DebtDto>> Handle(GetDebtsQuery request, CancellationToken ct)
     {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
         var q = _context.DebtRecords.AsNoTracking()
             .Where(d => d.TenantId == _tenant.TenantId);
         if (!string.IsNullOrWhiteSpace(request.Search))
             q = q.Where(d => d.Title.Contains(request.Search) || (d.CreditorName != null && d.CreditorName.Contains(request.Search)));
+
+        // Overdue/Open/PartiallyPaid are derived from persisted Status + DueDate —
+        // Overdue itself is never persisted, it's computed at read time.
         if (request.Status.HasValue)
-            q = q.Where(d => d.Status == request.Status.Value);
+        {
+            q = request.Status.Value switch
+            {
+                DebtStatus.Overdue => q.Where(d => d.Status != DebtStatus.Paid && d.DueDate < today),
+                DebtStatus.Paid => q.Where(d => d.Status == DebtStatus.Paid),
+                _ => q.Where(d => d.Status == request.Status.Value && d.DueDate >= today),
+            };
+        }
+
         q = q.OrderByDescending(d => d.CreatedAt);
         var total = await q.CountAsync(ct);
         var items = await q.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
@@ -36,7 +49,12 @@ public sealed class GetDebtsQueryHandler : IRequestHandler<GetDebtsQuery, Pagina
                 d.Category, d.Status, d.CreatedAt))
             .ToListAsync(ct);
 
-        return new PaginatedList<DebtDto>(items, total, request.PageNumber, request.PageSize);
+        var mapped = items.Select(d => d with
+        {
+            Status = d.Status != DebtStatus.Paid && d.DueDate < today ? DebtStatus.Overdue : d.Status,
+        }).ToList();
+
+        return new PaginatedList<DebtDto>(mapped, total, request.PageNumber, request.PageSize);
     }
 }
 

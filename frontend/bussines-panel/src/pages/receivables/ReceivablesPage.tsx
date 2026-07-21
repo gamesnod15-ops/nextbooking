@@ -125,7 +125,7 @@ export function ReceivablesPage() {
                   <button onClick={() => setDeleteReceivableId(r.id)} className="p-1 hover:bg-red-50 text-red-600 rounded" title="Sil">
                     <Trash2 size={14} />
                   </button>
-                  {r.installmentCount > 1 && (
+                  {r.installments.length > 0 && (
                     <button onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
                       className="p-1 hover:bg-gray-100 rounded text-gray-500">
                       {expandedId === r.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

@@ -17,6 +17,7 @@ export interface Appointment {
   price: number
   notes: string | null
   source: string
+  hasPayment: boolean
   createdAt: string
 }
 
