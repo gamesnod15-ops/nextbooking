@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +68,10 @@ public class FallbackBookingService : IFallbackBookingService
         }
 
         conversation.SetPendingService(match.Id, match.Name);
-        return Reply($"\"{match.Name}\" seçtiniz. Hangi gün için randevu istersiniz? (örn: bugün, yarın, 25.07)", 30);
+        return Reply(
+            $"\"{match.Name}\" seçtiniz. Hangi gün için randevu istersiniz?",
+            30,
+            new List<QuickReply> { new("Bugün", "bugün"), new("Yarın", "yarın") });
     }
 
     private async Task<ClaudeBotReply> HandleAwaitingDateAsync(WhatsAppConversation conversation, string message, CancellationToken ct)
@@ -78,7 +82,10 @@ public class FallbackBookingService : IFallbackBookingService
             conversation.IncrementRetry();
             if (conversation.RetryCount >= MaxRetries)
                 return Escalate(conversation, "Otomasyon: tarih anlaşılamadı.");
-            return Reply("Tarihi anlayamadım. Lütfen \"bugün\", \"yarın\" veya gün.ay (örn: 25.07) formatında yazın.", 30);
+            return Reply(
+                "Tarihi anlayamadım. Lütfen \"bugün\", \"yarın\" veya gün.ay (örn: 25.07) formatında yazın.",
+                30,
+                new List<QuickReply> { new("Bugün", "bugün"), new("Yarın", "yarın") });
         }
 
         var slots = await AvailableTimesAsync(conversation.PendingServiceId!.Value, date.Value, ct);
@@ -86,11 +93,15 @@ public class FallbackBookingService : IFallbackBookingService
         {
             // Not a parsing failure — a real but unavailable date. Ask again
             // without counting it against the retry limit.
-            return Reply($"{date:dd.MM.yyyy} için müsait saat bulunamadı. Başka bir gün ister misiniz?", 30);
+            return Reply(
+                $"{date:dd.MM.yyyy} tarihinde boş saat yok — o tarih ve saat dolu görünüyor. Başka bir gün ister misiniz?",
+                30,
+                new List<QuickReply> { new("Bugün", "bugün"), new("Yarın", "yarın") });
         }
 
         conversation.SetPendingDate(date.Value);
-        return Reply($"{date:dd.MM.yyyy} için uygun saatler:\n\n{FormatNumberedList(slots)}\n\nHangi saati istersiniz? Numarasını yazın.", 50);
+        var dateButtons = slots.Select(s => new QuickReply($"{s.StartTime:HH:mm}", $"{s.StartTime:HH:mm}")).ToList();
+        return Reply($"{date:dd.MM.yyyy} için uygun saatler. Hangi saati istersiniz?", 50, dateButtons);
     }
 
     private async Task<ClaudeBotReply> HandleAwaitingTimeAsync(WhatsAppConversation conversation, string message, CancellationToken ct)
@@ -101,9 +112,10 @@ public class FallbackBookingService : IFallbackBookingService
         if (match is null)
         {
             conversation.IncrementRetry();
+            var timeButtons = slots.Select(s => new QuickReply($"{s.StartTime:HH:mm}", $"{s.StartTime:HH:mm}")).ToList();
             if (conversation.RetryCount >= MaxRetries)
                 return Escalate(conversation, "Otomasyon: saat seçilemedi.");
-            return Reply($"Anlayamadım. Lütfen listeden bir numara yazın:\n\n{FormatNumberedList(slots)}", 50);
+            return Reply("Anlayamadım. Lütfen listeden bir saat seçin.", 50, timeButtons);
         }
 
         conversation.SetPendingTime(match.Value);
@@ -139,8 +151,8 @@ public class FallbackBookingService : IFallbackBookingService
             $"Saat: {conversation.PendingTime:HH:mm}\n" +
             $"Ad: {conversation.PendingName}\n" +
             $"Telefon: {normalized}\n\n" +
-            $"Onaylıyor musunuz? (Evet/Hayır)";
-        return Reply(summary, 90);
+            $"Onaylıyor musunuz?";
+        return Reply(summary, 90, new List<QuickReply> { new("Evet", "Evet"), new("Hayır", "Hayır") });
     }
 
     private ClaudeBotReply HandleConfirming(WhatsAppConversation conversation, string message)
@@ -179,7 +191,7 @@ public class FallbackBookingService : IFallbackBookingService
         conversation.IncrementRetry();
         if (conversation.RetryCount >= MaxRetries)
             return Escalate(conversation, "Otomasyon: onay adımında anlaşılamadı.");
-        return Reply("Anlayamadım — onaylıyor musunuz? Lütfen \"Evet\" veya \"Hayır\" yazın.", 90);
+        return Reply("Anlayamadım — onaylıyor musunuz?", 90, new List<QuickReply> { new("Evet", "Evet"), new("Hayır", "Hayır") });
     }
 
     // ─── Helpers ────────────────────────────────────────────────────────────
@@ -196,8 +208,8 @@ public class FallbackBookingService : IFallbackBookingService
         if (services.Count == 0)
             return Escalate(null, "Otomasyon: tanımlı hizmet bulunamadı.");
 
-        var lines = services.Select((s, i) => $"{i + 1}. {s.Name} — {s.DurationMinutes} dk — {s.Price}₺");
-        return Reply($"{prefix}Hangi hizmeti almak istersiniz?\n\n{string.Join("\n", lines)}\n\nNumarasını yazabilirsiniz.", 20);
+        var buttons = services.Select((s, i) => new QuickReply($"{s.Name} — {s.DurationMinutes} dk — {s.Price}₺", (i + 1).ToString())).ToList();
+        return Reply($"{prefix}Hangi hizmeti almak istersiniz?", 20, buttons);
     }
 
     private async Task<List<TimeSlotDto>> AvailableTimesAsync(Guid serviceId, DateOnly date, CancellationToken ct)
@@ -205,9 +217,6 @@ public class FallbackBookingService : IFallbackBookingService
         var slots = await _sender.Send(new GetAvailableSlotsQuery(null, serviceId, date), ct);
         return slots.Where(s => s.IsAvailable).OrderBy(s => s.StartTime).ToList();
     }
-
-    private static string FormatNumberedList(List<TimeSlotDto> slots) =>
-        string.Join("\n", slots.Select((s, i) => $"{i + 1}. {s.StartTime:HH:mm}"));
 
     private static Service? MatchByIndexOrSubstring(string message, List<Service> services, Func<Service, string> nameSelector)
     {
@@ -281,8 +290,21 @@ public class FallbackBookingService : IFallbackBookingService
         return digits.Length == 10 && digits[0] == '5' ? $"+90{digits}" : null;
     }
 
-    private static ClaudeBotReply Reply(string text, int leadScore) =>
-        new(text, null, leadScore, LeadTierForScore(leadScore), false, null);
+    /// What a quick-reply button shows (Label) vs. what gets sent as the
+    /// customer's message when tapped (Value) — e.g. a button showing
+    /// "Cilt Bakımı — 90 dk — 350₺" sends just its menu index "1", which
+    /// MatchByIndexOrSubstring resolves unambiguously regardless of the
+    /// display text.
+    private record QuickReply(string Label, string Value);
+
+    private static ClaudeBotReply Reply(string text, int leadScore, IReadOnlyList<QuickReply>? quickReplies = null) =>
+        new(
+            text,
+            quickReplies is null ? null : JsonSerializer.Serialize(new { quickReplies }),
+            leadScore,
+            LeadTierForScore(leadScore),
+            false,
+            null);
 
     private static LeadTier LeadTierForScore(int score) =>
         score >= 70 ? LeadTier.Hot : score >= 40 ? LeadTier.Warm : LeadTier.Cold;

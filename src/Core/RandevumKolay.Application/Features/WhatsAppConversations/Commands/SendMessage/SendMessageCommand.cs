@@ -17,7 +17,7 @@ public record SendMessageCommand(
     List<string> Services,
     List<string> WorkingHours) : IRequest<SendMessageResult>;
 
-public record MessageDto(Guid Id, MessageRole Role, string Text, DateTimeOffset CreatedAt);
+public record MessageDto(Guid Id, MessageRole Role, string Text, DateTimeOffset CreatedAt, string? ExtractedDataJson = null);
 
 public record SendMessageResult(
     Guid ConversationId,
@@ -124,7 +124,7 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
 
             var botMessage = WhatsAppMessage.Create(tenantId, conversation.Id, nextSequence++, MessageRole.Bot, reply.ReplyText, reply.ExtractedFieldsJson);
             _context.WhatsAppMessages.Add(botMessage);
-            newMessages.Add(new MessageDto(botMessage.Id, botMessage.Role, botMessage.Text, botMessage.CreatedAt));
+            newMessages.Add(new MessageDto(botMessage.Id, botMessage.Role, botMessage.Text, botMessage.CreatedAt, botMessage.ExtractedDataJson));
 
             var wasEscalated = conversation.Status == ConversationStatus.Escalated;
             conversation.ApplyBotAssessment(reply.LeadScore, reply.LeadTier, reply.ShouldEscalate, reply.EscalationReason);

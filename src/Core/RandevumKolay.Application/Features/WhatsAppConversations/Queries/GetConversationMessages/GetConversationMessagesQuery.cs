@@ -8,7 +8,7 @@ namespace RandevumKolay.Application.Features.WhatsAppConversations.Queries.GetCo
 
 public record GetConversationMessagesQuery(Guid ConversationId) : IRequest<List<ConversationMessageDto>>;
 
-public record ConversationMessageDto(Guid Id, MessageRole Role, string Text, DateTimeOffset CreatedAt);
+public record ConversationMessageDto(Guid Id, MessageRole Role, string Text, DateTimeOffset CreatedAt, string? ExtractedDataJson);
 
 public sealed class GetConversationMessagesQueryHandler
     : IRequestHandler<GetConversationMessagesQuery, List<ConversationMessageDto>>
@@ -35,7 +35,7 @@ public sealed class GetConversationMessagesQueryHandler
             .AsNoTracking()
             .Where(m => m.ConversationId == request.ConversationId && m.TenantId == _tenantService.TenantId)
             .OrderBy(m => m.Sequence)
-            .Select(m => new ConversationMessageDto(m.Id, m.Role, m.Text, m.CreatedAt))
+            .Select(m => new ConversationMessageDto(m.Id, m.Role, m.Text, m.CreatedAt, m.ExtractedDataJson))
             .ToListAsync(cancellationToken);
     }
 }

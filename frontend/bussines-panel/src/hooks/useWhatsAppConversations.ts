@@ -23,6 +23,7 @@ export interface ConversationMessage {
   role: MessageRole
   text: string
   createdAt: string
+  extractedDataJson?: string | null
 }
 
 export interface ConversationsFilter {

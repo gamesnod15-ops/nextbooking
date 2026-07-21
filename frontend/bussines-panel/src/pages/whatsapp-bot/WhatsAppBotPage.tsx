@@ -45,7 +45,21 @@ const draftStatusColor: Record<BookingDraftStatus, string> = {
 // ─── Bot Message bubble ────────────────────────────────────────────────────
 type BubbleRole = 'customer' | 'bot' | 'owner'
 
-function ChatBubble({ role, text }: { role: BubbleRole; text: string }) {
+interface QuickReply { label: string; value: string }
+
+function parseQuickReplies(json?: string | null): QuickReply[] {
+  if (!json) return []
+  try {
+    const parsed = JSON.parse(json)
+    return Array.isArray(parsed?.quickReplies) ? parsed.quickReplies : []
+  } catch {
+    return []
+  }
+}
+
+function ChatBubble({ role, text, quickReplies, onQuickReply }: {
+  role: BubbleRole; text: string; quickReplies?: QuickReply[]; onQuickReply?: (value: string) => void
+}) {
   const isCustomer = role === 'customer'
   const isOwner = role === 'owner'
   return (
@@ -71,13 +85,26 @@ function ChatBubble({ role, text }: { role: BubbleRole; text: string }) {
         >
           {text}
         </div>
+        {quickReplies && quickReplies.length > 0 && onQuickReply && (
+          <div className="flex flex-wrap gap-1.5">
+            {quickReplies.map((qr, i) => (
+              <button
+                key={i}
+                onClick={() => onQuickReply(qr.value)}
+                className="rounded-full border border-green-300 bg-white px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 transition-colors shadow-sm"
+              >
+                {qr.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 // ─── Simulator Tab ─────────────────────────────────────────────────────────
-interface SimMessage { id: string; role: BubbleRole; text: string }
+interface SimMessage { id: string; role: BubbleRole; text: string; extractedDataJson?: string | null }
 
 function randomTestPhone() {
   return `0500${Math.floor(1000000 + Math.random() * 8999999)}`
@@ -119,10 +146,10 @@ function SimulatorTab() {
     }])
   }
 
-  function handleSend() {
-    const text = input.trim()
+  function handleSend(overrideText?: string) {
+    const text = (overrideText ?? input).trim()
     if (!text || sendMessage.isPending) return
-    setInput('')
+    if (overrideText === undefined) setInput('')
     setMessages(prev => [...prev, { id: `local_${Date.now()}`, role: 'customer', text }])
 
     sendMessage.mutate({
@@ -141,7 +168,7 @@ function SimulatorTab() {
         setLastResult({ status: result.status, leadScore: result.leadScore, leadTier: result.leadTier })
         const botReply = result.newMessages.find(m => m.role === 'bot')
         if (botReply) {
-          setMessages(prev => [...prev, { id: botReply.id, role: 'bot', text: botReply.text }])
+          setMessages(prev => [...prev, { id: botReply.id, role: 'bot', text: botReply.text, extractedDataJson: botReply.extractedDataJson }])
         }
       },
       onError: () => {
@@ -187,8 +214,14 @@ function SimulatorTab() {
             className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3"
             style={{ backgroundImage: 'radial-gradient(#e5ddd5 1px, transparent 1px)', backgroundSize: '20px 20px' }}
           >
-            {messages.map(msg => (
-              <ChatBubble key={msg.id} role={msg.role} text={msg.text} />
+            {messages.map((msg, i) => (
+              <ChatBubble
+                key={msg.id}
+                role={msg.role}
+                text={msg.text}
+                quickReplies={i === messages.length - 1 ? parseQuickReplies(msg.extractedDataJson) : undefined}
+                onQuickReply={value => handleSend(value)}
+              />
             ))}
             {sendMessage.isPending && (
               <div className="self-start flex items-center gap-2 text-xs text-gray-400 pl-10">
@@ -208,7 +241,7 @@ function SimulatorTab() {
               className="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:border-green-400"
             />
             <button
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={!input.trim() || sendMessage.isPending}
               className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center disabled:opacity-40 hover:bg-green-600 transition-colors"
             >
