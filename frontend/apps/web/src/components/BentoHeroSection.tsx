@@ -245,7 +245,7 @@ function SearchCard() {
             <button
               key={t}
               onClick={() => handleSearch(t)}
-              className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
+              className="rounded-full border border-gray-200 bg-white px-4 py-2.5 text-xs font-medium text-gray-600 transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
             >
               {t}
             </button>

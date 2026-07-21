@@ -136,8 +136,11 @@ export async function PricingSection({ showComparison = false }: { showCompariso
         {/* Only the dedicated /pricing page shows the full comparison — on the
             home page it made the section far too long. */}
         {showComparison && allFeatures.length > 0 && (
-          <div className="mt-20 overflow-x-auto rounded-2xl border border-gray-300 bg-white shadow-sm">
-            <table className="w-full min-w-[640px] border-collapse text-sm">
+          <div className="mt-20">
+            <p className="mb-2 text-center text-xs text-gray-400 sm:hidden">Tüm özellikleri görmek için kaydırın →</p>
+            <div className="relative overflow-x-auto rounded-2xl border border-gray-300 bg-white shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent sm:hidden" />
+              <table className="w-full min-w-[640px] border-collapse text-sm">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="border border-gray-300 px-5 py-4 text-left font-semibold text-gray-500">Özellik</th>
@@ -169,6 +172,7 @@ export async function PricingSection({ showComparison = false }: { showCompariso
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>
