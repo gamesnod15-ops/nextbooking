@@ -160,9 +160,9 @@ export function ReportsPage() {
           {/* KPIs */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <KpiCard icon={<TrendingUp className="h-5 w-5 text-blue-500" />} label="Toplam Ciro" value={formatCurrency(kpis?.totalRevenue ?? 0)} sub={`Ort. sepet: ${formatCurrency(kpis?.averageBasket ?? 0)}`} />
-            <KpiCard icon={<CheckCircle2 className="h-5 w-5 text-emerald-500" />} label="Tamamlanan" value={(kpis?.completedAppointments ?? 0).toLocaleString('tr-TR')} sub={`Tamamlanma: %${((kpis?.completionRate ?? 0) * 100).toFixed(0)}`} />
+            <KpiCard icon={<CheckCircle2 className="h-5 w-5 text-emerald-500" />} label="Tamamlanan" value={(kpis?.completedAppointments ?? 0).toLocaleString('tr-TR')} sub={`Tamamlanma: %${(kpis?.completionRate ?? 0).toFixed(0)}`} />
             <KpiCard icon={<Users className="h-5 w-5 text-amber-500" />} label="Toplam Randevu" value={(kpis?.totalAppointments ?? 0).toLocaleString('tr-TR')} sub={`Tekil müşteri: ${kpis?.uniqueCustomers ?? 0}`} />
-            <KpiCard icon={<XCircle className="h-5 w-5 text-red-500" />} label="İptal Oranı" value={`%${((kpis?.cancellationRate ?? 0) * 100).toFixed(1)}`} sub={`İptal: ${kpis?.cancelledAppointments ?? 0} randevu`} />
+            <KpiCard icon={<XCircle className="h-5 w-5 text-red-500" />} label="İptal Oranı" value={`%${(kpis?.cancellationRate ?? 0).toFixed(1)}`} sub={`İptal: ${kpis?.cancelledAppointments ?? 0} randevu`} />
           </div>
 
           {/* Revenue + Status charts */}
@@ -240,7 +240,7 @@ export function ReportsPage() {
                           <span className="text-gray-500 shrink-0 ml-1">{e.completed}/{e.appointments}</span>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-gray-100">
-                          <div className="h-full rounded-full bg-primary" style={{ width: `${e.completionRate * 100}%` }} />
+                          <div className="h-full rounded-full bg-primary" style={{ width: `${e.completionRate}%` }} />
                         </div>
                       </div>
                       <span className="text-xs font-semibold text-gray-700 shrink-0 w-20 text-right">
