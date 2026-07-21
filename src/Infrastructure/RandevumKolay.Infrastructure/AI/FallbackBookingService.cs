@@ -297,10 +297,12 @@ public class FallbackBookingService : IFallbackBookingService
     /// display text.
     private record QuickReply(string Label, string Value);
 
+    private static readonly JsonSerializerOptions QuickReplyJsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     private static ClaudeBotReply Reply(string text, int leadScore, IReadOnlyList<QuickReply>? quickReplies = null) =>
         new(
             text,
-            quickReplies is null ? null : JsonSerializer.Serialize(new { quickReplies }),
+            quickReplies is null ? null : JsonSerializer.Serialize(new { quickReplies }, QuickReplyJsonOptions),
             leadScore,
             LeadTierForScore(leadScore),
             false,
