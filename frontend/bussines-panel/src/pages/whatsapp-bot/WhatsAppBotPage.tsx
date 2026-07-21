@@ -890,30 +890,24 @@ export function WhatsAppBotPage() {
     )
   }
 
-  if (!waStatus?.isConnected) {
-    return (
-      <div className="space-y-6">
-        <PageHeader title="WhatsApp Bot" description="Müşterileriniz WhatsApp'tan otomatik randevu alabilsin." />
-        <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-              <Lock className="h-6 w-6 text-gray-400" />
-            </div>
-            <p className="font-semibold text-gray-900">WhatsApp Business bağlantısı gerekli</p>
-            <p className="max-w-sm text-sm text-gray-500">
-              Bu sayfayı kullanabilmek için önce Ayarlar → Entegrasyonlar'dan WhatsApp Business hesabınızı bağlamanız gerekiyor.
-            </p>
-            <Link to="/settings/integrations">
-              <Button className="mt-2">Entegrasyonlara Git</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
+      {!waStatus?.isConnected && (
+        <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <Lock className="h-5 w-5 shrink-0 text-amber-600" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-800">Test Modu — WhatsApp Business henüz bağlı değil</p>
+            <p className="text-xs text-amber-700">
+              Gerçek müşteri mesajları alınmıyor, ama Konuşma Simülatörü ile botu (AI ve otomasyon dahil) uçtan uca test edebilirsiniz.
+            </p>
+          </div>
+          <Link to="/settings/integrations">
+            <Button size="sm" variant="outline" className="shrink-0 border-amber-300 bg-white text-amber-700 hover:bg-amber-100">
+              Bağlantı Kur
+            </Button>
+          </Link>
+        </div>
+      )}
       <PageHeader
         title="WhatsApp Bot"
         description="Müşterileriniz WhatsApp'tan otomatik randevu alabilsin."
