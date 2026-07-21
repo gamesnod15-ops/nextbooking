@@ -75,6 +75,8 @@ public static class DependencyInjection
         {
             client.Timeout = TimeSpan.FromSeconds(30);
         });
+        services.AddScoped<IAiUsageService, AiUsageService>();
+        services.AddScoped<IFallbackBookingService, FallbackBookingService>();
 
         // Hangfire
         services.AddHangfire(config =>

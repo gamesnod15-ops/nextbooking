@@ -2,6 +2,7 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RandevumKolay.Application.Features.AiUsage.Queries.GetAiUsage;
 using RandevumKolay.Application.Features.WhatsAppConversations.Commands.EscalateConversation;
 using RandevumKolay.Application.Features.WhatsAppConversations.Commands.ResolveConversation;
 using RandevumKolay.Application.Features.WhatsAppConversations.Commands.SendMessage;
@@ -70,6 +71,14 @@ public class WhatsAppConversationsController : ControllerBase
     {
         await _sender.Send(new ResolveConversationCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    [HttpGet("ai-usage")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAiUsage(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetAiUsageQuery(), cancellationToken);
+        return Ok(result);
     }
 }
 

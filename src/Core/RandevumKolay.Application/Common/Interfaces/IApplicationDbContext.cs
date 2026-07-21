@@ -55,6 +55,8 @@ public interface IApplicationDbContext
     DbSet<LoyaltyMember> LoyaltyMembers { get; }
     DbSet<LoyaltyReward> LoyaltyRewards { get; }
     DbSet<LoyaltyRedemption> LoyaltyRedemptions { get; }
+    DbSet<WhatsAppIntegration> WhatsAppIntegrations { get; }
+    DbSet<AiUsageRecord> AiUsageRecords { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

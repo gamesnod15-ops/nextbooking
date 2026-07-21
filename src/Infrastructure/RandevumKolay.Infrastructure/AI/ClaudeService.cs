@@ -44,6 +44,9 @@ public class ClaudeService : IClaudeService
 
     public async Task<ClaudeBotReply> GetBotReplyAsync(ClaudeBotContext context, CancellationToken cancellationToken = default)
     {
+        var totalInputTokens = 0;
+        var totalOutputTokens = 0;
+
         try
         {
             var systemPrompt = BuildSystemPrompt(context);
@@ -52,13 +55,15 @@ public class ClaudeService : IClaudeService
             for (var round = 0; round < MaxToolRounds; round++)
             {
                 var response = await CallAnthropicAsync(systemPrompt, messages, cancellationToken);
+                totalInputTokens += response.Usage?.InputTokens ?? 0;
+                totalOutputTokens += response.Usage?.OutputTokens ?? 0;
 
                 if (response.StopReason != "tool_use")
                 {
                     var rawText = response.Content.FirstOrDefault(c => c.Type == "text")?.Text;
                     if (string.IsNullOrWhiteSpace(rawText))
                         throw new InvalidOperationException("Claude'dan boş yanıt geldi.");
-                    return ParseReply(rawText);
+                    return ParseReply(rawText) with { InputTokens = totalInputTokens, OutputTokens = totalOutputTokens };
                 }
 
                 // Echo the assistant's turn back verbatim (text + tool_use blocks),
@@ -86,13 +91,20 @@ public class ClaudeService : IClaudeService
                 50,
                 LeadTier.Warm,
                 true,
-                "Bot yanıtı üretilemedi (teknik hata) — insan devralmalı.");
+                "Bot yanıtı üretilemedi (teknik hata) — insan devralmalı.",
+                totalInputTokens,
+                totalOutputTokens);
         }
     }
 
     private async Task<AnthropicResponse> CallAnthropicAsync(string systemPrompt, List<AnthropicMessage> messages, CancellationToken cancellationToken)
     {
-        var request = new AnthropicRequest(_settings.Model, _settings.MaxTokens, systemPrompt, messages, Tools);
+        // Cached: the system prompt + tool schemas are identical across every
+        // round of one customer message and across consecutive messages in the
+        // same conversation — marking it ephemeral-cached gets ~90% off on
+        // cache hits instead of re-billing it as fresh input every call.
+        var systemBlocks = new List<AnthropicSystemBlock> { new("text", systemPrompt, new { type = "ephemeral" }) };
+        var request = new AnthropicRequest(_settings.Model, _settings.MaxTokens, systemBlocks, messages, Tools);
 
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, ApiUrl)
         {
@@ -246,10 +258,14 @@ public class ClaudeService : IClaudeService
             """;
     }
 
+    /// Bounds worst-case cost/context size for very long conversations — the
+    /// full history was previously resent unbounded on every single call.
+    private const int MaxHistoryTurns = 16;
+
     private static List<AnthropicMessage> BuildMessages(ClaudeBotContext context)
     {
         var messages = new List<AnthropicMessage>();
-        foreach (var turn in context.History)
+        foreach (var turn in context.History.TakeLast(MaxHistoryTurns))
         {
             var role = turn.Role == MessageRole.Customer ? "user" : "assistant";
             var text = turn.Role == MessageRole.Owner ? $"[İşletme sahibi yazdı]: {turn.Text}" : turn.Text;
@@ -308,9 +324,14 @@ public class ClaudeService : IClaudeService
     private record AnthropicRequest(
         [property: JsonPropertyName("model")] string Model,
         [property: JsonPropertyName("max_tokens")] int MaxTokens,
-        [property: JsonPropertyName("system")] string System,
+        [property: JsonPropertyName("system")] List<AnthropicSystemBlock> System,
         [property: JsonPropertyName("messages")] List<AnthropicMessage> Messages,
         [property: JsonPropertyName("tools")] List<AnthropicTool> Tools);
+
+    private record AnthropicSystemBlock(
+        [property: JsonPropertyName("type")] string Type,
+        [property: JsonPropertyName("text")] string Text,
+        [property: JsonPropertyName("cache_control")] object? CacheControl = null);
 
     private record AnthropicTool(
         [property: JsonPropertyName("name")] string Name,
@@ -335,7 +356,12 @@ public class ClaudeService : IClaudeService
 
     private record AnthropicResponse(
         [property: JsonPropertyName("content")] List<AnthropicContentBlock> Content,
-        [property: JsonPropertyName("stop_reason")] string? StopReason);
+        [property: JsonPropertyName("stop_reason")] string? StopReason,
+        [property: JsonPropertyName("usage")] AnthropicUsage? Usage);
+
+    private record AnthropicUsage(
+        [property: JsonPropertyName("input_tokens")] int InputTokens,
+        [property: JsonPropertyName("output_tokens")] int OutputTokens);
 
     private record AnthropicContentBlock(
         [property: JsonPropertyName("type")] string Type,

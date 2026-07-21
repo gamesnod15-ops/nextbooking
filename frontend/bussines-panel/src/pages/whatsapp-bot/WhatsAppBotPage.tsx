@@ -13,11 +13,14 @@ import {
   type Conversation, type LeadTier, type BookingDraft, type BookingDraftStatus,
 } from '@/hooks/useWhatsAppConversations'
 import { useWinBackRules, useCreateWinBackRule, useUpdateWinBackRule, useDeleteWinBackRule } from '@/hooks/useWinBackRules'
+import { useWhatsAppIntegrationStatus } from '@/hooks/useWhatsAppIntegration'
+import { useAiUsage } from '@/hooks/useAiUsage'
+import { Link } from 'react-router-dom'
 import {
   MessageCircle, Settings2, CalendarCheck, Plus, Trash2,
   RefreshCw, Send, CheckCircle2, XCircle, Bot, Smartphone,
   Clock, Scissors, Phone, Mail, Info, AlertTriangle,
-  MessagesSquare, Flame, Snowflake, Sun, Heart,
+  MessagesSquare, Flame, Snowflake, Sun, Heart, Lock, Loader2,
 } from 'lucide-react'
 
 // ─── WhatsApp Icon ─────────────────────────────────────────────────────────
@@ -509,6 +512,47 @@ function SettingsTab() {
           </div>
         </CardContent>
       </Card>
+
+      {/* AI usage */}
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Bot className="h-4 w-4 text-green-600" />
+            AI Kullanımı
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AiUsageCard />
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+function AiUsageCard() {
+  const { data: usage } = useAiUsage()
+  if (!usage) return <p className="text-xs text-gray-400">Yükleniyor...</p>
+
+  const pct = Math.min(100, Math.round((usage.messageCount / usage.freeLimit) * 100))
+  const exhausted = usage.messageCount >= usage.freeLimit
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-gray-600">Bu ay {usage.messageCount}/{usage.freeLimit} AI mesajı kullanıldı</span>
+        <span className="text-xs text-gray-400">≈ ${usage.estimatedCostUsd.toFixed(2)}</span>
+      </div>
+      <div className="h-2 rounded-full bg-gray-100">
+        <div
+          className={cn('h-2 rounded-full transition-all', exhausted ? 'bg-red-500' : 'bg-green-500')}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      {exhausted && (
+        <p className="text-xs text-amber-600">
+          Ücretsiz AI kotanız doldu — yeni mesajlar, gerçek hizmet ve müsaitlik verilerinizi kullanan otomatik randevu akışıyla yanıtlanıyor.
+        </p>
+      )}
     </div>
   )
 }
@@ -829,6 +873,7 @@ export function WhatsAppBotPage() {
   const pendingCount = pendingDrafts?.totalCount ?? 0
   const { data: escalatedData } = useConversations({ status: 'escalated', pageSize: 1 })
   const escalatedCount = escalatedData?.totalCount ?? 0
+  const { data: waStatus, isLoading: waLoading } = useWhatsAppIntegrationStatus()
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'simulator', label: 'Konuşma Simülatörü', icon: <Smartphone className="h-4 w-4" /> },
@@ -836,6 +881,36 @@ export function WhatsAppBotPage() {
     { id: 'appointments', label: 'WhatsApp Randevuları', icon: <CalendarCheck className="h-4 w-4" /> },
     { id: 'settings', label: 'Bot Ayarları', icon: <Settings2 className="h-4 w-4" /> },
   ]
+
+  if (waLoading) {
+    return (
+      <div className="flex items-center justify-center p-16">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      </div>
+    )
+  }
+
+  if (!waStatus?.isConnected) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="WhatsApp Bot" description="Müşterileriniz WhatsApp'tan otomatik randevu alabilsin." />
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+              <Lock className="h-6 w-6 text-gray-400" />
+            </div>
+            <p className="font-semibold text-gray-900">WhatsApp Business bağlantısı gerekli</p>
+            <p className="max-w-sm text-sm text-gray-500">
+              Bu sayfayı kullanabilmek için önce Ayarlar → Entegrasyonlar'dan WhatsApp Business hesabınızı bağlamanız gerekiyor.
+            </p>
+            <Link to="/settings/integrations">
+              <Button className="mt-2">Entegrasyonlara Git</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

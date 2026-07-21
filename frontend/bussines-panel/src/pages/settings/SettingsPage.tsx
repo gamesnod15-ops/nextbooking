@@ -4,6 +4,9 @@ import { useAppSelector, useAppDispatch } from '@/store'
 import { updateProfile, logout } from '@/store/slices/authSlice'
 import { updateBusiness } from '@/store/slices/businessSlice'
 import { connectIntegration, disconnectIntegration } from '@/store/slices/integrationsSlice'
+import {
+  useWhatsAppIntegrationStatus, useConnectWhatsAppIntegration, useDisconnectWhatsAppIntegration,
+} from '@/hooks/useWhatsAppIntegration'
 import { INTEGRATIONS } from '@/config/integrations'
 import { PLAN_CONFIGS, getPlanConfig, normalizePlanId, planAllows, splitModulesByPlan } from '@/config/plans'
 import { useBusiness, useUpdateBusiness } from '@/hooks/useBusiness'
@@ -2250,7 +2253,13 @@ function RequirementsChecklist({ requirements }: { requirements: string[] }) {
 
 function IntegrationsSettings() {
   const dispatch = useAppDispatch()
-  const connected = useAppSelector((s) => s.integrations.connected)
+  const reduxConnected = useAppSelector((s) => s.integrations.connected)
+  const { data: waStatus } = useWhatsAppIntegrationStatus()
+  const connectWhatsApp = useConnectWhatsAppIntegration()
+  const disconnectWhatsApp = useDisconnectWhatsAppIntegration()
+  // WhatsApp connection state is real (backend-tracked); every other
+  // integration here is still a frontend-only mock (localStorage flag).
+  const connected: Record<string, boolean> = { ...reduxConnected, whatsapp: waStatus?.isConnected ?? false }
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const [whatsappPhone, setWhatsappPhone] = useState('')
   const [whatsappToken, setWhatsappToken] = useState('')
@@ -2274,12 +2283,23 @@ function IntegrationsSettings() {
   }
 
   function connect(key: string, msg?: string) {
+    if (key === 'whatsapp') {
+      connectWhatsApp.mutate({ phoneNumberId: whatsappPhone, accessToken: whatsappToken }, {
+        onSuccess: () => { setExpandedKey(null); showToast(msg ?? 'Bağlantı kuruldu') },
+        onError: () => showToast('Bağlantı kurulamadı, lütfen tekrar deneyin'),
+      })
+      return
+    }
     dispatch(connectIntegration(key))
     setExpandedKey(null)
     showToast(msg ?? 'Bağlantı kuruldu')
   }
 
   function disconnect(key: string) {
+    if (key === 'whatsapp') {
+      disconnectWhatsApp.mutate(undefined, { onSuccess: () => showToast('Bağlantı kesildi') })
+      return
+    }
     dispatch(disconnectIntegration(key))
     showToast('Bağlantı kesildi')
   }
@@ -2331,7 +2351,7 @@ function IntegrationsSettings() {
         </div>
         <div className="flex justify-end gap-2">
           <Button variant="outline" size="sm" onClick={() => setExpandedKey(null)}>İptal</Button>
-          <Button size="sm" onClick={() => connect('whatsapp', 'WhatsApp yapılandırması kaydedildi')} disabled={!whatsappPhone || !whatsappToken}>
+          <Button size="sm" onClick={() => connect('whatsapp', 'WhatsApp yapılandırması kaydedildi')} disabled={!whatsappPhone || !whatsappToken || connectWhatsApp.isPending}>
             <Phone className="h-3.5 w-3.5 mr-1" /> Kaydet & Bağlan
           </Button>
         </div>

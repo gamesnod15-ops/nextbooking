@@ -32,17 +32,23 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
     private readonly IApplicationDbContext _context;
     private readonly ICurrentTenantService _tenantService;
     private readonly IClaudeService _claudeService;
+    private readonly IFallbackBookingService _fallbackBookingService;
+    private readonly IAiUsageService _aiUsageService;
     private readonly INotificationService _notificationService;
 
     public SendMessageCommandHandler(
         IApplicationDbContext context,
         ICurrentTenantService tenantService,
         IClaudeService claudeService,
+        IFallbackBookingService fallbackBookingService,
+        IAiUsageService aiUsageService,
         INotificationService notificationService)
     {
         _context = context;
         _tenantService = tenantService;
         _claudeService = claudeService;
+        _fallbackBookingService = fallbackBookingService;
+        _aiUsageService = aiUsageService;
         _notificationService = notificationService;
     }
 
@@ -87,16 +93,34 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
 
         if (request.Role == MessageRole.Customer && conversation.Status != ConversationStatus.Closed)
         {
-            var claudeContext = new ClaudeBotContext(
-                conversation.Id,
-                request.BusinessName,
-                request.WelcomeMessage,
-                request.Services,
-                request.WorkingHours,
-                history,
-                request.Text);
+            // Once a conversation has entered the deterministic fallback flow,
+            // it stays there until that flow concludes (booked/escalated) —
+            // even if the monthly quota resets mid-conversation — to avoid
+            // switching "brains" partway through. Fresh conversations always
+            // re-check quota.
+            var useAi = conversation.AutomationStep != AutomationStep.None
+                ? false
+                : await _aiUsageService.HasQuotaRemainingAsync(tenantId, cancellationToken);
 
-            var reply = await _claudeService.GetBotReplyAsync(claudeContext, cancellationToken);
+            ClaudeBotReply reply;
+            if (useAi)
+            {
+                var claudeContext = new ClaudeBotContext(
+                    conversation.Id,
+                    request.BusinessName,
+                    request.WelcomeMessage,
+                    request.Services,
+                    request.WorkingHours,
+                    history,
+                    request.Text);
+
+                reply = await _claudeService.GetBotReplyAsync(claudeContext, cancellationToken);
+                await _aiUsageService.RecordUsageAsync(tenantId, reply.InputTokens, reply.OutputTokens, cancellationToken);
+            }
+            else
+            {
+                reply = await _fallbackBookingService.GetReplyAsync(conversation, request.Text, cancellationToken);
+            }
 
             var botMessage = WhatsAppMessage.Create(tenantId, conversation.Id, nextSequence++, MessageRole.Bot, reply.ReplyText, reply.ExtractedFieldsJson);
             _context.WhatsAppMessages.Add(botMessage);

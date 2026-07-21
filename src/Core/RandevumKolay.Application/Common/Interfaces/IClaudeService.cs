@@ -19,7 +19,9 @@ public record ClaudeBotReply(
     int LeadScore,
     LeadTier LeadTier,
     bool ShouldEscalate,
-    string? EscalationReason);
+    string? EscalationReason,
+    int InputTokens = 0,
+    int OutputTokens = 0);
 
 public interface IClaudeService
 {
