@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Loader2 } from 'lucide-react'
 import { useLogin } from '@/hooks/useAuth'
 import { showToast } from '@/components/ui/Toast'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Shield } from 'lucide-react'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -10,7 +10,9 @@ export function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [shake, setShake] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,6 +20,8 @@ export function LoginPage() {
 
     if (!email || !password) {
       setError('E-posta ve şifre gereklidir.')
+      setShake(true)
+      setTimeout(() => setShake(false), 500)
       return
     }
 
@@ -27,61 +31,117 @@ export function LoginPage() {
       navigate('/dashboard')
     } catch {
       showToast('error', 'Giriş başarısız', 'E-posta veya şifre hatalı.')
+      setError('E-posta veya şifre hatalı.')
+      setShake(true)
+      setTimeout(() => setShake(false), 500)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-brand-100">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8 px-6 sm:px-8 mx-4 sm:mx-0">
-        <h1 className="text-2xl font-bold mb-6 text-center text-brand-600">Giriş Yap</h1>
+    <>
+      {/* Animated Background */}
+      <div className="login-bg">
+        <div className="blob blob1" />
+        <div className="blob blob2" />
+        <div className="blob blob3" />
+        <div className="grid-dot grid-dot-left" />
+        <div className="grid-dot grid-dot-right" />
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-brand-400 focus:outline-none"
-              placeholder="ornek@email.com"
-            />
+      {/* Login Wrapper */}
+      <div className="login-wrapper">
+        <div className={`login-card ${shake ? 'login-error' : ''}`}>
+
+          {/* Logo */}
+          <div className="login-logo">
+            <img src="/logo-jetrandevu.png" alt="JetRandevu" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-brand-400 focus:outline-none"
-              placeholder="Şifreniz"
-            />
-          </div>
+          <h1 className="login-title">Hoş Geldiniz</h1>
+          <p className="login-subtitle">Hesabınıza giriş yaparak devam edin</p>
 
-          {error && <div className="text-red-600 text-sm text-center">{error}</div>}
+          <form onSubmit={handleSubmit} className="login-form">
 
-          <button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2"
-          >
-            {loginMutation.isPending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Giriş yapılıyor...</>
-            ) : (
-              'Giriş Yap'
+            {/* Email */}
+            <div className="login-form-group">
+              <label>E-posta</label>
+              <div className="login-input-wrap">
+                <Mail className="login-input-icon" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                  placeholder="ornek@email.com"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="login-form-group">
+              <label>Şifre</label>
+              <div className="login-input-wrap">
+                <Lock className="login-input-icon" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  placeholder="Şifreniz"
+                />
+                <button
+                  type="button"
+                  className="login-eye-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
+            </div>
+
+            {/* Forgot Password */}
+            <div className="login-forgot">
+              <a href="/sifre-unuttum">Şifremi Unuttum?</a>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="mb-4 text-center text-sm text-red-600 font-medium">
+                {error}
+              </div>
             )}
-          </button>
-        </form>
 
-        <div className="mt-6 text-center text-sm text-gray-500">
-          Hesabınız yok mu?{' '}
-          <a href="/register" className="text-brand-600 hover:underline font-medium">Kayıt Ol</a>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className={`login-submit ${loginMutation.isPending ? 'login-loading' : ''}`}
+            >
+              <span>Giriş Yap</span>
+              <ArrowRight className="arrow-icon" size={22} />
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="login-divider">
+            <span>veya</span>
+          </div>
+
+          {/* Register */}
+          <div className="login-register">
+            Hesabınız yok mu?{' '}
+            <a href="/register">Kayıt Ol</a>
+          </div>
+        </div>
+
+        {/* Security Badge */}
+        <div className="login-secure">
+          <Shield size={18} />
+          Güvenli bağlantı ile korunmaktadır
         </div>
       </div>
-    </div>
+    </>
   )
 }
