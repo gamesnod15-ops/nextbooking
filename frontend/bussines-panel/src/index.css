@@ -150,10 +150,10 @@
 }
 
 .login-bg .blob1 {
-  width: 650px;
-  height: 650px;
-  left: -180px;
-  bottom: -120px;
+  width: 400px;
+  height: 400px;
+  left: -120px;
+  bottom: -80px;
   background: radial-gradient(circle, #8db8ff 0%, #4a8fff 70%, transparent 71%);
   border-radius: 45% 55% 60% 40%;
   opacity: 0.7;
@@ -161,20 +161,20 @@
 }
 
 .login-bg .blob2 {
-  width: 900px;
-  height: 520px;
-  right: -200px;
-  bottom: -180px;
+  width: 550px;
+  height: 320px;
+  right: -140px;
+  bottom: -120px;
   border-radius: 50%;
   background: radial-gradient(circle, #3f86ff 0%, #1664ff 70%, transparent 71%);
   animation: floatBlob 12s ease-in-out infinite;
 }
 
 .login-bg .blob3 {
-  width: 600px;
-  height: 600px;
-  right: -120px;
-  top: -160px;
+  width: 380px;
+  height: 380px;
+  right: -80px;
+  top: -100px;
   background: rgba(255, 255, 255, 0.45);
   border-radius: 42%;
   backdrop-filter: blur(15px);
@@ -269,23 +269,23 @@
 }
 
 .login-logo img {
-  width: 56px;
+  width: 64px;
 }
 
 .login-title {
-  margin-top: 16px;
+  margin-top: 12px;
   text-align: center;
   color: #1B2B49;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 800;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .login-subtitle {
-  margin-top: 6px;
+  margin-top: 4px;
   text-align: center;
   color: #69758D;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .login-form {
