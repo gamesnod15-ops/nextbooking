@@ -32,7 +32,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-brand-100">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8 px-6 sm:px-8 mx-4 sm:mx-0">
         <h1 className="text-2xl font-bold mb-6 text-center text-brand-600">Giriş Yap</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
