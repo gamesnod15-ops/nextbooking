@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
@@ -103,7 +103,7 @@ function PaketSecContent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30">
       {/* Header */}
       <header className="border-b border-white/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
               <CalendarCheck className="h-4 w-4 text-white" />
@@ -124,7 +124,7 @@ function PaketSecContent() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Title */}
         <div className="text-center mb-12">
           <p className="text-sm font-semibold uppercase tracking-widest text-brand-500 mb-2">Ad�m 2/3</p>

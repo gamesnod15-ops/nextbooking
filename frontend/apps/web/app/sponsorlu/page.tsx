@@ -1,4 +1,4 @@
-import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import CheckoutLink from '@/components/CheckoutLink'
 import Link from 'next/link'
@@ -122,7 +122,7 @@ export default function SponsorluPage() {
 
         {/* Showcase */}
         <section className="py-28">
-          <div className="mx-auto max-w-screen-2xl px-4">
+          <div className="mx-auto max-w-7xl px-4">
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Öne Çıkan İşletmeler</p>
               <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Sponsorlu İşletmeler Daha Çok Tercih Ediliyor</h2>
@@ -154,7 +154,7 @@ export default function SponsorluPage() {
 
         {/* Benefits */}
         <section className="bg-gradient-to-b from-gray-50 to-white py-28">
-          <div className="mx-auto max-w-screen-2xl px-4">
+          <div className="mx-auto max-w-7xl px-4">
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Avantajlar</p>
               <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Sponsorlu Öne Çıkmanın Gücü</h2>
@@ -177,7 +177,7 @@ export default function SponsorluPage() {
 
         {/* Pricing */}
         <section id="packages" className="py-28">
-          <div className="mx-auto max-w-screen-2xl px-4">
+          <div className="mx-auto max-w-7xl px-4">
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Fiyatlandırma</p>
               <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Size Uygun Paketi Seçin</h2>
@@ -226,7 +226,7 @@ export default function SponsorluPage() {
 
         {/* Testimonials */}
         <section className="bg-gray-900 py-28">
-          <div className="mx-auto max-w-screen-2xl px-4">
+          <div className="mx-auto max-w-7xl px-4">
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Başarı Hikayeleri</p>
               <h2 className="text-4xl font-extrabold text-white mb-4">Sponsorlu İşletmeler Ne Diyor?</h2>

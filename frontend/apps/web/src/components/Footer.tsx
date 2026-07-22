@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 
 const socialLinks = [
   {
@@ -42,7 +42,7 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="border-t border-gray-100 bg-gray-50">
-      <div className="mx-auto max-w-screen-2xl px-5 py-12 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export function Footer() {
         <div className="mt-10 border-t border-gray-200 pt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-xs text-gray-400 text-center sm:text-left">© 2026 JetRandevu. Tüm hakları saklıdır.</p>
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+            <span className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
               <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />

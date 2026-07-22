@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Check, X } from 'lucide-react'
 import { SlideIn } from './motion/Reveal'
 
@@ -53,7 +53,7 @@ export async function PricingSection({ showComparison = false }: { showCompariso
 
   return (
     <section id="pricing" className="bg-gray-50 py-24">
-      <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <SlideIn direction="left" className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-gray-900">İşletmenize Uygun Plan</h2>
           <p className="mt-4 text-lg text-gray-600">14 gün ücretsiz deneyin. Kredi kartı gerekmez.</p>

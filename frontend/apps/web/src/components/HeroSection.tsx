@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { ArrowRight, Play } from 'lucide-react'
 
 const CATEGORIES = [
@@ -32,7 +32,7 @@ export function HeroSection() {
       <div aria-hidden className="absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-brand-500/10 blur-3xl" />
       <div aria-hidden className="absolute bottom-0 right-1/4 h-72 w-72 rounded-full bg-brand-500/5 blur-3xl" />
 
-      <div className="relative mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
         {/* Eyebrow badge */}
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 shadow-sm">
           <span className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />

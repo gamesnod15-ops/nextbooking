@@ -1,4 +1,4 @@
-import {
+﻿import {
   Calendar, Bell, BarChart3, Users, Smartphone, Shield,
   Zap, Globe, CreditCard, MessageSquare, Star, RefreshCw,
   CheckCircle, ArrowRight,
@@ -191,7 +191,7 @@ export function FeaturesSection() {
         <div aria-hidden className="absolute inset-0 opacity-[0.015]"
           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #111 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
-        <div className="relative mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
+        <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SlideIn direction="left" className="text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 mb-4">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
@@ -243,7 +243,7 @@ export function FeaturesSection() {
           </svg>
         </div>
 
-        <div className="relative mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
+        <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <SlideIn direction="right">
@@ -385,7 +385,7 @@ export function FeaturesSection() {
           </svg>
         </div>
 
-        <div className="relative mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
+        <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SlideIn direction="right" className="text-center mb-14">
             <p className="text-sm font-semibold uppercase tracking-widest text-brand-500">Entegrasyonlar</p>
             <h2 className="mt-2 text-4xl font-extrabold text-white">Kullandığınız Araçlarla Çalışır</h2>

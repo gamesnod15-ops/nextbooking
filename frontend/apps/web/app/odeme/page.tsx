@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
@@ -427,7 +427,7 @@ function OdemeInner() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/20">
       {/* Header */}
       <header className="border-b border-white/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
               <CalendarCheck className="h-4 w-4 text-white" />

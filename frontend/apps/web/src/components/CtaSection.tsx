@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { SlideIn } from './motion/Reveal'
 
@@ -18,7 +18,7 @@ export function CtaSection() {
         </svg>
       </div>
 
-      <div className="relative mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <SlideIn direction="right">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">

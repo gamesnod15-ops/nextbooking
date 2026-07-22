@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useId, cloneElement, isValidElement } from 'react'
 import Link from 'next/link'
@@ -373,7 +373,7 @@ export default function RegisterPage() {
       <div className="flex flex-col">
         {/* Mobile header */}
         <header className="border-b border-gray-100 bg-white/80 backdrop-blur-md lg:hidden">
-          <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-5 sm:px-8">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
                 <CalendarCheck className="h-4 w-4 text-white" />
