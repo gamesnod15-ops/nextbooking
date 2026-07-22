@@ -7,7 +7,7 @@ export interface UiState {
 }
 
 const initialState: UiState = {
-  sidebarOpen: true,
+  sidebarOpen: false,
   sidebarCollapsed: localStorage.getItem('sidebar_collapsed') === 'true',
   theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
 }

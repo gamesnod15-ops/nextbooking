@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { normalizePlanId, planAllows } from '@/config/plans'
 import { cn } from '@/lib/utils'
@@ -108,6 +108,12 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
   const location = useLocation()
   const plan = normalizePlanId(business?.plan)
   const badge = planBadge[plan]
+
+  // Close the mobile drawer whenever the route changes (e.g. after tapping a nav link).
+  useEffect(() => {
+    if (isOpen) onClose?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
 
   const collapsedItems = navigationConfig.flatMap((group) =>
     group.items.filter((item) => {

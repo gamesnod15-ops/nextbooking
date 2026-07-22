@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { SearchTrigger } from '@/components/search/GlobalSearch'
 import { cn } from '@/lib/utils'
 import {
   BarChart,
@@ -175,23 +176,30 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Mobile-only search — on desktop this lives in the header instead */}
+      <div className="lg:hidden">
+        <SearchTrigger />
+      </div>
+
       {/* Page Header */}
       <PageHeader
         title={`${greeting()}, ${business?.name ?? 'İşletme'}! 👋`}
         description="İşletmenizin güncel durumuna genel bakış"
       >
-        <Button asChild size="sm" variant="outline">
-          <Link to="/calendar">
-            <Calendar className="h-4 w-4" />
-            Takvimi Aç
-          </Link>
-        </Button>
-        <Button asChild size="sm">
-          <Link to="/calendar?new=true">
-            <Plus className="h-4 w-4" />
-            Randevu Ekle
-          </Link>
-        </Button>
+        <div className="hidden lg:flex items-center gap-3">
+          <Button asChild size="sm" variant="outline">
+            <Link to="/calendar">
+              <Calendar className="h-4 w-4" />
+              Takvimi Aç
+            </Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link to="/calendar?new=true">
+              <Plus className="h-4 w-4" />
+              Randevu Ekle
+            </Link>
+          </Button>
+        </div>
       </PageHeader>
 
       {/* Billing completeness warning */}

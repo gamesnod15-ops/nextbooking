@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState, useAppDispatch } from '@/store'
 import { normalizePlanId, planAllows } from '@/config/plans'
@@ -15,6 +15,8 @@ import {
   Settings,
   Check,
   Shield,
+  Calendar,
+  Plus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
@@ -37,6 +39,8 @@ const notificationIcons: Record<string, string> = {
 }
 
 export function Header({ onMenuClick, onSidebarToggle }: HeaderProps) {
+  const location = useLocation()
+  const isDashboard = location.pathname === '/dashboard'
   const { fullName, jobTitle, phone: userPhone } = useSelector((s: RootState) => s.auth)
   const { items, unreadCount } = useSelector((s: RootState) => s.notifications)
   const { unresolvedCount: errorCount } = useSelector((s: RootState) => s.errors)
@@ -108,9 +112,28 @@ export function Header({ onMenuClick, onSidebarToggle }: HeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {/* Center: Global Search — takes remaining space, centered */}
-      <div className="flex flex-1 justify-center">
-        <SearchTrigger />
+      {/* Center: Global Search on desktop; on mobile, only the dashboard's
+          quick actions show here (search moves into the dashboard content). */}
+      <div className="flex flex-1 justify-center overflow-hidden">
+        <div className="hidden lg:flex w-full justify-center">
+          <SearchTrigger />
+        </div>
+        {isDashboard && (
+          <div className="flex items-center gap-2 lg:hidden">
+            <Button asChild size="sm" variant="outline">
+              <Link to="/calendar">
+                <Calendar className="h-4 w-4" />
+                Takvimi Aç
+              </Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to="/calendar?new=true">
+                <Plus className="h-4 w-4" />
+                Randevu Ekle
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Right */}
