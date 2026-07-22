@@ -204,15 +204,17 @@ export function DashboardPage() {
 
       {/* Billing completeness warning */}
       {missingItems.length > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          <div className="flex-1 text-sm">
-            <span className="font-medium text-amber-900">Eksik profil bilgisi: </span>
-            <span className="text-amber-800">{missingItems.join(' ve ')} eklenmeden paket değişikliği yapılamaz.</span>
+        <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 lg:flex-row lg:items-start">
+          <div className="flex flex-1 items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <div className="flex-1 text-sm">
+              <span className="font-medium text-amber-900">Eksik profil bilgisi: </span>
+              <span className="text-amber-800">{missingItems.join(' ve ')} eklenmeden paket değişikliği yapılamaz.</span>
+            </div>
           </div>
           <Link
             to="/settings/profile"
-            className="flex shrink-0 items-center gap-1 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100"
+            className="flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100 lg:justify-start"
           >
             <FileText className="h-3.5 w-3.5" />
             Profili Tamamla
@@ -222,15 +224,17 @@ export function DashboardPage() {
 
       {/* Missing integrations warning — disappears once every integration is connected */}
       {pendingIntegrations.length > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          <div className="flex-1 text-sm">
-            <span className="font-medium text-amber-900">Bağlı olmayan entegrasyonlar: </span>
-            <span className="text-amber-800">{pendingIntegrations.map((i) => i.name).join(', ')} henüz bağlanmadı.</span>
+        <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 lg:flex-row lg:items-start">
+          <div className="flex flex-1 items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <div className="flex-1 text-sm">
+              <span className="font-medium text-amber-900">Bağlı olmayan entegrasyonlar: </span>
+              <span className="text-amber-800">{pendingIntegrations.map((i) => i.name).join(', ')} henüz bağlanmadı.</span>
+            </div>
           </div>
           <Link
             to="/settings/integrations"
-            className="flex shrink-0 items-center gap-1 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100"
+            className="flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100 lg:justify-start"
           >
             <Plug className="h-3.5 w-3.5" />
             Entegrasyonları Yönet
