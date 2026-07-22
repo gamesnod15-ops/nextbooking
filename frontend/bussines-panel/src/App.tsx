@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { setCredentials } from '@/store/slices/authSlice'
 import api from '@/lib/api'
 import { normalizePlanId, planAllows } from '@/config/plans'
@@ -53,6 +53,7 @@ import { SmartSchedulePage } from '@/pages/smart-schedule/SmartSchedulePage'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { GlobalSearch } from '@/components/search/GlobalSearch'
 import { FeedbackWidget } from '@/components/feedback/FeedbackWidget'
+import { PreloadScreen } from '@/components/PreloadScreen'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { accessToken, role } = useSelector((s: RootState) => s.auth)
@@ -135,8 +136,12 @@ function ModuleRoute({ moduleId, children }: { moduleId: string; children: React
 }
 
 export default function App() {
+  const [showPreload, setShowPreload] = useState(true)
+  const handlePreloadComplete = useCallback(() => setShowPreload(false), [])
+
   return (
     <ErrorBoundary>
+      {showPreload && <PreloadScreen onComplete={handlePreloadComplete} />}
       <BrowserRouter>
         <AutoLoginHandler />
         <OnboardingGate />
