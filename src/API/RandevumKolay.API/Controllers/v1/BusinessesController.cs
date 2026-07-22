@@ -20,13 +20,34 @@ public class BusinessesController : ControllerBase
     public async Task<IActionResult> GetBusinesses(
         [FromQuery] string? search,
         [FromQuery] int? categoryId,
+        [FromQuery] string? categoryIds,
         [FromQuery] string? city,
+        [FromQuery] string? cities,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 12,
         CancellationToken cancellationToken = default)
     {
+        var parsedCategoryIds = new List<int>();
+        if (categoryId.HasValue)
+            parsedCategoryIds.Add(categoryId.Value);
+        else if (!string.IsNullOrWhiteSpace(categoryIds))
+            parsedCategoryIds = categoryIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => int.TryParse(s.Trim(), out var id) ? id : (int?)null)
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .ToList();
+
+        var parsedCities = new List<string>();
+        if (!string.IsNullOrWhiteSpace(city))
+            parsedCities.Add(city);
+        else if (!string.IsNullOrWhiteSpace(cities))
+            parsedCities = cities.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+
         var result = await _sender.Send(
-            new GetPublicBusinessesQuery(search, categoryId, city, pageNumber, pageSize),
+            new GetPublicBusinessesQuery(search, parsedCategoryIds, parsedCities, pageNumber, pageSize),
             cancellationToken);
         return Ok(result);
     }

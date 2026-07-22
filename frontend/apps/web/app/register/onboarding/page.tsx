@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -10,22 +10,22 @@ import {
   CalendarCheck,
 } from 'lucide-react'
 
-// â”€â”€â”€ Step definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step definitions ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 const STEPS = [
-  { id: 'services',  title: 'Hizmetler',        icon: Scissors,  desc: 'SunduÄŸunuz hizmetleri ekleyin' },
+  { id: 'services',  title: 'Hizmetler',        icon: Scissors,  desc: 'Sunduðunuz hizmetleri ekleyin' },
   { id: 'packages',  title: 'Paketler',          icon: Package,   desc: 'Hizmetlerinizi paketleyin (opsiyonel)' },
-  { id: 'employees', title: 'Ã‡alÄ±ÅŸanlar',        icon: Users,     desc: 'Ekibinizi tanÄ±tÄ±n' },
-  { id: 'hours',     title: 'Ã‡alÄ±ÅŸma Saatleri',  icon: Clock,     desc: 'AÃ§Ä±k olduÄŸunuz saatleri belirleyin' },
-  { id: 'branches',  title: 'Åžubeler',           icon: Building2, desc: 'DiÄŸer ÅŸubelerinizi ekleyin (opsiyonel)' },
-  { id: 'plan',      title: 'Plan & Ã–deme',      icon: CreditCard, desc: 'Size uygun planÄ± seÃ§in' },
+  { id: 'employees', title: 'Çalýþanlar',        icon: Users,     desc: 'Ekibinizi tanýtýn' },
+  { id: 'hours',     title: 'Çalýþma Saatleri',  icon: Clock,     desc: 'Açýk olduðunuz saatleri belirleyin' },
+  { id: 'branches',  title: 'Þubeler',           icon: Building2, desc: 'Diðer þubelerinizi ekleyin (opsiyonel)' },
+  { id: 'plan',      title: 'Plan & Ödeme',      icon: CreditCard, desc: 'Size uygun planý seçin' },
 ] as const
 
 const PLAN_CONFIGS = [
-  { id: 'starter' as const,        name: 'BaÅŸlangÄ±Ã§',   price: 'â‚º299/ay', badgeLabel: 'BaÅŸlangÄ±Ã§', accentClassName: 'border-gray-200 text-gray-600', features: ['Temel randevu, takvim ve mÃ¼ÅŸteri yÃ¶netimi', 'Ã–deme takibi ve temel raporlar', 'Tek ÅŸube ile hÄ±zlÄ± baÅŸlangÄ±Ã§'] },
-  { id: 'business' as const,       name: 'BÃ¼yÃ¼me',      price: 'â‚º599/ay', badgeLabel: 'En PopÃ¼ler', accentClassName: 'border-brand-200 bg-brand-50 text-brand-700', features: ['Kampanya, kupon ve indirim yÃ¶netimi', 'Online rezervasyon ve bekleme listesi', 'Ã‡oklu ÅŸube yÃ¶netimi'] },
-  { id: 'professional' as const,   name: 'Profesyonel',  price: 'â‚º999/ay', badgeLabel: 'Profesyonel', accentClassName: 'border-amber-200 text-amber-700', features: ['ÃœrÃ¼n satÄ±ÅŸÄ± ve stok yÃ¶netimi', 'Personel performans takibi', 'GeliÅŸmiÅŸ analitik & raporlar'] },
-  { id: 'custom' as const,         name: 'Kurumsal',    price: 'Ã–zel',    badgeLabel: 'Kurumsal',   accentClassName: 'border-purple-200 text-purple-700', features: ['CanlÄ± chatbot ve walk-in sÄ±ra yÃ¶netimi', 'Ã–zel entegrasyon ve onboarding', 'SLA garantisi & 7/24 destek'] },
+  { id: 'starter' as const,        name: 'Baþlangýç',   price: '?299/ay', badgeLabel: 'Baþlangýç', accentClassName: 'border-gray-200 text-gray-600', features: ['Temel randevu, takvim ve müþteri yönetimi', 'Ödeme takibi ve temel raporlar', 'Tek þube ile hýzlý baþlangýç'] },
+  { id: 'business' as const,       name: 'Büyüme',      price: '?599/ay', badgeLabel: 'En Popüler', accentClassName: 'border-brand-200 bg-brand-50 text-brand-700', features: ['Kampanya, kupon ve indirim yönetimi', 'Online rezervasyon ve bekleme listesi', 'Çoklu þube yönetimi'] },
+  { id: 'professional' as const,   name: 'Profesyonel',  price: '?999/ay', badgeLabel: 'Profesyonel', accentClassName: 'border-amber-200 text-amber-700', features: ['Ürün satýþý ve stok yönetimi', 'Personel performans takibi', 'Geliþmiþ analitik & raporlar'] },
+  { id: 'custom' as const,         name: 'Kurumsal',    price: 'Özel',    badgeLabel: 'Kurumsal',   accentClassName: 'border-purple-200 text-purple-700', features: ['Canlý chatbot ve walk-in sýra yönetimi', 'Özel entegrasyon ve onboarding', 'SLA garantisi & 7/24 destek'] },
 ]
 
 const PLAN_PRICES: Record<string, number> = { starter: 299, business: 599, professional: 999, custom: 0 }
@@ -35,7 +35,7 @@ const HALF_HOURS = Array.from({ length: 48 }, (_, i) => {
   return `${String(h).padStart(2, '0')}:${m}`
 })
 
-const DAY_NAMES = ['Pazartesi', 'SalÄ±', 'Ã‡arÅŸamba', 'PerÅŸembe', 'Cuma', 'Cumartesi', 'Pazar']
+const DAY_NAMES = ['Pazartesi', 'Salý', 'Çarþamba', 'Perþembe', 'Cuma', 'Cumartesi', 'Pazar']
 
 type DaySchedule = { open: boolean; start: string; end: string }
 const defaultSchedule: DaySchedule[] = [
@@ -83,7 +83,7 @@ function PhoneInput({ value, onChange, placeholder }: { value: string; onChange:
   )
 }
 
-// â”€â”€â”€ Main page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Main page ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -126,12 +126,12 @@ export default function OnboardingPage() {
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
             <PartyPopper className="h-10 w-10 text-emerald-500" />
           </div>
-          <h2 className="text-2xl font-extrabold text-gray-900">Kurulum tamamlandÄ±!</h2>
-          <p className="mt-3 text-gray-600">Ä°ÅŸletmeniz hazÄ±r, panelinize yÃ¶nlendiriliyorsunuzâ€¦</p>
+          <h2 className="text-2xl font-extrabold text-gray-900">Kurulum tamamlandý!</h2>
+          <p className="mt-3 text-gray-600">Ýþletmeniz hazýr, panelinize yönlendiriliyorsunuz…</p>
           <Loader2 className="mx-auto mt-5 h-6 w-6 animate-spin text-brand-500" />
           {panelUrl && (
             <a href={panelUrl} className="mt-4 inline-block text-sm text-brand-500 underline">
-              Paneli manuel aÃ§
+              Paneli manuel aç
             </a>
           )}
         </div>
@@ -145,7 +145,7 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-5 sm:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
               <CalendarCheck className="h-4 w-4 text-white" />
@@ -162,7 +162,7 @@ export default function OnboardingPage() {
       <div className="border-b p-4 lg:hidden">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-gray-900">
-            AdÄ±m {step + 1}/{STEPS.length} Â· {STEPS[step].title}
+            Adým {step + 1}/{STEPS.length} · {STEPS[step].title}
           </span>
         </div>
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100">
@@ -176,7 +176,7 @@ export default function OnboardingPage() {
           <div className="sticky top-24 space-y-1">
             <div className="mb-6 flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-brand-500" />
-              <span className="text-lg font-bold text-gray-900">Kurulum SihirbazÄ±</span>
+              <span className="text-lg font-bold text-gray-900">Kurulum Sihirbazý</span>
             </div>
             {STEPS.map((s, i) => {
               const Icon = s.icon
@@ -234,7 +234,7 @@ export default function OnboardingPage() {
   )
 }
 
-// â”€â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Loading ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function LoadingScreen() {
   return (
@@ -244,7 +244,7 @@ function LoadingScreen() {
   )
 }
 
-// â”€â”€â”€ Shared step footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Shared step footer ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function StepFooter({ onBack, onNext, nextLabel = 'Devam Et', skippable, busy }: {
   onBack?: () => void
@@ -265,7 +265,7 @@ function StepFooter({ onBack, onNext, nextLabel = 'Devam Et', skippable, busy }:
       <div className="flex items-center gap-3">
         {skippable && (
           <button type="button" onClick={onNext} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
-            Åžimdilik atla
+            Þimdilik atla
           </button>
         )}
         <button type="button" onClick={onNext} disabled={busy}
@@ -278,7 +278,7 @@ function StepFooter({ onBack, onNext, nextLabel = 'Devam Et', skippable, busy }:
   )
 }
 
-// â”€â”€â”€ Step 1: Services â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step 1: Services ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function ServicesStep({ onNext }: { onNext: () => void }) {
   const [services, setServices] = useState<Array<{ id: string; name: string; durationMinutes: number; price: number }>>([])
@@ -329,7 +329,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
     <div>
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_120px_120px_auto]">
-          <input className={inputCls} placeholder="Hizmet adÄ± (Ã¶rn. SaÃ§ Kesimi)" value={form.name}
+          <input className={inputCls} placeholder="Hizmet adý (örn. Saç Kesimi)" value={form.name}
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))} onKeyDown={e => e.key === 'Enter' && add()} />
           <select className={inputCls} value={form.durationMinutes}
             onChange={e => setForm(f => ({ ...f, durationMinutes: Number(e.target.value) }))}>
@@ -338,7 +338,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
           <div className="relative">
             <input className={`${inputCls} pr-8`} type="number" min={0} placeholder="Fiyat" value={form.price || ''}
               onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} onKeyDown={e => e.key === 'Enter' && add()} />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">â‚º</span>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">?</span>
           </div>
           <button type="button" onClick={add} disabled={loading || !form.name.trim()} aria-label="Hizmet ekle"
             className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
@@ -349,7 +349,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
 
       {services.length === 0 ? (
         <p className="mt-4 rounded-xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-400">
-          HenÃ¼z hizmet eklemediniz â€” en az bir hizmet eklemeniz gerekiyor
+          Henüz hizmet eklemediniz — en az bir hizmet eklemeniz gerekiyor
         </p>
       ) : (
         <ul className="mt-4 space-y-2">
@@ -357,7 +357,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
             <li key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
               <span className="font-semibold text-gray-900">{s.name}</span>
               <span className="flex items-center gap-3">
-                <span className="text-gray-500">{s.durationMinutes} dk Â· â‚º{s.price}</span>
+                <span className="text-gray-500">{s.durationMinutes} dk · ?{s.price}</span>
                 <button type="button" onClick={() => remove(s.id)} aria-label={`${s.name} hizmetini sil`} className="text-gray-400 hover:text-red-500 transition-colors">
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -372,7 +372,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
   )
 }
 
-// â”€â”€â”€ Step 2: Packages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step 2: Packages ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [services, setServices] = useState<Array<{ id: string; name: string }>>([])
@@ -422,24 +422,24 @@ function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
     <div>
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_130px_130px]">
-          <input className={inputCls} placeholder="Paket adÄ± (Ã¶rn. 5 Seans Masaj)" value={form.name}
+          <input className={inputCls} placeholder="Paket adý (örn. 5 Seans Masaj)" value={form.name}
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
           <div className="relative">
             <input className={`${inputCls} pr-8`} type="number" min={0} placeholder="Fiyat" value={form.price || ''}
               onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">â‚º</span>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">?</span>
           </div>
           <select className={inputCls} value={form.validityDays ?? ''}
             onChange={e => setForm(f => ({ ...f, validityDays: e.target.value ? Number(e.target.value) : null }))}>
-            <option value="">SÃ¼resiz</option>
-            {[30, 60, 90, 180, 365].map(d => <option key={d} value={d}>{d} gÃ¼n</option>)}
+            <option value="">Süresiz</option>
+            {[30, 60, 90, 180, 365].map(d => <option key={d} value={d}>{d} gün</option>)}
           </select>
         </div>
 
         <div>
-          <p className="mb-2 text-xs font-medium text-gray-500">Paket iÃ§eriÄŸi â€” hizmet seÃ§in:</p>
+          <p className="mb-2 text-xs font-medium text-gray-500">Paket içeriði — hizmet seçin:</p>
           {services.length === 0 ? (
-            <p className="text-sm text-gray-400">Ã–nce hizmet eklemelisiniz.</p>
+            <p className="text-sm text-gray-400">Önce hizmet eklemelisiniz.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {services.map(s => (
@@ -468,7 +468,7 @@ function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           {added.map((p, i) => (
             <li key={i} className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
               <span className="font-semibold text-gray-900">{p.name}</span>
-              <span className="text-gray-500">â‚º{p.price}</span>
+              <span className="text-gray-500">?{p.price}</span>
             </li>
           ))}
         </ul>
@@ -479,7 +479,7 @@ function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   )
 }
 
-// â”€â”€â”€ Step 3: Employees â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step 3: Employees ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [services, setServices] = useState<Array<{ id: string; name: string }>>([])
@@ -528,14 +528,14 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <input className={inputCls} placeholder="Ad Soyad" value={form.name}
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-          <input className={inputCls} placeholder="Ãœnvan (Ã¶rn. KuafÃ¶r)" value={form.title}
+          <input className={inputCls} placeholder="Ünvan (örn. Kuaför)" value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
           <PhoneInput value={form.phone} onChange={v => setForm(f => ({ ...f, phone: v }))} placeholder="555 000 00 00" />
         </div>
 
         {services.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium text-gray-500">VerebildiÄŸi hizmetler:</p>
+            <p className="mb-2 text-xs font-medium text-gray-500">Verebildiði hizmetler:</p>
             <div className="flex flex-wrap gap-2">
               {services.map(s => (
                 <button key={s.id} type="button" onClick={() => toggleService(s.id)}
@@ -554,7 +554,7 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
         <button type="button" onClick={add} disabled={loading || !form.name.trim()}
           className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          Ã‡alÄ±ÅŸanÄ± Ekle
+          Çalýþaný Ekle
         </button>
       </div>
 
@@ -563,7 +563,7 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
           {added.map((p, i) => (
             <li key={i} className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
               <span className="font-semibold text-gray-900">{p.name}</span>
-              <span className="text-gray-500">{p.title || 'Ã‡alÄ±ÅŸan'}</span>
+              <span className="text-gray-500">{p.title || 'Çalýþan'}</span>
             </li>
           ))}
         </ul>
@@ -574,7 +574,7 @@ function EmployeesStep({ onNext, onBack }: { onNext: () => void; onBack: () => v
   )
 }
 
-// â”€â”€â”€ Step 4: Working hours â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step 4: Working hours ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function HoursStep({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [schedule, setSchedule] = useState<DaySchedule[]>(defaultSchedule)
@@ -613,14 +613,14 @@ function HoursStep({ onNext, onBack }: { onNext: () => void; onBack: () => void 
                     className="rounded-xl border border-gray-200 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                     {HALF_HOURS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
-                  <span className="text-gray-400">â€”</span>
+                  <span className="text-gray-400">—</span>
                   <select value={schedule[i].end} onChange={e => update(i, { end: e.target.value })}
                     className="rounded-xl border border-gray-200 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                     {HALF_HOURS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               ) : (
-                <span className="flex-1 text-sm text-gray-400">KapalÄ±</span>
+                <span className="flex-1 text-sm text-gray-400">Kapalý</span>
               )}
             </div>
           ))}
@@ -632,7 +632,7 @@ function HoursStep({ onNext, onBack }: { onNext: () => void; onBack: () => void 
   )
 }
 
-// â”€â”€â”€ Step 5: Branches â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step 5: Branches ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [added, setAdded] = useState<Array<{ name: string; city: string }>>([])
@@ -662,14 +662,14 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   return (
     <div>
       <p className="mb-4 rounded-xl bg-brand-50 border border-brand-100 px-4 py-3 text-sm text-brand-700">
-        Tek ÅŸubeniz varsa bu adÄ±mÄ± atlayabilirsiniz â€” kayÄ±t sÄ±rasÄ±nda verdiÄŸiniz adres ana ÅŸubeniz olarak kullanÄ±lÄ±r.
+        Tek þubeniz varsa bu adýmý atlayabilirsiniz — kayýt sýrasýnda verdiðiniz adres ana þubeniz olarak kullanýlýr.
       </p>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <input className={inputCls} placeholder="Åžube adÄ± (Ã¶rn. KadÄ±kÃ¶y Åžubesi)" value={form.name}
+          <input className={inputCls} placeholder="Þube adý (örn. Kadýköy Þubesi)" value={form.name}
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-          <input className={inputCls} placeholder="Åžehir" value={form.city}
+          <input className={inputCls} placeholder="Þehir" value={form.city}
             onChange={e => setForm(f => ({ ...f, city: e.target.value }))} />
           <input className={inputCls} placeholder="Adres" value={form.address}
             onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
@@ -678,7 +678,7 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         <button type="button" onClick={add} disabled={loading || !form.name.trim()}
           className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          Åžubeyi Ekle
+          Þubeyi Ekle
         </button>
       </div>
 
@@ -687,7 +687,7 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           {added.map((b, i) => (
             <li key={i} className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
               <span className="font-semibold text-gray-900">{b.name}</span>
-              <span className="text-gray-500">{b.city || 'â€”'}</span>
+              <span className="text-gray-500">{b.city || '—'}</span>
             </li>
           ))}
         </ul>
@@ -698,7 +698,7 @@ function BranchesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   )
 }
 
-// â”€â”€â”€ Step 6: Plan selection + payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Step 6: Plan selection + payment ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
 function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (plan?: string) => void }) {
   const [selected, setSelected] = useState<string>('starter')
@@ -726,10 +726,10 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
   async function pay() {
     setPayError('')
     const num = payForm.cardNumber.replace(/\s/g, '')
-    if (num.length < 16) { setPayError('GeÃ§erli bir kart numarasÄ± girin.'); return }
-    if (!payForm.cardHolder.trim()) { setPayError('Kart Ã¼zerindeki isim gereklidir.'); return }
-    if (payForm.expiry.length < 5) { setPayError('GeÃ§erli bir son kullanma tarihi girin.'); return }
-    if (payForm.cvv.length < 3) { setPayError('CVV en az 3 haneli olmalÄ±dÄ±r.'); return }
+    if (num.length < 16) { setPayError('Geçerli bir kart numarasý girin.'); return }
+    if (!payForm.cardHolder.trim()) { setPayError('Kart üzerindeki isim gereklidir.'); return }
+    if (payForm.expiry.length < 5) { setPayError('Geçerli bir son kullanma tarihi girin.'); return }
+    if (payForm.cvv.length < 3) { setPayError('CVV en az 3 haneli olmalýdýr.'); return }
 
     setPaying(true)
     try {
@@ -746,17 +746,17 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
       dueDate.setDate(dueDate.getDate() + 1)
       const planCfg = PLAN_CONFIGS.find(p => p.id === selected)
       await api.post('/api/v1/receivables', {
-        customerName: payForm.cardHolder || 'MÃ¼ÅŸteri',
+        customerName: payForm.cardHolder || 'Müþteri',
         totalAmount: PLAN_PRICES[selected],
         dueDate: dueDate.toISOString().split('T')[0],
         installmentCount: 1,
-        description: `${planCfg?.name ?? selected} Plan aboneliÄŸi (aylÄ±k)`,
+        description: `${planCfg?.name ?? selected} Plan aboneliði (aylýk)`,
       }).catch(() => {})
 
       onComplete(selected)
     } catch (err) {
       const apiErr = err as ApiError
-      setPayError(apiErr.message || 'Ã–deme iÅŸlenirken bir hata oluÅŸtu.')
+      setPayError(apiErr.message || 'Ödeme iþlenirken bir hata oluþtu.')
     }
     setPaying(false)
   }
@@ -768,18 +768,18 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
         <div className="mb-5 flex items-center justify-between rounded-xl border border-brand-200 bg-brand-50 p-4">
           <div>
             <p className="font-semibold text-gray-900">{planCfg?.name} Plan</p>
-            <p className="text-sm text-gray-500">{planCfg?.badgeLabel} Â· aylÄ±k abonelik</p>
+            <p className="text-sm text-gray-500">{planCfg?.badgeLabel} · aylýk abonelik</p>
           </div>
-          <p className="text-lg font-extrabold text-gray-900">â‚º{PLAN_PRICES[selected]}<span className="text-sm font-normal text-gray-500">/ay</span></p>
+          <p className="text-lg font-extrabold text-gray-900">?{PLAN_PRICES[selected]}<span className="text-sm font-normal text-gray-500">/ay</span></p>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-            Bu bÃ¶lÃ¼m test aÅŸamasÄ±ndadÄ±r. GerÃ§ek kart bilgisi girmenize gerek yok â€” herhangi bir kart numarasÄ±, isim ve gÃ¼venlik kodu (CVV) kullanabilirsiniz.
+            Bu bölüm test aþamasýndadýr. Gerçek kart bilgisi girmenize gerek yok — herhangi bir kart numarasý, isim ve güvenlik kodu (CVV) kullanabilirsiniz.
           </p>
-          <input className={inputCls} placeholder="Kart Ã¼zerindeki isim" value={payForm.cardHolder}
+          <input className={inputCls} placeholder="Kart üzerindeki isim" value={payForm.cardHolder}
             onChange={e => setPayForm(f => ({ ...f, cardHolder: e.target.value }))} />
-          <input className={inputCls} placeholder="Kart numarasÄ±" inputMode="numeric" value={payForm.cardNumber}
+          <input className={inputCls} placeholder="Kart numarasý" inputMode="numeric" value={payForm.cardNumber}
             onChange={e => setPayForm(f => ({ ...f, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim() }))} />
           <div className="grid grid-cols-2 gap-3">
             <input className={inputCls} placeholder="AA/YY" inputMode="numeric" value={payForm.expiry}
@@ -792,18 +792,18 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
               onChange={e => setPayForm(f => ({ ...f, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) }))} />
           </div>
           {payError && <p className="text-sm text-red-600">{payError}</p>}
-          <p className="text-xs text-gray-400">Ã–deme bilgileriniz gÃ¼venle saklanÄ±r. 14 gÃ¼n Ã¼cretsiz deneme.</p>
+          <p className="text-xs text-gray-400">Ödeme bilgileriniz güvenle saklanýr. 14 gün ücretsiz deneme.</p>
         </div>
 
         <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-5">
           <button type="button" onClick={() => setPhase('select')}
             className="inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-            <ChevronLeft className="h-4 w-4" /> Plan SeÃ§imine DÃ¶n
+            <ChevronLeft className="h-4 w-4" /> Plan Seçimine Dön
           </button>
           <button type="button" onClick={pay} disabled={paying}
             className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-60 transition-all hover:-translate-y-0.5">
             {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-            Ã–demeyi Tamamla
+            Ödemeyi Tamamla
           </button>
         </div>
       </div>
@@ -848,7 +848,7 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
         </button>
         <button type="button" onClick={proceed}
           className="inline-flex items-center gap-1 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5">
-          {selected === 'custom' ? 'SatÄ±ÅŸ Ekibine Ä°let' : 'Ã–demeye GeÃ§'} <ChevronRight className="h-4 w-4" />
+          {selected === 'custom' ? 'Satýþ Ekibine Ýlet' : 'Ödemeye Geç'} <ChevronRight className="h-4 w-4" />
         </button>
       </div>
     </div>

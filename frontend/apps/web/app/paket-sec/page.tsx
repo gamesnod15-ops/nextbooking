@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
@@ -19,7 +19,7 @@ interface ApiPlan {
   planKey: string | null
 }
 
-// Visuals aren't stored in the DB â€” cycle through a fixed style per card
+// Visuals aren't stored in the DB — cycle through a fixed style per card
 // position, with the highlighted plan always getting the brand treatment.
 const STYLE_BY_POSITION = [
   { icon: Zap, color: 'slate', accentBorder: 'border-slate-200', accentBg: 'bg-slate-50', badgeClass: 'bg-slate-100 text-slate-700', iconBg: 'bg-slate-100', iconColor: 'text-slate-600', btnClass: 'bg-slate-700 hover:bg-slate-800 text-white' },
@@ -78,7 +78,7 @@ function PaketSecContent() {
   function handleContinue() {
     if (!selected) return
 
-    // The Kurumsal (custom) plan has no fixed price â€” there's nothing to
+    // The Kurumsal (custom) plan has no fixed price — there's nothing to
     // charge a card for. Collect the lead instead of routing to checkout.
     if (selected === 'custom') {
       setLeadModalOpen(true)
@@ -97,7 +97,7 @@ function PaketSecContent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30">
       {/* Header */}
       <header className="border-b border-white/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
               <CalendarCheck className="h-4 w-4 text-white" />
@@ -106,25 +106,25 @@ function PaketSecContent() {
           </Link>
           {/* Step indicator */}
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">âœ“</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">?</span>
             <span className="text-gray-400">Hesap</span>
-            <span className="text-gray-300">â€º</span>
+            <span className="text-gray-300">›</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">2</span>
             <span className="font-semibold text-gray-800">Paket</span>
-            <span className="text-gray-300">â€º</span>
+            <span className="text-gray-300">›</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs font-bold">3</span>
-            <span className="text-gray-400">Ã–deme</span>
+            <span className="text-gray-400">Ödeme</span>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Title */}
         <div className="text-center mb-12">
-          <p className="text-sm font-semibold uppercase tracking-widest text-brand-500 mb-2">AdÄ±m 2/3</p>
-          <h1 className="text-4xl font-extrabold text-gray-900">Ä°ÅŸletmenize Uygun PlanÄ± SeÃ§in</h1>
+          <p className="text-sm font-semibold uppercase tracking-widest text-brand-500 mb-2">Adım 2/3</p>
+          <h1 className="text-4xl font-extrabold text-gray-900">İşletmenize Uygun Planı Seçin</h1>
           <p className="mt-3 text-lg text-gray-600 max-w-xl mx-auto">
-            14 gÃ¼n boyunca Ã¼cretsiz kullanÄ±n. Ä°stediÄŸiniz zaman planÄ±nÄ±zÄ± deÄŸiÅŸtirin ya da iptal edin.
+            14 gün boyunca ücretsiz kullanın. İstediğiniz zaman planınızı değiştirin ya da iptal edin.
           </p>
         </div>
 
@@ -155,14 +155,14 @@ function PaketSecContent() {
                 {/* Popular badge */}
                 {isPopular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 px-4 py-1 text-xs font-bold text-amber-900 shadow">
-                    â­ {plan.highlightLabel || 'En PopÃ¼ler'}
+                    ? {plan.highlightLabel || 'En Popüler'}
                   </div>
                 )}
 
                 {/* Selected indicator */}
                 {isSelected && !isPopular && (
                   <div className="absolute -top-3 right-4 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-xs">
-                    âœ“
+                    ?
                   </div>
                 )}
 
@@ -185,17 +185,17 @@ function PaketSecContent() {
                   <div className="mt-4 mb-5">
                     {plan.isCustomPricing ? (
                       <>
-                        <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>Ã–zel</span>
+                        <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>Özel</span>
                         <span className={`text-sm ${isPopular ? 'text-white/70' : 'text-gray-500'}`}> fiyat</span>
                       </>
                     ) : (
                       <>
-                        <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>â‚º{plan.price}</span>
+                        <span className={`text-3xl font-extrabold ${isPopular ? 'text-white' : 'text-gray-900'}`}>?{plan.price}</span>
                         <span className={`text-sm ${isPopular ? 'text-white/70' : 'text-gray-500'}`}>/ay</span>
                       </>
                     )}
                     {!isCustom && (
-                      <p className={`text-xs mt-0.5 ${isPopular ? 'text-white/60' : 'text-gray-400'}`}>+ KDV â€¢ 14 gÃ¼n Ã¼cretsiz</p>
+                      <p className={`text-xs mt-0.5 ${isPopular ? 'text-white/60' : 'text-gray-400'}`}>+ KDV • 14 gün ücretsiz</p>
                     )}
                   </div>
 
@@ -221,7 +221,7 @@ function PaketSecContent() {
                           ? plan.btnClass
                           : `border-2 ${plan.accentBorder} text-gray-700 hover:border-brand-300`
                   }`}>
-                    {isCustom ? plan.buttonText : isSelected ? 'âœ“ SeÃ§ildi' : 'SeÃ§'}
+                    {isCustom ? plan.buttonText : isSelected ? '? Seçildi' : 'Seç'}
                   </div>
                 </div>
               </button>
@@ -233,7 +233,7 @@ function PaketSecContent() {
         {/* Money-back note */}
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
-            ğŸ”’ 30 gÃ¼n para-iade garantisi Â· Kredi kartÄ± gerekmez Â· Ä°stediÄŸiniz zaman iptal
+            ?? 30 gün para-iade garantisi · Kredi kartı gerekmez · İstediğiniz zaman iptal
           </p>
         </div>
 
@@ -244,20 +244,20 @@ function PaketSecContent() {
             disabled={!selected || loading}
             className="flex items-center gap-2 rounded-2xl bg-brand-500 px-10 py-4 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
-            {loading ? 'YÃ¶nlendiriliyorâ€¦' : 'Devam Et â€” Ã–deme'}
+            {loading ? 'Yönlendiriliyor…' : 'Devam Et — Ödeme'}
             <ArrowRight className="h-5 w-5" />
           </button>
           {!selected && (
-            <p className="text-xs text-gray-400">Devam etmek iÃ§in bir plan seÃ§in</p>
+            <p className="text-xs text-gray-400">Devam etmek için bir plan seçin</p>
           )}
         </div>
 
         {/* FAQ strip */}
         <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-3 max-w-3xl mx-auto">
           {[
-            { q: 'Deneme sÃ¼resi sonunda ne olur?', a: 'SeÃ§tiÄŸiniz plan Ã¼cretlendirilmeye baÅŸlanÄ±r. Ä°stediÄŸiniz zaman iptal edebilirsiniz.' },
-            { q: 'Plan deÄŸiÅŸtirebilir miyim?', a: 'Evet, dilediÄŸiniz zaman planÄ±nÄ±zÄ± yÃ¼kseltebilir veya dÃ¼ÅŸÃ¼rebilirsiniz.' },
-            { q: 'Fatura kesilecek mi?', a: 'Evet, her ay e-fatura otomatik olarak gÃ¶nderilir.' },
+            { q: 'Deneme süresi sonunda ne olur?', a: 'Seçtiğiniz plan ücretlendirilmeye başlanır. İstediğiniz zaman iptal edebilirsiniz.' },
+            { q: 'Plan değiştirebilir miyim?', a: 'Evet, dilediğiniz zaman planınızı yükseltebilir veya düşürebilirsiniz.' },
+            { q: 'Fatura kesilecek mi?', a: 'Evet, her ay e-fatura otomatik olarak gönderilir.' },
           ].map(({ q, a }) => (
             <div key={q} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <p className="text-sm font-semibold text-gray-900 mb-1">{q}</p>
@@ -272,9 +272,9 @@ function PaketSecContent() {
   )
 }
 
-// â”€â”€â”€ Sales lead modal (Kurumsal / custom plan) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ¦¦¦ Sales lead modal (Kurumsal / custom plan) ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
 
-// Same +90 formatting used on /register â€” keeps phone input consistent site-wide.
+// Same +90 formatting used on /register — keeps phone input consistent site-wide.
 function formatPhoneDisplay(raw: string) {
   const digits = raw.replace(/\D/g, '')
   const local = digits.startsWith('90') ? digits.slice(2) : digits.startsWith('0') ? digits.slice(1) : digits
@@ -307,12 +307,12 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
 
   function validate(): boolean {
     const errs: Record<string, string> = {}
-    if (!form.companyName.trim()) errs.companyName = 'Ä°ÅŸletme adÄ± gereklidir.'
+    if (!form.companyName.trim()) errs.companyName = 'İşletme adı gereklidir.'
     if (!form.firstName.trim()) errs.firstName = 'Ad gereklidir.'
     if (!form.lastName.trim()) errs.lastName = 'Soyad gereklidir.'
-    if (!form.phone.trim() || form.phone.replace(/\D/g, '').length < 12) errs.phone = 'GeÃ§erli bir telefon numarasÄ± girin.'
+    if (!form.phone.trim() || form.phone.replace(/\D/g, '').length < 12) errs.phone = 'Geçerli bir telefon numarası girin.'
     if (!form.email.trim()) errs.email = 'E-posta gereklidir.'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'GeÃ§erli bir e-posta girin.'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Geçerli bir e-posta girin.'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -335,7 +335,7 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
       setSent(true)
     } catch (err) {
       const apiErr = err as ApiError
-      setGeneralError(apiErr.message || 'Talebiniz gÃ¶nderilirken bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.')
+      setGeneralError(apiErr.message || 'Talebiniz gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
     } finally {
       setSubmitting(false)
     }
@@ -365,10 +365,10 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
               <CheckCircle className="h-8 w-8 text-emerald-500" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900">Talebiniz AlÄ±ndÄ±!</h3>
+            <h3 className="text-lg font-bold text-gray-900">Talebiniz Alındı!</h3>
             <p className="max-w-sm text-sm text-gray-600">
-              SatÄ±ÅŸ ekibimiz talebinizi inceleyip en kÄ±sa sÃ¼rede <strong>+90 {formatPhoneDisplay(form.phone)}</strong> numarasÄ±ndan
-              veya <strong>{form.email}</strong> adresinden sizinle iletiÅŸime geÃ§ecek.
+              Satış ekibimiz talebinizi inceleyip en kısa sürede <strong>+90 {formatPhoneDisplay(form.phone)}</strong> numarasından
+              veya <strong>{form.email}</strong> adresinden sizinle iletişime geçecek.
             </p>
             <button onClick={onClose} className="mt-2 text-sm font-medium text-brand-600 hover:underline">
               Kapat
@@ -378,10 +378,10 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
           <div className="p-8">
             <div className="mb-1 flex items-center gap-2">
               <Building2 className="h-5 w-5 text-brand-500" />
-              <h2 className="text-xl font-bold text-gray-900">Kurumsal Plan â€” SatÄ±ÅŸ Ekibiyle GÃ¶rÃ¼ÅŸ</h2>
+              <h2 className="text-xl font-bold text-gray-900">Kurumsal Plan — Satış Ekibiyle Görüş</h2>
             </div>
             <p className="mb-6 text-sm text-gray-500">
-              Ä°htiyaÃ§larÄ±nÄ±zÄ± bize iletin, size Ã¶zel fiyat teklifiyle en kÄ±sa sÃ¼rede dÃ¶nelim.
+              İhtiyaçlarınızı bize iletin, size özel fiyat teklifiyle en kısa sürede dönelim.
             </p>
 
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
@@ -393,13 +393,13 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div>
                   <label htmlFor="lead-lastname" className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
-                  <input id="lead-lastname" value={form.lastName} onChange={set('lastName')} placeholder="YÄ±lmaz" autoComplete="family-name" className={inputCls(errors.lastName)} />
+                  <input id="lead-lastname" value={form.lastName} onChange={set('lastName')} placeholder="Yılmaz" autoComplete="family-name" className={inputCls(errors.lastName)} />
                   {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
                 </div>
               </div>
               <div>
-                <label htmlFor="lead-company" className="mb-1.5 block text-sm font-medium text-gray-700">Ä°ÅŸletme AdÄ± *</label>
-                <input id="lead-company" value={form.companyName} onChange={set('companyName')} placeholder="Ã–rn. Elit GÃ¼zellik Merkezi" autoComplete="organization" className={inputCls(errors.companyName)} />
+                <label htmlFor="lead-company" className="mb-1.5 block text-sm font-medium text-gray-700">İşletme Adı *</label>
+                <input id="lead-company" value={form.companyName} onChange={set('companyName')} placeholder="Örn. Elit Güzellik Merkezi" autoComplete="organization" className={inputCls(errors.companyName)} />
                 {errors.companyName && <p className="mt-1 text-xs text-red-500">{errors.companyName}</p>}
               </div>
               <div>
@@ -409,10 +409,10 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="lead-phone" className="mb-1.5 block text-sm font-medium text-gray-700">Telefon NumarasÄ± *</label>
+                  <label htmlFor="lead-phone" className="mb-1.5 block text-sm font-medium text-gray-700">Telefon Numarası *</label>
                   <div className={`flex w-full overflow-hidden rounded-xl border bg-white focus-within:ring-2 focus-within:ring-brand-500/40 transition-shadow ${errors.phone ? 'border-red-400' : 'border-gray-200'}`}>
                     <span className="flex shrink-0 select-none items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500">
-                      ğŸ‡¹ğŸ‡· +90
+                      ???? +90
                     </span>
                     <input
                       id="lead-phone"
@@ -427,13 +427,13 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
                   {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                 </div>
                 <div>
-                  <label htmlFor="lead-branchcount" className="mb-1.5 block text-sm font-medium text-gray-700">Åube SayÄ±sÄ±</label>
-                  <input id="lead-branchcount" value={form.branchCount} onChange={set('branchCount')} type="number" min={1} placeholder="Ã–rn. 5" className={inputCls()} />
+                  <label htmlFor="lead-branchcount" className="mb-1.5 block text-sm font-medium text-gray-700">Şube Sayısı</label>
+                  <input id="lead-branchcount" value={form.branchCount} onChange={set('branchCount')} type="number" min={1} placeholder="Örn. 5" className={inputCls()} />
                 </div>
               </div>
               <div>
-                <label htmlFor="lead-message" className="mb-1.5 block text-sm font-medium text-gray-700">Ä°htiyaÃ§larÄ±nÄ±z (isteÄŸe baÄŸlÄ±)</label>
-                <textarea id="lead-message" value={form.message} onChange={set('message')} rows={3} placeholder="KaÃ§ personel, hangi entegrasyonlar, Ã¶zel akÄ±ÅŸlarâ€¦" className={`${inputCls()} resize-none`} />
+                <label htmlFor="lead-message" className="mb-1.5 block text-sm font-medium text-gray-700">İhtiyaçlarınız (isteğe bağlı)</label>
+                <textarea id="lead-message" value={form.message} onChange={set('message')} rows={3} placeholder="Kaç personel, hangi entegrasyonlar, özel akışlar…" className={`${inputCls()} resize-none`} />
               </div>
 
               {generalError && <p className="text-sm text-red-500">{generalError}</p>}
@@ -444,7 +444,7 @@ function SalesLeadModal({ onClose }: { onClose: () => void }) {
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                {submitting ? 'GÃ¶nderiliyorâ€¦' : 'Talebi GÃ¶nder'}
+                {submitting ? 'Gönderiliyor…' : 'Talebi Gönder'}
               </button>
             </form>
           </div>

@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Navbar } from '@/components/Navbar'
@@ -24,9 +24,9 @@ export default function IletisimPage() {
     if (!form.ad.trim())     newErrors.ad = 'Bu alan zorunludur.'
     if (!form.soyad.trim())  newErrors.soyad = 'Bu alan zorunludur.'
     if (!form.email.trim())  newErrors.email = 'Bu alan zorunludur.'
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = 'GeÃ§erli bir e-posta girin.'
-    if (!form.konu.trim())   newErrors.konu = 'LÃ¼tfen bir konu seÃ§in.'
-    if (!form.mesaj.trim())  newErrors.mesaj = 'Mesaj alanÄ± boÅŸ bÄ±rakÄ±lamaz.'
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = 'Geçerli bir e-posta girin.'
+    if (!form.konu.trim())   newErrors.konu = 'Lütfen bir konu seçin.'
+    if (!form.mesaj.trim())  newErrors.mesaj = 'Mesaj alaný boþ býrakýlamaz.'
     setErrors(newErrors)
     if (Object.keys(newErrors).length === 0) {
       setSubmitted(true)
@@ -59,11 +59,11 @@ export default function IletisimPage() {
             </svg>
           </div>
           <div className="relative mx-auto max-w-3xl px-5 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Ä°letiÅŸim</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-6">NasÄ±l YardÄ±mcÄ± Olabiliriz?</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Ýletiþim</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-6">Nasýl Yardýmcý Olabiliriz?</h1>
             <p className="mx-auto max-w-xl text-lg text-gray-300">
-              SorularÄ±nÄ±z, Ã¶nerileriniz veya Ã¶zel ihtiyaÃ§larÄ±nÄ±z iÃ§in bize ulaÅŸÄ±n.
-              Ekibimiz en kÄ±sa sÃ¼rede size geri dÃ¶necek.
+              Sorularýnýz, önerileriniz veya özel ihtiyaçlarýnýz için bize ulaþýn.
+              Ekibimiz en kýsa sürede size geri dönecek.
             </p>
           </div>
         </section>
@@ -72,8 +72,8 @@ export default function IletisimPage() {
         <section className="bg-white py-20 border-b border-gray-100">
           <div className="mx-auto max-w-6xl px-5">
             <div className="text-center mb-12">
-              <h2 className="text-2xl font-extrabold text-gray-900">Destek KanallarÄ±mÄ±z</h2>
-              <p className="text-sm text-gray-500 mt-2">Size en uygun kanaldan ulaÅŸÄ±n</p>
+              <h2 className="text-2xl font-extrabold text-gray-900">Destek Kanallarýmýz</h2>
+              <p className="text-sm text-gray-500 mt-2">Size en uygun kanaldan ulaþýn</p>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* 7/24 Support */}
@@ -84,11 +84,11 @@ export default function IletisimPage() {
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">7/24 Destek</h3>
                 <p className="text-xs text-gray-600 leading-relaxed mb-3">
-                  Destek birimimiz haftanÄ±n 7 gÃ¼nÃ¼, gÃ¼nÃ¼n 24 saati hizmetinizdedir.
+                  Destek birimimiz haftanýn 7 günü, günün 24 saati hizmetinizdedir.
                 </p>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Ã‡evrimiÃ§i
+                  Çevrimiçi
                 </span>
               </div>
 
@@ -100,10 +100,10 @@ export default function IletisimPage() {
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">AI Chatbot</h3>
                 <p className="text-xs text-gray-600 leading-relaxed mb-3">
-                  Yapay zeka destekli chatbot&apos;umuz sÄ±k sorulan sorulara anÄ±nda yanÄ±t verir.
+                  Yapay zeka destekli chatbot&apos;umuz sýk sorulan sorulara anýnda yanýt verir.
                 </p>
                 <a href="#chatbot" className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 hover:underline">
-                  Chatbot&apos;u AÃ§ â€º
+                  Chatbot&apos;u Aç ›
                 </a>
               </div>
 
@@ -113,11 +113,11 @@ export default function IletisimPage() {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200 transition-all shadow-sm">
                   <MessageSquare className="h-7 w-7 text-emerald-600" />
                 </div>
-                <h3 className="text-base font-bold text-gray-900 mb-2">CanlÄ± Destek</h3>
+                <h3 className="text-base font-bold text-gray-900 mb-2">Canlý Destek</h3>
                 <p className="text-xs text-gray-600 leading-relaxed mb-3">
-                  Uzman destek ekibimizle gerÃ§ek zamanlÄ± sohbet edin. Ortalama yanÄ±t sÃ¼remiz 2 dakika.
+                  Uzman destek ekibimizle gerçek zamanlý sohbet edin. Ortalama yanýt süremiz 2 dakika.
                 </p>
-                <p className="text-xs text-gray-400">Pztâ€“Cum: 09:00â€“22:00<br />Ctsâ€“Paz: 10:00â€“18:00</p>
+                <p className="text-xs text-gray-400">Pzt–Cum: 09:00–22:00<br />Cts–Paz: 10:00–18:00</p>
               </div>
 
               {/* Contact info */}
@@ -130,7 +130,7 @@ export default function IletisimPage() {
                   {[
                     { icon: Mail,   label: 'E-posta', value: 'destek@JetRandevu.com' },
                     { icon: Phone,  label: 'Telefon', value: '+90 (212) 000 00 00' },
-                    { icon: MapPin, label: 'Adres',   value: 'Maslak, Ä°stanbul' },
+                    { icon: MapPin, label: 'Adres',   value: 'Maslak, Ýstanbul' },
                   ].map(({ icon: Icon, label, value }) => (
                     <div key={label} className="flex items-center gap-2.5">
                       <Icon className="h-3.5 w-3.5 shrink-0 text-amber-500" />
@@ -151,7 +151,7 @@ export default function IletisimPage() {
           <div className="mx-auto max-w-3xl px-5 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Sosyal Medya</p>
             <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Bizi Takip Edin</h2>
-            <p className="text-sm text-gray-500 mb-10">GÃ¼ncelleme ve duyurular iÃ§in sosyal medya hesaplarÄ±mÄ±zÄ± takip edin.</p>
+            <p className="text-sm text-gray-500 mb-10">Güncelleme ve duyurular için sosyal medya hesaplarýmýzý takip edin.</p>
             <div className="flex items-center justify-center gap-6 flex-wrap">
               {[
                 { icon: InstagramIcon, label: 'Instagram', href: '#', color: 'hover:bg-gradient-to-br hover:from-pink-500 hover:to-orange-500' },
@@ -181,19 +181,19 @@ export default function IletisimPage() {
               {/* Form */}
               <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
                 <h2 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
-                  <Send className="h-5 w-5 text-brand-500" /> Bize YazÄ±n
+                  <Send className="h-5 w-5 text-brand-500" /> Bize Yazýn
                 </h2>
-                <p className="text-sm text-gray-500 mb-6">En geÃ§ 1 iÅŸ gÃ¼nÃ¼ iÃ§inde yanÄ±t veriyoruz.</p>
+                <p className="text-sm text-gray-500 mb-6">En geç 1 iþ günü içinde yanýt veriyoruz.</p>
 
                 {submitted ? (
                   <div className="flex flex-col items-center py-10 text-center gap-4">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
                       <CheckCircle className="h-8 w-8 text-emerald-500" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">MesajÄ±nÄ±z AlÄ±ndÄ±!</h3>
-                    <p className="text-sm text-gray-600 max-w-sm">En kÄ±sa sÃ¼rede size geri dÃ¶neceÄŸiz. TeÅŸekkÃ¼r ederiz!</p>
+                    <h3 className="text-lg font-bold text-gray-900">Mesajýnýz Alýndý!</h3>
+                    <p className="text-sm text-gray-600 max-w-sm">En kýsa sürede size geri döneceðiz. Teþekkür ederiz!</p>
                     <button onClick={() => setSubmitted(false)} className="mt-2 text-sm text-brand-500 hover:underline font-medium">
-                      Yeni mesaj gÃ¶nder
+                      Yeni mesaj gönder
                     </button>
                   </div>
                 ) : (
@@ -206,7 +206,7 @@ export default function IletisimPage() {
                       </div>
                       <div>
                         <label htmlFor="iletisim-soyad" className="mb-1.5 block text-sm font-medium text-gray-700">Soyad *</label>
-                        <input id="iletisim-soyad" name="soyad" type="text" placeholder="YÄ±lmaz" value={form.soyad} onChange={handleChange} className={inputCls(errors.soyad)} />
+                        <input id="iletisim-soyad" name="soyad" type="text" placeholder="Yýlmaz" value={form.soyad} onChange={handleChange} className={inputCls(errors.soyad)} />
                         {errors.soyad && <p className="mt-1 text-xs text-red-500">{errors.soyad}</p>}
                       </div>
                     </div>
@@ -218,24 +218,24 @@ export default function IletisimPage() {
                     <div>
                       <label htmlFor="iletisim-konu" className="mb-1.5 block text-sm font-medium text-gray-700">Konu *</label>
                       <select id="iletisim-konu" name="konu" value={form.konu} onChange={handleChange} className={inputCls(errors.konu)}>
-                        <option value="">Konu seÃ§inâ€¦</option>
+                        <option value="">Konu seçin…</option>
                         <option value="teknik">Teknik Destek</option>
-                        <option value="fatura">Fatura & Ã–deme</option>
-                        <option value="satis">SatÄ±ÅŸ & FiyatlandÄ±rma</option>
-                        <option value="ozellik">Ã–zellik Talebi</option>
-                        <option value="diger">DiÄŸer</option>
+                        <option value="fatura">Fatura & Ödeme</option>
+                        <option value="satis">Satýþ & Fiyatlandýrma</option>
+                        <option value="ozellik">Özellik Talebi</option>
+                        <option value="diger">Diðer</option>
                       </select>
                       {errors.konu && <p className="mt-1 text-xs text-red-500">{errors.konu}</p>}
                     </div>
                     <div>
-                      <label htmlFor="iletisim-mesaj" className="mb-1.5 block text-sm font-medium text-gray-700">MesajÄ±nÄ±z *</label>
-                      <textarea id="iletisim-mesaj" name="mesaj" rows={5} placeholder="NasÄ±l yardÄ±mcÄ± olabiliriz?" value={form.mesaj} onChange={handleChange}
+                      <label htmlFor="iletisim-mesaj" className="mb-1.5 block text-sm font-medium text-gray-700">Mesajýnýz *</label>
+                      <textarea id="iletisim-mesaj" name="mesaj" rows={5} placeholder="Nasýl yardýmcý olabiliriz?" value={form.mesaj} onChange={handleChange}
                         className={`${inputCls(errors.mesaj)} resize-none`} />
                       {errors.mesaj && <p className="mt-1 text-xs text-red-500">{errors.mesaj}</p>}
                     </div>
                     <button type="submit"
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-bold text-white shadow-md hover:bg-brand-600 transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                      <Send className="h-4 w-4" /> GÃ¶nder
+                      <Send className="h-4 w-4" /> Gönder
                     </button>
                   </form>
                 )}
@@ -243,13 +243,13 @@ export default function IletisimPage() {
 
               {/* FAQ */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900">SÄ±k Sorulan Sorular</h2>
+                <h2 className="text-xl font-bold text-gray-900">Sýk Sorulan Sorular</h2>
                 {[
-                  { q: '7/24 destek Ã¼cretsiz mi?', a: 'Evet, tÃ¼m planlarda 7/24 Ã§evrimiÃ§i chatbot ve e-posta desteÄŸi Ã¼cretsizdir. Business ve Ã¼zeri planlarda canlÄ± destek de dahildir.' },
-                  { q: 'AI Chatbot ne yapabilir?', a: 'Chatbot\'umuz randevu yÃ¶netimi, fatura sorgularÄ±, teknik sorunlar ve sÄ±k sorulan sorularÄ± anÄ±nda yanÄ±tlar. Yeterli olmazsa sizi canlÄ± destek ekibine yÃ¶nlendirir.' },
-                  { q: 'Ortalama yanÄ±t sÃ¼resi ne kadar?', a: 'Chatbot anÄ±nda yanÄ±t verir. CanlÄ± destek iÃ§in ortalama 2 dakika, e-posta iÃ§in 1 iÅŸ gÃ¼nÃ¼dÃ¼r.' },
-                  { q: 'Teknik sorunlar iÃ§in ne yapmalÄ±yÄ±m?', a: 'Ã–nce AI Chatbot\'u deneyin. Ã‡Ã¶zÃ¼m bulamazsanÄ±z canlÄ± destek veya destek formuyla bize ulaÅŸÄ±n. Kritik sorunlara 1 saat iÃ§inde yanÄ±t veriyoruz.' },
-                  { q: 'Demo talep edebilir miyim?', a: 'Evet! Formu kullanarak "SatÄ±ÅŸ & FiyatlandÄ±rma" konusunu seÃ§in, size en uygun zamanda ekibimiz arayacak.' },
+                  { q: '7/24 destek ücretsiz mi?', a: 'Evet, tüm planlarda 7/24 çevrimiçi chatbot ve e-posta desteði ücretsizdir. Business ve üzeri planlarda canlý destek de dahildir.' },
+                  { q: 'AI Chatbot ne yapabilir?', a: 'Chatbot\'umuz randevu yönetimi, fatura sorgularý, teknik sorunlar ve sýk sorulan sorularý anýnda yanýtlar. Yeterli olmazsa sizi canlý destek ekibine yönlendirir.' },
+                  { q: 'Ortalama yanýt süresi ne kadar?', a: 'Chatbot anýnda yanýt verir. Canlý destek için ortalama 2 dakika, e-posta için 1 iþ günüdür.' },
+                  { q: 'Teknik sorunlar için ne yapmalýyým?', a: 'Önce AI Chatbot\'u deneyin. Çözüm bulamazsanýz canlý destek veya destek formuyla bize ulaþýn. Kritik sorunlara 1 saat içinde yanýt veriyoruz.' },
+                  { q: 'Demo talep edebilir miyim?', a: 'Evet! Formu kullanarak "Satýþ & Fiyatlandýrma" konusunu seçin, size en uygun zamanda ekibimiz arayacak.' },
                 ].map(({ q, a }) => (
                   <div key={q} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
                     <p className="text-sm font-semibold text-gray-900 mb-1.5">{q}</p>

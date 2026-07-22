@@ -1,7 +1,7 @@
-﻿import { VideoHeroPopup } from './VideoHeroPopup'
+import { VideoHeroPopup } from './VideoHeroPopup'
 
 // Full-width silent autoplay video banner shown above the bento hero.
-// Stock footage — swap `src` for real JetRandevu/salon footage when available.
+// Stock footage � swap `src` for real JetRandevu/salon footage when available.
 export function VideoHeroBanner() {
   return (
     <section id="video-hero-banner" className="relative h-screen w-full overflow-hidden bg-gray-900">

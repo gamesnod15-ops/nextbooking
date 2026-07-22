@@ -1,94 +1,94 @@
-ï»¿import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-export const metadata = { title: 'HakkÄ±mÄ±zda â€” JetRandevu' }
+export const metadata = { title: 'Hakkımızda — JetRandevu' }
 
 const milestones = [
   {
     year: '2023',
-    title: 'KuruluÅŸ',
-    desc: 'Ä°stanbul\'da 5 kiÅŸilik bir ekiple kurulduk. Basit bir soruna Ã§Ã¶zÃ¼m arÄ±yorduk.',
-    icon: 'ğŸš€',
+    title: 'Kuruluş',
+    desc: 'İstanbul\'da 5 kişilik bir ekiple kurulduk. Basit bir soruna çözüm arıyorduk.',
+    icon: '??',
   },
   {
     year: '2024',
-    title: 'Ä°lk 1.000 MÃ¼ÅŸteri',
-    desc: '6 ayda 1.000 aktif iÅŸletmeye ulaÅŸtÄ±k. GÃ¼ven inÅŸa ettik.',
-    icon: 'ğŸ¯',
+    title: 'İlk 1.000 Müşteri',
+    desc: '6 ayda 1.000 aktif işletmeye ulaştık. Güven inşa ettik.',
+    icon: '??',
   },
   {
     year: '2024',
-    title: 'Seri A YatÄ±rÄ±m',
-    desc: 'Ekibimizi 30 kiÅŸiye geniÅŸlettik. Teknoloji altyapÄ±mÄ±zÄ± gÃ¼Ã§lendirdik.',
-    icon: 'ğŸ’°',
+    title: 'Seri A Yatırım',
+    desc: 'Ekibimizi 30 kişiye genişlettik. Teknoloji altyapımızı güçlendirdik.',
+    icon: '??',
   },
   {
     year: '2025',
-    title: '10.000+ Ä°ÅŸletme',
-    desc: 'TÃ¼rkiye genelinde 10.000+ iÅŸletme bize gÃ¼vendi. BÃ¼yÃ¼meye devam ediyoruz.',
-    icon: 'ğŸ†',
+    title: '10.000+ İşletme',
+    desc: 'Türkiye genelinde 10.000+ işletme bize güvendi. Büyümeye devam ediyoruz.',
+    icon: '??',
   },
 ]
 
 const values = [
   {
-    title: 'MÃ¼ÅŸteri OdaklÄ±lÄ±k',
-    desc: 'Her kararÄ±mÄ±zda mÃ¼ÅŸterilerimizin baÅŸarÄ±sÄ±nÄ± Ã¶n planda tutuyoruz.',
-    icon: 'ğŸ‘¥',
+    title: 'Müşteri Odaklılık',
+    desc: 'Her kararımızda müşterilerimizin başarısını ön planda tutuyoruz.',
+    icon: '??',
     color: 'from-blue-500 to-blue-600',
   },
   {
-    title: 'HÄ±z & Basitlik',
-    desc: 'KarmaÅŸÄ±k yazÄ±lÄ±mlar yerine 5 dakikada kullanÄ±labilir bir platform.',
-    icon: 'âš¡',
+    title: 'Hız & Basitlik',
+    desc: 'Karmaşık yazılımlar yerine 5 dakikada kullanılabilir bir platform.',
+    icon: '?',
     color: 'from-amber-500 to-orange-600',
   },
   {
-    title: 'GÃ¼venilirlik',
-    desc: '%99.9 uptime garantisi ve PCI DSS uyumlu altyapÄ±.',
-    icon: 'ğŸ›¡ï¸',
+    title: 'Güvenilirlik',
+    desc: '%99.9 uptime garantisi ve PCI DSS uyumlu altyapı.',
+    icon: '???',
     color: 'from-emerald-500 to-emerald-600',
   },
   {
     title: 'Empati',
-    desc: 'Ä°ÅŸletme sahiplerinin gÃ¼nlÃ¼k zorluklarÄ±nÄ± anlÄ±yoruz.',
-    icon: 'ğŸ’™',
+    desc: 'İşletme sahiplerinin günlük zorluklarını anlıyoruz.',
+    icon: '??',
     color: 'from-violet-500 to-purple-600',
   },
 ]
 
 const team = [
   {
-    name: 'Mert YÄ±ldÄ±z',
+    name: 'Mert Yıldız',
     role: 'Kurucu & CEO',
     img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80',
-    quote: 'Teknoloji her iÅŸletmenin eriÅŸebileceÄŸi kadar basit olmalÄ±.',
+    quote: 'Teknoloji her işletmenin erişebileceği kadar basit olmalı.',
   },
   {
     name: 'Selin Kaya',
     role: 'CTO',
     img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80',
-    quote: 'MÃ¼kemmel Ã¼rÃ¼n, kullanÄ±cÄ±yÄ± dÃ¼ÅŸÃ¼nerek baÅŸlar.',
+    quote: 'Mükemmel ürün, kullanıcıyı düşünerek başlar.',
   },
   {
-    name: 'Emre DoÄŸan',
-    role: 'ÃœrÃ¼n DirektÃ¶rÃ¼',
+    name: 'Emre Doğan',
+    role: 'Ürün Direktörü',
     img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80',
-    quote: 'Her detay, kullanÄ±cÄ± deneyimini etkiler.',
+    quote: 'Her detay, kullanıcı deneyimini etkiler.',
   },
   {
-    name: 'AyÅŸe Tekin',
-    role: 'MÃ¼ÅŸteri Deneyimi',
+    name: 'Ayşe Tekin',
+    role: 'Müşteri Deneyimi',
     img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80',
-    quote: 'MÃ¼ÅŸterilerimizin sesi her zaman Ã¶nceliÄŸimiz.',
+    quote: 'Müşterilerimizin sesi her zaman önceliğimiz.',
   },
   {
     name: 'Can Demir',
-    role: 'BaÅŸ GeliÅŸtirici',
+    role: 'Baş Geliştirici',
     img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
-    quote: 'Temiz kod, hÄ±zlÄ± product demektir.',
+    quote: 'Temiz kod, hızlı product demektir.',
   },
 ]
 
@@ -104,20 +104,20 @@ export default function HakkimizdaPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-3">Hikayemiz</p>
                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-6">
-                  Basit bir sorudan<br />bÃ¼yÃ¼k bir platforma
+                  Basit bir sorudan<br />büyük bir platforma
                 </h2>
                 <div className="space-y-4 text-gray-600 leading-relaxed">
                   <p>
-                    Kurucumuz Mert, kardeÅŸinin gÃ¼zellik salonunu ziyaret ettiÄŸinde telefon trafiÄŸinin yarattÄ±ÄŸÄ± kaosu gÃ¶rdÃ¼.
-                    MÃ¼ÅŸteriler randevu almak iÃ§in saat bekliyordu.
+                    Kurucumuz Mert, kardeşinin güzellik salonunu ziyaret ettiğinde telefon trafiğinin yarattığı kaosu gördü.
+                    Müşteriler randevu almak için saat bekliyordu.
                   </p>
                   <p>
-                    &ldquo;Bu sorunu Ã§Ã¶zmek iÃ§in birkaÃ§ hafta yeter&rdquo; diye dÃ¼ÅŸÃ¼nerek baÅŸladÄ±ÄŸÄ± yolculuk, bugÃ¼n
-                    10.000&apos;den fazla iÅŸletmenin gÃ¼vendiÄŸi bir platforma dÃ¶nÃ¼ÅŸtÃ¼.
+                    &ldquo;Bu sorunu çözmek için birkaç hafta yeter&rdquo; diye düşünerek başladığı yolculuk, bugün
+                    10.000&apos;den fazla işletmenin güvendiği bir platforma dönüştü.
                   </p>
                   <p>
-                    Ekibimiz SaaS, Ã¶deme sistemleri ve kullanÄ±cÄ± deneyimi alanlarÄ±nda deneyimli geliÅŸtiriciler,
-                    tasarÄ±mcÄ±lar ve iÅŸletme uzmanlarÄ±ndan oluÅŸuyor.
+                    Ekibimiz SaaS, ödeme sistemleri ve kullanıcı deneyimi alanlarında deneyimli geliştiriciler,
+                    tasarımcılar ve işletme uzmanlarından oluşuyor.
                   </p>
                 </div>
               </div>
@@ -126,12 +126,12 @@ export default function HakkimizdaPage() {
                 <div className="space-y-3">
                   <img
                     src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=400&q=80"
-                    alt="Ekip Ã§alÄ±ÅŸmasÄ±"
+                    alt="Ekip çalışması"
                     className="w-full h-48 object-cover rounded-2xl"
                   />
                   <img
                     src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80"
-                    alt="ToplantÄ±"
+                    alt="Toplantı"
                     className="w-full h-64 object-cover rounded-2xl"
                   />
                 </div>
@@ -156,8 +156,8 @@ export default function HakkimizdaPage() {
         <section className="bg-white py-24 overflow-hidden">
           <div className="mx-auto max-w-6xl px-5">
             <div className="text-center mb-16">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-3">YolculuÄŸumuz</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Zaman Ã‡izelgemiz</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-3">Yolculuğumuz</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Zaman Çizelgemiz</h2>
             </div>
 
             {/* Horizontal scroll container */}
@@ -205,7 +205,7 @@ export default function HakkimizdaPage() {
 
           <div className="relative mx-auto max-w-5xl px-5">
             <div className="text-center mb-14">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">DeÄŸerlerimiz</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Değerlerimiz</p>
               <h2 className="text-3xl md:text-4xl font-extrabold text-white">Bizi biz yapan ilkeler</h2>
             </div>
 
@@ -231,8 +231,8 @@ export default function HakkimizdaPage() {
           <div className="mx-auto max-w-6xl px-5">
             <div className="text-center mb-16">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-3">Ekibimiz</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">ArkamÄ±zdaki insanlar</h2>
-              <p className="mt-3 text-gray-500">Tutkulu ekibimizden bazÄ± isimler</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Arkamızdaki insanlar</h2>
+              <p className="mt-3 text-gray-500">Tutkulu ekibimizden bazı isimler</p>
             </div>
             <div className="grid grid-cols-2 gap-6 md:gap-8 lg:grid-cols-5">
               {team.map((member) => (
@@ -259,16 +259,16 @@ export default function HakkimizdaPage() {
         {/* CTA */}
         <section className="bg-[#1a1a1a] py-20 text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
-            Bizimle BÃ¼yÃ¼mek Ä°ster misiniz?
+            Bizimle Büyümek İster misiniz?
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto mb-8">
-            14 gÃ¼n Ã¼cretsiz deneme ile JetRandevu&apos;Ä± keÅŸfedin.
+            14 gün ücretsiz deneme ile JetRandevu&apos;ı keşfedin.
           </p>
           <Link
             href="/register"
             className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5 shadow-lg"
           >
-            Ãœcretsiz BaÅŸla <ArrowRight className="h-4 w-4" />
+            Ücretsiz Başla <ArrowRight className="h-4 w-4" />
           </Link>
         </section>
       </main>

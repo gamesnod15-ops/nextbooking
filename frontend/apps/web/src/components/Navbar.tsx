@@ -67,7 +67,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Subheader */}
       <div className="hidden md:flex border-b border-gray-200 bg-[#EFEFEF]">
-        <div className="mx-auto flex h-9 w-full max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex h-9 w-full max-w-screen-2xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <div className="flex items-center gap-1.5">
             <Mail className="h-3 w-3" />
             <a href="mailto:info@jetrandevu.com" className="text-xs hover:text-brand-500 transition-colors">info@jetrandevu.com</a>
@@ -89,7 +89,7 @@ export function Navbar() {
         </div>
       </div>
       <div className="border-b border-white/10 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-5 sm:px-8 lg:px-10">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <img src="/icon-site.png" alt="JetRandevu" className="h-7 w-auto sm:h-8" />

@@ -8,8 +8,8 @@ namespace RandevumKolay.Application.Features.Business.Queries.GetPublicBusinesse
 
 public record GetPublicBusinessesQuery(
     string? Search = null,
-    int? CategoryId = null,
-    string? City = null,
+    List<int>? CategoryIds = null,
+    List<string>? Cities = null,
     int PageNumber = 1,
     int PageSize = 12) : IRequest<PaginatedList<PublicBusinessDto>>;
 
@@ -79,11 +79,14 @@ public sealed class GetPublicBusinessesQueryHandler
                 (b.Description != null && b.Description.ToLower().Contains(term)));
         }
 
-        if (request.CategoryId.HasValue)
-            query = query.Where(b => (int)b.Category == request.CategoryId.Value);
+        if (request.CategoryIds != null && request.CategoryIds.Count > 0)
+            query = query.Where(b => request.CategoryIds.Contains((int)b.Category));
 
-        if (!string.IsNullOrWhiteSpace(request.City))
-            query = query.Where(b => b.City != null && b.City.ToLower() == request.City.ToLower());
+        if (request.Cities != null && request.Cities.Count > 0)
+        {
+            var lowerCities = request.Cities.Select(c => c.ToLower()).ToList();
+            query = query.Where(b => b.City != null && lowerCities.Contains(b.City.ToLower()));
+        }
 
         var businesses = await query
             .OrderBy(b => b.Name)

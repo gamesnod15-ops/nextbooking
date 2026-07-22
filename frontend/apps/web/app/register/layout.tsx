@@ -1,8 +1,8 @@
-ï»¿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'KayÄ±t Ol â€” JetRandevu',
-  description: 'Ä°ÅŸletmeniz iÃ§in Ã¼cretsiz JetRandevu hesabÄ± oluÅŸturun ve online randevu almaya hemen baÅŸlayÄ±n.',
+  title: 'Kayıt Ol — JetRandevu',
+  description: 'İşletmeniz için ücretsiz JetRandevu hesabı oluşturun ve online randevu almaya hemen başlayın.',
 }
 
 export default function RegisterLayout({ children }: { children: React.ReactNode }) {

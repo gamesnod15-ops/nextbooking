@@ -1,8 +1,8 @@
-ï»¿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'DokÃ¼mantasyon â€” JetRandevu',
-  description: 'JetRandevu API dokÃ¼mantasyonu, entegrasyon rehberleri ve sÄ±k sorulan sorular.',
+  title: 'Dokümantasyon — JetRandevu',
+  description: 'JetRandevu API dokümantasyonu, entegrasyon rehberleri ve sýk sorulan sorular.',
 }
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {

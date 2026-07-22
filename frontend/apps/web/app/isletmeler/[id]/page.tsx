@@ -168,7 +168,7 @@ export default function BusinessDetailPage() {
       <main>
         {/* Breadcrumb */}
         <div className="border-b border-gray-100 bg-white">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-3">
+          <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10 py-3">
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <Link href="/" className="hover:text-brand-500 transition-colors">Ana Sayfa</Link>
               <ChevronRight className="h-3 w-3" />
@@ -186,7 +186,7 @@ export default function BusinessDetailPage() {
             <div className="absolute -bottom-40 right-1/4 h-[400px] w-[400px] rounded-full bg-violet-500/8 blur-3xl" />
           </div>
 
-          <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 pt-6">
+          <div className="relative mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10 pt-6">
             {biz.galleryImages.length > 0 && (
               <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-2">
                 {biz.galleryImages.slice(0, 4).map((img, i) => (
@@ -263,7 +263,7 @@ export default function BusinessDetailPage() {
         </section>
 
         {/* Content */}
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-8">
+        <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10 py-8">
           <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
             <div className="space-y-6">
               {biz.description && (

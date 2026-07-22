@@ -410,7 +410,7 @@ function OnlineCard() {
 export function BentoHeroSection() {
   return (
     <section className="bg-white py-10 sm:py-14">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
           <div className="lg:col-span-7"><SearchCard /></div>
           <div className="lg:col-span-5"><CategoriesCard /></div>

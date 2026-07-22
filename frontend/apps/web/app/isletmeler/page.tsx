@@ -287,7 +287,7 @@ export default function BusinessListPage() {
       <main className="bg-gray-50 min-h-screen">
         {/* Top search bar */}
         <div className="border-b border-gray-200 bg-white">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-5">
+          <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10 py-5">
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -320,7 +320,7 @@ export default function BusinessListPage() {
         {/* Active filters chips */}
         {activeFilterCount > 0 && (
           <div className="border-b border-gray-100 bg-white">
-            <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-3 flex flex-wrap items-center gap-2">
+            <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10 py-3 flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium text-gray-500 mr-1">Aktif filtreler:</span>
               {selectedCategories.map(catId => {
                 const cat = allCategories.find(c => c.id === catId)
@@ -352,7 +352,7 @@ export default function BusinessListPage() {
         )}
 
         {/* Content */}
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-8">
+        <div className="mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10 py-8">
           <div className="flex gap-8">
             {/* Desktop sidebar */}
             <div className="hidden lg:block">

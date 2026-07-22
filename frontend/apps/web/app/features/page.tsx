@@ -1,16 +1,16 @@
-ï»¿import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = { title: 'Ã–zellikler â€” JetRandevu', description: 'JetRandevu\'Ä±n tÃ¼m Ã¶zelliklerini keÅŸfedin.' }
+export const metadata = { title: 'Özellikler — JetRandevu', description: 'JetRandevu\'ın tüm özelliklerini keşfedin.' }
 
 const features = [
   {
     title: 'Online Randevu',
-    subtitle: '7/24 Randevu YÃ¶netimi',
-    desc: 'MÃ¼ÅŸterileriniz web ve mobil Ã¼zerinden 7/24 randevu alabilir. GerÃ§ek zamanlÄ± mÃ¼saitlik takvimi sayesinde Ã§ifte randevu sorunu artÄ±k yok. Randevular otomatik olarak personele atanÄ±r.',
-    bullets: ['GerÃ§ek zamanlÄ± mÃ¼saitlik takvimi', 'Ã‡ifte randevu korumasÄ±', 'Mobil ve web uyumlu'],
+    subtitle: '7/24 Randevu Yönetimi',
+    desc: 'Müşterileriniz web ve mobil üzerinden 7/24 randevu alabilir. Gerçek zamanlı müsaitlik takvimi sayesinde çifte randevu sorunu artık yok. Randevular otomatik olarak personele atanır.',
+    bullets: ['Gerçek zamanlı müsaitlik takvimi', 'Çifte randevu koruması', 'Mobil ve web uyumlu'],
     img: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80',
     bg: 'bg-blue-50',
     accent: 'text-blue-600',
@@ -18,10 +18,10 @@ const features = [
     dotColor: '#3b82f6',
   },
   {
-    title: 'Otomatik HatÄ±rlatma',
-    subtitle: 'HayÄ±r-deme OranÄ±nÄ± %70 AzaltÄ±n',
-    desc: 'SMS ve e-posta ile otomatik hatÄ±rlatmalar gÃ¶nderin. Randevusuna gelmeyen mÃ¼ÅŸteriler artÄ±k tarih olmayacak. HatÄ±rlatma zamanlarÄ±nÄ± ve iÃ§eriklerini tamamen Ã¶zelleÅŸtirin.',
-    bullets: ['SMS ve e-posta hatÄ±rlatma', 'Ã–zelleÅŸtirilebilir zamanlama', '%70 daha az hayÄ±r-deme'],
+    title: 'Otomatik Hatırlatma',
+    subtitle: 'Hayır-deme Oranını %70 Azaltın',
+    desc: 'SMS ve e-posta ile otomatik hatırlatmalar gönderin. Randevusuna gelmeyen müşteriler artık tarih olmayacak. Hatırlatma zamanlarını ve içeriklerini tamamen özelleştirin.',
+    bullets: ['SMS ve e-posta hatırlatma', 'Özelleştirilebilir zamanlama', '%70 daha az hayır-deme'],
     img: 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=600&q=80',
     bg: 'bg-emerald-50',
     accent: 'text-emerald-600',
@@ -29,10 +29,10 @@ const features = [
     dotColor: '#10b981',
   },
   {
-    title: 'Gelir AnalitiÄŸi',
-    subtitle: 'Verilerle YÃ¶netin',
-    desc: 'GÃ¼nlÃ¼k, haftalÄ±k, aylÄ±k gelir raporlarÄ± ve detaylÄ± istatistikler. Ä°ÅŸletmenizin performansÄ±nÄ± gerÃ§ek zamanlÄ± takip edin, veri odaklÄ± kararlar alÄ±n.',
-    bullets: ['GerÃ§ek zamanlÄ± gelir raporlarÄ±', 'Personel performans analizi', 'Trend grafikleri ve istatistikler'],
+    title: 'Gelir Analitiği',
+    subtitle: 'Verilerle Yönetin',
+    desc: 'Günlük, haftalık, aylık gelir raporları ve detaylı istatistikler. İşletmenizin performansını gerçek zamanlı takip edin, veri odaklı kararlar alın.',
+    bullets: ['Gerçek zamanlı gelir raporları', 'Personel performans analizi', 'Trend grafikleri ve istatistikler'],
     img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
     bg: 'bg-violet-50',
     accent: 'text-violet-600',
@@ -40,10 +40,10 @@ const features = [
     dotColor: '#8b5cf6',
   },
   {
-    title: 'Ã‡oklu Personel',
-    subtitle: 'Ekibinizi Kolayca YÃ¶netin',
-    desc: 'Birden fazla personel iÃ§in ayrÄ± takvimler, yetkilendirme seviyeleri ve performans takibi. Her personelin kendi randevularÄ±nÄ± yÃ¶netmesini saÄŸlayÄ±n.',
-    bullets: ['Bireysel personel takvimi', 'Rol bazlÄ± yetkilendirme', 'Performans takibi'],
+    title: 'Çoklu Personel',
+    subtitle: 'Ekibinizi Kolayca Yönetin',
+    desc: 'Birden fazla personel için ayrı takvimler, yetkilendirme seviyeleri ve performans takibi. Her personelin kendi randevularını yönetmesini sağlayın.',
+    bullets: ['Bireysel personel takvimi', 'Rol bazlı yetkilendirme', 'Performans takibi'],
     img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80',
     bg: 'bg-amber-50',
     accent: 'text-amber-600',
@@ -51,10 +51,10 @@ const features = [
     dotColor: '#f59e0b',
   },
   {
-    title: 'GÃ¼venli Ã–deme',
-    subtitle: 'PCI DSS Uyumlu AltyapÄ±',
-    desc: 'Stripe ve Ä°yzico entegrasyonu ile gÃ¼venli online Ã¶deme alÄ±n. Ã–n Ã¶deme, depozito ve tam Ã¶deme seÃ§enekleri. TÃ¼m iÅŸlemler SSL ile ÅŸifrelenir.',
-    bullets: ['Stripe & Ä°yzico entegrasyonu', 'SSL ÅŸifreleme', 'Ã–n Ã¶deme ve depozito desteÄŸi'],
+    title: 'Güvenli Ödeme',
+    subtitle: 'PCI DSS Uyumlu Altyapı',
+    desc: 'Stripe ve İyzico entegrasyonu ile güvenli online ödeme alın. Ön ödeme, depozito ve tam ödeme seçenekleri. Tüm işlemler SSL ile şifrelenir.',
+    bullets: ['Stripe & İyzico entegrasyonu', 'SSL şifreleme', 'Ön ödeme ve depozito desteği'],
     img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
     bg: 'bg-rose-50',
     accent: 'text-rose-600',
@@ -62,10 +62,10 @@ const features = [
     dotColor: '#f43f5e',
   },
   {
-    title: 'Sadakat ProgramÄ±',
-    subtitle: 'MÃ¼ÅŸteri BaÄŸlÄ±lÄ±ÄŸÄ±nÄ± ArtÄ±rÄ±n',
-    desc: 'Puan, kupa ve Ã¶dÃ¼llerle mÃ¼ÅŸterilerinizi tekrar tekrar iÅŸletmenize Ã§ekin. Sadakat programÄ± ile mÃ¼ÅŸteri yaÅŸam boyu deÄŸerini artÄ±rÄ±n.',
-    bullets: ['Puan ve Ã¶dÃ¼l sistemi', 'Kupa ve seviye takibi', 'MÃ¼ÅŸteri yaÅŸam boyu deÄŸer artÄ±ÅŸÄ±'],
+    title: 'Sadakat Programı',
+    subtitle: 'Müşteri Bağlılığını Artırın',
+    desc: 'Puan, kupa ve ödüllerle müşterilerinizi tekrar tekrar işletmenize çekin. Sadakat programı ile müşteri yaşam boyu değerini artırın.',
+    bullets: ['Puan ve ödül sistemi', 'Kupa ve seviye takibi', 'Müşteri yaşam boyu değer artışı'],
     img: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=600&q=80',
     bg: 'bg-orange-50',
     accent: 'text-orange-600',
@@ -73,10 +73,10 @@ const features = [
     dotColor: '#f97316',
   },
   {
-    title: 'HÄ±zlÄ± Kurulum',
-    subtitle: '5 Dakikada HazÄ±r Olun',
-    desc: 'KarmaÅŸÄ±k kurulum adÄ±mlarÄ± yok. E-posta adresiniz ve iÅŸletme bilgilerinizle hesabÄ±nÄ±zÄ± oluÅŸturun, hemen mÃ¼ÅŸteri kabul etmeye baÅŸlayÄ±n.',
-    bullets: ['2 dakikada hesap oluÅŸturma', 'Kolay iÅŸletme kurulumu', 'Teknik bilgi gerektirmez'],
+    title: 'Hızlı Kurulum',
+    subtitle: '5 Dakikada Hazır Olun',
+    desc: 'Karmaşık kurulum adımları yok. E-posta adresiniz ve işletme bilgilerinizle hesabınızı oluşturun, hemen müşteri kabul etmeye başlayın.',
+    bullets: ['2 dakikada hesap oluşturma', 'Kolay işletme kurulumu', 'Teknik bilgi gerektirmez'],
     img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&q=80',
     bg: 'bg-teal-50',
     accent: 'text-teal-600',
@@ -86,8 +86,8 @@ const features = [
   {
     title: 'Mobil Uygulama',
     subtitle: 'Her An, Her Yerde',
-    desc: 'iOS ve Android iÃ§in optimize edilmiÅŸ mobil deneyim. RandevularÄ±nÄ±zÄ± telefonunuzdan yÃ¶netin, bildirimler anÄ±nda cebinize gelsin.',
-    bullets: ['iOS ve Android uygulama', 'Push bildirimleri', 'Ã‡evrimdÄ±ÅŸÄ± eriÅŸim'],
+    desc: 'iOS ve Android için optimize edilmiş mobil deneyim. Randevularınızı telefonunuzdan yönetin, bildirimler anında cebinize gelsin.',
+    bullets: ['iOS ve Android uygulama', 'Push bildirimleri', 'Çevrimdışı erişim'],
     img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80',
     bg: 'bg-sky-50',
     accent: 'text-sky-600',
@@ -138,7 +138,7 @@ export default function FeaturesPage() {
                     </div>
                     <div className={`absolute -bottom-4 ${isReversed ? '-left-4' : '-right-4'} rounded-2xl ${f.accentBg} px-5 py-3 shadow-lg`}>
                       <p className={`text-sm font-bold ${f.accent}`}>{f.title}</p>
-                      <p className="text-xs text-gray-500">JetRandevu ile tanÄ±ÅŸÄ±n</p>
+                      <p className="text-xs text-gray-500">JetRandevu ile tanışın</p>
                     </div>
                   </div>
                 </div>
@@ -150,16 +150,16 @@ export default function FeaturesPage() {
         {/* CTA */}
         <section className="bg-[#1a1a1a] py-20 text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
-            TÃ¼m Bu Ã–zellikler Sizi Bekliyor
+            Tüm Bu Özellikler Sizi Bekliyor
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto mb-8">
-            14 gÃ¼n Ã¼cretsiz deneme ile JetRandevu&apos;Ä± keÅŸfedin. Kredi kartÄ± gerekmez.
+            14 gün ücretsiz deneme ile JetRandevu&apos;ı keşfedin. Kredi kartı gerekmez.
           </p>
           <Link
             href="/register"
             className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5 shadow-lg"
           >
-            Ãœcretsiz BaÅŸla <ArrowRight className="h-4 w-4" />
+            Ücretsiz Başla <ArrowRight className="h-4 w-4" />
           </Link>
         </section>
       </main>

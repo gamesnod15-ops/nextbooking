@@ -42,7 +42,7 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="border-t border-gray-100 bg-gray-50">
-      <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-screen-2xl px-5 py-12 sm:px-8 lg:px-10">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
