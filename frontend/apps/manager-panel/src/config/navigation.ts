@@ -13,5 +13,6 @@ export const navigationConfig: NavItem[] = [
   { id: 'feedback', label: 'Geri Bildirimler', to: '/feedback', icon: 'MessageSquare' },
   { id: 'customers', label: 'Müşteriler', to: '/customers', icon: 'UserRound' },
   { id: 'employees', label: 'Personel', to: '/employees', icon: 'UserCheck' },
+  { id: 'finance', label: 'Finans Hesaplayıcı', to: '/finance', icon: 'Calculator' },
   { id: 'users', label: 'Yöneticiler', to: '/users', icon: 'Users' },
 ]

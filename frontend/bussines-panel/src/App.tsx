@@ -50,7 +50,6 @@ import { RecommendationsPage } from '@/pages/recommendations/RecommendationsPage
 import { NoShowPredictionPage } from '@/pages/no-show-prediction/NoShowPredictionPage'
 import { DepositsPage } from '@/pages/deposits/DepositsPage'
 import { SmartSchedulePage } from '@/pages/smart-schedule/SmartSchedulePage'
-import { FinanceCalculatorPage } from '@/pages/finance/FinanceCalculatorPage'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { GlobalSearch } from '@/components/search/GlobalSearch'
 import { FeedbackWidget } from '@/components/feedback/FeedbackWidget'
@@ -202,7 +201,6 @@ export default function App() {
             <Route path="no-show-prediction" element={<ModuleRoute moduleId="no-show-prediction"><NoShowPredictionPage /></ModuleRoute>} />
             <Route path="deposits" element={<ModuleRoute moduleId="deposits"><DepositsPage /></ModuleRoute>} />
             <Route path="smart-schedule" element={<ModuleRoute moduleId="smart-schedule"><SmartSchedulePage /></ModuleRoute>} />
-            <Route path="finance-calculator" element={<FinanceCalculatorPage />} />
             <Route path="error-monitor" element={<ErrorMonitorPage />} />
           </Route>
         </Routes>

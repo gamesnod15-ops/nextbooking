@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { navigationConfig } from '@/config/navigation'
-import { LayoutDashboard, CreditCard, MessageSquare, Users, Building2, UserRound, UserCheck, Tag, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, CreditCard, MessageSquare, Users, Building2, UserRound, UserCheck, Tag, Calculator, type LucideIcon } from 'lucide-react'
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -12,6 +12,7 @@ const iconMap: Record<string, LucideIcon> = {
   UserRound,
   UserCheck,
   Tag,
+  Calculator,
 }
 
 interface SidebarProps {

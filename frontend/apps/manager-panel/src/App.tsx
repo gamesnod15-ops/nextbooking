@@ -12,6 +12,7 @@ import { UsersPage } from '@/pages/users/UsersPage'
 import { CustomersPage } from '@/pages/customers/CustomersPage'
 import { EmployeesPage } from '@/pages/employees/EmployeesPage'
 import { ProfilePage } from '@/pages/profile/ProfilePage'
+import { FinanceCalculatorPage } from '@/pages/finance/FinanceCalculatorPage'
 import { ToastContainer } from '@/components/ui/Toast'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="employees" element={<EmployeesPage />} />
+          <Route path="finance" element={<FinanceCalculatorPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>

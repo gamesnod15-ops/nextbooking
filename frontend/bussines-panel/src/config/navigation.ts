@@ -41,7 +41,6 @@ export const navigationConfig: NavGroup[] = [
       { id: 'debts', label: 'Borç Takibi', to: '/debts', icon: 'AlertCircle', moduleId: 'debts' },
       { id: 'advertisements', label: 'Reklam Yönetimi', to: '/advertisements', icon: 'Megaphone', moduleId: 'advertisements' },
       { id: 'deposits', label: 'Kapora Yönetimi', to: '/deposits', icon: 'Banknote', moduleId: 'deposits' },
-      { id: 'finance-calculator', label: 'Finans Hesaplayıcı', to: '/finance-calculator', icon: 'Calculator' },
     ],
   },
   {
