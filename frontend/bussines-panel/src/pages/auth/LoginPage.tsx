@@ -54,7 +54,7 @@ export function LoginPage() {
 
           {/* Logo */}
           <div className="login-logo">
-            <img src="/logo-jetrandevu.png" alt="JetRandevu" />
+            <img src="/icon-site.png" alt="JetRandevu" />
           </div>
 
           <h1 className="login-title">Hoş Geldiniz</h1>
