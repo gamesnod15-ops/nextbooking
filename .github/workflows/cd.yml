@@ -6,7 +6,7 @@ on:
     tags: ['v*']
 
 jobs:
-  deploy:
+  deploy-api:
     name: Build & Deploy API to Azure
     runs-on: ubuntu-latest
     environment: production
@@ -43,3 +43,30 @@ jobs:
         with:
           app-name: 'api-randevumkolay'
           package: ./deploy.zip
+
+  deploy-web:
+    name: Deploy Web to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Pull Vercel Environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: frontend/apps/web
+
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: frontend/apps/web
+
+      - name: Deploy to Production
+        id: deploy
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: frontend/apps/web

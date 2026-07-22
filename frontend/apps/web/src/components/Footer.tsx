@@ -114,9 +114,9 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-gray-200 pt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-xs text-gray-400">© 2026 JetRandevu. Tüm hakları saklıdır.</p>
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+          <p className="text-xs text-gray-400 text-center sm:text-left">© 2026 JetRandevu. Tüm hakları saklıdır.</p>
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
               <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
@@ -124,16 +124,16 @@ export function Footer() {
               Güvenli Ödeme
             </span>
             {/* Mastercard */}
-            <svg width="38" height="26" viewBox="0 0 38 26" fill="none">
+            <svg className="hidden sm:block" width="38" height="26" viewBox="0 0 38 26" fill="none">
               <rect x="0.5" y="0.5" width="37" height="25" rx="3.5" fill="white" stroke="#D1D5DB" />
               <circle cx="14" cy="13" r="8" fill="#EB001B" opacity="0.8" />
               <circle cx="24" cy="13" r="8" fill="#F79E1B" opacity="0.8" />
             </svg>
             {/* Visa */}
-            <span className="flex h-7 w-auto items-center justify-center rounded-[4px] border border-gray-300 bg-white px-1.5">
+            <span className="hidden sm:flex h-7 w-auto items-center justify-center rounded-[4px] border border-gray-300 bg-white px-1.5">
               <img src="/visa.svg" alt="Visa" className="h-4 w-auto" />
             </span>
-            <span className="w-px h-6 bg-gray-300" />
+            <span className="hidden sm:block w-px h-6 bg-gray-300" />
             {/* Google Play */}
             <span className="flex h-7 items-center gap-1 rounded-[4px] border border-gray-300 bg-white px-2.5">
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none">
