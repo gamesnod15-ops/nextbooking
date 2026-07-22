@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { MobileHeaderActions } from '@/components/ui/MobileHeaderActions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -126,18 +127,23 @@ export function WaitingListPage() {
         title="Bekleme Listesi"
         description="Dolu randevu slotları için bekleme listesini yönetin, açılan yerleri bildirin"
       >
-        <Button onClick={() => setShowAdd(true)}>
-          <Plus className="h-4 w-4 mr-1.5" /> Listeye Ekle
-        </Button>
+        <div className="hidden lg:block">
+          <Button onClick={() => setShowAdd(true)}>
+            <Plus className="h-4 w-4 mr-1.5" /> Listeye Ekle
+          </Button>
+        </div>
+        <MobileHeaderActions
+          actions={[{ label: 'Listeye Ekle', icon: <Plus className="h-4 w-4" />, onClick: () => setShowAdd(true) }]}
+        />
       </PageHeader>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory lg:grid lg:grid-cols-3 lg:overflow-visible">
         {[
           { label: 'Bekleyen', value: waitingCount, icon: Clock, color: 'text-amber-600 bg-amber-50' },
           { label: 'Bildirildi', value: notifiedCount, icon: Bell, color: 'text-blue-600 bg-blue-50' },
           { label: 'Randevu Alındı', value: bookedCount, icon: CalendarCheck, color: 'text-green-600 bg-green-50' },
         ].map((stat) => (
-          <Card key={stat.label}>
+          <Card key={stat.label} className="min-w-[78%] shrink-0 snap-center lg:min-w-0 lg:shrink lg:snap-align-none">
             <CardContent className="pt-5 pb-4">
               <div className="flex items-center gap-3">
                 <div className={cn('p-2 rounded-lg', stat.color)}><stat.icon className="h-5 w-5" /></div>

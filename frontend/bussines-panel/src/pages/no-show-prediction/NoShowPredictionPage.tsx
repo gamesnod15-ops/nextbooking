@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ShieldAlert, Loader2, Filter } from 'lucide-react'
+import { MobileHeaderActions } from '@/components/ui/MobileHeaderActions'
 import {
   useNoShowPredictions,
   usePredictNoShow,
@@ -48,10 +49,13 @@ export function NoShowPredictionPage() {
         </div>
         <button
           onClick={() => setShowPredictModal(true)}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+          className="hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity lg:flex"
         >
           <ShieldAlert className="h-4 w-4" /> Tahmin Yap
         </button>
+        <MobileHeaderActions
+          actions={[{ label: 'Tahmin Yap', icon: <ShieldAlert className="h-4 w-4" />, onClick: () => setShowPredictModal(true) }]}
+        />
       </div>
 
       <div className="flex items-center gap-3">

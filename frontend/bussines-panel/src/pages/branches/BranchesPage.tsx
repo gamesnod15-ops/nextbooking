@@ -4,6 +4,7 @@ import {
   useBranches, useCreateBranch, useUpdateBranch, useDeleteBranch, type Branch,
 } from '@/hooks/useBranches'
 import { PhoneInput } from '@/components/ui/PhoneInput'
+import { MobileHeaderActions } from '@/components/ui/MobileHeaderActions'
 
 type BranchForm = Omit<Branch, 'createdAt'>
 
@@ -58,16 +59,19 @@ export function BranchesPage() {
   }
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4 lg:p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Çoklu Şube Yönetimi</h1>
           <p className="text-sm text-gray-500">İşletmenizin şubelerini yönetin</p>
         </div>
         <button onClick={() => setModal({ open: true, form: { ...emptyForm } })}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+          className="hidden items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium lg:flex">
           <Plus size={16} /> Yeni Şube
         </button>
+        <MobileHeaderActions
+          actions={[{ label: 'Yeni Şube', icon: <Plus className="h-4 w-4" />, onClick: () => setModal({ open: true, form: { ...emptyForm } }) }]}
+        />
       </div>
 
       {isLoading ? (

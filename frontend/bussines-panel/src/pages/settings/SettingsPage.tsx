@@ -1376,33 +1376,35 @@ function WorkingHoursSettings() {
       <CardContent>
         <div className="space-y-3">
           {days.map((day, i) => (
-            <div key={day} className="flex items-center gap-4">
-              <div className="w-28 shrink-0">
-                <span className={cn('text-sm font-medium', !schedule[i].open && 'text-muted-foreground')}>{day}</span>
+            <div key={day} className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
+              <div className="flex items-center justify-between gap-3 lg:contents">
+                <div className="lg:w-28 lg:shrink-0">
+                  <span className={cn('text-sm font-medium', !schedule[i].open && 'text-muted-foreground')}>{day}</span>
+                </div>
+                <label className="relative flex shrink-0 cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    checked={schedule[i].open}
+                    onChange={e => update(i, { open: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="peer h-5 w-9 rounded-full bg-gray-200 transition-colors peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-4" />
+                </label>
               </div>
-              <label className="relative flex shrink-0 cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  checked={schedule[i].open}
-                  onChange={e => update(i, { open: e.target.checked })}
-                  className="sr-only peer"
-                />
-                <div className="peer h-5 w-9 rounded-full bg-gray-200 transition-colors peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-4" />
-              </label>
               {schedule[i].open ? (
                 <div className="flex flex-1 items-center gap-2">
                   <select
                     value={schedule[i].start}
                     onChange={e => update(i, { start: e.target.value })}
-                    className="rounded-lg border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="flex-1 rounded-lg border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring lg:flex-none"
                   >
                     {HALF_HOURS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
-                  <span className="text-muted-foreground">—</span>
+                  <span className="shrink-0 text-muted-foreground">—</span>
                   <select
                     value={schedule[i].end}
                     onChange={e => update(i, { end: e.target.value })}
-                    className="rounded-lg border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="flex-1 rounded-lg border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring lg:flex-none"
                   >
                     {HALF_HOURS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
@@ -1828,9 +1830,9 @@ export function BillingSettings() {
           <CardDescription>Aktif abonelik bilgileriniz</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between rounded-xl bg-primary/5 border border-primary/20 p-4">
+          <div className="flex flex-col gap-3 rounded-xl bg-primary/5 border border-primary/20 p-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <p className="font-semibold">{currentPlanConfig.name} Plan</p>
                 <Badge variant="default">Aktif</Badge>
                 <Badge variant="secondary">{currentPlanConfig.badgeLabel}</Badge>
@@ -1840,7 +1842,7 @@ export function BillingSettings() {
               </p>
               <p className="mt-2 text-xs text-muted-foreground">{currentPlanConfig.description}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setPlanModalView('main')}>Planı Yönet</Button>
+            <Button variant="outline" size="sm" onClick={() => setPlanModalView('main')} className="lg:shrink-0">Planı Yönet</Button>
           </div>
         </CardContent>
       </Card>
@@ -2380,11 +2382,11 @@ function IntegrationsSettings() {
           <div className="space-y-3">
             {integrations.map(({ key, name, desc, type, logo, docsUrl }) => (
               <div key={key} className="rounded-xl border overflow-hidden">
-                <div className="flex items-center justify-between p-4">
+                <div className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{logo}</span>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <p className="text-sm font-medium">{name}</p>
                         <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', type === 'oauth' ? 'bg-blue-100 text-blue-700' : type === 'api-key' ? 'bg-amber-100 text-amber-700' : 'bg-purple-100 text-purple-700')}>
                           {type === 'oauth' ? 'OAuth' : type === 'api-key' ? 'API Key' : 'Webhook'}
@@ -2398,7 +2400,7 @@ function IntegrationsSettings() {
                       <p className="text-xs text-muted-foreground">{desc}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 lg:shrink-0">
                     <a href={docsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                       <ExternalLink className="h-3 w-3" /> Döküman
                     </a>

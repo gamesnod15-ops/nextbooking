@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { updateSettings } from '@/store/slices/whatsappBotSlice'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { MobileHeaderActions } from '@/components/ui/MobileHeaderActions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { PhoneInput } from '@/components/ui/PhoneInput'
@@ -953,7 +954,7 @@ type Tab = 'settings' | 'simulator' | 'appointments' | 'conversations'
 export function WhatsAppBotPage() {
   const [tab, setTab] = useState<Tab>(() => {
     const param = new URLSearchParams(window.location.search).get('tab')
-    return param === 'appointments' || param === 'settings' || param === 'conversations' ? param : 'simulator'
+    return param === 'appointments' || param === 'settings' || param === 'simulator' ? param : 'conversations'
   })
   const isEnabled = useAppSelector(s => s.whatsappBot.settings.isEnabled)
   const { data: pendingDrafts } = useBookingDrafts({ status: 'pendingApproval', pageSize: 1 })
@@ -1023,8 +1024,17 @@ export function WhatsAppBotPage() {
         </div>
       </PageHeader>
 
-      {/* Tabs */}
-      <div className="flex gap-1 border-b">
+      {/* Tabs — full bar on desktop, current tab + kebab switcher on mobile */}
+      <div className="flex items-center justify-between lg:hidden">
+        <span className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+          {tabs.find(x => x.id === tab)?.icon}
+          {tabs.find(x => x.id === tab)?.label}
+        </span>
+        <MobileHeaderActions
+          actions={tabs.map(t => ({ label: t.label, icon: t.icon, onClick: () => setTab(t.id) }))}
+        />
+      </div>
+      <div className="hidden gap-1 border-b lg:flex">
         {tabs.map(t => (
           <button
             key={t.id}

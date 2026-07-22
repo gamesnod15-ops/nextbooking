@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { MobileHeaderActions } from '@/components/ui/MobileHeaderActions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -94,7 +95,7 @@ export function LoyaltyPage() {
         title="Sadakat Programı"
         description="Puan sistemi ve ödüller ile müşteri bağlılığını artırın"
       >
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+        <div className="hidden items-center gap-3 lg:flex">
           <Button variant="outline" size="sm" onClick={() => { setActiveTab('members'); setShowAddMember(true) }}>
             <UserPlus className="h-4 w-4 mr-1.5" /> Üye Ekle
           </Button>
@@ -102,6 +103,12 @@ export function LoyaltyPage() {
             <Plus className="h-4 w-4 mr-1.5" /> Ödül Ekle
           </Button>
         </div>
+        <MobileHeaderActions
+          actions={[
+            { label: 'Üye Ekle', icon: <UserPlus className="h-4 w-4" />, onClick: () => { setActiveTab('members'); setShowAddMember(true) } },
+            { label: 'Ödül Ekle', icon: <Plus className="h-4 w-4" />, onClick: () => { setActiveTab('rewards'); setShowAddReward(true) } },
+          ]}
+        />
       </PageHeader>
 
       {/* Tabs */}

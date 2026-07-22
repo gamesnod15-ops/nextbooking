@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { MobileHeaderActions } from '@/components/ui/MobileHeaderActions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -117,9 +118,14 @@ export function SurveysPage() {
         title="Anket & Feedback"
         description="Müşteri memnuniyetini ölçün, geri bildirimleri analiz edin"
       >
-        <Button onClick={() => setShowAddSurvey(true)}>
-          <Plus className="h-4 w-4 mr-1.5" /> Yeni Anket
-        </Button>
+        <div className="hidden lg:block">
+          <Button onClick={() => setShowAddSurvey(true)}>
+            <Plus className="h-4 w-4 mr-1.5" /> Yeni Anket
+          </Button>
+        </div>
+        <MobileHeaderActions
+          actions={[{ label: 'Yeni Anket', icon: <Plus className="h-4 w-4" />, onClick: () => setShowAddSurvey(true) }]}
+        />
       </PageHeader>
 
       <div className="flex gap-1 border-b">

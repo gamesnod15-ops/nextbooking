@@ -68,7 +68,9 @@ export function ReceivablesPage() {
           <p className="hidden text-sm text-gray-500 lg:block">Müşteri alacaklarını ve taksit ödemelerini takip edin</p>
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
-          <Plus size={16} /> Yeni Alacak
+          <Plus size={16} />
+          <span className="hidden lg:inline">Yeni Alacak</span>
+          <span className="lg:hidden">Ekle</span>
         </button>
       </div>
 
