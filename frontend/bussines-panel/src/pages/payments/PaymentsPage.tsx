@@ -32,7 +32,7 @@ export function PaymentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Ödemeler</h1>
-          <p className="text-sm text-gray-500">Ödeme geçmişi ve durum takibi</p>
+          <p className="hidden text-sm text-gray-500 lg:block">Ödeme geçmişi ve durum takibi</p>
         </div>
       </div>
 

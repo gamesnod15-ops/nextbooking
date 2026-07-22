@@ -79,7 +79,7 @@ export function CampaignsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Kampanyalar</h1>
-          <p className="text-sm text-gray-500">Müşteri kampanyalarını ve indirimlerini yönetin</p>
+          <p className="hidden text-sm text-gray-500 lg:block">Müşteri kampanyalarını ve indirimlerini yönetin</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
           <Plus className="h-4 w-4" /> Yeni Kampanya

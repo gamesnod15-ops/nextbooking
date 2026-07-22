@@ -94,12 +94,14 @@ export function LoyaltyPage() {
         title="Sadakat Programı"
         description="Puan sistemi ve ödüller ile müşteri bağlılığını artırın"
       >
-        <Button variant="outline" size="sm" onClick={() => { setActiveTab('members'); setShowAddMember(true) }}>
-          <UserPlus className="h-4 w-4 mr-1.5" /> Üye Ekle
-        </Button>
-        <Button onClick={() => { setActiveTab('rewards'); setShowAddReward(true) }}>
-          <Plus className="h-4 w-4 mr-1.5" /> Ödül Ekle
-        </Button>
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+          <Button variant="outline" size="sm" onClick={() => { setActiveTab('members'); setShowAddMember(true) }}>
+            <UserPlus className="h-4 w-4 mr-1.5" /> Üye Ekle
+          </Button>
+          <Button onClick={() => { setActiveTab('rewards'); setShowAddReward(true) }}>
+            <Plus className="h-4 w-4 mr-1.5" /> Ödül Ekle
+          </Button>
+        </div>
       </PageHeader>
 
       {/* Tabs */}

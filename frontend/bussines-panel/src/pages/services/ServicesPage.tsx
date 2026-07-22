@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, Search, Clock, X, Loader2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
+import { Plus, Edit2, Trash2, Search, Clock, X, Loader2, ChevronDown } from 'lucide-react'
+import { cn, formatCurrency } from '@/lib/utils'
 import {
   useServices,
   useCreateService,
@@ -33,6 +33,7 @@ export function ServicesPage() {
   const [page, setPage] = useState(1)
   const [modal, setModal] = useState<{ open: boolean; form: ServiceForm } | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const [errors, setErrors] = useState<{ name?: string; durationMinutes?: string; price?: string }>({})
 
   const { data, isLoading } = useServices({ pageNumber: page, pageSize: 20, search: search || undefined })
@@ -160,51 +161,87 @@ export function ServicesPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table (desktop) / Accordion (mobile) */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {isLoading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
+        ) : services.length === 0 ? (
+          <div className="px-4 py-10 text-center text-gray-400">Hizmet bulunamadı</div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="border-b border-gray-100 bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Hizmet Adı</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Süre</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Fiyat</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">Durum</th>
-                <th className="px-4 py-3 text-right font-semibold text-gray-600">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {services.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400">Hizmet bulunamadı</td></tr>
-              ) : services.map(svc => (
-                <tr key={svc.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900">{svc.name}</div>
-                    <div className="text-xs text-gray-400 mt-0.5 line-clamp-1">{svc.description}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Clock className="h-3.5 w-3.5" /> {svc.durationMinutes} dk
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-semibold text-gray-900">{formatCurrency(svc.price)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${svc.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                      {svc.isActive ? 'Aktif' : 'Pasif'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openEdit(svc)} className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"><Edit2 className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => setDeleteId(svc.id)} className="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
-                    </div>
-                  </td>
+          <>
+            <table className="hidden w-full text-sm lg:table">
+              <thead className="border-b border-gray-100 bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Hizmet Adı</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Süre</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Fiyat</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Durum</th>
+                  <th className="px-4 py-3 text-right font-semibold text-gray-600">İşlemler</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {services.map(svc => (
+                  <tr key={svc.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-gray-900">{svc.name}</div>
+                      <div className="text-xs text-gray-400 mt-0.5 line-clamp-1">{svc.description}</div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Clock className="h-3.5 w-3.5" /> {svc.durationMinutes} dk
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-gray-900">{formatCurrency(svc.price)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${svc.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {svc.isActive ? 'Aktif' : 'Pasif'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => openEdit(svc)} className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"><Edit2 className="h-3.5 w-3.5" /></button>
+                        <button onClick={() => setDeleteId(svc.id)} className="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Mobile: name-only rows, tap to expand details */}
+            <div className="divide-y divide-gray-50 lg:hidden">
+              {services.map(svc => {
+                const isOpen = expandedId === svc.id
+                return (
+                  <div key={svc.id}>
+                    <button
+                      onClick={() => setExpandedId(isOpen ? null : svc.id)}
+                      className="flex w-full items-center justify-between px-4 py-3.5 text-left"
+                    >
+                      <span className="font-medium text-gray-900">{svc.name}</span>
+                      <ChevronDown className={cn('h-4 w-4 shrink-0 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
+                    </button>
+                    {isOpen && (
+                      <div className="space-y-2.5 px-4 pb-4">
+                        {svc.description && <p className="text-xs text-gray-500">{svc.description}</p>}
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <Clock className="h-3.5 w-3.5" /> {svc.durationMinutes} dk
+                        </div>
+                        <div className="text-sm font-semibold text-gray-900">{formatCurrency(svc.price)}</div>
+                        <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${svc.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {svc.isActive ? 'Aktif' : 'Pasif'}
+                        </span>
+                        <div className="flex items-center gap-2 pt-1">
+                          <button onClick={() => openEdit(svc)} className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600"><Edit2 className="h-3.5 w-3.5" /> Düzenle</button>
+                          <button onClick={() => setDeleteId(svc.id)} className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-red-500"><Trash2 className="h-3.5 w-3.5" /> Sil</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </>
         )}
       </div>
 

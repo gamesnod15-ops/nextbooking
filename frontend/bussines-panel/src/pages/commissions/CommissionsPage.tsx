@@ -61,7 +61,7 @@ export function CommissionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Prim & Hak Ediş Takibi</h1>
-          <p className="text-sm text-gray-500">Personel prim ve komisyon ödemelerini yönetin</p>
+          <p className="hidden text-sm text-gray-500 lg:block">Personel prim ve komisyon ödemelerini yönetin</p>
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
           <Plus size={16} /> Yeni Prim

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Search, CreditCard, CheckCircle, Clock, ChevronDown, ChevronUp, Loader2, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import {
   useReceivables, useCreateReceivable, usePayInstallment, useDeleteReceivable,
   type ReceivableStatus,
@@ -65,7 +65,7 @@ export function ReceivablesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Cari Alacak & Taksit Takibi</h1>
-          <p className="text-sm text-gray-500">Müşteri alacaklarını ve taksit ödemelerini takip edin</p>
+          <p className="hidden text-sm text-gray-500 lg:block">Müşteri alacaklarını ve taksit ödemelerini takip edin</p>
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
           <Plus size={16} /> Yeni Alacak
@@ -106,56 +106,121 @@ export function ReceivablesPage() {
             <p>Henüz alacak kaydı yok</p>
           </div>
         ) : (
-          <div className="divide-y">
-            {receivables.map((r) => (
-              <div key={r.id}>
-                <div className="px-4 py-3 flex items-center gap-4 hover:bg-gray-50">
-                  <div className="flex-1">
-                    <div className="font-medium">{r.customerName}</div>
-                    {r.customerPhone && <div className="text-xs text-gray-400">{r.customerPhone}</div>}
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">{formatCurrency(r.totalAmount)}</div>
-                    <div className="text-xs text-gray-400">Kalan: {formatCurrency(r.remainingAmount)}</div>
-                  </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor[r.status]}`}>
-                    {statusLabel[r.status]}
-                  </span>
-                  <div className="text-xs text-gray-400">{r.dueDate}</div>
-                  <button onClick={() => setDeleteReceivableId(r.id)} className="p-1 hover:bg-red-50 text-red-600 rounded" title="Sil">
-                    <Trash2 size={14} />
-                  </button>
-                  {r.installments.length > 0 && (
-                    <button onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
-                      className="p-1 hover:bg-gray-100 rounded text-gray-500">
-                      {expandedId === r.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          <>
+            {/* Desktop: full row */}
+            <div className="hidden divide-y lg:block">
+              {receivables.map((r) => (
+                <div key={r.id}>
+                  <div className="px-4 py-3 flex items-center gap-4 hover:bg-gray-50">
+                    <div className="flex-1">
+                      <div className="font-medium">{r.customerName}</div>
+                      {r.customerPhone && <div className="text-xs text-gray-400">{r.customerPhone}</div>}
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">{formatCurrency(r.totalAmount)}</div>
+                      <div className="text-xs text-gray-400">Kalan: {formatCurrency(r.remainingAmount)}</div>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor[r.status]}`}>
+                      {statusLabel[r.status]}
+                    </span>
+                    <div className="text-xs text-gray-400">{r.dueDate}</div>
+                    <button onClick={() => setDeleteReceivableId(r.id)} className="p-1 hover:bg-red-50 text-red-600 rounded" title="Sil">
+                      <Trash2 size={14} />
                     </button>
+                    {r.installments.length > 0 && (
+                      <button onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
+                        className="p-1 hover:bg-gray-100 rounded text-gray-500">
+                        {expandedId === r.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </button>
+                    )}
+                  </div>
+                  {expandedId === r.id && r.installments.length > 0 && (
+                    <div className="bg-gray-50 px-8 py-3 space-y-2">
+                      <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Taksitler</p>
+                      {r.installments.map((inst) => (
+                        <div key={inst.id} className="flex items-center gap-3 text-sm">
+                          <span className="w-6 text-gray-400 text-xs">{inst.number}.</span>
+                          <span className="flex-1">{formatCurrency(inst.amount)}</span>
+                          <span className="text-gray-400">{inst.dueDate}</span>
+                          {inst.isPaid ? (
+                            <span className="flex items-center gap-1 text-green-600 text-xs"><CheckCircle size={12} /> Ödendi</span>
+                          ) : (
+                            <button onClick={() => payMutation.mutate(inst.id)}
+                              disabled={payMutation.isPending}
+                              className="flex items-center gap-1 text-blue-600 text-xs hover:underline">
+                              <Clock size={12} /> Öde
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-                {expandedId === r.id && r.installments.length > 0 && (
-                  <div className="bg-gray-50 px-8 py-3 space-y-2">
-                    <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Taksitler</p>
-                    {r.installments.map((inst) => (
-                      <div key={inst.id} className="flex items-center gap-3 text-sm">
-                        <span className="w-6 text-gray-400 text-xs">{inst.number}.</span>
-                        <span className="flex-1">{formatCurrency(inst.amount)}</span>
-                        <span className="text-gray-400">{inst.dueDate}</span>
-                        {inst.isPaid ? (
-                          <span className="flex items-center gap-1 text-green-600 text-xs"><CheckCircle size={12} /> Ödendi</span>
-                        ) : (
-                          <button onClick={() => payMutation.mutate(inst.id)}
-                            disabled={payMutation.isPending}
-                            className="flex items-center gap-1 text-blue-600 text-xs hover:underline">
-                            <Clock size={12} /> Öde
-                          </button>
+              ))}
+            </div>
+
+            {/* Mobile: name-only rows, tap to expand full detail */}
+            <div className="divide-y lg:hidden">
+              {receivables.map((r) => {
+                const isOpen = expandedId === r.id
+                return (
+                  <div key={r.id}>
+                    <button
+                      onClick={() => setExpandedId(isOpen ? null : r.id)}
+                      className="flex w-full items-center justify-between px-4 py-3.5 text-left"
+                    >
+                      <span className="font-medium text-gray-900">{r.customerName}</span>
+                      <ChevronDown className={cn('h-4 w-4 shrink-0 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
+                    </button>
+                    {isOpen && (
+                      <div className="space-y-2.5 px-4 pb-4">
+                        {r.customerPhone && <div className="text-xs text-gray-400">{r.customerPhone}</div>}
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Toplam</span>
+                          <span className="font-medium text-gray-900">{formatCurrency(r.totalAmount)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Kalan</span>
+                          <span className="font-medium text-gray-900">{formatCurrency(r.remainingAmount)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Vade</span>
+                          <span className="text-gray-700">{r.dueDate}</span>
+                        </div>
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusColor[r.status]}`}>
+                          {statusLabel[r.status]}
+                        </span>
+
+                        {r.installments.length > 0 && (
+                          <div className="space-y-2 rounded-lg bg-gray-50 p-3">
+                            <p className="text-xs font-semibold uppercase text-gray-500">Taksitler</p>
+                            {r.installments.map((inst) => (
+                              <div key={inst.id} className="flex items-center gap-3 text-sm">
+                                <span className="w-6 text-xs text-gray-400">{inst.number}.</span>
+                                <span className="flex-1">{formatCurrency(inst.amount)}</span>
+                                <span className="text-gray-400">{inst.dueDate}</span>
+                                {inst.isPaid ? (
+                                  <span className="flex items-center gap-1 text-xs text-green-600"><CheckCircle size={12} /> Ödendi</span>
+                                ) : (
+                                  <button onClick={() => payMutation.mutate(inst.id)} disabled={payMutation.isPending} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <Clock size={12} /> Öde
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         )}
+
+                        <button onClick={() => setDeleteReceivableId(r.id)} className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-red-500">
+                          <Trash2 className="h-3.5 w-3.5" /> Sil
+                        </button>
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                )
+              })}
+            </div>
+          </>
         )}
       </div>
 

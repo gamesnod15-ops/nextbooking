@@ -120,16 +120,14 @@ export function Header({ onMenuClick, onSidebarToggle }: HeaderProps) {
         </div>
         {isDashboard && (
           <div className="flex items-center gap-2 lg:hidden">
-            <Button asChild size="sm" variant="outline">
+            <Button asChild size="icon-sm" variant="outline" title="Takvimi Aç">
               <Link to="/calendar">
                 <Calendar className="h-4 w-4" />
-                Takvimi Aç
               </Link>
             </Button>
-            <Button asChild size="sm">
+            <Button asChild size="icon-sm" title="Randevu Ekle">
               <Link to="/calendar?new=true">
                 <Plus className="h-4 w-4" />
-                Randevu Ekle
               </Link>
             </Button>
           </div>

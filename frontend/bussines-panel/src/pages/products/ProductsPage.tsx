@@ -91,7 +91,7 @@ export function ProductsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Ürün & Stok Yönetimi</h1>
-          <p className="text-sm text-gray-500">Ürünlerinizi ve stok durumlarını yönetin</p>
+          <p className="hidden text-sm text-gray-500 lg:block">Ürünlerinizi ve stok durumlarını yönetin</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
           <Plus size={16} /> Yeni Ürün

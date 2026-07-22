@@ -126,7 +126,7 @@ export function GiftCouponsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Hediye Kuponları</h1>
-          <p className="text-sm text-gray-500">Kuponlar canlı API verisinden yüklenir ve doğrudan kaydedilir</p>
+          <p className="hidden text-sm text-gray-500 lg:block">Kuponlar canlı API verisinden yüklenir ve doğrudan kaydedilir</p>
         </div>
         <button
           onClick={() => {

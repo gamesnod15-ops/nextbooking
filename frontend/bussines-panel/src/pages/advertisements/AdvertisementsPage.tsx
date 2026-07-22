@@ -1297,15 +1297,16 @@ export function AdvertisementsPage() {
         <PageHeader
           title="Reklam Yönetimi"
           description="Reklamlarınızı oluşturun, yönetin ve performansını takip edin"
+          descriptionHiddenOnMobile
         />
 
-        {/* Tab nav */}
-        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+        {/* Tab nav — horizontally scrollable on mobile so it doesn't get crushed */}
+        <div className="flex gap-1 overflow-x-auto no-scrollbar bg-slate-100 p-1 rounded-xl lg:w-fit lg:overflow-visible">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex shrink-0 items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-500 hover:text-slate-700'

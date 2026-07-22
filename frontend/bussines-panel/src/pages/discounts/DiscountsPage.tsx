@@ -80,7 +80,7 @@ export function DiscountsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">İndirimler</h1>
-          <p className="text-sm text-gray-500">İndirim kodları ve promosyonları yönetin</p>
+          <p className="hidden text-sm text-gray-500 lg:block">İndirim kodları ve promosyonları yönetin</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
           <Plus className="h-4 w-4" /> Yeni İndirim

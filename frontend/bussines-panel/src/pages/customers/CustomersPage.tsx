@@ -84,7 +84,9 @@ export function CustomersPage() {
           <p className="text-sm text-gray-500">Müşteri veritabanınızı yönetin</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity">
-          <Plus className="h-4 w-4" /> Müşteri Ekle
+          <Plus className="h-4 w-4" />
+          <span className="hidden lg:inline">Müşteri Ekle</span>
+          <span className="lg:hidden">Ekle</span>
         </button>
       </div>
 

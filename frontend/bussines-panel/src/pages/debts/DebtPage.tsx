@@ -93,7 +93,7 @@ export function DebtPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Borç & Ödeme Takibi</h1>
-          <p className="text-sm text-gray-500">İşletme borçlarını ve ödeme planlarını yönetin</p>
+          <p className="hidden text-sm text-gray-500 lg:block">İşletme borçlarını ve ödeme planlarını yönetin</p>
         </div>
         <button onClick={() => { setModal({ open: true, form: { ...emptyForm } }); setErrors({}) }}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
