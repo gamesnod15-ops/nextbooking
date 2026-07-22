@@ -383,7 +383,7 @@ function OdemeInner() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
               <CalendarCheck className="h-4 w-4 text-white" />
             </div>
-            <span className="text-base font-bold text-gray-900">BookingAi</span>
+            <span className="text-base font-bold text-gray-900">JetRandevu</span>
           </Link>
           {/* Step indicator */}
           <div className="flex items-center gap-2 text-sm text-gray-500">

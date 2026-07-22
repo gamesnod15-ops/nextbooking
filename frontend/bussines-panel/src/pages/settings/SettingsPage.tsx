@@ -1748,13 +1748,13 @@ export function BillingSettings() {
               <div className="p-5 space-y-4">
                 <p className="text-sm text-muted-foreground">Plan değişikliği, toplu lisans veya özel teklif için ekibimize ulaşın.</p>
                 <a
-                  href="mailto:satis@randevumkolay.com"
+                  href="mailto:satis@jetrandevu.com"
                   className="flex items-center gap-3 rounded-lg border px-4 py-3 hover:bg-accent transition-colors"
                 >
                   <span className="text-lg">✉️</span>
                   <div>
                     <p className="text-sm font-medium">E-posta Gönder</p>
-                    <p className="text-xs text-muted-foreground">satis@randevumkolay.com</p>
+                    <p className="text-xs text-muted-foreground">satis@jetrandevu.com</p>
                   </div>
                 </a>
                 <a
@@ -1786,7 +1786,7 @@ export function BillingSettings() {
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Ödenen abonelik ücretleri, faturalama dönemi başladıktan sonra iade edilmez. Detaylar için{' '}
-                  <a href="https://randevumkolay.com/iptal-ve-iade" target="_blank" rel="noopener noreferrer" className="underline">
+                  <a href="https://jetrandevu.com/iptal-ve-iade" target="_blank" rel="noopener noreferrer" className="underline">
                     İptal ve İade Koşulları
                   </a>'nı inceleyebilirsiniz.
                 </p>

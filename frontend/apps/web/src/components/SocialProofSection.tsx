@@ -1,4 +1,4 @@
-import { Reveal, SlideIn, StaggerGroup, StaggerItem } from './motion/Reveal'
+﻿import { Reveal, SlideIn, StaggerGroup, StaggerItem } from './motion/Reveal'
 import { TestimonialSpotlight } from './TestimonialSpotlight'
 
 const stats = [
@@ -34,7 +34,7 @@ export function SocialProofSection() {
             <span className="text-brand-500">Ne Diyor?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            Türkiye&apos;nin dört bir yanından binlerce işletme randevu yönetimini BookingAi ile dönüştürüyor
+            Türkiye&apos;nin dört bir yanından binlerce işletme randevu yönetimini JetRandevu ile dönüştürüyor
           </p>
         </SlideIn>
 

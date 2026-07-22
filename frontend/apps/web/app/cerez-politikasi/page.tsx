@@ -1,7 +1,7 @@
-﻿import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Çerez Politikası — BookingAi', description: 'BookingAi çerez politikası.' }
+export const metadata = { title: 'Çerez Politikası — JetRandevu', description: 'JetRandevu çerez politikası.' }
 
 export default function CerezPolicyPage() {
   return (
@@ -118,7 +118,7 @@ export default function CerezPolicyPage() {
                 <h2 className="text-xl font-bold text-gray-900 mb-3">7. İletişim</h2>
                 <p>Çerez politikamız hakkında sorularınız, önerileriniz veya talepleriniz için bizimle iletişime geçebilirsiniz:</p>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                  <li>E-posta: info@nextbooking.com</li>
+                  <li>E-posta: info@jetrandevu.com</li>
                   <li>Adres: Maslak Mahallesi, Büyükdere Caddesi No:237, 34485 Sarıyer/İstanbul</li>
                 </ul>
               </div>

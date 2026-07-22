@@ -1,7 +1,7 @@
-﻿import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Güvenlik Politikası — BookingAi', description: 'BookingAi bilgi güvenliği politikası ve uygulamaları.' }
+export const metadata = { title: 'Güvenlik Politikası — JetRandevu', description: 'JetRandevu bilgi güvenliği politikası ve uygulamaları.' }
 
 export default function GuvenlikPage() {
   return (
@@ -26,8 +26,8 @@ export default function GuvenlikPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Giriş ve Kapsam</h2>
-                <p>BookingAi (nextbooking.com) olarak, bilgi güvenliğine en üst düzeyde önem vermekteyiz. Bu Güvenlik Politikası, platformumuzda işlenen tüm verilerin gizliliğini, bütünlüğünü ve erişilebilirliğini sağlamak amacıyla uyguladığımız teknik ve idari tedbirleri açıklamaktadır.</p>
-                <p className="mt-2">Bu politika, BookingAi platformunu kullanan tüm işletmeler, çalışanlar, müşteriler ve diğer tüm paydaşlar için geçerlidir. Bilgi güvenliği yönetim sistemimiz, uluslararası standartlar (ISO 27001) ve yerel mevzuat (KVKK, Türk Ticaret Kanunu) çerçevesinde yapılandırılmıştır.</p>
+                <p>JetRandevu (jetrandevu.com) olarak, bilgi güvenliğine en üst düzeyde önem vermekteyiz. Bu Güvenlik Politikası, platformumuzda işlenen tüm verilerin gizliliğini, bütünlüğünü ve erişilebilirliğini sağlamak amacıyla uyguladığımız teknik ve idari tedbirleri açıklamaktadır.</p>
+                <p className="mt-2">Bu politika, JetRandevu platformunu kullanan tüm işletmeler, çalışanlar, müşteriler ve diğer tüm paydaşlar için geçerlidir. Bilgi güvenliği yönetim sistemimiz, uluslararası standartlar (ISO 27001) ve yerel mevzuat (KVKK, Türk Ticaret Kanunu) çerçevesinde yapılandırılmıştır.</p>
               </div>
 
               <div>
@@ -142,8 +142,8 @@ export default function GuvenlikPage() {
                 <h2 className="text-xl font-bold text-gray-900 mb-3">11. Güvenlik Açığı Bildirimi</h2>
                 <p>Platformumuzda bir güvenlik açığı tespit etmeniz durumunda, sorumlu açıklama (responsible disclosure) prensipleri çerçevesinde aşağıdaki iletişim kanallarından bize bildirim yapabilirsiniz:</p>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                  <li><strong>E-posta:</strong> security@nextbooking.com</li>
-                  <li><strong>Web:</strong> nextbooking.com/security</li>
+                  <li><strong>E-posta:</strong> security@jetrandevu.com</li>
+                  <li><strong>Web:</strong> jetrandevu.com/security</li>
                 </ul>
                 <p className="mt-3">Bildiriminizi aldıktan sonra, zafiyeti doğrulamak ve gidermek için gerekli çalışmaları başlatırız. Tüm bildirimler gizli tutulur ve bildirimde bulunan kişinin kimliği, izni olmadan üçüncü taraflarla paylaşılmaz. Sorumlu açıklama yapan araştırmacılara, politika çerçevesinde takdir yetkimiz dahilinde ödül verilebilir.</p>
               </div>
@@ -176,8 +176,8 @@ export default function GuvenlikPage() {
                 <h2 className="text-xl font-bold text-gray-900 mb-3">14. İletişim</h2>
                 <p>Güvenlik politikamız hakkında soru, görüş veya endişeleriniz için aşağıdaki kanallardan bizimle iletişime geçebilirsiniz:</p>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                  <li><strong>E-posta:</strong> security@nextbooking.com</li>
-                  <li><strong>KVKK E-posta:</strong> kvkk@nextbooking.com</li>
+                  <li><strong>E-posta:</strong> security@jetrandevu.com</li>
+                  <li><strong>KVKK E-posta:</strong> kvkk@jetrandevu.com</li>
                   <li><strong>Telefon:</strong> +90 (212) 444 0 789</li>
                   <li><strong>Adres:</strong> Maslak Mahallesi, Büyükdere Caddesi No:237, 34485 Sarıyer/İstanbul</li>
                 </ul>

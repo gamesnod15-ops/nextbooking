@@ -1,9 +1,9 @@
-import { Navbar }         from '@/components/Navbar'
+﻿import { Navbar }         from '@/components/Navbar'
 import { PricingSection } from '@/components/PricingSection'
 import { CtaSection }     from '@/components/CtaSection'
 import { Footer }         from '@/components/Footer'
 
-export const metadata = { title: 'Fiyatlandırma — BookingAi' }
+export const metadata = { title: 'Fiyatlandırma — JetRandevu' }
 
 export default function PricingPage() {
   return (

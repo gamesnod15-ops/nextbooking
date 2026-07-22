@@ -89,7 +89,7 @@ export function HeroSection() {
             <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
             <span className="ml-3 flex-1 rounded-md bg-white/10 border border-white/10 py-0.5 text-center text-xs text-gray-500">
-              nextbooking.com/booking/isletmeniz
+              jetrandevu.com/booking/isletmeniz
             </span>
           </div>
           <div className="h-72 bg-white/5 flex flex-col items-center justify-center gap-4 p-6">

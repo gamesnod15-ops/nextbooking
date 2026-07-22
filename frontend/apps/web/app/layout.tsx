@@ -1,4 +1,4 @@
-
+﻿
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -19,9 +19,12 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title:       'BookingAi — Türkiye\'nin En Hızlı Randevu Sistemi',
+  title:       'JetRandevu — Türkiye\'nin En Hızlı Randevu Sistemi',
   description: 'Kuaför, güzellik salonu, diş kliniği ve daha fazlası için çevrimiçi randevu sistemi. Kolay kurulum, güçlü yönetim.',
   keywords:    'randevu sistemi, online randevu, kuaför randevu, güzellik salonu randevu',
+  icons: {
+    icon: '/icon-title.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

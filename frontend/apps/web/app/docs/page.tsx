@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Navbar } from '@/components/Navbar'
@@ -25,11 +25,11 @@ const docContents: Record<string, string> = {
   baslangic: `
 # Başlangıç Kılavuzu
 
-BookingAi ile işletmenizi dijital dünyaya taşımak çok kolay.
+JetRandevu ile işletmenizi dijital dünyaya taşımak çok kolay.
 
 ## Hızlı Kurulum
 
-1. **Hesap Oluşturun** — BookingAi'a ücretsiz kaydolun.
+1. **Hesap Oluşturun** — JetRandevu'a ücretsiz kaydolun.
 2. **İşletme Profilinizi Oluşturun** — İşletme adı, adres, iletişim bilgilerini ekleyin.
 3. **Hizmetlerinizi Tanımlayın** — Sunduğunuz hizmetleri, sürelerini ve fiyatlarını belirleyin.
 4. **Çalışma Takviminizi Ayarlayın** — Çalışma günleri ve saatlerinizi tanımlayın.
@@ -73,11 +73,11 @@ Video eğitimler için bizi takip etmeye devam edin.
   api: `
 # API Dokümantasyonu
 
-BookingAi REST API ile işletmenizi programatik olarak yönetin.
+JetRandevu REST API ile işletmenizi programatik olarak yönetin.
 
 ## Temel Bilgiler
 
-- **Base URL**: \\\`https://api.nextbooking.com/api/v1\\\`
+- **Base URL**: \\\`https://api.jetrandevu.com/api/v1\\\`
 - **Auth**: Bearer Token (JWT)
 - **Content-Type**: application/json
 
@@ -131,17 +131,17 @@ Resmi SDK'lar ile entegrasyonu hızlandırın.
 
 ## Mevcut SDK'lar
 
-- **JavaScript/TypeScript** — npm: \\\`nextbooking-sdk\\\`
-- **Python** — pip: \\\`nextbooking\\\`
-- **PHP** — composer: \\\`nextbooking/sdk\\\`
-- **C# (.NET)** — NuGet: \\\`BookingAi.SDK\\\`
+- **JavaScript/TypeScript** — npm: \\\`jetrandevu-sdk\\\`
+- **Python** — pip: \\\`jetrandevu\\\`
+- **PHP** — composer: \\\`jetrandevu/sdk\\\`
+- **C# (.NET)** — NuGet: \\\`JetRandevu.SDK\\\`
 
 ## Örnek Kullanım (JS)
 
 \\\`\\\`\\\`javascript
-import BookingAi from 'nextbooking-sdk'
+import JetRandevu from 'jetrandevu-sdk'
 
-const client = new BookingAi('API_KEY')
+const client = new JetRandevu('API_KEY')
 const appointments = await client.appointments.list()
 \\\`\\\`\\\`
   `,
@@ -272,7 +272,7 @@ export default function DocsPage() {
             </div>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">Dokümantasyon</h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-300">
-              Entegrasyon rehberleri, API dokümanları ve kullanım kılavuzları ile BookingAi&apos;ı en verimli şekilde kullanın.
+              Entegrasyon rehberleri, API dokümanları ve kullanım kılavuzları ile JetRandevu&apos;ı en verimli şekilde kullanın.
             </p>
           </div>
         </section>

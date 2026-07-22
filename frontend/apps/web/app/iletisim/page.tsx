@@ -128,7 +128,7 @@ export default function IletisimPage() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { icon: Mail,   label: 'E-posta', value: 'destek@bookingai.com' },
+                    { icon: Mail,   label: 'E-posta', value: 'destek@JetRandevu.com' },
                     { icon: Phone,  label: 'Telefon', value: '+90 (212) 000 00 00' },
                     { icon: MapPin, label: 'Adres',   value: 'Maslak, İstanbul' },
                   ].map(({ icon: Icon, label, value }) => (

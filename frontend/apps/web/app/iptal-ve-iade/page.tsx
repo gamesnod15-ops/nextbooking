@@ -1,7 +1,7 @@
-import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'İptal ve İade Koşulları — BookingAi', description: 'Abonelik iptali ve iade koşulları hakkında bilgilendirme.' }
+export const metadata = { title: 'İptal ve İade Koşulları — JetRandevu', description: 'Abonelik iptali ve iade koşulları hakkında bilgilendirme.' }
 
 export default function IptalVeIadePage() {
   return (
@@ -26,7 +26,7 @@ export default function IptalVeIadePage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Abonelik İptali</h2>
-                <p>BookingAi işletme panelinizden dilediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal talebiniz alındığı anda hesabınız pasif hale gelir ve panele erişim mevcut faturalama döneminin sonuna kadar değil, iptal anında sona erer.</p>
+                <p>JetRandevu işletme panelinizden dilediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal talebiniz alındığı anda hesabınız pasif hale gelir ve panele erişim mevcut faturalama döneminin sonuna kadar değil, iptal anında sona erer.</p>
               </div>
 
               <div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Cookie, Check } from 'lucide-react';
 
-const STORAGE_KEY = 'nextbooking-cookie-consent';
+const STORAGE_KEY = 'jetrandevu-cookie-consent';
 
 const COOKIE_CATEGORIES = [
   { key: 'necessary', label: 'Zorunlu Çerezler', description: 'Web sitesinin çalışması için gereklidir.' },

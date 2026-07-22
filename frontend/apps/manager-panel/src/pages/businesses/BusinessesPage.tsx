@@ -210,7 +210,7 @@ export function BusinessesPage() {
                 {detail.phone && <div className="flex items-center gap-2 text-gray-600"><Phone className="h-4 w-4 shrink-0 text-gray-400" />{detail.phone}</div>}
                 {detail.city && <div className="flex items-center gap-2 text-gray-600"><MapPin className="h-4 w-4 shrink-0 text-gray-400" />{detail.city}</div>}
                 {detail.category != null && <div className="text-gray-600">Kategori: {businessCategoryLabels[detail.category] ?? detail.category}</div>}
-                <div className="flex items-center gap-2 text-gray-600"><Users className="h-4 w-4 shrink-0 text-gray-400" />{detail.subdomain}.randevumkolay.com</div>
+                <div className="flex items-center gap-2 text-gray-600"><Users className="h-4 w-4 shrink-0 text-gray-400" />{detail.subdomain}.jetrandevu.com</div>
               </div>
               <div className="rounded-xl bg-gray-50 p-3 text-xs text-gray-500 space-y-1">
                 <div>Plan: <span className="font-medium text-gray-700">{planLabels[detail.plan] ?? detail.plan}</span></div>

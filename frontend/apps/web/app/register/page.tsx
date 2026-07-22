@@ -301,7 +301,7 @@ export default function RegisterPage() {
 
         {/* Logo */}
         <Link href="/" className="relative shrink-0">
-          <img src="/logo-white-last.png" alt="BookingAi" className="h-9 w-auto" />
+          <img src="/logo-jetrandevu-white.png" alt="JetRandevu" className="h-9 w-auto" />
         </Link>
 
         {/* Headline */}
@@ -349,7 +349,7 @@ export default function RegisterPage() {
               {[...Array(5)].map((_, i) => <span key={i} className={`text-sm ${i < 4 ? 'text-brand-500' : 'text-brand-500/30'}`}>&</span>)}
             </div>
             <p className="text-sm text-gray-300 italic leading-relaxed">
-              &ldquo;BookingAi sayesinde telefon trafiğimiz %80 azaldı. Artık müşterilerimizle çok daha fazla ilgilenebiliyoruz.&rdquo;
+              &ldquo;JetRandevu sayesinde telefon trafiğimiz %80 azaldı. Artık müşterilerimizle çok daha fazla ilgilenebiliyoruz.&rdquo;
             </p>
             <p className="mt-3 text-xs font-semibold text-brand-500/70">— Zeynep K., Güzellik Salonu Sahibi</p>
           </div>
@@ -366,7 +366,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer note */}
-        <p className="relative mt-8 shrink-0 text-xs text-gray-600">© 2026 BookingAi. Tüm hakları saklıdır.</p>
+        <p className="relative mt-8 shrink-0 text-xs text-gray-600">© 2026 JetRandevu. Tüm hakları saklıdır.</p>
       </div>
 
       {/* ——Right panel — form ——*/}
@@ -378,7 +378,7 @@ export default function RegisterPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
                 <CalendarCheck className="h-4 w-4 text-white" />
               </div>
-              <span className="text-base font-bold text-gray-900">BookingAi</span>
+              <span className="text-base font-bold text-gray-900">JetRandevu</span>
             </Link>
             <p className="text-sm text-gray-500">
               <Link href="/login" className="font-semibold text-brand-500 hover:text-brand-600 transition-colors">
@@ -506,11 +506,11 @@ export default function RegisterPage() {
                 <Field
                   label="Firma Kullanıcı Adı (Subdomain)"
                   error={errors.subdomain}
-                  hint="Bu adres randevu sayfanızın URL'i olacak: nextbooking.com/firma-adi"
+                  hint="Bu adres randevu sayfanızın URL'i olacak: jetrandevu.com/firma-adi"
                 >
                   <div className="flex rounded-xl border border-gray-300 overflow-hidden focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
                     <span className="flex items-center bg-gray-50 px-3 text-xs text-gray-500 border-r border-gray-300 whitespace-nowrap">
-                      nextbooking.com/
+                      jetrandevu.com/
                     </span>
                     <input
                       aria-label="Firma Kullanıcı Adı (Subdomain)"

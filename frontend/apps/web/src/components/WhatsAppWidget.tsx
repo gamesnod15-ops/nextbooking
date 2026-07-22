@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { MessageCircle, X, Send } from 'lucide-react'
@@ -67,7 +67,7 @@ export function WhatsAppWidget() {
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-bold text-white">BookingAi</p>
+            <p className="text-sm font-bold text-white">JetRandevu</p>
             <p className="text-xs text-white/80">Genellikle birkaç dakika içinde yanıt verir</p>
           </div>
           <button

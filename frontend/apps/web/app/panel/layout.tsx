@@ -82,7 +82,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
     <aside className="flex flex-col h-full w-64 bg-white border-r border-gray-100">
       {/* Logo */}
       <div className="flex items-center gap-2 px-6 py-5 border-b border-gray-100">
-        <img src="/logo-black-last.png" alt="Logo" className="h-7 w-auto" />
+        <img src="/logo-jetrandevu.png" alt="Logo" className="h-7 w-auto" />
       </div>
 
       {/* Nav */}

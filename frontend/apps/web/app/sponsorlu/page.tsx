@@ -1,10 +1,10 @@
-import { Navbar } from '@/components/Navbar'
+﻿import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import CheckoutLink from '@/components/CheckoutLink'
 import Link from 'next/link'
 import { ArrowRight, Check, Star, TrendingUp, Search, Zap, Award, Users, Sparkles, Shield } from 'lucide-react'
 
-export const metadata = { title: 'Sponsorlu Öne Çıkan — BookingAi' }
+export const metadata = { title: 'Sponsorlu Öne Çıkan — JetRandevu' }
 
 const stats = [
   { value: '%320', label: 'Ortalama Tıklanma Artışı' },

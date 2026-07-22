@@ -28,7 +28,7 @@ const posts = [
         <li>Randevu sonrası geri bildirim alın</li>
         <li>Sadakat programı ile tekrar eden müşterileri ödüllendirin</li>
       </ol>
-      <p>BookingAi ile müşteri memnuniyetinizi bir üst seviyeye taşıyın. Dijital dönüşümün avantajlarından yararlanarak işletmenizi büyütün.</p>
+      <p>JetRandevu ile müşteri memnuniyetinizi bir üst seviyeye taşıyın. Dijital dönüşümün avantajlarından yararlanarak işletmenizi büyütün.</p>
     `,
   },
   {
@@ -46,7 +46,7 @@ const posts = [
         <li><strong>Sosyal Medya Yönetimi:</strong> Instagram ve TikTok'ta düzenli içerik paylaşarak görünürlüğünüzü artırın.</li>
         <li><strong>Google My Business:</strong> İşletme profilinizi optimize ederek yerel aramalarda öne çıkın.</li>
         <li><strong>Müşteri Yorumları:</strong> Memnun müşterilerinizi Google ve sosyal medyada yorum bırakmaya teşvik edin.</li>
-        <li><strong>Online Randevu Sistemi:</strong> BookingAi ile web sitenize entegre randevu alma imkanı sunun.</li>
+        <li><strong>Online Randevu Sistemi:</strong> JetRandevu ile web sitenize entegre randevu alma imkanı sunun.</li>
       </ul>
       <p>Başarılı bir dijital pazarlama stratejisi ile müşteri sayınızı katlayabilir, marka bilinirliğinizi artırabilirsiniz.</p>
     `,
@@ -59,7 +59,7 @@ const posts = [
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
     content: `
       <p>İşletmenizin verimliliğini artırmak için kullanabileceğiniz 5 önemli aracı sizler için derledik.</p>
-      <h2>1. Online Randevu Sistemi (BookingAi)</h2>
+      <h2>1. Online Randevu Sistemi (JetRandevu)</h2>
       <p>Randevu yönetimini otomatikleştirerek personelinizin zamanını daha verimli kullanmasını sağlayın.</p>
       <h2>2. Müşteri İlişkileri Yönetimi (CRM)</h2>
       <p>Müşteri verilerinizi tek bir platformda toplayarak kişiselleştirilmiş hizmet sunun.</p>
@@ -87,7 +87,7 @@ const posts = [
         <li>Rekabet avantajı sağlar</li>
       </ul>
       <h2>Nasıl Oluşturulur?</h2>
-      <p>BookingAi platformu üzerinden kolayca sadakat programı oluşturabilirsiniz. Puan sistemi, indirim kuponları ve özel tekliflerle müşterilerinizi ödüllendirin.</p>
+      <p>JetRandevu platformu üzerinden kolayca sadakat programı oluşturabilirsiniz. Puan sistemi, indirim kuponları ve özel tekliflerle müşterilerinizi ödüllendirin.</p>
     `,
   },
   {

@@ -73,7 +73,7 @@ export function SocialMediaPage() {
   const [copied, setCopied] = useState<string | null>(null)
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null)
 
-  const bookingLink = `https://randevumkolay.com/randevu/${business?.slug ?? 'isletmeniz'}`
+  const bookingLink = `https://jetrandevu.com/randevu/${business?.slug ?? 'isletmeniz'}`
 
   function connect(id: string) {
     const platform = platforms.find((item) => item.id === id)

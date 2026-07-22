@@ -46,7 +46,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo-black-last.png" alt="BookingAi" className="h-8 w-auto" />
+              <img src="/logo-jetrandevu.png" alt="JetRandevu" className="h-8 w-auto" />
             </Link>
             <p className="mt-3 text-sm text-gray-500 max-w-xs">Türkiye&apos;nin en hızlı büyüyen online randevu platformu.</p>
             {/* Social icons */}
@@ -114,7 +114,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-gray-200 pt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-xs text-gray-400">© 2026 BookingAi. Tüm hakları saklıdır.</p>
+          <p className="text-xs text-gray-400">© 2026 JetRandevu. Tüm hakları saklıdır.</p>
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
               <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

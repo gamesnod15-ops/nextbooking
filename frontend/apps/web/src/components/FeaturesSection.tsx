@@ -1,4 +1,4 @@
-import {
+﻿import {
   Calendar, Bell, BarChart3, Users, Smartphone, Shield,
   Zap, Globe, CreditCard, MessageSquare, Star, RefreshCw,
   CheckCircle, ArrowRight,
@@ -199,7 +199,7 @@ export function FeaturesSection() {
             </div>
             <h2 className="text-4xl font-extrabold text-gray-900">İşletmenizi Büyütecek Her Şey</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              BookingAi&apos;ın güçlü özellikleri ile vaktinizi müşterilerinize harcayın, idari işler için değil.
+              JetRandevu&apos;ın güçlü özellikleri ile vaktinizi müşterilerinize harcayın, idari işler için değil.
             </p>
           </SlideIn>
 

@@ -1,7 +1,7 @@
-﻿import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'Gizlilik Politikası — BookingAi', description: 'BookingAi gizlilik politikası.' }
+export const metadata = { title: 'Gizlilik Politikası — JetRandevu', description: 'JetRandevu gizlilik politikası.' }
 
 export default function PrivacyPage() {
   return (
@@ -26,8 +26,8 @@ export default function PrivacyPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Giriş ve Kapsam</h2>
-                <p>BookingAi ("biz", "bizim", "platform") olarak, kullanıcılarımızın ve ziyaretçilerimizin gizliliğine büyük önem vermekteyiz. İşbu Gizlilik Politikası, platformumuzu kullanırken hangi bilgilerin toplandığını, bu bilgilerin nasıl kullanıldığını, saklandığını, korunduğunu ve paylaşıldığını açıklamaktadır.</p>
-                <p className="mt-2">Bu politika, BookingAi web sitesini (nextbooking.com), mobil uygulamalarını ve alt alan adlarını kapsamaktadır. Platformumuzu kullanarak, bu politikada belirtilen veri toplama ve kullanım uygulamalarını kabul etmiş sayılırsınız.</p>
+                <p>JetRandevu ("biz", "bizim", "platform") olarak, kullanıcılarımızın ve ziyaretçilerimizin gizliliğine büyük önem vermekteyiz. İşbu Gizlilik Politikası, platformumuzu kullanırken hangi bilgilerin toplandığını, bu bilgilerin nasıl kullanıldığını, saklandığını, korunduğunu ve paylaşıldığını açıklamaktadır.</p>
+                <p className="mt-2">Bu politika, JetRandevu web sitesini (jetrandevu.com), mobil uygulamalarını ve alt alan adlarını kapsamaktadır. Platformumuzu kullanarak, bu politikada belirtilen veri toplama ve kullanım uygulamalarını kabul etmiş sayılırsınız.</p>
               </div>
 
               <div>
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
 
               <div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">8. Üçüncü Taraf Bağlantıları</h2>
-                <p>Platformumuz, üçüncü taraf web sitelerine bağlantılar içerebilir (örneğin, sosyal medya butonları, ödeme sayfaları). Bu bağlantılar, üçüncü taraf sitelerin gizlilik uygulamalarını kapsamamaktadır. Bu sitelerin kendi gizlilik politikalarını incelemenizi öneririz. BookingAi, üçüncü taraf sitelerin veri toplama uygulamalarından sorumlu değildir.</p>
+                <p>Platformumuz, üçüncü taraf web sitelerine bağlantılar içerebilir (örneğin, sosyal medya butonları, ödeme sayfaları). Bu bağlantılar, üçüncü taraf sitelerin gizlilik uygulamalarını kapsamamaktadır. Bu sitelerin kendi gizlilik politikalarını incelemenizi öneririz. JetRandevu, üçüncü taraf sitelerin veri toplama uygulamalarından sorumlu değildir.</p>
               </div>
 
               <div>
@@ -132,9 +132,9 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-bold text-gray-900 mb-3">10. İletişim</h2>
                 <p>Gizlilik politikamız hakkında sorularınız, endişeleriniz veya talepleriniz için bize aşağıdaki kanallardan ulaşabilirsiniz:</p>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                  <li><strong>E-posta:</strong> privacy@nextbooking.com</li>
+                  <li><strong>E-posta:</strong> privacy@jetrandevu.com</li>
                   <li><strong>Adres:</strong> Maslak Mahallesi, Büyükdere Caddesi No:237, 34485 Sarıyer/İstanbul</li>
-                  <li><strong>Web:</strong> nextbooking.com/iletisim</li>
+                  <li><strong>Web:</strong> jetrandevu.com/iletisim</li>
                 </ul>
                 <p className="mt-3 text-gray-500 text-xs">Son güncelleme: 15 Mayıs 2026</p>
               </div>

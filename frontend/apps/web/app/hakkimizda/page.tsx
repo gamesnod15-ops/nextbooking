@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-export const metadata = { title: 'Hakkımızda — BookingAi' }
+export const metadata = { title: 'Hakkımızda — JetRandevu' }
 
 const milestones = [
   {
@@ -262,7 +262,7 @@ export default function HakkimizdaPage() {
             Bizimle Büyümek İster misiniz?
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto mb-8">
-            14 gün ücretsiz deneme ile BookingAi&apos;ı keşfedin.
+            14 gün ücretsiz deneme ile JetRandevu&apos;ı keşfedin.
           </p>
           <Link
             href="/register"

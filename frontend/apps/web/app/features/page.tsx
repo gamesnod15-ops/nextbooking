@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = { title: 'Özellikler — BookingAi', description: 'BookingAi\'ın tüm özelliklerini keşfedin.' }
+export const metadata = { title: 'Özellikler — JetRandevu', description: 'JetRandevu\'ın tüm özelliklerini keşfedin.' }
 
 const features = [
   {
@@ -138,7 +138,7 @@ export default function FeaturesPage() {
                     </div>
                     <div className={`absolute -bottom-4 ${isReversed ? '-left-4' : '-right-4'} rounded-2xl ${f.accentBg} px-5 py-3 shadow-lg`}>
                       <p className={`text-sm font-bold ${f.accent}`}>{f.title}</p>
-                      <p className="text-xs text-gray-500">BookingAi ile tanışın</p>
+                      <p className="text-xs text-gray-500">JetRandevu ile tanışın</p>
                     </div>
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export default function FeaturesPage() {
             Tüm Bu Özellikler Sizi Bekliyor
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto mb-8">
-            14 gün ücretsiz deneme ile BookingAi&apos;ı keşfedin. Kredi kartı gerekmez.
+            14 gün ücretsiz deneme ile JetRandevu&apos;ı keşfedin. Kredi kartı gerekmez.
           </p>
           <Link
             href="/register"

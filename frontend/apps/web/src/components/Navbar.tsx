@@ -70,7 +70,7 @@ export function Navbar() {
         <div className="mx-auto flex h-9 w-full max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <div className="flex items-center gap-1.5">
             <Mail className="h-3 w-3" />
-            <a href="mailto:info@nextbooking.com" className="text-xs hover:text-brand-500 transition-colors">info@nextbooking.com</a>
+            <a href="mailto:info@jetrandevu.com" className="text-xs hover:text-brand-500 transition-colors">info@jetrandevu.com</a>
           </div>
           <div className="flex items-center gap-4">
             <a href="tel:+908505555555" className="flex items-center gap-1 text-xs hover:text-brand-500 transition-colors">
@@ -92,7 +92,7 @@ export function Navbar() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <img src="/logo-black-last.png" alt="BookingAi" className="h-6 w-auto sm:h-7" />
+          <img src="/logo-jetrandevu.png" alt="JetRandevu" className="h-6 w-auto sm:h-7" />
         </Link>
 
         {/* Desktop nav */}

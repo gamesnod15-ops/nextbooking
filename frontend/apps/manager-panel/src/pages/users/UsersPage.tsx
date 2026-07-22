@@ -185,7 +185,7 @@ export function UsersPage() {
                 </div>
                 <div className="col-span-2">
                   <label className="mb-1 block text-xs font-medium text-gray-700">E-posta *</label>
-                  <input type="email" value={modal.email} onChange={(e) => setModal((m) => m && ({ ...m, email: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="yonetici@randevumkolay.com" />
+                  <input type="email" value={modal.email} onChange={(e) => setModal((m) => m && ({ ...m, email: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="yonetici@jetrandevu.com" />
                   {errors.email && <div className="text-xs text-red-500 mt-1">{errors.email}</div>}
                 </div>
                 {!modal.id && (
