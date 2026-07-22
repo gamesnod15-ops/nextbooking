@@ -92,7 +92,7 @@ export function Navbar() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <img src="/logo-jetrandevu.png" alt="JetRandevu" className="h-6 w-auto sm:h-7" />
+          <img src="/icon-site.png" alt="JetRandevu" className="h-7 w-auto sm:h-8" />
         </Link>
 
         {/* Desktop nav */}
