@@ -133,24 +133,6 @@ export function Footer() {
             <span className="hidden sm:flex h-7 w-auto items-center justify-center rounded-[4px] border border-gray-300 bg-white px-1.5">
               <img src="/visa.svg" alt="Visa" className="h-4 w-auto" />
             </span>
-            <span className="hidden sm:block w-px h-6 bg-gray-300" />
-            {/* Google Play */}
-            <span className="flex h-7 items-center gap-1 rounded-[4px] border border-gray-300 bg-white px-2.5">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none">
-                <path d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.2a1.497 1.497 0 010 2.596z" fill="#EA4335" />
-                <path d="M6.259 1.501h11.479a1.499 1.499 0 011.298.749l-3.515 3.521-10.237 10.24-3.019-1.738a1.498 1.498 0 01-.749-1.298V4.998a1.5 1.5 0 01.749-1.298l3.994-2.199z" fill="#34A853" />
-                <path d="M4.028 20.252l3.994 2.199a1.5 1.5 0 001.498 0l10.498-6.052-3.919-2.218-12.07 12.071z" fill="#FBBC05" />
-                <path d="M1.5 5v14l4.76-2.74L1.5 5z" fill="#4285F4" />
-              </svg>
-              <span className="text-[10px] font-semibold text-gray-600 whitespace-nowrap">Google Play</span>
-            </span>
-            {/* App Store */}
-            <span className="flex h-7 items-center gap-1 rounded-[4px] border border-gray-300 bg-white px-2.5">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none">
-                <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#A3AAAE" />
-              </svg>
-              <span className="text-[10px] font-semibold text-gray-600 whitespace-nowrap">App Store</span>
-            </span>
           </div>
         </div>
       </div>
