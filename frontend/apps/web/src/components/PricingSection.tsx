@@ -118,7 +118,7 @@ export async function PricingSection({ showComparison = false }: { showCompariso
                   href={plan.planKey === 'custom' ? '/iletisim' : '/register'}
                   className={`mt-8 block rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all hover:-translate-y-0.5 ${
                     plan.isHighlighted
-                      ? 'bg-black text-brand-500 hover:bg-gray-900 shadow'
+                      ? 'bg-black text-white hover:bg-gray-900 shadow'
                       : 'bg-brand-500 text-white hover:bg-brand-600'
                   }`}
                 >

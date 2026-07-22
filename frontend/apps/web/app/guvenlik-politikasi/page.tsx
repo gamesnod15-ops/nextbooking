@@ -14,9 +14,9 @@ export default function GuvenlikPage() {
             <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">G?venlik Politikas?</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">G?venlik Politikas?</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">Bilgi g?venli?i y?netim sistemimiz ve uygulad???m?z g?venlik ?nlemleri.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Güvenlik Politikası</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">Güvenlik Politikası</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">Bilgi güvenliği yönetim sistemimiz ve uyguladığımız güvenlik önlemleri.</p>
           </div>
         </section>
 

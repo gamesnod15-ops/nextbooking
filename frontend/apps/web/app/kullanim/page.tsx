@@ -14,9 +14,9 @@ export default function TermsPage() {
             <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Kullan?m ?artlar?</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">Kullan?m ?artlar?</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">Platformumuzu kullan?rken uyman?z gereken kurallar ve yasal ?er?eve.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Kullanım Şartları</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">Kullanım Şartları</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">Platformumuzu kullanırken uymanız gereken kurallar ve yasal çerçeve.</p>
           </div>
         </section>
 

@@ -195,7 +195,7 @@ export default function RegisterPage() {
           phone:       form.phone.replace(/\s/g, ''),
           password:    form.password,
         })
-        router.push('/isletmeler')
+        router.push('/musteri')
         return
       }
 

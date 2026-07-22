@@ -170,7 +170,7 @@ export default function BusinessListPage() {
 
   const FilterPanel = ({ mobile = false }: { mobile?: boolean }) => (
     <div className={`${mobile ? '' : 'w-[280px] shrink-0'}`}>
-      <div className="sticky top-24 space-y-1">
+      <div className={`${mobile ? '' : 'sticky top-24'} space-y-1 pointer-events-auto`}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold text-gray-900">Filtreler</h3>
           {activeFilterCount > 0 && (
@@ -195,9 +195,14 @@ export default function BusinessListPage() {
           {expandedCategories && (
             <div className="border-t border-gray-100 px-4 pb-4 max-h-[280px] overflow-y-auto">
               {allCategories.map((cat) => (
-                <label
+                <div
                   key={cat.id}
-                  className="flex cursor-pointer items-center gap-3 py-2 group"
+                  role="checkbox"
+                  aria-checked={selectedCategories.includes(cat.id)}
+                  tabIndex={0}
+                  onClick={() => toggleCategory(cat.id)}
+                  onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleCategory(cat.id) } }}
+                  className="flex cursor-pointer items-center gap-3 py-2 group select-none"
                 >
                   <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all ${
                     selectedCategories.includes(cat.id)
@@ -215,7 +220,7 @@ export default function BusinessListPage() {
                     {cat.name}
                   </span>
                   <span className="text-xs text-gray-400">{cat.count}</span>
-                </label>
+                </div>
               ))}
             </div>
           )}
@@ -244,9 +249,14 @@ export default function BusinessListPage() {
               </div>
               <div className="max-h-[280px] overflow-y-auto">
                 {filteredCities.map((cityItem) => (
-                  <label
+                  <div
                     key={cityItem.name}
-                    className="flex cursor-pointer items-center gap-3 py-2 group"
+                    role="checkbox"
+                    aria-checked={selectedCities.includes(cityItem.name)}
+                    tabIndex={0}
+                    onClick={() => toggleCity(cityItem.name)}
+                    onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleCity(cityItem.name) } }}
+                    className="flex cursor-pointer items-center gap-3 py-2 group select-none"
                   >
                     <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all ${
                       selectedCities.includes(cityItem.name)
@@ -261,7 +271,7 @@ export default function BusinessListPage() {
                     </div>
                     <span className="flex-1 text-sm text-gray-700 group-hover:text-gray-900">{cityItem.name}</span>
                     <span className="text-xs text-gray-400">{cityItem.count}</span>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
@@ -377,50 +387,64 @@ export default function BusinessListPage() {
                       key={biz.id}
                       className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-brand-200 flex flex-col"
                     >
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {/* Large photo */}
+                      {biz.coverImageUrl ? (
+                        <div className="relative h-44 overflow-hidden">
+                          <img src={biz.coverImageUrl} alt={biz.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                        </div>
+                      ) : (
+                        <div className={`relative h-44 flex items-center justify-center ${categoryColor(biz.categoryName)}`}>
+                          {biz.logoUrl ? (
+                            <img src={biz.logoUrl} alt={biz.name} className="h-20 w-20 rounded-2xl object-cover ring-4 ring-white/30" />
+                          ) : (
+                            <span className="text-4xl font-extrabold text-white/80">{initials(biz.name)}</span>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                        </div>
+                      )}
 
                       <div className="p-5 flex flex-col flex-1">
-                        <div className="flex items-start gap-3 mb-3">
-                          {biz.logoUrl ? (
-                            <img src={biz.logoUrl} alt={biz.name} className="h-12 w-12 shrink-0 rounded-xl object-cover ring-2 ring-gray-100 group-hover:ring-brand-200 transition-all" />
-                          ) : (
-                            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-bold ring-2 ring-gray-100 group-hover:ring-brand-200 transition-all ${categoryColor(biz.categoryName)}`}>
-                              {initials(biz.name)}
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <Link href={`/isletmeler/${biz.id}`} className="text-sm font-bold text-gray-900 group-hover:text-brand-600 transition-colors line-clamp-1">
-                              {biz.name}
-                            </Link>
-                            <div className="mt-1 flex items-center gap-1.5">
-                              <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${categoryColor(biz.categoryName)}`}>
-                                {categoryIcons[biz.categoryName] && <span className="text-[10px]">{categoryIcons[biz.categoryName]}</span>}
-                                {biz.categoryName}
-                              </span>
-                            </div>
-                          </div>
+                        {/* İşletme adı */}
+                        <Link href={`/isletmeler/${biz.id}`} className="text-base font-bold text-gray-900 group-hover:text-brand-600 transition-colors line-clamp-1">
+                          {biz.name}
+                        </Link>
+
+                        {/* Kategori */}
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${categoryColor(biz.categoryName)}`}>
+                            {categoryIcons[biz.categoryName] && <span className="text-[10px]">{categoryIcons[biz.categoryName]}</span>}
+                            {biz.categoryName}
+                          </span>
                         </div>
 
+                        {/* Açıklama */}
                         {biz.description && (
-                          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">{biz.description}</p>
+                          <p className="mt-3 text-xs text-gray-500 leading-relaxed line-clamp-2">{biz.description}</p>
                         )}
 
-                        <div className="mt-auto pt-3 border-t border-gray-100">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 text-xs text-gray-400 min-w-0">
-                              {biz.city && (
-                                <span className="flex items-center gap-0.5 shrink-0">
-                                  <MapPin className="h-3 w-3" /> {biz.city}
-                                </span>
-                              )}
-                            </div>
-                            <Link
-                              href={`/isletmeler/${biz.id}`}
-                              className="flex shrink-0 items-center gap-1 rounded-lg bg-brand-500 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-sm"
-                            >
-                              <CalendarCheck className="h-3 w-3" /> Randevu Al
-                            </Link>
+                        {/* Diğer bilgiler */}
+                        <div className="mt-auto pt-3 border-t border-gray-100 space-y-2">
+                          <div className="flex items-center gap-2 text-xs text-gray-400">
+                            {biz.city && (
+                              <span className="flex items-center gap-0.5">
+                                <MapPin className="h-3 w-3" /> {biz.city}
+                              </span>
+                            )}
+                            {biz.phone && (
+                              <span className="flex items-center gap-0.5">
+                                <Phone className="h-3 w-3" /> {biz.phone}
+                              </span>
+                            )}
                           </div>
+
+                          {/* Randevu Al butonu */}
+                          <Link
+                            href={`/isletmeler/${biz.id}`}
+                            className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-sm"
+                          >
+                            <CalendarCheck className="h-3.5 w-3.5" /> Randevu Al
+                          </Link>
                         </div>
                       </div>
                     </div>

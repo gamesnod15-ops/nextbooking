@@ -14,9 +14,9 @@ export default function PrivacyPage() {
             <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Gizlilik Politikas?</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">Gizlilik Politikas?</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">Ki?isel verilerinizin gizlili?i ve g?venli?i hakk?nda kapsaml? bilgi.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Gizlilik Politikası</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">Gizlilik Politikası</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">Kişisel verilerinizin gizliliği ve güvenliği hakkında kapsamlı bilgi.</p>
           </div>
         </section>
 

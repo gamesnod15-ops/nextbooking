@@ -14,9 +14,9 @@ export default function CerezPolicyPage() {
             <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">?erez Politikas?</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">?erez Politikas?</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">Sitemizde kullan?lan ?erezler ve veri toplama y?ntemleri hakk?nda bilgi.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Çerez Politikası</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">Çerez Politikası</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">Sitemizde kullanılan çerezler ve veri toplama yöntemleri hakkında bilgi.</p>
           </div>
         </section>
 

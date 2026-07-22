@@ -46,7 +46,7 @@ export function ScrollToTop() {
           : 'opacity-0 scale-75 pointer-events-none'
       }`}
       style={{
-        background: `conic-gradient(#ce0d1e ${progress * 360}deg, #f3f4f6 ${progress * 360}deg)`,
+        background: `conic-gradient(rgb(1, 84, 240) ${progress * 360}deg, #f3f4f6 ${progress * 360}deg)`,
       }}
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white">
