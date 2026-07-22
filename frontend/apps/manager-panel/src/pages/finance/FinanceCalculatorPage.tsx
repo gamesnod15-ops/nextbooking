@@ -45,15 +45,26 @@ function saveData(data: { packages: PackageRow[]; expenses: ExpenseRow[]; custom
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) } catch { /* quota */ }
 }
 
-let _id = 100
-function nextId() { return String(++_id) }
+let _idCounter = 100
+function nextId() { return String(++_idCounter) }
+function initIdCounter(items: { id: string }[]) {
+  const maxId = items.reduce((max, item) => {
+    const num = parseInt(item.id, 10)
+    return isNaN(num) ? max : Math.max(max, num)
+  }, 0)
+  if (maxId >= _idCounter) _idCounter = maxId
+}
 
 export function FinanceCalculatorPage() {
   const saved = useMemo(() => loadSaved(), [])
 
   const [packages, setPackages] = useState<PackageRow[]>(saved?.packages ?? defaultPackages)
   const [customPrice, setCustomPrice] = useState<number>(saved?.customPrice ?? 0)
-  const [expenses, setExpenses] = useState<ExpenseRow[]>(saved?.expenses ?? defaultExpenses)
+  const [expenses, setExpenses] = useState<ExpenseRow[]>(() => {
+    const list = saved?.expenses ?? defaultExpenses
+    initIdCounter(list)
+    return list
+  })
 
   useEffect(() => { saveData({ packages, expenses, customPrice }) }, [packages, expenses, customPrice])
 
