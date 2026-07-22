@@ -2,53 +2,53 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { HelpCircle, Zap, CreditCard, Settings, Shield, Smartphone, Users, Search } from 'lucide-react'
 
-export const metadata = { title: 'Sık Sorulan Sorular — JetRandevu', description: 'JetRandevu hakkında sık sorulan sorular ve cevapları.' }
+export const metadata = { title: 'SÄ±k Sorulan Sorular â€” JetRandevu', description: 'JetRandevu hakkÄ±nda sÄ±k sorulan sorular ve cevaplarÄ±.' }
 
 const categories = [
   {
     icon: HelpCircle, label: 'Genel',
     items: [
-      { q: 'JetRandevu nedir?', a: 'JetRandevu, kuaför, güzellik salonu, diş kliniği ve benzeri işletmeler için geliştirilmiş online randevu ve yönetim sistemidir.' },
-      { q: 'Ücretsiz deneme süresi ne kadar?', a: '14 gün ücretsiz deneme süresi sunuyoruz. Kredi kartı gerekmez, dilediğiniz zaman iptal edebilirsiniz.' },
-      { q: 'Kurulum ne kadar sürer?', a: 'Ortalama 5 dakika içinde kurulum tamamlanır. Herhangi bir yazılım yüklemenize gerek yoktur.' },
+      { q: 'JetRandevu nedir?', a: 'JetRandevu, kuafÃ¶r, gÃ¼zellik salonu, diÅŸ kliniÄŸi ve benzeri iÅŸletmeler iÃ§in geliÅŸtirilmiÅŸ online randevu ve yÃ¶netim sistemidir.' },
+      { q: 'Ãœcretsiz deneme sÃ¼resi ne kadar?', a: '14 gÃ¼n Ã¼cretsiz deneme sÃ¼resi sunuyoruz. Kredi kartÄ± gerekmez, dilediÄŸiniz zaman iptal edebilirsiniz.' },
+      { q: 'Kurulum ne kadar sÃ¼rer?', a: 'Ortalama 5 dakika iÃ§inde kurulum tamamlanÄ±r. Herhangi bir yazÄ±lÄ±m yÃ¼klemenize gerek yoktur.' },
     ],
   },
   {
-    icon: Users, label: 'Kullanım',
+    icon: Users, label: 'KullanÄ±m',
     items: [
-      { q: 'Hangi işletmeler kullanabilir?', a: 'Kuaför, berber, güzellik salonu, klinik, diş kliniği, fizyoterapi, spor salonu, spa ve daha birçok işletme türü kullanabilir.' },
-      { q: 'Birden fazla şube yönetebilir miyim?', a: 'Evet, Business ve Professional planlarımızda çoklu şube yönetimi desteği bulunmaktadır.' },
-      { q: 'Personel hesabı oluşturabilir miyim?', a: 'Evet, her personel için ayrı hesap ve yetkilendirme oluşturabilir, çalışma takvimlerini ayrı ayrı yönetebilirsiniz.' },
+      { q: 'Hangi iÅŸletmeler kullanabilir?', a: 'KuafÃ¶r, berber, gÃ¼zellik salonu, klinik, diÅŸ kliniÄŸi, fizyoterapi, spor salonu, spa ve daha birÃ§ok iÅŸletme tÃ¼rÃ¼ kullanabilir.' },
+      { q: 'Birden fazla ÅŸube yÃ¶netebilir miyim?', a: 'Evet, Business ve Professional planlarÄ±mÄ±zda Ã§oklu ÅŸube yÃ¶netimi desteÄŸi bulunmaktadÄ±r.' },
+      { q: 'Personel hesabÄ± oluÅŸturabilir miyim?', a: 'Evet, her personel iÃ§in ayrÄ± hesap ve yetkilendirme oluÅŸturabilir, Ã§alÄ±ÅŸma takvimlerini ayrÄ± ayrÄ± yÃ¶netebilirsiniz.' },
     ],
   },
   {
-    icon: CreditCard, label: 'Ödeme & Faturalandırma',
+    icon: CreditCard, label: 'Ã–deme & FaturalandÄ±rma',
     items: [
-      { q: 'Ödeme entegrasyonları hangileri?', a: 'İyzico ve Stripe entegrasyonlarımız mevcuttur. Güvenli ödeme altyapısı ile çalışır.' },
-      { q: 'Müşterilerimden kredi kartı ile ödeme alabilir miyim?', a: 'Evet, online ödeme altyapımız sayesinde müşterileriniz randevu sırasında kredi kartı ile ödeme yapabilir.' },
-      { q: 'Faturalarımı nereden görüntüleyebilirim?', a: 'Panelinizde Fatura bölümünden tüm geçmiş faturalarınızı görüntüleyebilir ve indirebilirsiniz.' },
+      { q: 'Ã–deme entegrasyonlarÄ± hangileri?', a: 'Ä°yzico ve Stripe entegrasyonlarÄ±mÄ±z mevcuttur. GÃ¼venli Ã¶deme altyapÄ±sÄ± ile Ã§alÄ±ÅŸÄ±r.' },
+      { q: 'MÃ¼ÅŸterilerimden kredi kartÄ± ile Ã¶deme alabilir miyim?', a: 'Evet, online Ã¶deme altyapÄ±mÄ±z sayesinde mÃ¼ÅŸterileriniz randevu sÄ±rasÄ±nda kredi kartÄ± ile Ã¶deme yapabilir.' },
+      { q: 'FaturalarÄ±mÄ± nereden gÃ¶rÃ¼ntÃ¼leyebilirim?', a: 'Panelinizde Fatura bÃ¶lÃ¼mÃ¼nden tÃ¼m geÃ§miÅŸ faturalarÄ±nÄ±zÄ± gÃ¶rÃ¼ntÃ¼leyebilir ve indirebilirsiniz.' },
     ],
   },
   {
     icon: Settings, label: 'Teknik',
     items: [
-      { q: 'Verilerim güvende mi?', a: 'Evet, tüm verileriniz SSL şifreleme ile korunur ve KVKK uyumlu sunucularda saklanır.' },
-      { q: 'Kendi alan adımı kullanabilir miyim?', a: 'Evet, Professional planımızda kendi alan adınızı kullanabilirsiniz.' },
-      { q: 'Mobil uygulamanız var mı?', a: 'Web tabanlı platformumuz tüm mobil tarayıcılarda kusursuz çalışır. Ayrı bir uygulama yüklemenize gerek yoktur.' },
+      { q: 'Verilerim gÃ¼vende mi?', a: 'Evet, tÃ¼m verileriniz SSL ÅŸifreleme ile korunur ve KVKK uyumlu sunucularda saklanÄ±r.' },
+      { q: 'Kendi alan adÄ±mÄ± kullanabilir miyim?', a: 'Evet, Professional planÄ±mÄ±zda kendi alan adÄ±nÄ±zÄ± kullanabilirsiniz.' },
+      { q: 'Mobil uygulamanÄ±z var mÄ±?', a: 'Web tabanlÄ± platformumuz tÃ¼m mobil tarayÄ±cÄ±larda kusursuz Ã§alÄ±ÅŸÄ±r. AyrÄ± bir uygulama yÃ¼klemenize gerek yoktur.' },
     ],
   },
   {
-    icon: Zap, label: 'Randevu & Hatırlatma',
+    icon: Zap, label: 'Randevu & HatÄ±rlatma',
     items: [
-      { q: 'Müşterilerime SMS ve e-posta gönderebilir miyim?', a: 'Evet, otomatik hatırlatma SMS ve e-postaları ile hayır-deme oranınızı düşürebilirsiniz.' },
-      { q: 'Randevu hatırlatmaları otomatik mi?', a: 'Evet, sistem randevu saatinden 24 saat ve 1 saat önce otomatik olarak hatırlatma gönderir.' },
+      { q: 'MÃ¼ÅŸterilerime SMS ve e-posta gÃ¶nderebilir miyim?', a: 'Evet, otomatik hatÄ±rlatma SMS ve e-postalarÄ± ile hayÄ±r-deme oranÄ±nÄ±zÄ± dÃ¼ÅŸÃ¼rebilirsiniz.' },
+      { q: 'Randevu hatÄ±rlatmalarÄ± otomatik mi?', a: 'Evet, sistem randevu saatinden 24 saat ve 1 saat Ã¶nce otomatik olarak hatÄ±rlatma gÃ¶nderir.' },
     ],
   },
   {
-    icon: Shield, label: 'Güvenlik & Yasal',
+    icon: Shield, label: 'GÃ¼venlik & Yasal',
     items: [
-      { q: 'KVKK uyumlu musunuz?', a: 'Evet, tüm veri işleme süreçlerimiz KVKK mevzuatına uygun olarak tasarlanmıştır.' },
-      { q: 'Veri yedekleme nasıl yapılıyor?', a: 'Verileriniz günlük olarak yedeklenir ve çok katmanlı güvenlik duvarları ile korunur.' },
+      { q: 'KVKK uyumlu musunuz?', a: 'Evet, tÃ¼m veri iÅŸleme sÃ¼reÃ§lerimiz KVKK mevzuatÄ±na uygun olarak tasarlanmÄ±ÅŸtÄ±r.' },
+      { q: 'Veri yedekleme nasÄ±l yapÄ±lÄ±yor?', a: 'Verileriniz gÃ¼nlÃ¼k olarak yedeklenir ve Ã§ok katmanlÄ± gÃ¼venlik duvarlarÄ± ile korunur.' },
     ],
   },
 ]
@@ -64,9 +64,9 @@ export default function FaqPage() {
             <div className="absolute -bottom-40 -left-40 h-[300px] w-[300px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Sık Sorulan Sorular</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">SÄ±k Sorulan Sorular</p>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">Merak Edilenler</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">JetRandevu hakkında en çok sorulan soruların cevaplarını kategorilere ayrılmış olarak bulabilirsiniz.</p>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">JetRandevu hakkÄ±nda en Ã§ok sorulan sorularÄ±n cevaplarÄ±nÄ± kategorilere ayrÄ±lmÄ±ÅŸ olarak bulabilirsiniz.</p>
           </div>
         </section>
 

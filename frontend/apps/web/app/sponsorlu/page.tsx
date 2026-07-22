@@ -4,69 +4,69 @@ import CheckoutLink from '@/components/CheckoutLink'
 import Link from 'next/link'
 import { ArrowRight, Check, Star, TrendingUp, Search, Zap, Award, Users, Sparkles, Shield } from 'lucide-react'
 
-export const metadata = { title: 'Sponsorlu Öne Çıkan — JetRandevu' }
+export const metadata = { title: 'Sponsorlu Ã–ne Ã‡Ä±kan â€” JetRandevu' }
 
 const stats = [
-  { value: '%320', label: 'Ortalama Tıklanma Artışı' },
-  { value: '2.5x', label: 'Daha Fazla Müşteri' },
-  { value: '15K+', label: 'Sponsorlu İşletme' },
-  { value: '81', label: 'Şehirde Aktif' },
+  { value: '%320', label: 'Ortalama TÄ±klanma ArtÄ±ÅŸÄ±' },
+  { value: '2.5x', label: 'Daha Fazla MÃ¼ÅŸteri' },
+  { value: '15K+', label: 'Sponsorlu Ä°ÅŸletme' },
+  { value: '81', label: 'Åehirde Aktif' },
 ]
 
 const benefits = [
   {
-    icon: Star, title: 'Ön Sıralarda Yer Alın', desc: 'Kategorinizde ve aramalarda sponsorlu olarak en üst sıralarda görünün.',
+    icon: Star, title: 'Ã–n SÄ±ralarda Yer AlÄ±n', desc: 'Kategorinizde ve aramalarda sponsorlu olarak en Ã¼st sÄ±ralarda gÃ¶rÃ¼nÃ¼n.',
     gradient: 'from-amber-500 to-orange-500',
   },
   {
-    icon: TrendingUp, title: 'Tıklanma Oranınızı Artırın', desc: 'Sponsorlu etiketiyle organik sonuçlardan sıyrılın, rakiplerinizin önüne geçin.',
+    icon: TrendingUp, title: 'TÄ±klanma OranÄ±nÄ±zÄ± ArtÄ±rÄ±n', desc: 'Sponsorlu etiketiyle organik sonuÃ§lardan sÄ±yrÄ±lÄ±n, rakiplerinizin Ã¶nÃ¼ne geÃ§in.',
     gradient: 'from-blue-500 to-cyan-500',
   },
   {
-    icon: Search, title: 'Doğru Kitleye Ulaşın', desc: 'Sadece sizin sektörünüzde ve bölgenizde arama yapan kullanıcılara öne çıkın.',
+    icon: Search, title: 'DoÄŸru Kitleye UlaÅŸÄ±n', desc: 'Sadece sizin sektÃ¶rÃ¼nÃ¼zde ve bÃ¶lgenizde arama yapan kullanÄ±cÄ±lara Ã¶ne Ã§Ä±kÄ±n.',
     gradient: 'from-emerald-500 to-green-500',
   },
   {
-    icon: Zap, title: 'Anında Yayına Girin', desc: 'Sponsorlu öne çıkma kampanyanız ödeme sonrası dakikalar içinde aktif olur.',
+    icon: Zap, title: 'AnÄ±nda YayÄ±na Girin', desc: 'Sponsorlu Ã¶ne Ã§Ä±kma kampanyanÄ±z Ã¶deme sonrasÄ± dakikalar iÃ§inde aktif olur.',
     gradient: 'from-violet-500 to-purple-500',
   },
 ]
 
 const plans = [
   {
-    name: 'Gümüş', price: '799', originalPrice: '1.199',
+    name: 'GÃ¼mÃ¼ÅŸ', price: '799', originalPrice: '1.199',
     badge: 'Ekonomik',
-    features: ['Kategori sayfasında öne çıkma', 'Sponsorlu etiketi', '5.000 aylık gösterim', 'Temel istatistikler', 'E-posta desteği'],
+    features: ['Kategori sayfasÄ±nda Ã¶ne Ã§Ä±kma', 'Sponsorlu etiketi', '5.000 aylÄ±k gÃ¶sterim', 'Temel istatistikler', 'E-posta desteÄŸi'],
   },
   {
-    name: 'Altın', price: '1.999', originalPrice: '2.999',
-    badge: 'En Popüler', popular: true,
-    features: ['Kategori sayfasında öne çıkma', 'Sponsorlu etiketi', '20.000 aylık gösterim', 'Gelişmiş istatistikler', 'Ana sayfada listeleme', 'Öncelikli destek'],
+    name: 'AltÄ±n', price: '1.999', originalPrice: '2.999',
+    badge: 'En PopÃ¼ler', popular: true,
+    features: ['Kategori sayfasÄ±nda Ã¶ne Ã§Ä±kma', 'Sponsorlu etiketi', '20.000 aylÄ±k gÃ¶sterim', 'GeliÅŸmiÅŸ istatistikler', 'Ana sayfada listeleme', 'Ã–ncelikli destek'],
   },
   {
     name: 'Platin', price: '4.999', originalPrice: '7.499',
     badge: 'Premium',
-    features: ['Kategori sayfasında öne çıkma', 'Sponsorlu etiketi', 'Sınırsız gösterim', 'Özel raporlama', 'Ana sayfada listeleme', '7/24 öncelikli destek', 'SEO danışmanlığı'],
+    features: ['Kategori sayfasÄ±nda Ã¶ne Ã§Ä±kma', 'Sponsorlu etiketi', 'SÄ±nÄ±rsÄ±z gÃ¶sterim', 'Ã–zel raporlama', 'Ana sayfada listeleme', '7/24 Ã¶ncelikli destek', 'SEO danÄ±ÅŸmanlÄ±ÄŸÄ±'],
   },
 ]
 
 const showcase = [
-  { name: 'Bella Kuaför', city: 'İstanbul', rating: 4.8, category: 'Güzellik', color: 'from-pink-500 to-rose-500' },
-  { name: 'Diş Hekimi Murat Yılmaz', city: 'Ankara', rating: 4.9, category: 'Sağlık', color: 'from-blue-500 to-cyan-500' },
+  { name: 'Bella KuafÃ¶r', city: 'Ä°stanbul', rating: 4.8, category: 'GÃ¼zellik', color: 'from-pink-500 to-rose-500' },
+  { name: 'DiÅŸ Hekimi Murat YÄ±lmaz', city: 'Ankara', rating: 4.9, category: 'SaÄŸlÄ±k', color: 'from-blue-500 to-cyan-500' },
   { name: 'Osmangazi Spor Salonu', city: 'Bursa', rating: 4.7, category: 'Fitness', color: 'from-emerald-500 to-green-500' },
-  { name: 'Lavanta Terapi', city: 'İzmir', rating: 4.9, category: 'Masaj & Spa', color: 'from-violet-500 to-purple-500' },
+  { name: 'Lavanta Terapi', city: 'Ä°zmir', rating: 4.9, category: 'Masaj & Spa', color: 'from-violet-500 to-purple-500' },
 ]
 
 const testimonials = [
-  { name: 'Can Öztürk', business: 'Diş Hekimi Murat Yılmaz', city: 'Ankara', text: 'Sponsorlu öne çıkan olduktan sonra randevu taleplerimiz %150 arttı. Harika bir sistem.', rating: 5 },
-  { name: 'Selin Aydın', business: 'Bella Kuaför', city: 'İstanbul', text: 'Rakiplerimin önüne geçmek için mükemmel bir fırsat. Aylık müşteri sayım ikiye katlandı.', rating: 5 },
+  { name: 'Can Ã–ztÃ¼rk', business: 'DiÅŸ Hekimi Murat YÄ±lmaz', city: 'Ankara', text: 'Sponsorlu Ã¶ne Ã§Ä±kan olduktan sonra randevu taleplerimiz %150 arttÄ±. Harika bir sistem.', rating: 5 },
+  { name: 'Selin AydÄ±n', business: 'Bella KuafÃ¶r', city: 'Ä°stanbul', text: 'Rakiplerimin Ã¶nÃ¼ne geÃ§mek iÃ§in mÃ¼kemmel bir fÄ±rsat. AylÄ±k mÃ¼ÅŸteri sayÄ±m ikiye katlandÄ±.', rating: 5 },
 ]
 
 const faq = [
-  { q: 'Sponsorlu öne çıkan nedir?', a: 'İşletmenizin belirli anahtar kelime ve kategorilerde, normal sonuçların üzerinde öne çıkarılmasıdır.' },
-  { q: 'Ne kadar sürede aktif olur?', a: 'Ödeme sonrası ortalama 15 dakika içinde sponsorlu öne çıkan listenizde yer almaya başlarsınız.' },
-  { q: 'Faturalandırma nasıl yapılır?', a: 'Aylık olarak faturalandırılır. İstediğiniz zaman iptal edebilir, bir sonraki dönem yenilenmez.' },
-  { q: 'Performansımı görebilir miyim?', a: 'Evet, panelinizden gösterim, tıklanma ve müşteri dönüşüm verilerinizi anlık takip edebilirsiniz.' },
+  { q: 'Sponsorlu Ã¶ne Ã§Ä±kan nedir?', a: 'Ä°ÅŸletmenizin belirli anahtar kelime ve kategorilerde, normal sonuÃ§larÄ±n Ã¼zerinde Ã¶ne Ã§Ä±karÄ±lmasÄ±dÄ±r.' },
+  { q: 'Ne kadar sÃ¼rede aktif olur?', a: 'Ã–deme sonrasÄ± ortalama 15 dakika iÃ§inde sponsorlu Ã¶ne Ã§Ä±kan listenizde yer almaya baÅŸlarsÄ±nÄ±z.' },
+  { q: 'FaturalandÄ±rma nasÄ±l yapÄ±lÄ±r?', a: 'AylÄ±k olarak faturalandÄ±rÄ±lÄ±r. Ä°stediÄŸiniz zaman iptal edebilir, bir sonraki dÃ¶nem yenilenmez.' },
+  { q: 'PerformansÄ±mÄ± gÃ¶rebilir miyim?', a: 'Evet, panelinizden gÃ¶sterim, tÄ±klanma ve mÃ¼ÅŸteri dÃ¶nÃ¼ÅŸÃ¼m verilerinizi anlÄ±k takip edebilirsiniz.' },
 ]
 
 export default function SponsorluPage() {
@@ -83,24 +83,24 @@ export default function SponsorluPage() {
           </div>
           <div className="relative mx-auto max-w-5xl px-4 text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-xs font-medium text-brand-500 mb-6">
-              <Sparkles className="h-3 w-3" /> Öne Çıkmanın En Akıllı Yolu
+              <Sparkles className="h-3 w-3" /> Ã–ne Ã‡Ä±kmanÄ±n En AkÄ±llÄ± Yolu
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6">
-              İşletmenizi öne çıkarın,<br />
-              <span className="bg-gradient-to-r from-brand-500 to-yellow-400 bg-clip-text text-transparent">rakiplerinizi</span> geride bırakın
+              Ä°ÅŸletmenizi Ã¶ne Ã§Ä±karÄ±n,<br />
+              <span className="bg-gradient-to-r from-brand-500 to-yellow-400 bg-clip-text text-transparent">rakiplerinizi</span> geride bÄ±rakÄ±n
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-300 mb-10">
-              Sponsorlu öne çıkan olarak işletmenizi binlerce kullanıcının karşısına çıkarın, 
-              sektörünüzde fark edilin ve müşteri sayınızı katlayın.
+              Sponsorlu Ã¶ne Ã§Ä±kan olarak iÅŸletmenizi binlerce kullanÄ±cÄ±nÄ±n karÅŸÄ±sÄ±na Ã§Ä±karÄ±n, 
+              sektÃ¶rÃ¼nÃ¼zde fark edilin ve mÃ¼ÅŸteri sayÄ±nÄ±zÄ± katlayÄ±n.
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/register"
                 className="group rounded-xl bg-brand-500 px-8 py-3.5 text-base font-bold text-white hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
-                Hemen Başla <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                Hemen BaÅŸla <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link href="#packages"
                 className="rounded-xl border border-white/20 px-8 py-3.5 text-base font-medium text-gray-300 hover:bg-white/5 transition-all">
-                Paketleri İncele
+                Paketleri Ä°ncele
               </Link>
             </div>
           </div>
@@ -124,9 +124,9 @@ export default function SponsorluPage() {
         <section className="py-28">
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Öne Çıkan İşletmeler</p>
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Sponsorlu İşletmeler Daha Çok Tercih Ediliyor</h2>
-              <p className="mx-auto max-w-2xl text-gray-500">Türkiye&apos;nin dört bir yanından binlerce işletme sponsorlu öne çıkan olarak büyüyor.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Ã–ne Ã‡Ä±kan Ä°ÅŸletmeler</p>
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Sponsorlu Ä°ÅŸletmeler Daha Ã‡ok Tercih Ediliyor</h2>
+              <p className="mx-auto max-w-2xl text-gray-500">TÃ¼rkiye&apos;nin dÃ¶rt bir yanÄ±ndan binlerce iÅŸletme sponsorlu Ã¶ne Ã§Ä±kan olarak bÃ¼yÃ¼yor.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
               {showcase.map((s) => (
@@ -157,8 +157,8 @@ export default function SponsorluPage() {
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Avantajlar</p>
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Sponsorlu Öne Çıkmanın Gücü</h2>
-              <p className="mx-auto max-w-2xl text-gray-500">Rakiplerinizin bir adım önünde olmak için ihtiyacınız olan her şey.</p>
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Sponsorlu Ã–ne Ã‡Ä±kmanÄ±n GÃ¼cÃ¼</h2>
+              <p className="mx-auto max-w-2xl text-gray-500">Rakiplerinizin bir adÄ±m Ã¶nÃ¼nde olmak iÃ§in ihtiyacÄ±nÄ±z olan her ÅŸey.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {benefits.map((b) => (
@@ -179,9 +179,9 @@ export default function SponsorluPage() {
         <section id="packages" className="py-28">
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Fiyatlandırma</p>
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Size Uygun Paketi Seçin</h2>
-              <p className="mx-auto max-w-2xl text-gray-500">Her bütçeye uygun paketler. 14 gün içinde memnun kalmazsanız paranız iade.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">FiyatlandÄ±rma</p>
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Size Uygun Paketi SeÃ§in</h2>
+              <p className="mx-auto max-w-2xl text-gray-500">Her bÃ¼tÃ§eye uygun paketler. 14 gÃ¼n iÃ§inde memnun kalmazsanÄ±z paranÄ±z iade.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
               {plans.map((p) => (
@@ -189,7 +189,7 @@ export default function SponsorluPage() {
                   {p.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-yellow-400 px-5 py-1 text-xs font-bold text-white shadow-lg">
-                        <Star className="h-3 w-3 fill-black" /> En Çok Tercih Edilen
+                        <Star className="h-3 w-3 fill-black" /> En Ã‡ok Tercih Edilen
                       </div>
                     </div>
                   )}
@@ -216,7 +216,7 @@ export default function SponsorluPage() {
                   </ul>
                   <CheckoutLink type="sponsored" plan={p.name}
                     className={`block rounded-xl py-3 text-center text-sm font-bold transition-all ${p.popular ? 'bg-gradient-to-r from-brand-500 to-yellow-400 text-white hover:from-brand-600 hover:to-yellow-500 shadow-lg' : 'border-2 border-gray-200 text-gray-700 hover:border-brand-500 hover:text-brand-600'}`}>
-                    {p.popular ? 'Hemen Başla' : 'Paketi Seç'}
+                    {p.popular ? 'Hemen BaÅŸla' : 'Paketi SeÃ§'}
                   </CheckoutLink>
                 </div>
               ))}
@@ -228,9 +228,9 @@ export default function SponsorluPage() {
         <section className="bg-gray-900 py-28">
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Başarı Hikayeleri</p>
-              <h2 className="text-4xl font-extrabold text-white mb-4">Sponsorlu İşletmeler Ne Diyor?</h2>
-              <p className="mx-auto max-w-2xl text-gray-400">Sponsorlu öne çıkan ile büyüyen işletmelerin başarı hikayeleri.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">BaÅŸarÄ± Hikayeleri</p>
+              <h2 className="text-4xl font-extrabold text-white mb-4">Sponsorlu Ä°ÅŸletmeler Ne Diyor?</h2>
+              <p className="mx-auto max-w-2xl text-gray-400">Sponsorlu Ã¶ne Ã§Ä±kan ile bÃ¼yÃ¼yen iÅŸletmelerin baÅŸarÄ± hikayeleri.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
               {testimonials.map((t) => (
@@ -260,7 +260,7 @@ export default function SponsorluPage() {
         <section className="py-28">
           <div className="mx-auto max-w-3xl px-4">
             <div className="mb-12 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Sık Sorulan Sorular</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">SÄ±k Sorulan Sorular</p>
               <h2 className="text-3xl font-extrabold text-gray-900">Merak Edilenler</h2>
             </div>
             <div className="space-y-4">
@@ -286,11 +286,11 @@ export default function SponsorluPage() {
             <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Öne Çıkmaya Hazır Mısınız?</h2>
-            <p className="text-gray-300 text-lg mb-8">Hemen kaydolun, işletmenizi sponsorlu öne çıkan yaparak rakiplerinizin önüne geçin.</p>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Ã–ne Ã‡Ä±kmaya HazÄ±r MÄ±sÄ±nÄ±z?</h2>
+            <p className="text-gray-300 text-lg mb-8">Hemen kaydolun, iÅŸletmenizi sponsorlu Ã¶ne Ã§Ä±kan yaparak rakiplerinizin Ã¶nÃ¼ne geÃ§in.</p>
             <Link href="/register"
               className="group inline-flex items-center gap-2 rounded-xl bg-brand-500 px-10 py-4 text-base font-bold text-white hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25">
-              Ücretsiz Hesap Oluştur <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+              Ãœcretsiz Hesap OluÅŸtur <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
         </section>

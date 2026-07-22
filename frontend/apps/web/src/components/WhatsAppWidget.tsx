@@ -48,7 +48,7 @@ export function WhatsAppWidget() {
       >
         <span className="flex items-center gap-2 text-xs font-semibold tracking-wide">
           <MessageCircle className="h-4 w-4 rotate-90 shrink-0" />
-          Whatsapp'tan Bize Yazın
+          Whatsapp'tan Bize YazÄ±n
         </span>
       </button>
 
@@ -68,7 +68,7 @@ export function WhatsAppWidget() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white">JetRandevu</p>
-            <p className="text-xs text-white/80">Genellikle birkaç dakika içinde yanıt verir</p>
+            <p className="text-xs text-white/80">Genellikle birkaÃ§ dakika iÃ§inde yanÄ±t verir</p>
           </div>
           <button
             onClick={() => setOpen(false)}
@@ -83,9 +83,9 @@ export function WhatsAppWidget() {
           <div className="mx-auto max-w-[85%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm">
             <p className="text-sm text-gray-800">Merhaba! ??</p>
             <p className="mt-1 text-sm text-gray-800">
-              Size nasıl yardımcı olabiliriz? Mesajınızı yazın, WhatsApp üzerinden size dönüş yapalım.
+              Size nasÄ±l yardÄ±mcÄ± olabiliriz? MesajÄ±nÄ±zÄ± yazÄ±n, WhatsApp Ã¼zerinden size dÃ¶nÃ¼ÅŸ yapalÄ±m.
             </p>
-            <p className="mt-2 text-[10px] text-gray-400 text-right">bugün</p>
+            <p className="mt-2 text-[10px] text-gray-400 text-right">bugÃ¼n</p>
           </div>
         </div>
 
@@ -96,7 +96,7 @@ export function WhatsAppWidget() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Mesajınızı yazın..."
+            placeholder="MesajÄ±nÄ±zÄ± yazÄ±n..."
             rows={1}
             className="max-h-24 flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none transition-colors focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]"
           />

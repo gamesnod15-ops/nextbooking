@@ -16,9 +16,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title:       'JetRandevu — Türkiye\'nin En Hızlı Randevu Sistemi',
-  description: 'Kuaför, güzellik salonu, diş kliniği ve daha fazlası için çevrimiçi randevu sistemi. Kolay kurulum, güçlü yönetim.',
-  keywords:    'randevu sistemi, online randevu, kuaför randevu, güzellik salonu randevu',
+  title:       'JetRandevu â€” TÃ¼rkiye\'nin En HÄ±zlÄ± Randevu Sistemi',
+  description: 'KuafÃ¶r, gÃ¼zellik salonu, diÅŸ kliniÄŸi ve daha fazlasÄ± iÃ§in Ã§evrimiÃ§i randevu sistemi. Kolay kurulum, gÃ¼Ã§lÃ¼ yÃ¶netim.',
+  keywords:    'randevu sistemi, online randevu, kuafÃ¶r randevu, gÃ¼zellik salonu randevu',
   icons: {
     icon: '/icon-title.png',
   },

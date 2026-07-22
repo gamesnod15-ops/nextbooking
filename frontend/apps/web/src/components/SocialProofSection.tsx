@@ -2,10 +2,10 @@ import { Reveal, SlideIn, StaggerGroup, StaggerItem } from './motion/Reveal'
 import { TestimonialSpotlight } from './TestimonialSpotlight'
 
 const stats = [
-  { value: '10.000+', label: 'Aktif Ýþletme' },
-  { value: '2M+',     label: 'Aylýk Randevu' },
-  { value: '%98',     label: 'Müþteri Memnuniyeti' },
-  { value: '?500M+',  label: 'Ýþlem Hacmi' },
+  { value: '10.000+', label: 'Aktif Ä°ÅŸletme' },
+  { value: '2M+',     label: 'AylÄ±k Randevu' },
+  { value: '%98',     label: 'MÃ¼ÅŸteri Memnuniyeti' },
+  { value: '?500M+',  label: 'Ä°ÅŸlem Hacmi' },
 ]
 
 export function SocialProofSection() {
@@ -27,14 +27,14 @@ export function SocialProofSection() {
         <SlideIn direction="left" className="mb-12 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5">
             <span className="h-2 w-2 rounded-full bg-brand-500" />
-            <span className="text-xs font-semibold text-gray-900">Müþteri Yorumlarý</span>
+            <span className="text-xs font-semibold text-gray-900">MÃ¼ÅŸteri YorumlarÄ±</span>
           </div>
           <h2 className="text-4xl font-extrabold text-gray-900">
-            Ýþletme Sahipleri{' '}
+            Ä°ÅŸletme Sahipleri{' '}
             <span className="text-brand-500">Ne Diyor?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-            Türkiye&apos;nin dört bir yanýndan binlerce iþletme randevu yönetimini JetRandevu ile dönüþtürüyor
+            TÃ¼rkiye&apos;nin dÃ¶rt bir yanÄ±ndan binlerce iÅŸletme randevu yÃ¶netimini JetRandevu ile dÃ¶nÃ¼ÅŸtÃ¼rÃ¼yor
           </p>
         </SlideIn>
 

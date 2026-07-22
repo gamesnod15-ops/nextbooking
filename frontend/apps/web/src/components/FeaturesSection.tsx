@@ -8,20 +8,20 @@ import type { ComponentType, SVGProps } from 'react'
 import { SlideIn } from './motion/Reveal'
 
 const features = [
-  { icon: Calendar,       title: 'Online Randevu',       desc: '7/24 web ve mobil üzerinden randevu. Gerçek zamanlı müsaitlik takvimi.' },
-  { icon: Bell,           title: 'Otomatik Hatırlatma',  desc: 'SMS ve e-posta ile otomatik hatırlatmalar. Hayır-deme oranını %70 azaltın.' },
-  { icon: BarChart3,      title: 'Gelir Analitiği',      desc: 'Günlük, haftalık, aylık gelir raporları. İşletmenizi verilerle yönetin.' },
-  { icon: Users,          title: 'Çoklu Personel',       desc: 'Personel takvimi, yetkilendirme ve performans takibi.' },
-  { icon: Smartphone,     title: 'Mobil Uyumlu',         desc: 'Tüm cihazlarda kusursuz deneyim. iOS ve Android için optimize.' },
-  { icon: Shield,         title: 'Güvenli Ödeme',        desc: 'PCI DSS uyumlu. Stripe ve İyzico entegrasyonu.' },
-  { icon: Zap,            title: 'Hızlı Kurulum',        desc: '5 dakikada hesap açın. 10 dakikada müşteri kabul etmeye başlayın.' },
-  { icon: Star,           title: 'Sadakat Programı',     desc: 'Puan, kupa ve ödüllerle müşteri bağlılığını artırın.' },
+  { icon: Calendar,       title: 'Online Randevu',       desc: '7/24 web ve mobil Ã¼zerinden randevu. GerÃ§ek zamanlÄ± mÃ¼saitlik takvimi.' },
+  { icon: Bell,           title: 'Otomatik HatÄ±rlatma',  desc: 'SMS ve e-posta ile otomatik hatÄ±rlatmalar. HayÄ±r-deme oranÄ±nÄ± %70 azaltÄ±n.' },
+  { icon: BarChart3,      title: 'Gelir AnalitiÄŸi',      desc: 'GÃ¼nlÃ¼k, haftalÄ±k, aylÄ±k gelir raporlarÄ±. Ä°ÅŸletmenizi verilerle yÃ¶netin.' },
+  { icon: Users,          title: 'Ã‡oklu Personel',       desc: 'Personel takvimi, yetkilendirme ve performans takibi.' },
+  { icon: Smartphone,     title: 'Mobil Uyumlu',         desc: 'TÃ¼m cihazlarda kusursuz deneyim. iOS ve Android iÃ§in optimize.' },
+  { icon: Shield,         title: 'GÃ¼venli Ã–deme',        desc: 'PCI DSS uyumlu. Stripe ve Ä°yzico entegrasyonu.' },
+  { icon: Zap,            title: 'HÄ±zlÄ± Kurulum',        desc: '5 dakikada hesap aÃ§Ä±n. 10 dakikada mÃ¼ÅŸteri kabul etmeye baÅŸlayÄ±n.' },
+  { icon: Star,           title: 'Sadakat ProgramÄ±',     desc: 'Puan, kupa ve Ã¶dÃ¼llerle mÃ¼ÅŸteri baÄŸlÄ±lÄ±ÄŸÄ±nÄ± artÄ±rÄ±n.' },
 ]
 
 const steps = [
-  { step: '01', title: 'Hesap Açın', desc: 'E-posta ve işletme bilgilerinizle 2 dakikada hesabınızı oluşturun.' },
-  { step: '02', title: 'İşletmenizi Kurun', desc: 'Hizmetlerinizi, personellerinizi ve çalışma saatlerinizi ekleyin.' },
-  { step: '03', title: 'Paylaşın', desc: 'Randevu linkinizi müşterilerinizle paylaşın, rezervasyonlar gelmeye başlasın.' },
+  { step: '01', title: 'Hesap AÃ§Ä±n', desc: 'E-posta ve iÅŸletme bilgilerinizle 2 dakikada hesabÄ±nÄ±zÄ± oluÅŸturun.' },
+  { step: '02', title: 'Ä°ÅŸletmenizi Kurun', desc: 'Hizmetlerinizi, personellerinizi ve Ã§alÄ±ÅŸma saatlerinizi ekleyin.' },
+  { step: '03', title: 'PaylaÅŸÄ±n', desc: 'Randevu linkinizi mÃ¼ÅŸterilerinizle paylaÅŸÄ±n, rezervasyonlar gelmeye baÅŸlasÄ±n.' },
 ]
 
 const integrations: {
@@ -34,7 +34,7 @@ const integrations: {
 }[] = [
   {
     name: 'WhatsApp',
-    category: 'Mesajlaşma',
+    category: 'MesajlaÅŸma',
     bg: '#25D366',
     ring: 'ring-[#25D366]/30',
     icon: (props) => (
@@ -47,7 +47,7 @@ const integrations: {
   },
   {
     name: 'Stripe',
-    category: 'Ödeme',
+    category: 'Ã–deme',
     bg: '#635BFF',
     ring: 'ring-[#635BFF]/30',
     icon: (props) => (
@@ -58,8 +58,8 @@ const integrations: {
     iconStyle: 'text-white',
   },
   {
-    name: 'İyzico',
-    category: 'Ödeme',
+    name: 'Ä°yzico',
+    category: 'Ã–deme',
     bg: '#1a56db',
     ring: 'ring-[#1a56db]/30',
     icon: (props) => (
@@ -108,7 +108,7 @@ const integrations: {
   },
   {
     name: 'SMS',
-    category: 'Hatırlatma',
+    category: 'HatÄ±rlatma',
     bg: '#F97316',
     ring: 'ring-[#F97316]/30',
     icon: (props) => (
@@ -132,7 +132,7 @@ const integrations: {
   },
   {
     name: 'Zoom',
-    category: 'Görüntülü',
+    category: 'GÃ¶rÃ¼ntÃ¼lÃ¼',
     bg: '#2D8CFF',
     ring: 'ring-[#2D8CFF]/30',
     icon: (props) => (
@@ -195,11 +195,11 @@ export function FeaturesSection() {
           <SlideIn direction="left" className="text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 mb-4">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
-              <span className="text-xs font-semibold text-gray-900">Özellikler</span>
+              <span className="text-xs font-semibold text-gray-900">Ã–zellikler</span>
             </div>
-            <h2 className="text-4xl font-extrabold text-gray-900">İşletmenizi Büyütecek Her Şey</h2>
+            <h2 className="text-4xl font-extrabold text-gray-900">Ä°ÅŸletmenizi BÃ¼yÃ¼tecek Her Åey</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              JetRandevu&apos;ın güçlü özellikleri ile vaktinizi müşterilerinize harcayın, idari işler için değil.
+              JetRandevu&apos;Ä±n gÃ¼Ã§lÃ¼ Ã¶zellikleri ile vaktinizi mÃ¼ÅŸterilerinize harcayÄ±n, idari iÅŸler iÃ§in deÄŸil.
             </p>
           </SlideIn>
 
@@ -226,7 +226,7 @@ export function FeaturesSection() {
               href="/features"
               className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-md"
             >
-              Tüm Özellikleri Görüntüle <ArrowRight className="h-4 w-4" />
+              TÃ¼m Ã–zellikleri GÃ¶rÃ¼ntÃ¼le <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -248,9 +248,9 @@ export function FeaturesSection() {
             <div>
               <SlideIn direction="right">
               <div className="mb-10">
-                <p className="text-sm font-semibold uppercase tracking-widest text-gray-900">Nasıl Çalışır?</p>
-                <h2 className="mt-2 text-4xl font-extrabold text-gray-900">3 Adımda Hazır</h2>
-                <p className="mt-4 text-lg text-gray-600">Karmaşık kurulum yok. Dakikalar içinde başlayın.</p>
+                <p className="text-sm font-semibold uppercase tracking-widest text-gray-900">NasÄ±l Ã‡alÄ±ÅŸÄ±r?</p>
+                <h2 className="mt-2 text-4xl font-extrabold text-gray-900">3 AdÄ±mda HazÄ±r</h2>
+                <p className="mt-4 text-lg text-gray-600">KarmaÅŸÄ±k kurulum yok. Dakikalar iÃ§inde baÅŸlayÄ±n.</p>
               </div>
               </SlideIn>
 
@@ -278,7 +278,7 @@ export function FeaturesSection() {
                   href="/register"
                   className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-brand-600 transition-all hover:-translate-y-0.5"
                 >
-                  <CheckCircle className="h-4 w-4" /> Hemen Başla — Ücretsiz
+                  <CheckCircle className="h-4 w-4" /> Hemen BaÅŸla â€” Ãœcretsiz
                 </Link>
               </div>
             </div>
@@ -288,14 +288,14 @@ export function FeaturesSection() {
                 <div className="relative h-[480px] w-full overflow-hidden rounded-3xl shadow-2xl rotate-1 transition-transform duration-500 hover:rotate-0">
                   <img
                     src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&q=80"
-                    alt="İşletme yönetimi"
+                    alt="Ä°ÅŸletme yÃ¶netimi"
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </div>
                 <div className="absolute -bottom-4 -left-4 rounded-2xl bg-white px-5 py-3 shadow-xl border-2 border-gray-200">
                   <p className="text-sm font-semibold text-gray-900">5 dakikada kurulum</p>
-                  <p className="text-xs text-gray-500">Üstelik tamamen ücretsiz</p>
+                  <p className="text-xs text-gray-500">Ãœstelik tamamen Ã¼cretsiz</p>
                 </div>
               </div>
             </div>
@@ -315,12 +315,12 @@ export function FeaturesSection() {
               <span className="text-xs font-semibold text-gray-900">Avantajlar</span>
             </div>
             <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
-              Rakiplerinizden Bir Adım{' '}
-              <span className="text-brand-500">Önde Olun</span>
+              Rakiplerinizden Bir AdÄ±m{' '}
+              <span className="text-brand-500">Ã–nde Olun</span>
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-gray-600 leading-relaxed">
-              Müşterileriniz artık telefon beklemiyor. Online randevu sistemiyle hem müşteri memnuniyetini artırın,
-              hem de idari yükünüzü azaltın.
+              MÃ¼ÅŸterileriniz artÄ±k telefon beklemiyor. Online randevu sistemiyle hem mÃ¼ÅŸteri memnuniyetini artÄ±rÄ±n,
+              hem de idari yÃ¼kÃ¼nÃ¼zÃ¼ azaltÄ±n.
             </p>
           </SlideIn>
 
@@ -329,10 +329,10 @@ export function FeaturesSection() {
 
             <div className="relative grid grid-cols-2 divide-x divide-y divide-gray-200/80 sm:grid-cols-4 sm:divide-y-0">
               {[
-                { value: '%70', label: 'Daha Az Hayır-deme' },
-                { value: '%35', label: 'Daha Yüksek Doluluk' },
+                { value: '%70', label: 'Daha Az HayÄ±r-deme' },
+                { value: '%35', label: 'Daha YÃ¼ksek Doluluk' },
                 { value: '%80', label: 'Daha Az Telefon' },
-                { value: '5 dk', label: 'Kurulum Süresi' },
+                { value: '5 dk', label: 'Kurulum SÃ¼resi' },
               ].map((stat) => (
                 <div key={stat.label} className="px-6 py-9 text-center sm:py-11">
                   <p className="text-3xl font-extrabold text-brand-600 sm:text-4xl">{stat.value}</p>
@@ -343,10 +343,10 @@ export function FeaturesSection() {
 
             <div className="relative border-t border-gray-200/80 sm:grid sm:grid-cols-2">
               {[
-                { icon: Bell, text: 'Hayır-deme oranını %70 azaltın', sub: 'Otomatik hatırlatmalar sayesinde', border: 'border-b sm:border-b sm:border-r' },
-                { icon: Calendar, text: 'Doluluk oranınızı %35 artırın', sub: 'Akıllı takvim yönetimiyle', border: 'border-b sm:border-b' },
-                { icon: Smartphone, text: 'Telefon trafiğini %80 azaltın', sub: '7/24 online rezervasyonla', border: 'border-b sm:border-b-0 sm:border-r' },
-                { icon: Star, text: 'Müşteri geri dönüş oranını yükseltin', sub: 'Sadakat programıyla', border: '' },
+                { icon: Bell, text: 'HayÄ±r-deme oranÄ±nÄ± %70 azaltÄ±n', sub: 'Otomatik hatÄ±rlatmalar sayesinde', border: 'border-b sm:border-b sm:border-r' },
+                { icon: Calendar, text: 'Doluluk oranÄ±nÄ±zÄ± %35 artÄ±rÄ±n', sub: 'AkÄ±llÄ± takvim yÃ¶netimiyle', border: 'border-b sm:border-b' },
+                { icon: Smartphone, text: 'Telefon trafiÄŸini %80 azaltÄ±n', sub: '7/24 online rezervasyonla', border: 'border-b sm:border-b-0 sm:border-r' },
+                { icon: Star, text: 'MÃ¼ÅŸteri geri dÃ¶nÃ¼ÅŸ oranÄ±nÄ± yÃ¼kseltin', sub: 'Sadakat programÄ±yla', border: '' },
               ].map(({ icon: Icon, text, sub, border }) => (
                 <div
                   key={text}
@@ -388,10 +388,10 @@ export function FeaturesSection() {
         <div className="relative mx-auto max-w-screen-2xl px-5 sm:px-8 lg:px-10">
           <SlideIn direction="right" className="text-center mb-14">
             <p className="text-sm font-semibold uppercase tracking-widest text-brand-500">Entegrasyonlar</p>
-            <h2 className="mt-2 text-4xl font-extrabold text-white">Kullandığınız Araçlarla Çalışır</h2>
+            <h2 className="mt-2 text-4xl font-extrabold text-white">KullandÄ±ÄŸÄ±nÄ±z AraÃ§larla Ã‡alÄ±ÅŸÄ±r</h2>
             <p className="mt-3 text-gray-400 max-w-xl mx-auto leading-relaxed">
-              Ödeme, mesajlaşma, sosyal medya ve muhasebe araçlarıyla sorunsuz entegrasyon.
-              Mevcut iş akışınızı değiştirmenize gerek yok.
+              Ã–deme, mesajlaÅŸma, sosyal medya ve muhasebe araÃ§larÄ±yla sorunsuz entegrasyon.
+              Mevcut iÅŸ akÄ±ÅŸÄ±nÄ±zÄ± deÄŸiÅŸtirmenize gerek yok.
             </p>
           </SlideIn>
 
@@ -437,14 +437,14 @@ export function FeaturesSection() {
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="text-xl font-bold text-white">İhtiyacınız olan entegrasyon listede yok mu?</h3>
-              <p className="mt-1 text-sm text-gray-400">Özel entegrasyon geliştirme için satış ekibimizle iletişime geçin.</p>
+              <h3 className="text-xl font-bold text-white">Ä°htiyacÄ±nÄ±z olan entegrasyon listede yok mu?</h3>
+              <p className="mt-1 text-sm text-gray-400">Ã–zel entegrasyon geliÅŸtirme iÃ§in satÄ±ÅŸ ekibimizle iletiÅŸime geÃ§in.</p>
             </div>
             <Link
               href="/iletisim"
               className="shrink-0 flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-lg"
             >
-              Bizimle İletişime Geç <ArrowRight className="h-4 w-4" />
+              Bizimle Ä°letiÅŸime GeÃ§ <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

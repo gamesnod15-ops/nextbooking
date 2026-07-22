@@ -4,30 +4,30 @@ import CheckoutLink from '@/components/CheckoutLink'
 import Link from 'next/link'
 import { ArrowRight, Check, TrendingUp, Eye, Target, BarChart3, Users, Star, Zap, Shield } from 'lucide-react'
 
-export const metadata = { title: 'Reklamveren Ol — JetRandevu' }
+export const metadata = { title: 'Reklamveren Ol â€” JetRandevu' }
 
 const stats = [
-  { value: '10M+', label: 'Aylık Gösterim' },
+  { value: '10M+', label: 'AylÄ±k GÃ¶sterim' },
   { value: '%240', label: 'Ortalama ROI' },
-  { value: '50K+', label: 'Tıklanma/Ay' },
-  { value: '%98', label: 'Müşteri Memnuniyeti' },
+  { value: '50K+', label: 'TÄ±klanma/Ay' },
+  { value: '%98', label: 'MÃ¼ÅŸteri Memnuniyeti' },
 ]
 
 const benefits = [
   {
-    icon: Eye, title: 'Dev Görünürlük', desc: 'Ana sayfa, kategori sayfaları ve arama sonuçlarında işletmeniz en önde yer alsın.',
+    icon: Eye, title: 'Dev GÃ¶rÃ¼nÃ¼rlÃ¼k', desc: 'Ana sayfa, kategori sayfalarÄ± ve arama sonuÃ§larÄ±nda iÅŸletmeniz en Ã¶nde yer alsÄ±n.',
     gradient: 'from-amber-500 to-orange-500',
   },
   {
-    icon: Target, title: 'Hedefli Erişim', desc: 'Konum, kategori ve kullanıcı davranışına göre reklamlarınızı optimize edin.',
+    icon: Target, title: 'Hedefli EriÅŸim', desc: 'Konum, kategori ve kullanÄ±cÄ± davranÄ±ÅŸÄ±na gÃ¶re reklamlarÄ±nÄ±zÄ± optimize edin.',
     gradient: 'from-blue-500 to-cyan-500',
   },
   {
-    icon: TrendingUp, title: 'Gerçek Zamanlı ROI', desc: 'Her kampanyanın gösterim, tıklanma ve dönüşüm verilerini anlık izleyin.',
+    icon: TrendingUp, title: 'GerÃ§ek ZamanlÄ± ROI', desc: 'Her kampanyanÄ±n gÃ¶sterim, tÄ±klanma ve dÃ¶nÃ¼ÅŸÃ¼m verilerini anlÄ±k izleyin.',
     gradient: 'from-emerald-500 to-green-500',
   },
   {
-    icon: BarChart3, title: 'Detaylı Analitik', desc: 'Rakip analizi, pazar trendleri ve performans raporları ile veri odaklı kararlar alın.',
+    icon: BarChart3, title: 'DetaylÄ± Analitik', desc: 'Rakip analizi, pazar trendleri ve performans raporlarÄ± ile veri odaklÄ± kararlar alÄ±n.',
     gradient: 'from-violet-500 to-purple-500',
   },
 ]
@@ -35,39 +35,39 @@ const benefits = [
 const plans = [
   {
     name: 'Temel', price: '1.999', originalPrice: '2.999',
-    badge: 'Başlangıç',
-    features: ['Ana sayfa listeleme', 'Kategori sayfasında öne çıkarma', '10.000 aylık gösterim', 'Temel raporlama', 'E-posta desteği'],
+    badge: 'BaÅŸlangÄ±Ã§',
+    features: ['Ana sayfa listeleme', 'Kategori sayfasÄ±nda Ã¶ne Ã§Ä±karma', '10.000 aylÄ±k gÃ¶sterim', 'Temel raporlama', 'E-posta desteÄŸi'],
   },
   {
     name: 'Standart', price: '4.999', originalPrice: '6.999',
-    badge: 'Popüler', popular: true,
-    features: ['Ana sayfa listeleme', 'Kategori sayfasında öne çıkarma', '50.000 aylık gösterim', 'Gelişmiş raporlama', 'Öncelikli destek', 'A/B test imkanı'],
+    badge: 'PopÃ¼ler', popular: true,
+    features: ['Ana sayfa listeleme', 'Kategori sayfasÄ±nda Ã¶ne Ã§Ä±karma', '50.000 aylÄ±k gÃ¶sterim', 'GeliÅŸmiÅŸ raporlama', 'Ã–ncelikli destek', 'A/B test imkanÄ±'],
   },
   {
     name: 'Premium', price: '9.999', originalPrice: '14.999',
     badge: 'Profesyonel',
-    features: ['Ana sayfa listeleme', 'Kategori sayfasında öne çıkarma', 'Sınırsız gösterim', 'Özel raporlama & Danışmanlık', 'Öncelikli 7/24 destek', 'Adwords & Meta entegrasyonu'],
+    features: ['Ana sayfa listeleme', 'Kategori sayfasÄ±nda Ã¶ne Ã§Ä±karma', 'SÄ±nÄ±rsÄ±z gÃ¶sterim', 'Ã–zel raporlama & DanÄ±ÅŸmanlÄ±k', 'Ã–ncelikli 7/24 destek', 'Adwords & Meta entegrasyonu'],
   },
 ]
 
 const steps = [
-  { num: '1', title: 'Hedef Belirle', desc: 'Kitle, bölge ve bütçenizi seçin.' },
-  { num: '2', title: 'Reklam Oluştur', desc: 'Görsel, başlık ve açıklamanızı ekleyin.' },
-  { num: '3', title: 'Yayına Al', desc: 'Kampanyanız anında başlasın.' },
-  { num: '4', title: 'İzle & Optimize', desc: 'Performansı takip edin, iyileştirin.' },
+  { num: '1', title: 'Hedef Belirle', desc: 'Kitle, bÃ¶lge ve bÃ¼tÃ§enizi seÃ§in.' },
+  { num: '2', title: 'Reklam OluÅŸtur', desc: 'GÃ¶rsel, baÅŸlÄ±k ve aÃ§Ä±klamanÄ±zÄ± ekleyin.' },
+  { num: '3', title: 'YayÄ±na Al', desc: 'KampanyanÄ±z anÄ±nda baÅŸlasÄ±n.' },
+  { num: '4', title: 'Ä°zle & Optimize', desc: 'PerformansÄ± takip edin, iyileÅŸtirin.' },
 ]
 
 const testimonials = [
-  { name: 'Ayşe Yılmaz', business: 'Bella Kuaför', city: 'İstanbul', text: 'Reklam kampanyasına başladıktan sonra müşteri sayımız %70 arttı. Kesinlikle tavsiye ediyorum.', rating: 5 },
-  { name: 'Mehmet Demir', business: 'Osmangazi Spor Salonu', city: 'Bursa', text: 'Rakip analizi ve hedefleme özellikleri sayesinde bütçemizi çok verimli kullanıyoruz.', rating: 5 },
-  { name: 'Zeynep Kaya', business: 'Lavanta Terapi', city: 'İzmir', text: 'Aylık 5.000 TL\'lik bütçeyle 40.000\'den fazla potansiyel müşteriye ulaştık.', rating: 5 },
+  { name: 'AyÅŸe YÄ±lmaz', business: 'Bella KuafÃ¶r', city: 'Ä°stanbul', text: 'Reklam kampanyasÄ±na baÅŸladÄ±ktan sonra mÃ¼ÅŸteri sayÄ±mÄ±z %70 arttÄ±. Kesinlikle tavsiye ediyorum.', rating: 5 },
+  { name: 'Mehmet Demir', business: 'Osmangazi Spor Salonu', city: 'Bursa', text: 'Rakip analizi ve hedefleme Ã¶zellikleri sayesinde bÃ¼tÃ§emizi Ã§ok verimli kullanÄ±yoruz.', rating: 5 },
+  { name: 'Zeynep Kaya', business: 'Lavanta Terapi', city: 'Ä°zmir', text: 'AylÄ±k 5.000 TL\'lik bÃ¼tÃ§eyle 40.000\'den fazla potansiyel mÃ¼ÅŸteriye ulaÅŸtÄ±k.', rating: 5 },
 ]
 
 const faq = [
-  { q: 'Reklam kampanyası ne zaman başlar?', a: 'Kampanyanız ödeme onaylandıktan sonra en geç 24 saat içinde yayına girer.' },
-  { q: 'Bütçemi sonradan değiştirebilir miyim?', a: 'Evet, dilediğiniz zaman kampanya bütçenizi artırabilir veya azaltabilirsiniz.' },
-  { q: 'Hangi ödeme yöntemlerini kabul ediyorsunuz?', a: 'Kredi kartı, banka kartı ve EFT/havale ile ödeme yapabilirsiniz.' },
-  { q: 'Reklam performansımı nasıl takip ederim?', a: 'Panelinizden anlık gösterim, tıklanma ve dönüşüm verilerinizi görüntüleyebilirsiniz.' },
+  { q: 'Reklam kampanyasÄ± ne zaman baÅŸlar?', a: 'KampanyanÄ±z Ã¶deme onaylandÄ±ktan sonra en geÃ§ 24 saat iÃ§inde yayÄ±na girer.' },
+  { q: 'BÃ¼tÃ§emi sonradan deÄŸiÅŸtirebilir miyim?', a: 'Evet, dilediÄŸiniz zaman kampanya bÃ¼tÃ§enizi artÄ±rabilir veya azaltabilirsiniz.' },
+  { q: 'Hangi Ã¶deme yÃ¶ntemlerini kabul ediyorsunuz?', a: 'Kredi kartÄ±, banka kartÄ± ve EFT/havale ile Ã¶deme yapabilirsiniz.' },
+  { q: 'Reklam performansÄ±mÄ± nasÄ±l takip ederim?', a: 'Panelinizden anlÄ±k gÃ¶sterim, tÄ±klanma ve dÃ¶nÃ¼ÅŸÃ¼m verilerinizi gÃ¶rÃ¼ntÃ¼leyebilirsiniz.' },
 ]
 
 export default function ReklamverenPage() {
@@ -87,21 +87,21 @@ export default function ReklamverenPage() {
               <Zap className="h-3 w-3" /> Yeni Nesil Reklam Platformu
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6">
-              İşletmenizi<br />
-              <span className="bg-gradient-to-r from-brand-500 to-yellow-400 bg-clip-text text-transparent">büyütmeye</span> hazır mısınız?
+              Ä°ÅŸletmenizi<br />
+              <span className="bg-gradient-to-r from-brand-500 to-yellow-400 bg-clip-text text-transparent">bÃ¼yÃ¼tmeye</span> hazÄ±r mÄ±sÄ±nÄ±z?
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-300 mb-10">
-              JetRandevu reklam ağı ile işletmenizi hedef kitlenize ulaştırın, müşteri sayınızı katlayın. 
-              Üstelik sadece sonuç alacağınız reklam modeliyle.
+              JetRandevu reklam aÄŸÄ± ile iÅŸletmenizi hedef kitlenize ulaÅŸtÄ±rÄ±n, mÃ¼ÅŸteri sayÄ±nÄ±zÄ± katlayÄ±n. 
+              Ãœstelik sadece sonuÃ§ alacaÄŸÄ±nÄ±z reklam modeliyle.
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/register"
                 className="group rounded-xl bg-brand-500 px-8 py-3.5 text-base font-bold text-white hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
-                Hemen Başla <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                Hemen BaÅŸla <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link href="#packages"
                 className="rounded-xl border border-white/20 px-8 py-3.5 text-base font-medium text-gray-300 hover:bg-white/5 transition-all">
-                Paketleri İncele
+                Paketleri Ä°ncele
               </Link>
             </div>
           </div>
@@ -126,8 +126,8 @@ export default function ReklamverenPage() {
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Neden Reklam Verilmeli?</p>
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">İşletmenize Değer Katan Çözümler</h2>
-              <p className="mx-auto max-w-2xl text-gray-500">Veri odaklı reklam çözümlerimizle doğru kitleye, doğru zamanda, doğru mesajla ulaşın.</p>
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Ä°ÅŸletmenize DeÄŸer Katan Ã‡Ã¶zÃ¼mler</h2>
+              <p className="mx-auto max-w-2xl text-gray-500">Veri odaklÄ± reklam Ã§Ã¶zÃ¼mlerimizle doÄŸru kitleye, doÄŸru zamanda, doÄŸru mesajla ulaÅŸÄ±n.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {benefits.map((b) => (
@@ -148,9 +148,9 @@ export default function ReklamverenPage() {
         <section className="bg-gradient-to-b from-gray-50 to-white py-28">
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Nasıl Çalışır?</p>
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">4 Adımda Reklam Yayınlayın</h2>
-              <p className="mx-auto max-w-2xl text-gray-500">Karmaşık süreçlere son. Birkaç tıklamayla reklam kampanyanızı başlatın.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">NasÄ±l Ã‡alÄ±ÅŸÄ±r?</p>
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">4 AdÄ±mda Reklam YayÄ±nlayÄ±n</h2>
+              <p className="mx-auto max-w-2xl text-gray-500">KarmaÅŸÄ±k sÃ¼reÃ§lere son. BirkaÃ§ tÄ±klamayla reklam kampanyanÄ±zÄ± baÅŸlatÄ±n.</p>
             </div>
             <div className="relative grid gap-8 md:grid-cols-4 max-w-5xl mx-auto">
               <div className="absolute top-12 left-[15%] right-[15%] h-px bg-gradient-to-r from-brand-500/0 via-brand-500/30 to-brand-500/0 hidden md:block" />
@@ -173,9 +173,9 @@ export default function ReklamverenPage() {
         <section id="packages" className="py-28">
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Fiyatlandırma</p>
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Size Uygun Paketi Seçin</h2>
-              <p className="mx-auto max-w-2xl text-gray-500">Tüm paketlerde 14 gün para iade garantisi. İstediğiniz zaman yükseltebilirsiniz.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">FiyatlandÄ±rma</p>
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Size Uygun Paketi SeÃ§in</h2>
+              <p className="mx-auto max-w-2xl text-gray-500">TÃ¼m paketlerde 14 gÃ¼n para iade garantisi. Ä°stediÄŸiniz zaman yÃ¼kseltebilirsiniz.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
               {plans.map((p) => (
@@ -183,7 +183,7 @@ export default function ReklamverenPage() {
                   {p.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-yellow-400 px-5 py-1 text-xs font-bold text-white shadow-lg">
-                        <Star className="h-3 w-3 fill-black" /> En Çok Tercih Edilen
+                        <Star className="h-3 w-3 fill-black" /> En Ã‡ok Tercih Edilen
                       </div>
                     </div>
                   )}
@@ -210,7 +210,7 @@ export default function ReklamverenPage() {
                   </ul>
                   <CheckoutLink type="ad" plan={p.name}
                     className={`block rounded-xl py-3 text-center text-sm font-bold transition-all ${p.popular ? 'bg-gradient-to-r from-brand-500 to-yellow-400 text-white hover:from-brand-600 hover:to-yellow-500 shadow-lg' : 'border-2 border-gray-200 text-gray-700 hover:border-brand-500 hover:text-brand-600'}`}>
-                    {p.popular ? 'Hemen Başla' : 'Paketi Seç'}
+                    {p.popular ? 'Hemen BaÅŸla' : 'Paketi SeÃ§'}
                   </CheckoutLink>
                 </div>
               ))}
@@ -222,9 +222,9 @@ export default function ReklamverenPage() {
         <section className="bg-gray-900 py-28">
           <div className="mx-auto max-w-screen-2xl px-4">
             <div className="mb-16 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Müşteri Yorumları</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">MÃ¼ÅŸteri YorumlarÄ±</p>
               <h2 className="text-4xl font-extrabold text-white mb-4">Reklamverenler Ne Diyor?</h2>
-              <p className="mx-auto max-w-2xl text-gray-400">Binlerce işletme JetRandevu ile büyüyor. Onların başarı hikayelerini keşfedin.</p>
+              <p className="mx-auto max-w-2xl text-gray-400">Binlerce iÅŸletme JetRandevu ile bÃ¼yÃ¼yor. OnlarÄ±n baÅŸarÄ± hikayelerini keÅŸfedin.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
               {testimonials.map((t) => (
@@ -254,7 +254,7 @@ export default function ReklamverenPage() {
         <section className="py-28">
           <div className="mx-auto max-w-3xl px-4">
             <div className="mb-12 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Sık Sorulan Sorular</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">SÄ±k Sorulan Sorular</p>
               <h2 className="text-3xl font-extrabold text-gray-900">Merak Edilenler</h2>
             </div>
             <div className="space-y-4">
@@ -280,12 +280,12 @@ export default function ReklamverenPage() {
             <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-violet-500/10 blur-3xl" />
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Reklamveren Olmaya Hazır Mısınız?</h2>
-            <p className="text-gray-300 text-lg mb-8">İlk kampanyanızı oluşturun, işletmenizi binlerce potansiyel müşteriye tanıtın.</p>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Reklamveren Olmaya HazÄ±r MÄ±sÄ±nÄ±z?</h2>
+            <p className="text-gray-300 text-lg mb-8">Ä°lk kampanyanÄ±zÄ± oluÅŸturun, iÅŸletmenizi binlerce potansiyel mÃ¼ÅŸteriye tanÄ±tÄ±n.</p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/register"
                 className="group rounded-xl bg-brand-500 px-10 py-4 text-base font-bold text-white hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/25">
-                Ücretsiz Hesap Oluştur <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                Ãœcretsiz Hesap OluÅŸtur <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
           </div>

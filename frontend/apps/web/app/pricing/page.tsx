@@ -3,7 +3,7 @@ import { PricingSection } from '@/components/PricingSection'
 import { CtaSection }     from '@/components/CtaSection'
 import { Footer }         from '@/components/Footer'
 
-export const metadata = { title: 'Fiyatlandýrma — JetRandevu' }
+export const metadata = { title: 'FiyatlandÄ±rma â€” JetRandevu' }
 
 export default function PricingPage() {
   return (

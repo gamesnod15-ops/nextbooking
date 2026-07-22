@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 
 const testimonials = [
-  { name: 'Ahmet Yýlmaz', role: 'Berber Salonu Sahibi, Ýstanbul', text: 'JetRandevu ile müþterilerimiz artýk telefon yerine online rezervasyon yapýyor. Hayýr-deme oraným %60 düþtü!' },
-  { name: 'Selin Kaya',   role: 'Güzellik Uzmaný, Ankara',        text: 'Çok kullanýþlý ve hýzlý. 5 dakikada kurdum, ayný gün ilk rezervasyonum geldi. Kesinlikle tavsiye ederim.' },
-  { name: 'Dr. Mehmet Er', role: 'Diþ Hekimi, Ýzmir',             text: 'Hasta kayýt sistemimizi sýfýrdan kurmamýza gerek kalmadý. Entegre randevu sistemi mükemmel çalýþýyor.' },
+  { name: 'Ahmet YÄ±lmaz', role: 'Berber Salonu Sahibi, Ä°stanbul', text: 'JetRandevu ile mÃ¼ÅŸterilerimiz artÄ±k telefon yerine online rezervasyon yapÄ±yor. HayÄ±r-deme oranÄ±m %60 dÃ¼ÅŸtÃ¼!' },
+  { name: 'Selin Kaya',   role: 'GÃ¼zellik UzmanÄ±, Ankara',        text: 'Ã‡ok kullanÄ±ÅŸlÄ± ve hÄ±zlÄ±. 5 dakikada kurdum, aynÄ± gÃ¼n ilk rezervasyonum geldi. Kesinlikle tavsiye ederim.' },
+  { name: 'Dr. Mehmet Er', role: 'DiÅŸ Hekimi, Ä°zmir',             text: 'Hasta kayÄ±t sistemimizi sÄ±fÄ±rdan kurmamÄ±za gerek kalmadÄ±. Entegre randevu sistemi mÃ¼kemmel Ã§alÄ±ÅŸÄ±yor.' },
 ]
 
 const avatarColors = [
@@ -83,7 +83,7 @@ export function TestimonialSpotlight() {
             key={item.name}
             type="button"
             onClick={() => setIndex(i)}
-            aria-label={`${item.name} yorumunu göster`}
+            aria-label={`${item.name} yorumunu gÃ¶ster`}
             aria-current={i === index}
             className={`h-1.5 rounded-full transition-all ${
               i === index ? 'w-8 bg-brand-500' : 'w-1.5 bg-gray-300 hover:bg-gray-400'

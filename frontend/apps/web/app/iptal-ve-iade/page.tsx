@@ -1,7 +1,7 @@
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
-export const metadata = { title: 'İptal ve İade Koşulları — JetRandevu', description: 'Abonelik iptali ve iade koşulları hakkında bilgilendirme.' }
+export const metadata = { title: 'Ä°ptal ve Ä°ade KoÅŸullarÄ± â€” JetRandevu', description: 'Abonelik iptali ve iade koÅŸullarÄ± hakkÄ±nda bilgilendirme.' }
 
 export default function IptalVeIadePage() {
   return (
@@ -15,8 +15,8 @@ export default function IptalVeIadePage() {
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Yasal</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">İptal ve İade Koşulları</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">Abonelik iptali ve iade süreçleri hakkında bilgilendirme metni.</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">Ä°ptal ve Ä°ade KoÅŸullarÄ±</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">Abonelik iptali ve iade sÃ¼reÃ§leri hakkÄ±nda bilgilendirme metni.</p>
           </div>
         </section>
 
@@ -25,31 +25,31 @@ export default function IptalVeIadePage() {
             <div className="space-y-8 text-sm text-gray-700 leading-relaxed">
 
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">1. Abonelik İptali</h2>
-                <p>JetRandevu işletme panelinizden dilediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal talebiniz alındığı anda hesabınız pasif hale gelir ve panele erişim mevcut faturalama döneminin sonuna kadar değil, iptal anında sona erer.</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">1. Abonelik Ä°ptali</h2>
+                <p>JetRandevu iÅŸletme panelinizden dilediÄŸiniz zaman aboneliÄŸinizi iptal edebilirsiniz. Ä°ptal talebiniz alÄ±ndÄ±ÄŸÄ± anda hesabÄ±nÄ±z pasif hale gelir ve panele eriÅŸim mevcut faturalama dÃ¶neminin sonuna kadar deÄŸil, iptal anÄ±nda sona erer.</p>
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">2. İade Koşulları</h2>
-                <p>Ödenmiş abonelik ücretleri, ilgili faturalama dönemi başladıktan sonra iade edilmez. Bu, aylık veya yıllık plan farkı gözetmeksizin tüm abonelik paketleri için geçerlidir.</p>
-                <p className="mt-2">Aşağıdaki istisnai durumlarda iade değerlendirmesi yapılabilir:</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">2. Ä°ade KoÅŸullarÄ±</h2>
+                <p>Ã–denmiÅŸ abonelik Ã¼cretleri, ilgili faturalama dÃ¶nemi baÅŸladÄ±ktan sonra iade edilmez. Bu, aylÄ±k veya yÄ±llÄ±k plan farkÄ± gÃ¶zetmeksizin tÃ¼m abonelik paketleri iÃ§in geÃ§erlidir.</p>
+                <p className="mt-2">AÅŸaÄŸÄ±daki istisnai durumlarda iade deÄŸerlendirmesi yapÄ±labilir:</p>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                  <li>Mükerrer (aynı dönem için birden fazla) tahsilat yapılmış olması</li>
-                  <li>Hizmetin, platform kaynaklı teknik bir arıza nedeniyle faturalama döneminin tamamında kullanılamamış olması</li>
-                  <li>Yasal mevzuatın açıkça iade gerektirdiği durumlar</li>
+                  <li>MÃ¼kerrer (aynÄ± dÃ¶nem iÃ§in birden fazla) tahsilat yapÄ±lmÄ±ÅŸ olmasÄ±</li>
+                  <li>Hizmetin, platform kaynaklÄ± teknik bir arÄ±za nedeniyle faturalama dÃ¶neminin tamamÄ±nda kullanÄ±lamamÄ±ÅŸ olmasÄ±</li>
+                  <li>Yasal mevzuatÄ±n aÃ§Ä±kÃ§a iade gerektirdiÄŸi durumlar</li>
                 </ul>
-                <p className="mt-2">Bu durumlarda iade talebiniz destek ekibimiz tarafından incelenir ve değerlendirme sonucu tarafınıza bildirilir.</p>
+                <p className="mt-2">Bu durumlarda iade talebiniz destek ekibimiz tarafÄ±ndan incelenir ve deÄŸerlendirme sonucu tarafÄ±nÄ±za bildirilir.</p>
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">3. Talep Yöntemi</h2>
-                <p>İptal ve iade taleplerinizi işletme panelinizdeki "Abonelik" sayfasından veya Destek sayfamızdaki iletişim kanallarından iletebilirsiniz.</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">3. Talep YÃ¶ntemi</h2>
+                <p>Ä°ptal ve iade taleplerinizi iÅŸletme panelinizdeki "Abonelik" sayfasÄ±ndan veya Destek sayfamÄ±zdaki iletiÅŸim kanallarÄ±ndan iletebilirsiniz.</p>
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">4. Güncellemeler</h2>
-                <p>Bu metin, mevzuat değişiklikleri ve platform güncellemeleri doğrultusunda periyodik olarak güncellenmektedir.</p>
-                <p className="mt-2 text-gray-500 text-xs">Son güncelleme: 21 Temmuz 2026</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">4. GÃ¼ncellemeler</h2>
+                <p>Bu metin, mevzuat deÄŸiÅŸiklikleri ve platform gÃ¼ncellemeleri doÄŸrultusunda periyodik olarak gÃ¼ncellenmektedir.</p>
+                <p className="mt-2 text-gray-500 text-xs">Son gÃ¼ncelleme: 21 Temmuz 2026</p>
               </div>
 
             </div>

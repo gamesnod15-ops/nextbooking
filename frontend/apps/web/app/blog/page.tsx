@@ -3,14 +3,14 @@ import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import { ArrowRight, Calendar } from 'lucide-react'
 
-export const metadata = { title: 'Blog — JetRandevu', description: 'Randevu sistemi, işletme yönetimi ve dijitalleşme hakkında blog yazıları.' }
+export const metadata = { title: 'Blog â€” JetRandevu', description: 'Randevu sistemi, iÅŸletme yÃ¶netimi ve dijitalleÅŸme hakkÄ±nda blog yazÄ±larÄ±.' }
 
 const posts = [
-  { title: 'Online Randevu Sistemi ile Müşteri Memnuniyetini Artırın', date: '15 Mayıs 2026', slug: 'online-randevu-musteri-memnuniyeti' },
-  { title: 'Kuaförünüz İçin Dijital Pazarlama Stratejileri', date: '8 Mayıs 2026', slug: 'kuafor-dijital-pazarlama' },
-  { title: 'İşletmenizde Verimliliği Artıracak 5 Araç', date: '1 Mayıs 2026', slug: 'verimlilik-araclari' },
-  { title: 'Müşteri Sadakat Programı Nasıl Oluşturulur?', date: '24 Nisan 2026', slug: 'musteri-sadakat-programi' },
-  { title: 'SMS ve E-posta Pazarlama ile Randevu Oranlarını Artırma', date: '17 Nisan 2026', slug: 'sms-eposta-pazarlama' },
+  { title: 'Online Randevu Sistemi ile MÃ¼ÅŸteri Memnuniyetini ArtÄ±rÄ±n', date: '15 MayÄ±s 2026', slug: 'online-randevu-musteri-memnuniyeti' },
+  { title: 'KuafÃ¶rÃ¼nÃ¼z Ä°Ã§in Dijital Pazarlama Stratejileri', date: '8 MayÄ±s 2026', slug: 'kuafor-dijital-pazarlama' },
+  { title: 'Ä°ÅŸletmenizde VerimliliÄŸi ArtÄ±racak 5 AraÃ§', date: '1 MayÄ±s 2026', slug: 'verimlilik-araclari' },
+  { title: 'MÃ¼ÅŸteri Sadakat ProgramÄ± NasÄ±l OluÅŸturulur?', date: '24 Nisan 2026', slug: 'musteri-sadakat-programi' },
+  { title: 'SMS ve E-posta Pazarlama ile Randevu OranlarÄ±nÄ± ArtÄ±rma', date: '17 Nisan 2026', slug: 'sms-eposta-pazarlama' },
 ]
 
 export default function BlogPage() {
@@ -25,8 +25,8 @@ export default function BlogPage() {
           </div>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-500 mb-3">Blog</p>
-            <h1 className="text-5xl font-extrabold leading-tight mb-4">İşletmenizi Büyütecek İpuçları</h1>
-            <p className="mx-auto max-w-xl text-lg text-gray-300">Randevu sistemi, dijitalleşme ve işletme yönetimi hakkında en güncel yazılar.</p>
+            <h1 className="text-5xl font-extrabold leading-tight mb-4">Ä°ÅŸletmenizi BÃ¼yÃ¼tecek Ä°puÃ§larÄ±</h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-300">Randevu sistemi, dijitalleÅŸme ve iÅŸletme yÃ¶netimi hakkÄ±nda en gÃ¼ncel yazÄ±lar.</p>
           </div>
         </section>
 
