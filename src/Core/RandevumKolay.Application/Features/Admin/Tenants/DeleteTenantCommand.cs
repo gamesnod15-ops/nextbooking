@@ -33,7 +33,7 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
             "advertisements", "branches", "schedules",
             "schedule_exceptions", "services", "payments", "audit_logs",
             "platform_payments", "feedbacks",
-            "appointments", "employees", "customers", "users", "businesses"
+            "customer_recommendations", "appointments", "employees", "customers", "users", "businesses"
         ];
 
         foreach (var table in tenantIdTables)
