@@ -38,24 +38,31 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
 
         foreach (var table in tenantIdTables)
         {
-            var sql = $"DELETE FROM \"{table}\" WHERE \"TenantId\" = @p0";
-            await db.ExecuteSqlRawAsync(sql, tid, cancellationToken);
+            await db.ExecuteSqlRawAsync(
+                $"DELETE FROM \"{table}\" WHERE \"TenantId\" = @p0",
+                new object[] { tid },
+                cancellationToken);
         }
 
         await db.ExecuteSqlRawAsync(
             "DELETE FROM \"Reviews\" WHERE \"BusinessId\" IN (SELECT \"Id\" FROM \"Businesses\" WHERE \"TenantId\" = @p0)",
-            tid, cancellationToken);
+            new object[] { tid },
+            cancellationToken);
 
         await db.ExecuteSqlRawAsync(
             "DELETE FROM \"RefreshTokens\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = @p0)",
-            tid, cancellationToken);
+            new object[] { tid },
+            cancellationToken);
 
         await db.ExecuteSqlRawAsync(
             "DELETE FROM \"UserAuthProviders\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = @p0)",
-            tid, cancellationToken);
+            new object[] { tid },
+            cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"Tenants\" WHERE \"Id\" = @p0", tid, cancellationToken);
+            "DELETE FROM \"Tenants\" WHERE \"Id\" = @p0",
+            new object[] { tid },
+            cancellationToken);
     }
 }
 
