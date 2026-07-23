@@ -11,7 +11,7 @@ const PLUGINS = [
   { id: 'chatbot', name: 'AI Chatbot', desc: 'Web sitesi için yapay zeka asistanı', icon: 'hardware-chip-outline', color: '#6366F1', enabled: true, category: 'İletişim' },
   { id: 'sms', name: 'SMS Bildirimi', desc: 'Otomatik SMS hatırlatıcıları', icon: 'chatbubble-outline', color: '#10B981', enabled: false, category: 'İletişim' },
   { id: 'loyalty', name: 'Sadakat Programı', desc: 'Puan tabanlı müşteri bağlılık sistemi', icon: 'star-outline', color: '#F59E0B', enabled: true, category: 'Müşteri' },
-  { id: 'giftcoupon', name: 'Hediye Kuponları', desc: 'Hediye kartı ve kupon yönetimi', icon: 'gift-outline', color: '#EC4899', enabled: true, category: 'Müşteri' },
+  { id: 'giftcoupon', name: 'Hediye Kuponları', desc: 'Hediye kartı ve kupon yönetimi', icon: 'gift-outline', color: '#6097F3', enabled: true, category: 'Müşteri' },
   { id: 'survey', name: 'Anket Modülü', desc: 'Müşteri memnuniyet anketleri', icon: 'clipboard-outline', color: '#8B5CF6', enabled: false, category: 'Müşteri' },
   { id: 'googlecal', name: 'Google Takvim', desc: 'Takvim senkronizasyonu', icon: 'calendar-outline', color: '#4285F4', enabled: false, category: 'Entegrasyon' },
   { id: 'accounting', name: 'Muhasebe Entegrasyonu', desc: 'ERP ve muhasebe sistemleri', icon: 'calculator-outline', color: '#6B7280', enabled: false, category: 'Entegrasyon' },

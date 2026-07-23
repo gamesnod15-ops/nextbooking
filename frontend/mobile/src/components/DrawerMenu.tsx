@@ -31,59 +31,59 @@ const MENU_SECTIONS: MenuSection[] = [
   {
     title: 'Yönetim',
     items: [
-      { id: 'services', label: 'Hizmetler', icon: 'cut-outline', route: '/(pages)/services', color: '#8B5CF6' },
+      { id: 'services', label: 'Hizmetler', icon: 'cut-outline', route: '/(pages)/services', color: '#6097F3' },
       { id: 'packages', label: 'Paketler', icon: 'cube-outline', route: '/(pages)/packages', color: COLORS.primary },
-      { id: 'employees', label: 'Çalışanlar', icon: 'people-circle-outline', route: '/(pages)/employees', color: '#10B981' },
-      { id: 'branches', label: 'Şubeler', icon: 'business-outline', route: '/(pages)/branches', color: '#F59E0B' },
-      { id: 'walkin-queue', label: 'Sıra Yönetimi', icon: 'list-outline', route: '/(pages)/walkin-queue', color: '#06B6D4' },
-      { id: 'waiting-list', label: 'Bekleme Listesi', icon: 'time-outline', route: '/(pages)/waiting-list', color: '#8B5CF6' },
+      { id: 'employees', label: 'Çalışanlar', icon: 'people-circle-outline', route: '/(pages)/employees', color: '#22C55E' },
+      { id: 'branches', label: 'Şubeler', icon: 'business-outline', route: '/(pages)/branches', color: '#A1B6DC' },
+      { id: 'walkin-queue', label: 'Sıra Yönetimi', icon: 'list-outline', route: '/(pages)/walkin-queue', color: '#7788A5' },
+      { id: 'waiting-list', label: 'Bekleme Listesi', icon: 'time-outline', route: '/(pages)/waiting-list', color: '#6097F3' },
     ],
   },
   {
     title: 'Finans & Pazarlama',
     items: [
-      { id: 'payments', label: 'Ödemeler', icon: 'card-outline', route: '/(pages)/payments', color: '#10B981' },
-      { id: 'campaigns', label: 'Kampanyalar', icon: 'pricetag-outline', route: '/(pages)/campaigns', color: '#F59E0B' },
-      { id: 'gift-coupons', label: 'Hediye Kuponlar', icon: 'gift-outline', route: '/(pages)/gift-coupons', color: '#EC4899' },
-      { id: 'discounts', label: 'İndirimler', icon: 'calculator-outline', route: '/(pages)/discounts', color: '#F97316' },
-      { id: 'products', label: 'Ürün & Stok', icon: 'storefront-outline', route: '/(pages)/products', color: '#6366F1' },
-      { id: 'receivables', label: 'Cari Alacaklar', icon: 'receipt-outline', route: '/(pages)/receivables', color: '#0EA5E9' },
-      { id: 'commissions', label: 'Prim & Hak Ediş', icon: 'ribbon-outline', route: '/(pages)/commissions', color: '#D946EF' },
-      { id: 'debts', label: 'Borç Takibi', icon: 'alert-circle-outline', route: '/(pages)/debts', color: '#EF4444' },
-      { id: 'advertisements', label: 'Reklam Yönetimi', icon: 'megaphone-outline', route: '/(pages)/advertisements', color: '#F59E0B' },
+      { id: 'payments', label: 'Ödemeler', icon: 'card-outline', route: '/(pages)/payments', color: '#22C55E' },
+      { id: 'campaigns', label: 'Kampanyalar', icon: 'pricetag-outline', route: '/(pages)/campaigns', color: '#A1B6DC' },
+      { id: 'gift-coupons', label: 'Hediye Kuponlar', icon: 'gift-outline', route: '/(pages)/gift-coupons', color: '#6097F3' },
+      { id: 'discounts', label: 'İndirimler', icon: 'calculator-outline', route: '/(pages)/discounts', color: '#7788A5' },
+      { id: 'products', label: 'Ürün & Stok', icon: 'storefront-outline', route: '/(pages)/products', color: '#6097F3' },
+      { id: 'receivables', label: 'Cari Alacaklar', icon: 'receipt-outline', route: '/(pages)/receivables', color: '#8E9BB2' },
+      { id: 'commissions', label: 'Prim & Hak Ediş', icon: 'ribbon-outline', route: '/(pages)/commissions', color: '#6097F3' },
+      { id: 'debts', label: 'Borç Takibi', icon: 'alert-circle-outline', route: '/(pages)/debts', color: '#7788A5' },
+      { id: 'advertisements', label: 'Reklam Yönetimi', icon: 'megaphone-outline', route: '/(pages)/advertisements', color: '#A1B6DC' },
     ],
   },
   {
     title: 'Müşteri Araçları',
     items: [
-      { id: 'loyalty', label: 'Sadakat Programı', icon: 'star-outline', route: '/(pages)/loyalty', color: '#F59E0B' },
-      { id: 'surveys', label: 'Anket & Feedback', icon: 'clipboard-outline', route: '/(pages)/surveys', color: '#8B5CF6' },
+      { id: 'loyalty', label: 'Sadakat Programı', icon: 'star-outline', route: '/(pages)/loyalty', color: '#A1B6DC' },
+      { id: 'surveys', label: 'Anket & Feedback', icon: 'clipboard-outline', route: '/(pages)/surveys', color: '#6097F3' },
       { id: 'forms', label: 'Formlar', icon: 'document-text-outline', route: '/(pages)/forms', color: COLORS.primary },
-      { id: 'reviews', label: 'Değerlendirmeler', icon: 'star-outline', route: '/(pages)/reviews', color: '#F59E0B' },
+      { id: 'reviews', label: 'Değerlendirmeler', icon: 'star-outline', route: '/(pages)/reviews', color: '#8E9BB2' },
     ],
   },
   {
     title: 'Analitik',
     items: [
       { id: 'reports', label: 'Raporlar', icon: 'bar-chart-outline', route: '/(pages)/reports', color: COLORS.primary },
-      { id: 'performance', label: 'Personel Performansı', icon: 'trending-up-outline', route: '/(pages)/performance', color: '#10B981' },
+      { id: 'performance', label: 'Personel Performansı', icon: 'trending-up-outline', route: '/(pages)/performance', color: '#22C55E' },
     ],
   },
   {
     title: 'İletişim & Sosyal',
     items: [
-      { id: 'whatsapp-bot', label: 'WhatsApp Bot', icon: 'logo-whatsapp', route: '/(pages)/whatsapp-bot', color: '#25D366' },
-      { id: 'social-media', label: 'Sosyal Medya', icon: 'share-social-outline', route: '/(pages)/social-media', color: '#EC4899' },
-      { id: 'chatbot', label: 'Chatbot', icon: 'chatbubbles-outline', route: '/(pages)/chatbot', color: '#6366F1' },
-      { id: 'maps', label: 'Harita & Konum', icon: 'map-outline', route: '/(pages)/maps', color: '#EF4444' },
+      { id: 'whatsapp-bot', label: 'WhatsApp Bot', icon: 'logo-whatsapp', route: '/(pages)/whatsapp-bot', color: '#22C55E' },
+      { id: 'social-media', label: 'Sosyal Medya', icon: 'share-social-outline', route: '/(pages)/social-media', color: '#6097F3' },
+      { id: 'chatbot', label: 'Chatbot', icon: 'chatbubbles-outline', route: '/(pages)/chatbot', color: '#7788A5' },
+      { id: 'maps', label: 'Harita & Konum', icon: 'map-outline', route: '/(pages)/maps', color: '#8E9BB2' },
     ],
   },
   {
     title: 'Sistem',
     items: [
       { id: 'notifications', label: 'Bildirimler', icon: 'notifications-outline', route: '/(pages)/notifications', color: COLORS.primaryDark },
-      { id: 'plugins', label: 'Eklentiler', icon: 'extension-puzzle-outline', route: '/(pages)/plugins', color: '#6366F1' },
-      { id: 'subscription', label: 'Abonelik', icon: 'diamond-outline', route: '/(pages)/subscription', color: '#D946EF' },
+      { id: 'plugins', label: 'Eklentiler', icon: 'extension-puzzle-outline', route: '/(pages)/plugins', color: '#6097F3' },
+      { id: 'subscription', label: 'Abonelik', icon: 'diamond-outline', route: '/(pages)/subscription', color: '#A1B6DC' },
       { id: 'settings', label: 'Ayarlar', icon: 'settings-outline', route: '/(pages)/settings', color: COLORS.textSecondary },
     ],
   },
@@ -203,7 +203,7 @@ function DrawerContent({ anim, isOpen, onClose }: { anim: Animated.Value; isOpen
             router.replace('/');
           }}
         >
-          <Ionicons name="log-out-outline" size={20} color={COLORS.error} />
+          <Ionicons name="log-out-outline" size={20} color={COLORS.textSecondary} />
           <Text style={styles.logoutText}>Çıkış Yap</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -234,7 +234,7 @@ export function NotifButton() {
 const styles = StyleSheet.create({
   backdrop: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: COLORS.overlay,
   },
   drawer: {
     position: 'absolute',
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACE[4],
     borderRightWidth: 1,
     borderRightColor: COLORS.border,
-    shadowColor: '#000',
+    shadowColor: COLORS.primaryDark,
     shadowOffset: { width: 4, height: 0 },
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: FONT.base,
     fontWeight: FONT.semibold,
-    color: COLORS.error,
+    color: COLORS.textSecondary,
   },
   notifDot: {
     position: 'absolute',
@@ -326,6 +326,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.error,
+    backgroundColor: COLORS.primary,
   },
 });

@@ -219,7 +219,7 @@ export default function BusinessesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <LinearGradient colors={[COLORS.black, '#1A1A1A']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+      <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.greet}>İşletmeler</Text>
@@ -289,7 +289,7 @@ export default function BusinessesScreen() {
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Ionicons name="alert-circle-outline" size={48} color={COLORS.error} />
+          <Ionicons name="alert-circle-outline" size={48} color={COLORS.textSecondary} />
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => fetchBusinesses(1)} activeOpacity={0.8}>
             <Text style={styles.retryBtnText}>Tekrar Dene</Text>

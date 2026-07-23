@@ -47,7 +47,7 @@ export default function ForgotPasswordScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <LinearGradient colors={['#0A0A0A', '#111111']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
       <View style={styles.blob} />
 
       <ScrollView

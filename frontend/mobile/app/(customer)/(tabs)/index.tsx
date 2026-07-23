@@ -36,7 +36,7 @@ export default function CustomerHomeScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* Hero Header */}
-      <LinearGradient colors={[COLORS.black, '#1A1A1A']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+      <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.greet}>Merhaba 👋</Text>
@@ -82,7 +82,7 @@ export default function CustomerHomeScreen() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], gap: SPACE[3] }}>
               {MOCK_BUSINESSES.slice(0, 3).map((b: any) => (
                 <TouchableOpacity key={b.id} activeOpacity={0.9} style={styles.featuredCard}>
-                  <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']} style={styles.featuredOverlay} />
+                  <LinearGradient colors={['rgba(8,34,75,0)', 'rgba(8,34,75,0.7)']} style={styles.featuredOverlay} />
                   <View style={styles.featuredHeader}>
                     <Badge variant={b.isOpen ? 'success' : 'default'} size="sm">{b.isOpen ? 'Açık' : 'Kapalı'}</Badge>
                   </View>
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   greet: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)' },
   heroTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.white },
   notifBtn: { width: 40, height: 40, borderRadius: RADIUS.full, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
-  notifDot: { position: 'absolute', top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.error, borderWidth: 1.5, borderColor: COLORS.black },
+  notifDot: { position: 'absolute', top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.primary, borderWidth: 1.5, borderColor: COLORS.primaryDark },
   searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, paddingHorizontal: SPACE[4], gap: SPACE[2], height: 48 },
   searchInput: { flex: 1, fontSize: FONT.base, color: COLORS.text },
   catChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.surface },

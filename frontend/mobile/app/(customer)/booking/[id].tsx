@@ -227,7 +227,7 @@ export default function BookingScreen() {
   if (success) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <LinearGradient colors={[COLORS.black, '#1A1A1A']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={StyleSheet.absoluteFill} />
         <View style={styles.successContainer}>
           <View style={styles.successIcon}>
             <Ionicons name="checkmark-circle" size={80} color={COLORS.success} />
@@ -260,7 +260,7 @@ export default function BookingScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <LinearGradient colors={[COLORS.black, '#111111']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
 
       <View style={[styles.header, { paddingTop: insets.top + SPACE[3] }]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => step > 1 ? setStep(step - 1) : router.back()} activeOpacity={0.7}>
@@ -638,14 +638,14 @@ const styles = StyleSheet.create({
     gap: SPACE[2],
     marginHorizontal: SPACE[5],
     marginBottom: SPACE[3],
-    backgroundColor: 'rgba(239,68,68,0.1)',
+    backgroundColor: 'rgba(1,84,240,0.1)',
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.2)',
+    borderColor: 'rgba(1,84,240,0.2)',
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
   },
-  errorText: { fontSize: FONT.sm, color: COLORS.error, flex: 1 },
+  errorText: { fontSize: FONT.sm, color: COLORS.textSecondary, flex: 1 },
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[8] },
   stepContent: { gap: SPACE[4] },
@@ -666,7 +666,7 @@ const styles = StyleSheet.create({
   },
   serviceCardActive: {
     borderColor: COLORS.primary,
-    backgroundColor: 'rgba(206,13,30,0.08)',
+    backgroundColor: 'rgba(1,84,240,0.08)',
   },
   serviceName: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.white },
   serviceDuration: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.4)', marginTop: 2 },
@@ -706,7 +706,7 @@ const styles = StyleSheet.create({
   },
   calDayPast: { opacity: 0.3 },
   calDaySelected: { backgroundColor: COLORS.primary },
-  calDayToday: { backgroundColor: 'rgba(206,13,30,0.15)' },
+  calDayToday: { backgroundColor: 'rgba(1,84,240,0.15)' },
   calDayAvailable: { backgroundColor: 'rgba(34,197,94,0.1)' },
   calDayUnavailable: { backgroundColor: 'rgba(255,255,255,0.03)' },
   calDayNum: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
@@ -733,7 +733,7 @@ const styles = StyleSheet.create({
   },
   timeSlotActive: {
     borderColor: COLORS.primary,
-    backgroundColor: 'rgba(206,13,30,0.1)',
+    backgroundColor: 'rgba(1,84,240,0.1)',
   },
   timeSlotText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: 'rgba(255,255,255,0.6)' },
   timeSlotTextActive: { color: COLORS.primary },

@@ -184,7 +184,7 @@ export default function BusinessDetailScreen() {
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        <LinearGradient colors={[COLORS.black, '#1A1A1A']} style={styles.hero}>
+        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero}>
           <View style={[styles.heroNav, { paddingTop: insets.top + SPACE[3] }]}>
             <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
               <Ionicons name="chevron-back" size={22} color={COLORS.white} />

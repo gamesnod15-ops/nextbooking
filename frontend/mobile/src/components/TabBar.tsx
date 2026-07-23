@@ -45,10 +45,10 @@ export function TabBar() {
           >
             {active ? (
               <View style={styles.iconCircle}>
-                <Ionicons name={tab.icon} size={20} color="#000" />
+                <Ionicons name={tab.icon} size={20} color={COLORS.white} />
               </View>
             ) : (
-              <Ionicons name={tab.icon} size={22} color="#8E8E93" />
+              <Ionicons name={tab.icon} size={22} color={COLORS.textMuted} />
             )}
             {!active && <Text style={styles.label}>{tab.label}</Text>}
           </TouchableOpacity>
@@ -61,7 +61,7 @@ export function TabBar() {
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: '#1C1C1E',
+    backgroundColor: COLORS.primaryDark,
     marginHorizontal: 10,
     borderRadius: 12,
     height: 68,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 8,
-    color: '#8E8E93',
+    color: COLORS.textMuted,
     fontWeight: '500',
   },
 });

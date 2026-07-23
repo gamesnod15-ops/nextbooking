@@ -86,7 +86,7 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#0A0A0A', '#111111']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
 
       <View style={[styles.container, { paddingTop: insets.top + SPACE[5], paddingBottom: insets.bottom + SPACE[5] }]}>
         <TouchableOpacity style={styles.skipBtn} onPress={skip} activeOpacity={0.7}>
@@ -160,11 +160,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(206,13,30,0.08)',
+    backgroundColor: 'rgba(1,84,240,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(206,13,30,0.15)',
+    borderColor: 'rgba(1,84,240,0.15)',
   },
   stepTitle: {
     fontSize: FONT['2xl'],

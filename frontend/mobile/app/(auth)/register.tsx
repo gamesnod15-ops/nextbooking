@@ -113,7 +113,7 @@ export default function RegisterScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <LinearGradient colors={['#0A0A0A', '#111111']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
       <View style={styles.blob} />
 
       <ScrollView
@@ -273,7 +273,7 @@ export default function RegisterScreen() {
       <Modal visible={modalContent !== null} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <LinearGradient colors={['#1E1E1E', '#2A2A2A']} style={StyleSheet.absoluteFill} />
+            <LinearGradient colors={['#0A1A3D', '#0D2252']} style={StyleSheet.absoluteFill} />
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
                 {modalContent === 'terms' ? 'Kullanıcı Sözleşmesi' : 'Aydınlatma Metni'}

@@ -53,7 +53,7 @@ export default function SubscriptionScreen() {
       <ScreenHeader title="Abonelik" showBack />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }} refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.primary} />}>
         {/* Current Plan Banner */}
-        <LinearGradient colors={[COLORS.black, '#1A1A1A']} style={styles.currentBanner} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.currentBanner} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <View style={styles.currentLeft}>
             <Text style={styles.currentLabel}>Mevcut Plan</Text>
             <Text style={styles.currentPlan}>{currentPlan?.name ?? (currentPlanId ? currentPlanId : 'Yükleniyor...')}</Text>

@@ -28,7 +28,7 @@ export default function RoleSelectScreen() {
   return (
     <View style={[styles.root, { paddingBottom: insets.bottom + SPACE[5] }]}>
       <LinearGradient
-        colors={['#0A0A0A', '#1A1A1A', '#0A0A0A']}
+        colors={[COLORS.primaryDark, '#08224B', COLORS.primaryDark]}
         style={StyleSheet.absoluteFill}
       />
 
