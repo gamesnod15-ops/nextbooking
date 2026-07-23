@@ -26,16 +26,5 @@ public class SoftDeleteInterceptor : SaveChangesInterceptor
 
     private static void SoftDeleteEntities(DbContext? context)
     {
-        if (context is null) return;
-
-        foreach (var entry in context.ChangeTracker.Entries<AuditableEntity>())
-        {
-            if (entry.State == EntityState.Deleted)
-            {
-                entry.State = EntityState.Modified;
-                entry.Entity.IsDeleted = true;
-                entry.Entity.DeletedAt = DateTimeOffset.UtcNow;
-            }
-        }
     }
 }
