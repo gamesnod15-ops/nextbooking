@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useAppDispatch } from '@/store';
 import { setCredentials } from '@/store/slices/authSlice';
+import { COLORS } from '@/lib/theme';
 
 export default function SplashScreen() {
   const router = useRouter();
