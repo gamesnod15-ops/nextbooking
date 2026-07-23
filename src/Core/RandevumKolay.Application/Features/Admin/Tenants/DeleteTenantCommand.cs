@@ -23,17 +23,17 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
 
         string[] tenantIdTables =
         [
-            "WinBackSendLogs", "WinBackRules", "WhatsAppMessages", "WhatsAppConversations",
-            "WhatsAppBookingDrafts", "WhatsAppIntegrations", "Surveys", "FormSubmissions",
-            "CustomForms", "NoShowPredictions", "LoyaltyRedemptions", "LoyaltyRewards",
-            "LoyaltyMembers", "LoyaltyTiers", "AiUsageRecords", "QueueItems",
-            "WaitingListEntries", "ProductPurchases", "PaymentCards",
-            "Deposits", "DebtRecords", "Installments", "Receivables", "Products",
-            "GiftCoupons", "Campaigns", "Coupons", "Packages", "EmployeeCommissions",
-            "Advertisements", "Branches", "EmployeeServices", "Schedules",
-            "ScheduleExceptions", "Services", "Payments", "AuditLogs",
-            "PlatformPayments", "Feedbacks",
-            "Appointments", "Employees", "Customers", "Users", "Businesses"
+            "win_back_send_logs", "win_back_rules", "whatsapp_messages", "whatsapp_conversations",
+            "whatsapp_booking_drafts", "whatsapp_integrations", "surveys", "form_submissions",
+            "custom_forms", "no_show_predictions", "loyalty_redemptions", "loyalty_rewards",
+            "loyalty_members", "loyalty_tiers", "ai_usage_records", "queue_items",
+            "waiting_list_entries", "product_purchases", "payment_cards",
+            "deposits", "debt_records", "installments", "receivables", "products",
+            "gift_coupons", "campaigns", "coupons", "packages", "employee_commissions",
+            "advertisements", "branches", "employee_services", "schedules",
+            "schedule_exceptions", "services", "payments", "audit_logs",
+            "platform_payments", "feedbacks",
+            "appointments", "employees", "customers", "users", "businesses"
         ];
 
         foreach (var table in tenantIdTables)
@@ -45,22 +45,22 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
         }
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"Reviews\" WHERE \"BusinessId\" IN (SELECT \"Id\" FROM \"Businesses\" WHERE \"TenantId\" = @p0)",
+            "DELETE FROM \"reviews\" WHERE \"BusinessId\" IN (SELECT \"Id\" FROM \"businesses\" WHERE \"TenantId\" = @p0)",
             new object[] { tid },
             cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"RefreshTokens\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = @p0)",
+            "DELETE FROM \"refresh_tokens\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"users\" WHERE \"TenantId\" = @p0)",
             new object[] { tid },
             cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"UserAuthProviders\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = @p0)",
+            "DELETE FROM \"user_auth_providers\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"users\" WHERE \"TenantId\" = @p0)",
             new object[] { tid },
             cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"Tenants\" WHERE \"Id\" = @p0",
+            "DELETE FROM \"tenants\" WHERE \"Id\" = @p0",
             new object[] { tid },
             cancellationToken);
     }
