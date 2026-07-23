@@ -30,7 +30,7 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
             "waiting_list_entries", "product_purchases", "payment_cards",
             "deposits", "debt_records", "installments", "receivables", "products",
             "gift_coupons", "campaigns", "coupons", "packages", "employee_commissions",
-            "advertisements", "branches", "employee_services", "schedules",
+            "advertisements", "branches", "schedules",
             "schedule_exceptions", "services", "payments", "audit_logs",
             "platform_payments", "feedbacks",
             "appointments", "employees", "customers", "users", "businesses"
