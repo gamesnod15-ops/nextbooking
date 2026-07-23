@@ -37,9 +37,16 @@ public sealed class CleanupSoftDeletesCommandHandler : IRequestHandler<CleanupSo
         var totalDeleted = 0;
         foreach (var table in tables)
         {
-            totalDeleted += await db.ExecuteSqlRawAsync(
-                $"DELETE FROM \"{table}\" WHERE \"is_deleted\" = true",
-                cancellationToken);
+            try
+            {
+                totalDeleted += await db.ExecuteSqlRawAsync(
+                    $"DELETE FROM \"{table}\" WHERE \"is_deleted\" = true",
+                    cancellationToken);
+            }
+            catch (Exception)
+            {
+                continue;
+            }
         }
         return new CleanupSoftDeletesResult(totalDeleted);
     }
