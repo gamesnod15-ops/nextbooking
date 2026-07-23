@@ -118,6 +118,16 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+    [HttpDelete("tenants/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteTenant(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new DeleteTenantCommand(id), cancellationToken);
+        return NoContent();
+    }
+
     [HttpGet("customers")]
     public async Task<IActionResult> GetCustomers(
         [FromQuery] int pageNumber = 1,

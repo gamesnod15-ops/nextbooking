@@ -54,3 +54,15 @@ export function useSetTenantActiveStatus() {
     },
   })
 }
+
+export function useDeleteTenant() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.delete(`/admin/tenants/${id}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'tenants'] })
+      qc.invalidateQueries({ queryKey: ['admin', 'dashboard'] })
+    },
+  })
+}

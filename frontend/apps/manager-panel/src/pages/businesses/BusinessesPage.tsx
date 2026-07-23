@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Loader2, Search, X, Mail, Phone, MapPin, Users, ShieldOff, ShieldCheck } from 'lucide-react'
+import { Loader2, Search, X, Mail, Phone, MapPin, Users, ShieldOff, ShieldCheck, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Badge } from '@/components/ui/Badge'
 import { showToast } from '@/components/ui/Toast'
 import { formatDate } from '@/lib/utils'
 import { businessCategoryLabels } from '@/config/businessCategories'
-import { useAdminTenants, useSetTenantActiveStatus, type PlatformTenant, type PlatformTenantSort } from '@/hooks/useAdminTenants'
+import { useAdminTenants, useSetTenantActiveStatus, useDeleteTenant, type PlatformTenant, type PlatformTenantSort } from '@/hooks/useAdminTenants'
 
 const planLabels: Record<string, string> = {
   starter: 'Starter',
@@ -30,6 +30,7 @@ export function BusinessesPage() {
   const [sort, setSort] = useState<PlatformTenantSort>('Recent')
   const [page, setPage] = useState(1)
   const [detail, setDetail] = useState<PlatformTenant | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<PlatformTenant | null>(null)
 
   const { data, isLoading } = useAdminTenants({
     pageNumber: page,
@@ -42,6 +43,7 @@ export function BusinessesPage() {
     sort,
   })
   const statusMutation = useSetTenantActiveStatus()
+  const deleteMutation = useDeleteTenant()
 
   function resetPage<T>(setter: (v: T) => void) {
     return (v: T) => { setter(v); setPage(1) }
@@ -56,6 +58,18 @@ export function BusinessesPage() {
       setDetail((d) => (d && d.tenantId === id ? { ...d, isActive: next } : d))
     } catch {
       showToast('error', 'Hata', 'İşlem gerçekleştirilemedi.')
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirmDelete) return
+    try {
+      await deleteMutation.mutateAsync(confirmDelete.tenantId)
+      showToast('success', 'İşletme silindi')
+      setConfirmDelete(null)
+      setDetail(null)
+    } catch {
+      showToast('error', 'Hata', 'Silme işlemi gerçekleştirilemedi.')
     }
   }
 
@@ -152,14 +166,23 @@ export function BusinessesPage() {
                     <Badge variant={t.isActive ? 'success' : 'destructive'}>{t.isActive ? 'Aktif' : 'Askıda'}</Badge>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => toggleActive(t.tenantId, !t.isActive)}
-                      disabled={statusMutation.isPending}
-                      className={`rounded-md p-1.5 hover:bg-gray-100 ${t.isActive ? 'text-red-500' : 'text-emerald-500'}`}
-                      title={t.isActive ? 'Askıya al' : 'Aktifleştir'}
-                    >
-                      {t.isActive ? <ShieldOff className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                    </button>
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => toggleActive(t.tenantId, !t.isActive)}
+                        disabled={statusMutation.isPending}
+                        className={`rounded-md p-1.5 hover:bg-gray-100 ${t.isActive ? 'text-red-500' : 'text-emerald-500'}`}
+                        title={t.isActive ? 'Askıya al' : 'Aktifleştir'}
+                      >
+                        {t.isActive ? <ShieldOff className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelete(t)}
+                        className="rounded-md p-1.5 text-red-500 hover:bg-red-50"
+                        title="İşletmeyi sil"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -225,6 +248,38 @@ export function BusinessesPage() {
               >
                 {detail.isActive ? <ShieldOff className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
                 {detail.isActive ? 'İşletmeyi Askıya Al' : 'İşletmeyi Aktifleştir'}
+              </button>
+              <button
+                onClick={() => { setConfirmDelete(detail); setDetail(null) }}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-600 transition-opacity hover:bg-red-50 hover:opacity-90 disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" />
+                İşletmeyi Sil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setConfirmDelete(null)}>
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-gray-900">İşlemi Onayla</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              <span className="font-semibold">{confirmDelete.businessName ?? confirmDelete.tenantName}</span> işletmesini ve tüm ilişkili verilerini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? 'Siliniyor...' : 'Sil'}
               </button>
             </div>
           </div>
