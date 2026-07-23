@@ -11,6 +11,7 @@ using RandevumKolay.Application.Features.Admin.PricingPlans;
 using RandevumKolay.Application.Features.Admin.Tenants;
 using RandevumKolay.Application.Features.Admin.Users;
 using RandevumKolay.Domain.Entities;
+using RandevumKolay.Domain.Entities;
 using RandevumKolay.Domain.Enums;
 
 namespace RandevumKolay.API.Controllers.v1;
@@ -126,6 +127,13 @@ public class AdminController : ControllerBase
     {
         await _sender.Send(new DeleteTenantCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    [HttpPost("cleanup-soft-deletes")]
+    public async Task<IActionResult> CleanupSoftDeletes(CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new CleanupSoftDeletesCommand(), cancellationToken);
+        return Ok(new { deleted = result.Deleted });
     }
 
     [HttpGet("customers")]
