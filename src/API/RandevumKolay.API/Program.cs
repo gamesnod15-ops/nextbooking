@@ -227,7 +227,8 @@ await db.Database.MigrateAsync();
 if (!await db.Tenants.AnyAsync())
     await SeedData.InitializeAsync(db);
 
-await DemoSeedData.SeedAsync(db);
+// DemoSeedData devre disi — demo veriler kalici olarak silindi
+// await DemoSeedData.SeedAsync(db);
 
 // First recurring Hangfire job in this codebase — daily win-back scan.
 // 06:00 UTC ≈ 09:00 Turkey time; IJobService has no timezone parameter,
