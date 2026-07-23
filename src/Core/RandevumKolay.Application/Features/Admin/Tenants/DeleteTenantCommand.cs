@@ -90,15 +90,16 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
         {
             string[] urlQueries =
             [
-                "SELECT \"LogoUrl\" FROM \"tenants\" WHERE \"Id\" = @p0 AND \"LogoUrl\" IS NOT NULL",
-                "SELECT \"LogoUrl\" FROM \"businesses\" WHERE \"tenant_id\" = @p0 AND \"LogoUrl\" IS NOT NULL",
-                "SELECT \"CoverImageUrl\" FROM \"businesses\" WHERE \"tenant_id\" = @p0 AND \"CoverImageUrl\" IS NOT NULL",
-                "SELECT \"AvatarUrl\" FROM \"employees\" WHERE \"tenant_id\" = @p0 AND \"AvatarUrl\" IS NOT NULL",
-                "SELECT \"ImageUrl\" FROM \"services\" WHERE \"tenant_id\" = @p0 AND \"ImageUrl\" IS NOT NULL",
-                "SELECT \"AvatarUrl\" FROM \"customers\" WHERE \"tenant_id\" = @p0 AND \"AvatarUrl\" IS NOT NULL",
-                "SELECT \"ImageUrl\" FROM \"packages\" WHERE \"tenant_id\" = @p0 AND \"ImageUrl\" IS NOT NULL",
-                "SELECT \"ImageUrls\" FROM \"feedbacks\" WHERE \"tenant_id\" = @p0 AND \"ImageUrls\" IS NOT NULL",
-                "SELECT \"AvatarUrl\" FROM \"users\" WHERE \"tenant_id\" = @p0 AND \"AvatarUrl\" IS NOT NULL",
+                "SELECT \"logo_url\" FROM \"tenants\" WHERE \"id\" = @p0 AND \"logo_url\" IS NOT NULL",
+                "SELECT \"logo_url\" FROM \"businesses\" WHERE \"tenant_id\" = @p0 AND \"logo_url\" IS NOT NULL",
+                "SELECT \"cover_image_url\" FROM \"businesses\" WHERE \"tenant_id\" = @p0 AND \"cover_image_url\" IS NOT NULL",
+                "SELECT \"gallery_images\" FROM \"businesses\" WHERE \"tenant_id\" = @p0 AND \"gallery_images\" IS NOT NULL",
+                "SELECT \"avatar_url\" FROM \"employees\" WHERE \"tenant_id\" = @p0 AND \"avatar_url\" IS NOT NULL",
+                "SELECT \"image_url\" FROM \"services\" WHERE \"tenant_id\" = @p0 AND \"image_url\" IS NOT NULL",
+                "SELECT \"avatar_url\" FROM \"customers\" WHERE \"tenant_id\" = @p0 AND \"avatar_url\" IS NOT NULL",
+                "SELECT \"image_url\" FROM \"packages\" WHERE \"tenant_id\" = @p0 AND \"image_url\" IS NOT NULL",
+                "SELECT \"image_urls\" FROM \"feedbacks\" WHERE \"tenant_id\" = @p0 AND \"image_urls\" IS NOT NULL",
+                "SELECT \"avatar_url\" FROM \"users\" WHERE \"tenant_id\" = @p0 AND \"avatar_url\" IS NOT NULL",
             ];
 
             foreach (var sql in urlQueries)
