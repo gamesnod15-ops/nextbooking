@@ -31,6 +31,7 @@ export function BusinessesPage() {
   const [page, setPage] = useState(1)
   const [detail, setDetail] = useState<PlatformTenant | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<PlatformTenant | null>(null)
+  const [deleteError, setDeleteError] = useState<{ status?: number; message: string; detail?: string } | null>(null)
 
   const { data, isLoading } = useAdminTenants({
     pageNumber: page,
@@ -68,8 +69,16 @@ export function BusinessesPage() {
       showToast('success', 'İşletme silindi')
       setConfirmDelete(null)
       setDetail(null)
-    } catch {
-      showToast('error', 'Hata', 'Silme işlemi gerçekleştirilemedi.')
+    } catch (e: any) {
+      const res = e?.response
+      setDeleteError({
+        status: res?.status,
+        message: res?.statusText ?? 'Bilinmeyen hata',
+        detail: typeof res?.data === 'string'
+          ? res.data
+          : JSON.stringify(res?.data ?? e?.message ?? e, null, 2),
+      })
+      setConfirmDelete(null)
     }
   }
 
@@ -280,6 +289,32 @@ export function BusinessesPage() {
                 className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleteMutation.isPending ? 'Siliniyor...' : 'Sil'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setDeleteError(null)}>
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2 text-red-600 mb-3">
+              <span className="text-lg font-bold">Silme Başarısız</span>
+              {deleteError.status && (
+                <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-mono font-bold text-red-700">{deleteError.status}</span>
+              )}
+            </div>
+            <p className="text-sm text-gray-600 mb-2">{deleteError.message}</p>
+            {deleteError.detail && (
+              <pre className="max-h-64 overflow-auto rounded-lg bg-gray-900 p-4 text-xs text-green-400 whitespace-pre-wrap break-all">
+                {deleteError.detail}
+              </pre>
+            )}
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setDeleteError(null)}
+                className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              >
+                Kapat
               </button>
             </div>
           </div>
