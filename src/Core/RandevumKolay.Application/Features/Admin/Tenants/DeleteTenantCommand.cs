@@ -25,15 +25,18 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
         [
             "win_back_send_logs", "win_back_rules", "whatsapp_messages", "whatsapp_conversations",
             "whatsapp_booking_drafts", "whatsapp_integrations", "surveys", "form_submissions",
-            "custom_forms", "no_show_predictions", "loyalty_redemptions", "loyalty_rewards",
-            "loyalty_members", "loyalty_tiers", "ai_usage_records", "queue_items",
-            "waiting_list_entries", "product_purchases", "payment_cards",
-            "deposits", "debt_records", "installments", "receivables", "products",
-            "gift_coupons", "campaigns", "coupons", "packages", "employee_commissions",
-            "advertisements", "branches", "schedules",
-            "schedule_exceptions", "payments", "audit_logs",
-            "platform_payments", "feedbacks",
-            "customer_recommendations", "appointments", "services", "employees", "customers", "users", "businesses"
+            "custom_forms", "loyalty_redemptions", "loyalty_rewards", "loyalty_members", "loyalty_tiers",
+            "ai_usage_records", "queue_items", "waiting_list_entries", "product_purchases",
+            "payment_cards", "debt_records", "installments", "receivables",
+            "gift_coupons", "campaigns", "coupons", "packages",
+            "employee_commissions", "advertisements", "branches", "schedules",
+            "schedule_exceptions", "payments", "audit_logs", "platform_payments",
+            "feedbacks", "users",
+            "no_show_predictions", "deposits",
+            "customer_recommendations",
+            "appointments",
+            "products", "services", "employees", "customers",
+            "businesses"
         ];
 
         foreach (var table in tenantIdTables)
