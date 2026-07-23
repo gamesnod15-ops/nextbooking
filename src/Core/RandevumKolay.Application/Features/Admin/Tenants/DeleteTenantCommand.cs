@@ -39,28 +39,28 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
         foreach (var table in tenantIdTables)
         {
             await db.ExecuteSqlRawAsync(
-                $"DELETE FROM \"{table}\" WHERE \"TenantId\" = @p0",
+                $"DELETE FROM \"{table}\" WHERE \"tenant_id\" = @p0",
                 new object[] { tid },
                 cancellationToken);
         }
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"reviews\" WHERE \"BusinessId\" IN (SELECT \"Id\" FROM \"businesses\" WHERE \"TenantId\" = @p0)",
+            "DELETE FROM \"reviews\" WHERE \"business_id\" IN (SELECT \"id\" FROM \"businesses\" WHERE \"tenant_id\" = @p0)",
             new object[] { tid },
             cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"refresh_tokens\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"users\" WHERE \"TenantId\" = @p0)",
+            "DELETE FROM \"refresh_tokens\" WHERE \"user_id\" IN (SELECT \"id\" FROM \"users\" WHERE \"tenant_id\" = @p0)",
             new object[] { tid },
             cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"user_auth_providers\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"users\" WHERE \"TenantId\" = @p0)",
+            "DELETE FROM \"user_auth_providers\" WHERE \"user_id\" IN (SELECT \"id\" FROM \"users\" WHERE \"tenant_id\" = @p0)",
             new object[] { tid },
             cancellationToken);
 
         await db.ExecuteSqlRawAsync(
-            "DELETE FROM \"tenants\" WHERE \"Id\" = @p0",
+            "DELETE FROM \"tenants\" WHERE \"id\" = @p0",
             new object[] { tid },
             cancellationToken);
     }
