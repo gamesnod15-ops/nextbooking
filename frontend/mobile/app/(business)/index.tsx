@@ -130,7 +130,8 @@ export default function DashboardScreen() {
   }
 
   const stats = data ?? EMPTY_STATS;
-  const maxCount = Math.max(...stats.weeklyStats.map((d) => d.appointments), 1);
+  const weeklyStats = stats.weeklyStats ?? [];
+  const maxCount = weeklyStats.length > 0 ? Math.max(...weeklyStats.map((d) => d.appointments), 1) : 1;
 
   return (
     <View style={styles.root}>
@@ -209,7 +210,7 @@ export default function DashboardScreen() {
         <Card style={styles.chartCard}>
           <Text style={styles.sectionTitle}>Haftalık Randevular</Text>
           <View style={styles.barChart}>
-            {stats.weeklyStats.map((d) => {
+            {weeklyStats.map((d) => {
               const pct = d.appointments / maxCount;
               return (
                 <View key={d.day} style={styles.barCol}>
