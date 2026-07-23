@@ -58,7 +58,9 @@ public class ExceptionHandlingMiddleware
 
             _ => (
                 HttpStatusCode.InternalServerError,
-                "An unexpected error occurred.",
+                exception.InnerException is not null
+                    ? $"An unexpected error occurred. {exception.Message} | Inner: {exception.InnerException.Message}"
+                    : $"An unexpected error occurred. {exception.Message}",
                 (Dictionary<string, string[]>?)null)
         };
 
