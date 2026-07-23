@@ -160,11 +160,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(207,242,30,0.08)',
+    backgroundColor: 'rgba(206,13,30,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(207,242,30,0.15)',
+    borderColor: 'rgba(206,13,30,0.15)',
   },
   stepTitle: {
     fontSize: FONT['2xl'],

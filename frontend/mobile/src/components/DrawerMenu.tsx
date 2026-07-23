@@ -32,7 +32,7 @@ const MENU_SECTIONS: MenuSection[] = [
     title: 'Yönetim',
     items: [
       { id: 'services', label: 'Hizmetler', icon: 'cut-outline', route: '/(pages)/services', color: '#8B5CF6' },
-      { id: 'packages', label: 'Paketler', icon: 'cube-outline', route: '/(pages)/packages', color: '#3B82F6' },
+      { id: 'packages', label: 'Paketler', icon: 'cube-outline', route: '/(pages)/packages', color: COLORS.primary },
       { id: 'employees', label: 'Çalışanlar', icon: 'people-circle-outline', route: '/(pages)/employees', color: '#10B981' },
       { id: 'branches', label: 'Şubeler', icon: 'business-outline', route: '/(pages)/branches', color: '#F59E0B' },
       { id: 'walkin-queue', label: 'Sıra Yönetimi', icon: 'list-outline', route: '/(pages)/walkin-queue', color: '#06B6D4' },
@@ -58,14 +58,14 @@ const MENU_SECTIONS: MenuSection[] = [
     items: [
       { id: 'loyalty', label: 'Sadakat Programı', icon: 'star-outline', route: '/(pages)/loyalty', color: '#F59E0B' },
       { id: 'surveys', label: 'Anket & Feedback', icon: 'clipboard-outline', route: '/(pages)/surveys', color: '#8B5CF6' },
-      { id: 'forms', label: 'Formlar', icon: 'document-text-outline', route: '/(pages)/forms', color: '#3B82F6' },
+      { id: 'forms', label: 'Formlar', icon: 'document-text-outline', route: '/(pages)/forms', color: COLORS.primary },
       { id: 'reviews', label: 'Değerlendirmeler', icon: 'star-outline', route: '/(pages)/reviews', color: '#F59E0B' },
     ],
   },
   {
     title: 'Analitik',
     items: [
-      { id: 'reports', label: 'Raporlar', icon: 'bar-chart-outline', route: '/(pages)/reports', color: '#3B82F6' },
+      { id: 'reports', label: 'Raporlar', icon: 'bar-chart-outline', route: '/(pages)/reports', color: COLORS.primary },
       { id: 'performance', label: 'Personel Performansı', icon: 'trending-up-outline', route: '/(pages)/performance', color: '#10B981' },
     ],
   },

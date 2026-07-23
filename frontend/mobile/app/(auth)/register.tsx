@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACE[2],
   },
   businessTag: { backgroundColor: COLORS.primary },
-  customerTag: { backgroundColor: '#3B82F6' },
+  customerTag: { backgroundColor: COLORS.primary },
   roleTagText: { fontSize: FONT.xs, fontWeight: FONT.bold },
   title: {
     fontSize: FONT['3xl'],
@@ -425,8 +425,8 @@ const styles = StyleSheet.create({
     ...SHADOW.primary,
   },
   customerBtn: {
-    backgroundColor: '#3B82F6',
-    shadowColor: '#3B82F6',
+    backgroundColor: COLORS.primary,
+    shadowColor: COLORS.primary,
   },
   disabledBtn: {
     opacity: 0.5,

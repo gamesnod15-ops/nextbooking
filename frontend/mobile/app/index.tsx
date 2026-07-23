@@ -26,14 +26,14 @@ export default function SplashScreen() {
     } catch { /* ignore */ }
 
     setTimeout(() => {
-      router.replace('/role-select');
+      router.replace('/(auth)/login');
     }, 1500);
   }
 
   return (
     <View style={styles.root}>
       <Image
-        source={require('../assets/images/logo-black-last.png')}
+        source={require('../assets/images/icon.png')}
         style={styles.logo}
         resizeMode="contain"
       />

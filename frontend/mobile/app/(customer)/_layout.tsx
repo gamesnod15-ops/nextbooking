@@ -1,4 +1,4 @@
-import { Tabs, Redirect } from 'expo-router';
+import { Tabs, Stack } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -28,32 +28,51 @@ const tabStyles = StyleSheet.create({
   },
 });
 
-export default function CustomerLayout() {
+function AuthGuard({ children }: { children: React.ReactNode }) {
   const { accessToken } = useSelector((state: RootState) => state.auth);
-  if (!accessToken) return <Redirect href="/(auth)/login?role=customer" />;
-
-  return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: COLORS.primaryDark,
-        tabBarInactiveTintColor: COLORS.textSecondary,
-        tabBarStyle: {
-          backgroundColor: COLORS.surface,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 1,
-          height: Platform.OS === 'ios' ? 90 : 74,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: FONT.bold },
-      }}
-    >
-      <Tabs.Screen name="index" options={{ title: 'Keşfet', tabBarIcon: ({ focused, color }) => <TabIcon name="search-outline" focused={focused} color={color} /> }} />
-      <Tabs.Screen name="appointments" options={{ title: 'Randevularım', tabBarIcon: ({ focused, color }) => <TabIcon name="calendar-outline" focused={focused} color={color} /> }} />
-      <Tabs.Screen name="favorites" options={{ title: 'Favoriler', tabBarIcon: ({ focused, color }) => <TabIcon name="heart-outline" focused={focused} color={color} /> }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profil', tabBarIcon: ({ focused, color }) => <TabIcon name="person-outline" focused={focused} color={color} /> }} />
-    </Tabs>
-  );
+  if (!accessToken) {
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="businesses" />
+        <Stack.Screen name="business/[id]" />
+        <Stack.Screen name="booking/[id]" />
+      </Stack>
+    );
+  }
+  return <>{children}</>;
 }
 
+export default function CustomerLayout() {
+  const { accessToken } = useSelector((state: RootState) => state.auth);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen
+        name="businesses"
+        options={{
+          headerShown: true,
+          headerTitle: 'İşletmeler',
+          headerStyle: { backgroundColor: COLORS.surface },
+          headerTintColor: COLORS.text,
+          headerTitleStyle: { fontWeight: FONT.bold, fontSize: FONT.md },
+        }}
+      />
+      <Stack.Screen
+        name="business/[id]"
+        options={{
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="booking/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+    </Stack>
+  );
+}
