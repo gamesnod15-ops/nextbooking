@@ -21,13 +21,13 @@ export default function CustomerHomeScreen() {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Tümü');
-  const { data: businesses = MOCK_BUSINESSES } = useQuery({
+  const { data: businesses } = useQuery({
     queryKey: ['businesses'],
     queryFn: async () => { const res = await api.get('/businesses'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
     placeholderData: MOCK_BUSINESSES,
   });
 
-  const filtered = businesses.filter((b: any) => {
+  const filtered = (businesses ?? MOCK_BUSINESSES).filter((b: any) => {
     const matchCat = category === 'Tümü' || b.category === category;
     const matchSearch = b.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
