@@ -1,4 +1,4 @@
-package com.nextbooking.app
+package com.JetRandevu.app
 
 import android.app.Application
 import android.content.res.Configuration

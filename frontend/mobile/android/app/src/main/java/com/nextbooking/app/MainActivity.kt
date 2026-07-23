@@ -1,4 +1,4 @@
-package com.nextbooking.app
+package com.JetRandevu.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

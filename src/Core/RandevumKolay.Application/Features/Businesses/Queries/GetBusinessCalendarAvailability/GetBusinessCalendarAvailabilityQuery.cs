@@ -115,6 +115,8 @@ public sealed class GetBusinessCalendarAvailabilityQueryHandler
 
         var slotDuration = TimeSpan.FromMinutes(service.DurationMinutes + service.BufferMinutes);
         var serviceDuration = TimeSpan.FromMinutes(service.DurationMinutes);
+        var defaultWorkStart = new TimeOnly(9, 0);
+        var defaultWorkEnd = new TimeOnly(20, 0);
 
         var result = new List<BusinessAvailabilityDto>();
         var current = DateOnly.FromDateTime(monthStart.DateTime);
@@ -129,17 +131,14 @@ public sealed class GetBusinessCalendarAvailabilityQueryHandler
                 var daySchedule = schedules.FirstOrDefault(s =>
                     s.EmployeeId == emp.Id && s.DayOfWeek == current.DayOfWeek);
 
-                if (daySchedule is null)
-                    continue;
-
                 var exception = exceptions.FirstOrDefault(e =>
                     e.EmployeeId == emp.Id && e.Date == current);
 
                 if (exception?.IsClosed == true)
                     continue;
 
-                var workStart = exception?.StartTime ?? daySchedule.StartTime;
-                var workEnd = exception?.EndTime ?? daySchedule.EndTime;
+                var workStart = exception?.StartTime ?? daySchedule?.StartTime ?? defaultWorkStart;
+                var workEnd = exception?.EndTime ?? daySchedule?.EndTime ?? defaultWorkEnd;
 
                 var dayStartTime = current.ToDateTime(workStart, DateTimeKind.Utc);
                 var dayEndTime = current.ToDateTime(workEnd, DateTimeKind.Utc);

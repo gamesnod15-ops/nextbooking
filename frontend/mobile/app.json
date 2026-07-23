@@ -1,22 +1,22 @@
 {
   "expo": {
-    "name": "RandevumKolay",
-    "slug": "nextbooking",
+    "name": "JetRandevu",
+    "slug": "jetrandevu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "nextbooking",
+    "scheme": "jetrandevu",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nextbooking.app"
+      "bundleIdentifier": "com.jetrandevu.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0A0A0A"
       },
-      "package": "com.nextbooking.app"
+      "package": "com.jetrandevu.app"
     },
     "androidNavigationBar": {
       "visible": "immersive"
