@@ -122,7 +122,7 @@ public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductC
         var product = await _context.Products.FirstOrDefaultAsync(
             p => p.Id == request.Id && p.TenantId == _tenant.TenantId, ct)
             ?? throw new Exception("Product not found");
-        product.IsDeleted = true;
+        _context.Products.Remove(product);
         await _context.SaveChangesAsync(ct);
     }
 }

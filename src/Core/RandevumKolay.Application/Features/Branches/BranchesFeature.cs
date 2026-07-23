@@ -89,7 +89,7 @@ public sealed class DeleteBranchCommandHandler : IRequestHandler<DeleteBranchCom
         var branch = await _context.Branches
             .FirstOrDefaultAsync(b => b.Id == request.Id && b.TenantId == _tenant.TenantId, ct)
             ?? throw new Exception("Branch not found");
-        branch.IsDeleted = true;
+        _context.Branches.Remove(branch);
         await _context.SaveChangesAsync(ct);
     }
 }
