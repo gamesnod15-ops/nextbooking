@@ -38,24 +38,24 @@ public sealed class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCom
 
         foreach (var table in tenantIdTables)
         {
-            await db.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM \"{table}\" WHERE \"TenantId\" = {tid}", cancellationToken);
+            var sql = $"DELETE FROM \"{table}\" WHERE \"TenantId\" = @p0";
+            await db.ExecuteSqlRawAsync(sql, tid, cancellationToken);
         }
 
-        await db.ExecuteSqlInterpolatedAsync(
-            $"DELETE FROM \"Reviews\" WHERE \"BusinessId\" IN (SELECT \"Id\" FROM \"Businesses\" WHERE \"TenantId\" = {tid})",
-            cancellationToken);
+        await db.ExecuteSqlRawAsync(
+            "DELETE FROM \"Reviews\" WHERE \"BusinessId\" IN (SELECT \"Id\" FROM \"Businesses\" WHERE \"TenantId\" = @p0)",
+            tid, cancellationToken);
 
-        await db.ExecuteSqlInterpolatedAsync(
-            $"DELETE FROM \"RefreshTokens\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = {tid})",
-            cancellationToken);
+        await db.ExecuteSqlRawAsync(
+            "DELETE FROM \"RefreshTokens\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = @p0)",
+            tid, cancellationToken);
 
-        await db.ExecuteSqlInterpolatedAsync(
-            $"DELETE FROM \"UserAuthProviders\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = {tid})",
-            cancellationToken);
+        await db.ExecuteSqlRawAsync(
+            "DELETE FROM \"UserAuthProviders\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"TenantId\" = @p0)",
+            tid, cancellationToken);
 
-        await db.ExecuteSqlInterpolatedAsync(
-            $"DELETE FROM \"Tenants\" WHERE \"Id\" = {tid}", cancellationToken);
+        await db.ExecuteSqlRawAsync(
+            "DELETE FROM \"Tenants\" WHERE \"Id\" = @p0", tid, cancellationToken);
     }
 }
 
