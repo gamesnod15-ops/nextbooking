@@ -213,7 +213,7 @@ export default function LoginScreen() {
 
         <View style={styles.heroBlock}>
           <Text style={styles.heroTitle}>Hoş Geldiniz</Text>
-          <Text style={styles.heroSubtitle}>Randevularınızı kolayca yönetin, zamanınızı verimli kullanın.</Text>
+          <Text style={styles.heroSubtitle}>Randevularınızı kolayca yönetin,{'\n'}zamanınızı verimli kullanın.</Text>
         </View>
 
         <View style={styles.cardsBlock}>
@@ -492,10 +492,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: SPACE[6],
   },
   logoBlock: {
     alignItems: 'center',
+    marginBottom: SPACE[3],
   },
   logo: {
     width: 120,
@@ -505,6 +505,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACE[5],
     gap: SPACE[2],
+    marginBottom: SPACE[4],
   },
   heroTitle: {
     fontSize: FONT['3xl'],
@@ -524,6 +525,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: SPACE[5],
     gap: SPACE[4],
+    marginBottom: SPACE[6],
   },
   primaryCard: {
     borderRadius: RADIUS['2xl'],
@@ -617,6 +619,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     paddingHorizontal: SPACE[6],
+    marginBottom: SPACE[5],
   },
   featureItem: {
     flex: 1,
