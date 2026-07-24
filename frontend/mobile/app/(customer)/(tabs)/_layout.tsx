@@ -44,7 +44,7 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 11, fontWeight: FONT.bold },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Keşfet', tabBarIcon: ({ focused, color }) => <TabIcon name="search-outline" focused={focused} color={color} /> }} />
+      <Tabs.Screen name="index" options={{ title: 'İşletmeler', tabBarIcon: ({ focused, color }) => <TabIcon name="business-outline" focused={focused} color={color} /> }} />
       <Tabs.Screen name="appointments" options={{ title: 'Randevularım', tabBarIcon: ({ focused, color }) => <TabIcon name="calendar-outline" focused={focused} color={color} /> }} />
       <Tabs.Screen name="favorites" options={{ title: 'Favoriler', tabBarIcon: ({ focused, color }) => <TabIcon name="heart-outline" focused={focused} color={color} /> }} />
       <Tabs.Screen name="profile" options={{ title: 'Profil', tabBarIcon: ({ focused, color }) => <TabIcon name="person-outline" focused={focused} color={color} /> }} />
