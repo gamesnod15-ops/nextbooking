@@ -98,7 +98,7 @@ export default function LoginScreen() {
 
           <View style={styles.formCard}>
             <Image
-              source={require('../../assets/images/logo-jetrandevu.png')}
+              source={require('../../assets/images/icon-site.png')}
               style={styles.formCardLogo}
               resizeMode="contain"
             />
@@ -204,7 +204,7 @@ export default function LoginScreen() {
 
       <View style={[styles.logoBlock, { paddingTop: insets.top + SPACE[10] }]}>
         <Image
-          source={require('../../assets/images/logo-jetrandevu.png')}
+          source={require('../../assets/images/icon-site.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -351,9 +351,9 @@ const styles = StyleSheet.create({
     ...SHADOW.lg,
   },
   formCardLogo: {
-    width: 150,
-    height: 32,
-    marginBottom: SPACE[5],
+    width: 76,
+    height: 76,
+    marginBottom: SPACE[3],
   },
   formCardTitle: {
     fontSize: FONT['2xl'],
@@ -474,8 +474,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 220,
-    height: 46,
+    width: 160,
+    height: 160,
   },
   heroBlock: {
     alignItems: 'center',
