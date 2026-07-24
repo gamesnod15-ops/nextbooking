@@ -211,8 +211,7 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.heroBlock}>
-        <Text style={styles.heroTitle}>JetRandevu'ya{'\n'}Hoş Geldiniz</Text>
-        <Text style={styles.heroSubtitle}>İşletmenizi yönetin veya hemen randevu alın</Text>
+        <Text style={styles.heroTitle}>Hoş Geldiniz</Text>
       </View>
 
       <View style={styles.cardsBlock}>
@@ -235,7 +234,7 @@ export default function LoginScreen() {
             </View>
             <View style={styles.cardContent}>
               <Text style={[styles.cardTitle, styles.primaryCardTitle]}>İşletme Girişi</Text>
-              <Text style={[styles.cardDesc, styles.primaryCardDesc]}>
+              <Text style={styles.cardDesc}>
                 Randevuları ve işletmenizi yönetin
               </Text>
             </View>
@@ -274,14 +273,6 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.footerBlock}>
-        <TouchableOpacity
-          style={styles.onboardingBtn}
-          onPress={() => router.push({ pathname: '/(auth)/onboarding', params: { role: 'business' } })}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="play-circle-outline" size={16} color={COLORS.textMuted} />
-          <Text style={styles.onboardingText}>Uygulamayı Tanıyın</Text>
-        </TouchableOpacity>
         <Text style={styles.footer}>
           Giriş yaparak{' '}
           <Text style={styles.footerLink}>Kullanım Koşulları</Text>
@@ -474,8 +465,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 160,
-    height: 160,
+    width: 120,
+    height: 120,
   },
   heroBlock: {
     alignItems: 'center',
@@ -489,11 +480,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -0.5,
     lineHeight: 36,
-  },
-  heroSubtitle: {
-    fontSize: FONT.base,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
   },
   cardsBlock: {
     width: '100%',
@@ -563,9 +549,6 @@ const styles = StyleSheet.create({
     fontSize: FONT.sm,
     color: COLORS.textSecondary,
   },
-  primaryCardDesc: {
-    color: 'rgba(0,0,0,0.55)',
-  },
   cardArrow: {
     width: 32,
     height: 32,
@@ -588,21 +571,6 @@ const styles = StyleSheet.create({
   footerBlock: {
     alignItems: 'center',
     gap: SPACE[3],
-  },
-  onboardingBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: SPACE[2],
-    paddingHorizontal: SPACE[4],
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  onboardingText: {
-    fontSize: FONT.xs,
-    color: COLORS.textMuted,
-    fontWeight: FONT.medium,
   },
   footer: {
     fontSize: FONT.xs,
