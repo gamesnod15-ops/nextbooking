@@ -213,6 +213,7 @@ export default function LoginScreen() {
 
         <View style={styles.heroBlock}>
           <Text style={styles.heroTitle}>Hoş Geldiniz</Text>
+          <Text style={styles.heroSubtitle}>Randevularınızı kolayca yönetin, zamanınızı verimli kullanın.</Text>
         </View>
 
         <View style={styles.cardsBlock}>
@@ -271,6 +272,29 @@ export default function LoginScreen() {
               </View>
             </LinearGradient>
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.featuresRow}>
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconWrap}>
+              <Ionicons name="shield-checkmark-outline" size={20} color={COLORS.primary} />
+            </View>
+            <Text style={styles.featureLabel}>Güvenli{'\n'}Altyapı</Text>
+          </View>
+          <View style={styles.featureDivider} />
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconWrap}>
+              <Ionicons name="time-outline" size={20} color={COLORS.primary} />
+            </View>
+            <Text style={styles.featureLabel}>Hızlı{'\n'}Randevu</Text>
+          </View>
+          <View style={styles.featureDivider} />
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconWrap}>
+              <Ionicons name="ribbon-outline" size={20} color={COLORS.primary} />
+            </View>
+            <Text style={styles.featureLabel}>Profesyonel{'\n'}Çözüm</Text>
+          </View>
         </View>
 
         <View style={styles.footerBlock}>
@@ -490,6 +514,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     lineHeight: 36,
   },
+  heroSubtitle: {
+    fontSize: FONT.base,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   cardsBlock: {
     width: '100%',
     paddingHorizontal: SPACE[5],
@@ -559,23 +589,61 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   cardArrow: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   cardArrowBlue: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: RADIUS.full,
     backgroundColor: '#EBF5FF',
+    borderWidth: 1.5,
+    borderColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   primaryCardArrow: {
-    backgroundColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  featuresRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: SPACE[6],
+  },
+  featureItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: SPACE[2],
+  },
+  featureIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.full,
+    borderWidth: 1.5,
+    borderColor: COLORS.primaryLight,
+    backgroundColor: 'rgba(1,84,240,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featureLabel: {
+    fontSize: FONT.xs,
+    fontWeight: FONT.semibold,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 15,
+  },
+  featureDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: COLORS.borderLight,
   },
   footerBlock: {
     alignItems: 'center',
