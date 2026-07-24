@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions, DimensionValue } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -22,11 +23,11 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const NO_REDUCE_MOTION = { reduceMotion: ReduceMotion.Never };
 
 const SPEED_LINES: { top: DimensionValue; width: number; delay: number }[] = [
-  { top: '22%', width: 150, delay: 0 },
-  { top: '38%', width: 120, delay: 200 },
-  { top: '54%', width: 180, delay: 400 },
-  { top: '68%', width: 135, delay: 150 },
-  { top: '82%', width: 165, delay: 350 },
+  { top: '22%', width: 90, delay: 0 },
+  { top: '38%', width: 70, delay: 200 },
+  { top: '54%', width: 100, delay: 400 },
+  { top: '68%', width: 75, delay: 150 },
+  { top: '82%', width: 95, delay: 350 },
 ];
 
 function SpeedLine({ top, width, delay }: { top: DimensionValue; width: number; delay: number }) {
@@ -45,11 +46,20 @@ function SpeedLine({ top, width, delay }: { top: DimensionValue; width: number; 
 
   const style = useAnimatedStyle(() => {
     const tx = interpolate(progress.value, [0, 1], [-width, SCREEN_WIDTH + width]);
-    const opacity = interpolate(progress.value, [0, 0.3, 1], [0, 1, 0], Extrapolation.CLAMP);
+    const opacity = interpolate(progress.value, [0, 0.3, 1], [0, 0.6, 0], Extrapolation.CLAMP);
     return { opacity, transform: [{ translateX: tx }] };
   });
 
-  return <Animated.View style={[styles.speedLine, { top, width }, style]} />;
+  return (
+    <Animated.View style={[styles.speedLine, { top, width }, style]}>
+      <LinearGradient
+        colors={['transparent', COLORS.primary, 'transparent']}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
+    </Animated.View>
+  );
 }
 
 const SPLASH_DURATION = 2200;
@@ -108,16 +118,30 @@ export default function SplashScreen() {
     opacity: screenOpacity.value,
   }));
 
+  const glowOuterAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value * 0.08,
+    transform: [{ scale: logoScale.value }],
+  }));
+
+  const glowInnerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value * 0.12,
+    transform: [{ scale: logoScale.value }],
+  }));
+
   return (
     <Animated.View style={[styles.root, screenAnimatedStyle]}>
       {SPEED_LINES.map((line, i) => (
         <SpeedLine key={i} top={line.top} width={line.width} delay={line.delay} />
       ))}
-      <Animated.Image
-        source={require('../assets/images/icon-site.png')}
-        style={[styles.logo, logoAnimatedStyle]}
-        resizeMode="contain"
-      />
+      <View style={styles.logoWrap}>
+        <Animated.View style={[styles.glowOuter, glowOuterAnimatedStyle]} />
+        <Animated.View style={[styles.glowInner, glowInnerAnimatedStyle]} />
+        <Animated.Image
+          source={require('../assets/images/icon-site.png')}
+          style={[styles.logo, logoAnimatedStyle]}
+          resizeMode="contain"
+        />
+      </View>
     </Animated.View>
   );
 }
@@ -130,19 +154,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
+  logoWrap: {
+    width: 220,
+    height: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logo: {
     width: 140,
     height: 140,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
+  },
+  glowOuter: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: COLORS.primary,
+  },
+  glowInner: {
+    position: 'absolute',
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    backgroundColor: COLORS.primary,
   },
   speedLine: {
     position: 'absolute',
-    height: 2,
-    borderRadius: 2,
-    backgroundColor: COLORS.primary,
-    opacity: 0.5,
+    height: 1.5,
   },
 });
