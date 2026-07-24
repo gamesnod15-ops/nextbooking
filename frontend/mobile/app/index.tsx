@@ -46,6 +46,9 @@ function SpeedLine({ top, width, delay }: { top: DimensionValue; width: number; 
   return <Animated.View style={[styles.speedLine, { top, width }, style]} />;
 }
 
+const SPLASH_DURATION = 2200;
+const FADE_DURATION = 300;
+
 export default function SplashScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -53,6 +56,7 @@ export default function SplashScreen() {
   const logoOpacity = useSharedValue(0);
   const logoScale = useSharedValue(0.3);
   const logoTranslateX = useSharedValue(-60);
+  const screenOpacity = useSharedValue(1);
 
   useEffect(() => {
     logoOpacity.value = withTiming(1, { duration: 400 });
@@ -71,20 +75,22 @@ export default function SplashScreen() {
   }, []);
 
   async function init() {
+    let target: '/(business)' | '/(customer)' | '/(auth)/login' = '/(auth)/login';
+
     try {
       const raw = await SecureStore.getItemAsync('auth_data');
       if (raw) {
         const auth = JSON.parse(raw);
         dispatch(setCredentials(auth));
         const role = auth.appRole || 'business';
-        router.replace(role === 'business' ? '/(business)' : '/(customer)');
-        return;
+        target = role === 'business' ? '/(business)' : '/(customer)';
       }
     } catch { /* ignore */ }
 
     setTimeout(() => {
-      router.replace('/(auth)/login');
-    }, 1500);
+      screenOpacity.value = withTiming(0, { duration: FADE_DURATION });
+      setTimeout(() => router.replace(target), FADE_DURATION);
+    }, SPLASH_DURATION - FADE_DURATION);
   }
 
   const logoAnimatedStyle = useAnimatedStyle(() => ({
@@ -92,8 +98,12 @@ export default function SplashScreen() {
     transform: [{ scale: logoScale.value }, { translateX: logoTranslateX.value }],
   }));
 
+  const screenAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: screenOpacity.value,
+  }));
+
   return (
-    <View style={styles.root}>
+    <Animated.View style={[styles.root, screenAnimatedStyle]}>
       {SPEED_LINES.map((line, i) => (
         <SpeedLine key={i} top={line.top} width={line.width} delay={line.delay} />
       ))}
@@ -102,7 +112,7 @@ export default function SplashScreen() {
         style={[styles.logo, logoAnimatedStyle]}
         resizeMode="contain"
       />
-    </View>
+    </Animated.View>
   );
 }
 
