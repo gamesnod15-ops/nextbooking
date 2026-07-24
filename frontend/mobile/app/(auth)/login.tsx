@@ -21,6 +21,7 @@ import { useAppDispatch } from '@/store';
 import { setCredentials, setAppRole } from '@/store/slices/authSlice';
 import api from '@/lib/api';
 import * as SecureStore from 'expo-secure-store';
+import { DotGrid } from '@/components/ui/DotGrid';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -33,6 +34,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   const isBusiness = role === 'business';
 
@@ -77,10 +80,14 @@ export default function LoginScreen() {
         style={styles.root}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <LinearGradient colors={['#EBF2FF', '#F0F6FF', '#E8F0FE']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={['#E8F0FE', '#D4E4F7', '#EBF2FF']} style={StyleSheet.absoluteFill} />
+        <View style={styles.blobBlue} />
+        <View style={styles.blobAccent} />
+        <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
+        <DotGrid style={styles.dotGridBottomLeft} rows={4} cols={4} />
 
         <ScrollView
-          contentContainerStyle={[styles.scroll, { paddingTop: insets.top + SPACE[5], paddingBottom: insets.bottom + SPACE[8] }]}
+          contentContainerStyle={[styles.formScroll, { paddingTop: insets.top + SPACE[4], paddingBottom: insets.bottom + SPACE[6] }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -89,79 +96,95 @@ export default function LoginScreen() {
             <Text style={styles.backLabel}>Geri</Text>
           </TouchableOpacity>
 
-          <View style={styles.header}>
-            <View style={[styles.roleTag, styles.businessTag]}>
-              <Ionicons name="business-outline" size={14} color={COLORS.white} />
-              <Text style={[styles.roleTagText, { color: COLORS.white }]}>İşletme</Text>
+          <View style={styles.formCard}>
+            <Image
+              source={require('../../assets/images/logo-jetrandevu.png')}
+              style={styles.formCardLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.formCardTitle}>Hoş Geldiniz</Text>
+            <Text style={styles.formCardSubtitle}>Hesabınıza giriş yaparak devam edin</Text>
+
+            <View style={styles.form}>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>E-posta</Text>
+                <View style={[styles.inputWrap, emailFocused && styles.inputWrapFocused]}>
+                  <Ionicons name="mail-outline" size={18} color={emailFocused ? COLORS.primary : COLORS.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                    placeholder="ornek@email.com"
+                    placeholderTextColor={COLORS.textMuted}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="email"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Şifre</Text>
+                <View style={[styles.inputWrap, passwordFocused && styles.inputWrapFocused]}>
+                  <Ionicons name="lock-closed-outline" size={18} color={passwordFocused ? COLORS.primary : COLORS.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={password}
+                    onChangeText={setPassword}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
+                    placeholder="••••••••"
+                    placeholderTextColor={COLORS.textMuted}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7}>
+                    <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={COLORS.textMuted} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <TouchableOpacity style={styles.forgotBtn} onPress={() => router.push('/(auth)/forgot-password')} activeOpacity={0.7}>
+                <Text style={styles.forgotText}>Şifremi unuttum</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.loginBtn}
+                onPress={handleLogin}
+                disabled={loading}
+                activeOpacity={0.85}
+              >
+                {loading ? (
+                  <ActivityIndicator color={COLORS.white} />
+                ) : (
+                  <>
+                    <Text style={styles.loginBtnText}>Giriş Yap</Text>
+                    <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
-            <Text style={styles.title}>İşletme Girişi</Text>
-            <Text style={styles.subtitle}>Hesabınıza giriş yapın</Text>
+
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>veya</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <View style={styles.registerRow}>
+              <Text style={styles.registerText}>Hesabınız yok mu? </Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/register?role=business')} activeOpacity={0.7}>
+                <Text style={styles.registerLink}>Kayıt Ol</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={styles.form}>
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>E-posta</Text>
-              <View style={styles.inputWrap}>
-                <Ionicons name="mail-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="ornek@email.com"
-                  placeholderTextColor={COLORS.textMuted}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="email"
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Şifre</Text>
-              <View style={styles.inputWrap}>
-                <Ionicons name="lock-closed-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="••••••••"
-                  placeholderTextColor={COLORS.textMuted}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7}>
-                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={COLORS.textMuted} />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.forgotBtn} onPress={() => router.push('/(auth)/forgot-password')} activeOpacity={0.7}>
-              <Text style={styles.forgotText}>Şifremi unuttum</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.loginBtn}
-              onPress={handleLogin}
-              disabled={loading}
-              activeOpacity={0.85}
-            >
-              {loading ? (
-                <ActivityIndicator color={COLORS.white} />
-              ) : (
-                <>
-                  <Text style={styles.loginBtnText}>Giriş Yap</Text>
-                  <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.registerRow}>
-            <Text style={styles.registerText}>Hesabınız yok mu? </Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/register?role=business')} activeOpacity={0.7}>
-              <Text style={styles.registerLink}>Kayıt Ol</Text>
-            </TouchableOpacity>
+          <View style={styles.secureFooter}>
+            <Ionicons name="shield-checkmark-outline" size={14} color={COLORS.textMuted} />
+            <Text style={styles.secureFooterText}>Güvenli bağlantı ile korunmaktadır</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -176,17 +199,19 @@ export default function LoginScreen() {
       />
       <View style={styles.blobBlue} />
       <View style={styles.blobAccent} />
+      <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
+      <DotGrid style={styles.dotGridBottomLeft} rows={4} cols={4} />
 
       <View style={[styles.logoBlock, { paddingTop: insets.top + SPACE[10] }]}>
         <Image
-          source={require('../../assets/images/splash-icon.png')}
+          source={require('../../assets/images/logo-jetrandevu.png')}
           style={styles.logo}
           resizeMode="contain"
         />
       </View>
 
       <View style={styles.heroBlock}>
-        <Text style={styles.heroTitle}>RandevumKolay'a{'\n'}Hoş Geldiniz</Text>
+        <Text style={styles.heroTitle}>JetRandevu'ya{'\n'}Hoş Geldiniz</Text>
         <Text style={styles.heroSubtitle}>İşletmenizi yönetin veya hemen randevu alın</Text>
       </View>
 
@@ -291,9 +316,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#60A5FA',
     opacity: 0.06,
   },
-  scroll: {
+  dotGridTopRight: {
+    position: 'absolute',
+    top: 24,
+    right: 8,
+  },
+  dotGridBottomLeft: {
+    position: 'absolute',
+    bottom: 24,
+    left: 8,
+  },
+  formScroll: {
     paddingHorizontal: SPACE[5],
-    gap: SPACE[6],
+    gap: SPACE[4],
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   backBtn: {
     flexDirection: 'row',
@@ -306,57 +343,58 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontWeight: FONT.medium,
   },
-  header: {
-    gap: SPACE[2],
-  },
-  roleTag: {
-    flexDirection: 'row',
+  formCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 28,
+    padding: SPACE[6],
     alignItems: 'center',
-    gap: 6,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: RADIUS.full,
-    marginBottom: SPACE[2],
+    ...SHADOW.lg,
   },
-  businessTag: {
-    backgroundColor: COLORS.primary,
+  formCardLogo: {
+    width: 150,
+    height: 32,
+    marginBottom: SPACE[5],
   },
-  roleTagText: {
-    fontSize: FONT.xs,
-    fontWeight: FONT.bold,
-  },
-  title: {
-    fontSize: FONT['3xl'],
+  formCardTitle: {
+    fontSize: FONT['2xl'],
     fontWeight: FONT.extrabold,
     color: COLORS.text,
     letterSpacing: -0.5,
   },
-  subtitle: {
-    fontSize: FONT.base,
+  formCardSubtitle: {
+    fontSize: FONT.sm,
     color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginTop: SPACE[1],
+    marginBottom: SPACE[6],
   },
   form: {
+    width: '100%',
     gap: SPACE[5],
   },
   fieldGroup: {
     gap: SPACE[2],
+    width: '100%',
   },
   label: {
     fontSize: FONT.sm,
     fontWeight: FONT.semibold,
     color: COLORS.textSecondary,
+    textAlign: 'left',
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: COLORS.border,
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3] + 2,
     gap: SPACE[2],
+  },
+  inputWrapFocused: {
+    borderColor: COLORS.primary,
   },
   inputIcon: {},
   input: {
@@ -390,6 +428,23 @@ const styles = StyleSheet.create({
     fontWeight: FONT.bold,
     color: COLORS.white,
   },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACE[3],
+    width: '100%',
+    marginTop: SPACE[6],
+    marginBottom: SPACE[4],
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.borderLight,
+  },
+  dividerText: {
+    fontSize: FONT.xs,
+    color: COLORS.textMuted,
+  },
   registerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -404,12 +459,23 @@ const styles = StyleSheet.create({
     fontWeight: FONT.bold,
     color: COLORS.primary,
   },
+  secureFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: SPACE[5],
+  },
+  secureFooterText: {
+    fontSize: FONT.xs,
+    color: COLORS.textMuted,
+  },
   logoBlock: {
     alignItems: 'center',
   },
   logo: {
-    width: 140,
-    height: 140,
+    width: 220,
+    height: 46,
   },
   heroBlock: {
     alignItems: 'center',

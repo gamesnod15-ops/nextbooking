@@ -18,6 +18,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "frontend/apps/manager-panel"],
       "port": 3010
+    },
+    {
+      "name": "mobile",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "web", "--prefix", "frontend/mobile"],
+      "port": 8081
     }
   ]
 }
