@@ -12,12 +12,14 @@ import Animated, {
   Easing,
   interpolate,
   Extrapolation,
+  ReduceMotion,
 } from 'react-native-reanimated';
 import { useAppDispatch } from '@/store';
 import { setCredentials } from '@/store/slices/authSlice';
 import { COLORS } from '@/lib/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const NO_REDUCE_MOTION = { reduceMotion: ReduceMotion.Never };
 
 const SPEED_LINES: { top: DimensionValue; width: number; delay: number }[] = [
   { top: '22%', width: 150, delay: 0 },
@@ -33,7 +35,11 @@ function SpeedLine({ top, width, delay }: { top: DimensionValue; width: number; 
   useEffect(() => {
     progress.value = withDelay(
       delay,
-      withRepeat(withTiming(1, { duration: 1200, easing: Easing.out(Easing.quad) }), -1, false)
+      withRepeat(
+        withTiming(1, { duration: 1200, easing: Easing.out(Easing.quad), ...NO_REDUCE_MOTION }),
+        -1,
+        false
+      )
     );
   }, []);
 
@@ -59,16 +65,16 @@ export default function SplashScreen() {
   const screenOpacity = useSharedValue(1);
 
   useEffect(() => {
-    logoOpacity.value = withTiming(1, { duration: 400 });
+    logoOpacity.value = withTiming(1, { duration: 400, ...NO_REDUCE_MOTION });
     logoScale.value = withSequence(
-      withTiming(1.1, { duration: 400, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) }),
-      withTiming(0.95, { duration: 160 }),
-      withTiming(1, { duration: 240 })
+      withTiming(1.1, { duration: 400, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94), ...NO_REDUCE_MOTION }),
+      withTiming(0.95, { duration: 160, ...NO_REDUCE_MOTION }),
+      withTiming(1, { duration: 240, ...NO_REDUCE_MOTION })
     );
     logoTranslateX.value = withSequence(
-      withTiming(5, { duration: 400, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) }),
-      withTiming(-2, { duration: 160 }),
-      withTiming(0, { duration: 240 })
+      withTiming(5, { duration: 400, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94), ...NO_REDUCE_MOTION }),
+      withTiming(-2, { duration: 160, ...NO_REDUCE_MOTION }),
+      withTiming(0, { duration: 240, ...NO_REDUCE_MOTION })
     );
 
     init();
@@ -88,7 +94,7 @@ export default function SplashScreen() {
     } catch { /* ignore */ }
 
     setTimeout(() => {
-      screenOpacity.value = withTiming(0, { duration: FADE_DURATION });
+      screenOpacity.value = withTiming(0, { duration: FADE_DURATION, ...NO_REDUCE_MOTION });
       setTimeout(() => router.replace(target), FADE_DURATION);
     }, SPLASH_DURATION - FADE_DURATION);
   }
