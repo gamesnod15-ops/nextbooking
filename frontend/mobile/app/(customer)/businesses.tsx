@@ -89,6 +89,7 @@ export default function BusinessesScreen() {
       const res = await api.get(`/businesses?${params.toString()}`);
       setData(res.data);
     } catch (e: any) {
+      console.error('[businesses] fetch failed:', e?.message, e?.code, e?.response?.status);
       setError('İşletmeler yüklenirken bir hata oluştu.');
     } finally {
       setLoading(false);
