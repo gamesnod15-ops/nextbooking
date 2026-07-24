@@ -202,84 +202,86 @@ export default function LoginScreen() {
       <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
       <DotGrid style={styles.dotGridBottomLeft} rows={4} cols={4} />
 
-      <View style={[styles.logoBlock, { paddingTop: insets.top + SPACE[10] }]}>
-        <Image
-          source={require('../../assets/images/icon-site.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
+      <View style={[styles.contentGroup, { paddingTop: insets.top + SPACE[6], paddingBottom: insets.bottom + SPACE[6] }]}>
+        <View style={styles.logoBlock}>
+          <Image
+            source={require('../../assets/images/icon-site.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
 
-      <View style={styles.heroBlock}>
-        <Text style={styles.heroTitle}>Hoş Geldiniz</Text>
-      </View>
+        <View style={styles.heroBlock}>
+          <Text style={styles.heroTitle}>Hoş Geldiniz</Text>
+        </View>
 
-      <View style={styles.cardsBlock}>
-        <TouchableOpacity
-          style={styles.primaryCard}
-          activeOpacity={0.85}
-          onPress={() => {
-            dispatch(setAppRole('business'));
-            setShowLoginForm(true);
-          }}
-        >
-          <LinearGradient
-            colors={[COLORS.primary, COLORS.primaryDark]}
-            style={styles.cardGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+        <View style={styles.cardsBlock}>
+          <TouchableOpacity
+            style={styles.primaryCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              dispatch(setAppRole('business'));
+              setShowLoginForm(true);
+            }}
           >
-            <View style={[styles.cardIcon, styles.primaryCardIcon]}>
-              <Ionicons name="business-outline" size={28} color={COLORS.white} />
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, styles.primaryCardTitle]}>İşletme Girişi</Text>
-              <Text style={styles.cardDesc}>
-                Randevuları ve işletmenizi yönetin
-              </Text>
-            </View>
-            <View style={[styles.cardArrow, styles.primaryCardArrow]}>
-              <Ionicons name="chevron-forward" size={20} color={COLORS.white} />
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              colors={[COLORS.primary, COLORS.primaryDark]}
+              style={styles.cardGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={[styles.cardIcon, styles.primaryCardIcon]}>
+                <Ionicons name="business-outline" size={28} color={COLORS.white} />
+              </View>
+              <View style={styles.cardContent}>
+                <Text style={[styles.cardTitle, styles.primaryCardTitle]}>İşletme Girişi</Text>
+                <Text style={styles.cardDesc}>
+                  Randevuları ve işletmenizi yönetin
+                </Text>
+              </View>
+              <View style={[styles.cardArrow, styles.primaryCardArrow]}>
+                <Ionicons name="chevron-forward" size={20} color={COLORS.white} />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.secondaryCard}
-          activeOpacity={0.85}
-          onPress={() => {
-            dispatch(setAppRole('customer'));
-            router.push('/(customer)/businesses');
-          }}
-        >
-          <LinearGradient
-            colors={['#FFFFFF', '#F5F9FF']}
-            style={styles.cardGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <TouchableOpacity
+            style={styles.secondaryCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              dispatch(setAppRole('customer'));
+              router.push('/(customer)/businesses');
+            }}
           >
-            <View style={styles.cardIconBlue}>
-              <Ionicons name="calendar-outline" size={28} color={COLORS.info} />
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitleBlue}>Randevu Al</Text>
-              <Text style={styles.cardDescBlue}>İşletmeleri keşfedin ve hemen randevu oluşturun</Text>
-            </View>
-            <View style={styles.cardArrowBlue}>
-              <Ionicons name="chevron-forward" size={20} color={COLORS.info} />
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+            <LinearGradient
+              colors={['#FFFFFF', '#F5F9FF']}
+              style={styles.cardGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={styles.cardIconBlue}>
+                <Ionicons name="calendar-outline" size={28} color={COLORS.info} />
+              </View>
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitleBlue}>Randevu Al</Text>
+                <Text style={styles.cardDescBlue}>İşletmeleri keşfedin ve hemen randevu oluşturun</Text>
+              </View>
+              <View style={styles.cardArrowBlue}>
+                <Ionicons name="chevron-forward" size={20} color={COLORS.info} />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.footerBlock}>
-        <Text style={styles.footer}>
-          Giriş yaparak{' '}
-          <Text style={styles.footerLink}>Kullanım Koşulları</Text>
-          {'nı ve '}
-          <Text style={styles.footerLink}>Gizlilik Politikası</Text>
-          {'nı kabul etmiş olursunuz.'}
-        </Text>
+        <View style={styles.footerBlock}>
+          <Text style={styles.footer}>
+            Giriş yaparak{' '}
+            <Text style={styles.footerLink}>Kullanım Koşulları</Text>
+            {'nı ve '}
+            <Text style={styles.footerLink}>Gizlilik Politikası</Text>
+            {'nı kabul etmiş olursunuz.'}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -460,6 +462,13 @@ const styles = StyleSheet.create({
   secureFooterText: {
     fontSize: FONT.xs,
     color: COLORS.textMuted,
+  },
+  contentGroup: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACE[6],
   },
   logoBlock: {
     alignItems: 'center',
