@@ -18,9 +18,6 @@ public sealed class GetAvailableSlotsQueryHandler
 {
     private readonly IApplicationDbContext _context;
 
-    // Turkey timezone offset (UTC+3, year-round since 2016)
-    private static readonly TimeSpan TurkeyOffset = TimeSpan.FromHours(3);
-
     public GetAvailableSlotsQueryHandler(IApplicationDbContext context)
     {
         _context = context;
@@ -155,8 +152,8 @@ public sealed class GetAvailableSlotsQueryHandler
                     b.EndTime > new DateTimeOffset(current));
 
                 if (!isBusy)
-                    mergedSlots.Add((new DateTimeOffset(current, TurkeyOffset),
-                                     new DateTimeOffset(slotEnd, TurkeyOffset)));
+                    mergedSlots.Add((new DateTimeOffset(current, TimeSpan.Zero),
+                                     new DateTimeOffset(slotEnd, TimeSpan.Zero)));
 
                 current = current.Add(slotDuration);
             }
@@ -213,8 +210,8 @@ public sealed class GetAvailableSlotsQueryHandler
                 b.EndTime > new DateTimeOffset(current));
 
             slots.Add(new TimeSlotDto(
-                new DateTimeOffset(current, TurkeyOffset),
-                new DateTimeOffset(slotEnd, TurkeyOffset),
+                new DateTimeOffset(current, TimeSpan.Zero),
+                new DateTimeOffset(slotEnd, TimeSpan.Zero),
                 isAvailable));
 
             current = current.Add(slotDuration);
