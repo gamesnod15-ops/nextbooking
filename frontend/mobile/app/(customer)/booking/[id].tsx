@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
+import { useQueryClient } from '@tanstack/react-query';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
@@ -49,6 +50,7 @@ export default function BookingScreen() {
   const { id: businessId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
 
   const [step, setStep] = useState(1);
   const [services, setServices] = useState<ServiceDto[]>([]);
@@ -227,6 +229,7 @@ export default function BookingScreen() {
         email: form.email,
         sehir: form.sehir,
       }));
+      await queryClient.invalidateQueries({ queryKey: ['my-appointments'] });
       setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Randevu oluşturulurken bir hata oluştu.');

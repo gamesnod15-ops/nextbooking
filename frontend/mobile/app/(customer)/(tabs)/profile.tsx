@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
@@ -38,7 +38,7 @@ export default function CustomerProfileScreen() {
     enabled: !!accessToken,
   });
 
-  const { data: appointments = [] } = useQuery({
+  const { data: appointments = [], refetch: refetchAppointments } = useQuery({
     queryKey: ['my-appointments'],
     queryFn: async () => {
       const deviceId = await getDeviceId();
@@ -47,7 +47,7 @@ export default function CustomerProfileScreen() {
     },
   });
 
-  const { data: favorites = [] } = useQuery({
+  const { data: favorites = [], refetch: refetchFavorites } = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
       const res = await api.get('/favorites');
@@ -55,6 +55,13 @@ export default function CustomerProfileScreen() {
     },
     enabled: !!accessToken,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchAppointments();
+      if (accessToken) refetchFavorites();
+    }, [refetchAppointments, refetchFavorites, accessToken])
+  );
 
   const stats = [
     { label: 'Toplam Randevu', value: appointments.length },
