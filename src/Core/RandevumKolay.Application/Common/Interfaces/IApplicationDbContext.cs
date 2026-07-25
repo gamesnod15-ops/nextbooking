@@ -32,6 +32,7 @@ public interface IApplicationDbContext
     DbSet<UserAuthProvider> UserAuthProviders { get; }
     DbSet<PaymentCard> PaymentCards { get; }
     DbSet<Review> Reviews { get; }
+    DbSet<Favorite> Favorites { get; }
     DbSet<ProductPurchase> ProductPurchases { get; }
     DbSet<QueueItem> QueueItems { get; }
     DbSet<WaitingListEntry> WaitingListEntries { get; }

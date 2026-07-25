@@ -7,6 +7,7 @@ using RandevumKolay.Application.Features.Appointments.Commands.ConfirmAppointmen
 using RandevumKolay.Application.Features.Appointments.Commands.CompleteAppointment;
 using RandevumKolay.Application.Features.Appointments.Commands.CreateAppointment;
 using RandevumKolay.Application.Features.Appointments.Queries.GetAppointments;
+using RandevumKolay.Application.Features.Appointments.Queries.GetAppointmentsByDevice;
 using RandevumKolay.Application.Features.Appointments.Queries.GetAvailableSlots;
 using RandevumKolay.Domain.Entities;
 
@@ -40,6 +41,17 @@ public class AppointmentsController : ControllerBase
             new GetAppointmentsQuery(pageNumber, pageSize, date, employeeId, status, search),
             cancellationToken);
 
+        return Ok(result);
+    }
+
+    [HttpGet("by-device")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAppointmentsByDevice(
+        [FromQuery] string deviceId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetAppointmentsByDeviceQuery(deviceId), cancellationToken);
         return Ok(result);
     }
 

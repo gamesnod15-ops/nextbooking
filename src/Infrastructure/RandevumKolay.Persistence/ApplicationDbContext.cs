@@ -52,6 +52,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UserAuthProvider> UserAuthProviders => Set<UserAuthProvider>();
     public DbSet<PaymentCard> PaymentCards => Set<PaymentCard>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<Favorite> Favorites => Set<Favorite>();
     public DbSet<ProductPurchase> ProductPurchases => Set<ProductPurchase>();
     public DbSet<QueueItem> QueueItems => Set<QueueItem>();
     public DbSet<WaitingListEntry> WaitingListEntries => Set<WaitingListEntry>();

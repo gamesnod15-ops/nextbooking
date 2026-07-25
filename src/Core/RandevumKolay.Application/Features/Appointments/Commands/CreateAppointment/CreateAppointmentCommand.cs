@@ -17,7 +17,8 @@ public record CreateAppointmentCommand(
     string Email,
     string? City = null,
     string? Notes = null,
-    string Source = "web") : IRequest<Guid>;
+    string Source = "web",
+    string? DeviceId = null) : IRequest<Guid>;
 
 public sealed class CreateAppointmentCommandHandler
     : IRequestHandler<CreateAppointmentCommand, Guid>
@@ -93,7 +94,8 @@ public sealed class CreateAppointmentCommandHandler
             endTime,
             service.Price,
             request.Notes,
-            request.Source);
+            request.Source,
+            request.DeviceId);
 
         _context.Appointments.Add(appointment);
         await _context.SaveChangesAsync(cancellationToken);

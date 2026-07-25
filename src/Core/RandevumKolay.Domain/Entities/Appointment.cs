@@ -18,6 +18,7 @@ public class Appointment : AuditableEntity, ITenantEntity
     public string? CancellationReason { get; private set; }
     public string Source { get; private set; } = "web";
     public bool ReminderSent { get; private set; }
+    public string? DeviceId { get; private set; }
 
     // Navigation properties
     public Service? Service { get; private set; }
@@ -41,7 +42,8 @@ public class Appointment : AuditableEntity, ITenantEntity
         DateTimeOffset endTime,
         decimal price,
         string? notes = null,
-        string source = "web")
+        string source = "web",
+        string? deviceId = null)
     {
         var appointment = new Appointment
         {
@@ -55,7 +57,8 @@ public class Appointment : AuditableEntity, ITenantEntity
             Status = AppointmentStatus.Pending,
             Price = price,
             Notes = notes,
-            Source = source
+            Source = source,
+            DeviceId = deviceId
         };
 
         appointment._domainEvents.Add(new AppointmentCreatedEvent(appointment));
