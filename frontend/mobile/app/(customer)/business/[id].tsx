@@ -160,11 +160,13 @@ export default function BusinessDetailScreen() {
     if (!authorName.trim() || rating === 0 || !id) return;
     setSubmitting(true);
     try {
+      const deviceId = await getDeviceId();
       const res = await api.post('/reviews', {
         businessId: id,
         authorName: authorName.trim(),
         rating,
         comment: comment.trim() || null,
+        deviceId,
       });
       setReviews((prev) => [res.data, ...prev]);
       setAuthorName('');

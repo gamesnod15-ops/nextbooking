@@ -1,53 +1,24 @@
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Platform, StyleSheet, View } from 'react-native';
-import { COLORS, FONT, RADIUS } from '@/lib/theme';
+import React from 'react';
+import { Stack } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+import { TabBar, type TabBarItem } from '@/components/TabBar';
 
-type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+const CUSTOMER_TABS: TabBarItem[] = [
+  { name: 'index', label: 'İşletmeler', icon: 'business-outline' },
+  { name: 'appointments', label: 'Randevularım', icon: 'calendar-outline' },
+  { name: 'favorites', label: 'Favoriler', icon: 'heart-outline' },
+  { name: 'profile', label: 'Profil', icon: 'person-outline' },
+];
 
-function TabIcon({ name, focused, color }: { name: IoniconsName; focused: boolean; color: string | import('react-native').ColorValue }) {
+export default function TabsLayout() {
   return (
-    <View style={[tabStyles.iconWrap, focused && tabStyles.iconWrapActive]}>
-      <Ionicons name={name} size={24} color={color} />
+    <View style={styles.root}>
+      <Stack screenOptions={{ headerShown: false }} />
+      <TabBar basePath="/(customer)/(tabs)" tabs={CUSTOMER_TABS} />
     </View>
   );
 }
 
-const tabStyles = StyleSheet.create({
-  iconWrap: {
-    width: 48,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: RADIUS.full,
-  },
-  iconWrapActive: {
-    backgroundColor: COLORS.primaryMuted,
-  },
+const styles = StyleSheet.create({
+  root: { flex: 1 },
 });
-
-export default function TabsLayout() {
-  return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: COLORS.primaryDark,
-        tabBarInactiveTintColor: COLORS.textSecondary,
-        tabBarStyle: {
-          backgroundColor: COLORS.surface,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 1,
-          height: Platform.OS === 'ios' ? 90 : 74,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: FONT.bold },
-      }}
-    >
-      <Tabs.Screen name="index" options={{ title: 'İşletmeler', tabBarIcon: ({ focused, color }) => <TabIcon name="business-outline" focused={focused} color={color} /> }} />
-      <Tabs.Screen name="appointments" options={{ title: 'Randevularım', tabBarIcon: ({ focused, color }) => <TabIcon name="calendar-outline" focused={focused} color={color} /> }} />
-      <Tabs.Screen name="favorites" options={{ title: 'Favoriler', tabBarIcon: ({ focused, color }) => <TabIcon name="heart-outline" focused={focused} color={color} /> }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profil', tabBarIcon: ({ focused, color }) => <TabIcon name="person-outline" focused={focused} color={color} /> }} />
-    </Tabs>
-  );
-}

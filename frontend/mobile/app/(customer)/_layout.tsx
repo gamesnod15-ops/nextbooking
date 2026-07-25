@@ -73,6 +73,11 @@ export default function CustomerLayout() {
           animation: 'slide_from_bottom',
         }}
       />
+      <Stack.Screen name="reviews" options={{ headerShown: false, animation: 'slide_from_right' }} />
+      <Stack.Screen name="gift-coupons" options={{ headerShown: false, animation: 'slide_from_right' }} />
+      <Stack.Screen name="privacy" options={{ headerShown: false, animation: 'slide_from_right' }} />
+      <Stack.Screen name="notifications" options={{ headerShown: false, animation: 'slide_from_right' }} />
+      <Stack.Screen name="support" options={{ headerShown: false, animation: 'slide_from_right' }} />
     </Stack>
   );
 }

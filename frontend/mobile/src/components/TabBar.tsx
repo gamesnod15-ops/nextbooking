@@ -5,7 +5,13 @@ import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/lib/theme';
 
-const tabs: { name: string; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+export interface TabBarItem {
+  name: string;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}
+
+const BUSINESS_TABS: TabBarItem[] = [
   { name: 'appointments', label: 'Randevular', icon: 'calendar-outline' },
   { name: 'services', label: 'Hizmetler', icon: 'cut-outline' },
   { name: 'index', label: 'Pano', icon: 'grid-outline' },
@@ -13,13 +19,18 @@ const tabs: { name: string; label: string; icon: keyof typeof Ionicons.glyphMap 
   { name: 'settings', label: 'Ayarlar', icon: 'settings-outline' },
 ];
 
-export function TabBar() {
+interface TabBarProps {
+  basePath?: string;
+  tabs?: TabBarItem[];
+}
+
+export function TabBar({ basePath = '/(business)', tabs = BUSINESS_TABS }: TabBarProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
 
   const currentName = (() => {
-    if (pathname === '/(business)' || pathname === '/' || pathname === '/(business)/index') return 'index';
+    if (pathname === basePath || pathname === '/' || pathname === `${basePath}/index`) return 'index';
     for (const tab of tabs) {
       if (pathname.includes(`/${tab.name}`)) return tab.name;
     }
@@ -32,7 +43,7 @@ export function TabBar() {
         const active = currentName === tab.name;
 
         const onPress = () => {
-          const target = tab.name === 'index' ? '/(business)' : `/(business)/${tab.name}`;
+          const target = tab.name === 'index' ? basePath : `${basePath}/${tab.name}`;
           router.replace(target as any);
         };
 

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { DotGrid } from '@/components/ui/DotGrid';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
 
@@ -93,8 +94,14 @@ export default function CustomerAppointmentsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <View style={styles.blobBlue} />
+      <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
+
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Randevularım</Text>
+        <View>
+          <Text style={styles.headerTitle}>Randevularım</Text>
+          <View style={styles.headerUnderline} />
+        </View>
         <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(customer)/(tabs)')} activeOpacity={0.8}>
           <Ionicons name="add" size={22} color={COLORS.white} />
         </TouchableOpacity>
@@ -215,8 +222,24 @@ export default function CustomerAppointmentsScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  blobBlue: {
+    position: 'absolute',
+    top: -60,
+    right: -50,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: '#3B82F6',
+    opacity: 0.08,
+  },
+  dotGridTopRight: {
+    position: 'absolute',
+    top: 24,
+    right: 16,
+  },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },
   headerTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.text },
+  headerUnderline: { width: 44, height: 4, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, marginTop: 6 },
   addBtn: { width: 38, height: 38, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },

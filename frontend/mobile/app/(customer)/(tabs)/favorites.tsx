@@ -8,6 +8,7 @@ import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { DotGrid } from '@/components/ui/DotGrid';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
 
@@ -55,8 +56,14 @@ export default function FavoritesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <View style={styles.blobBlue} />
+      <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
+
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Favorilerim</Text>
+        <View>
+          <Text style={styles.headerTitle}>Favorilerim</Text>
+          <View style={styles.headerUnderline} />
+        </View>
         <Text style={styles.headerSub}>{items.length} salon</Text>
       </View>
       <FlatList
@@ -122,9 +129,25 @@ export default function FavoritesScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
-  header: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },
+  blobBlue: {
+    position: 'absolute',
+    top: -60,
+    right: -50,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: '#3B82F6',
+    opacity: 0.08,
+  },
+  dotGridTopRight: {
+    position: 'absolute',
+    top: 24,
+    right: 16,
+  },
+  header: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },
   headerTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.text },
-  headerSub: { fontSize: FONT.sm, color: COLORS.textMuted, marginTop: 4 },
+  headerUnderline: { width: 44, height: 4, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, marginTop: 6 },
+  headerSub: { fontSize: FONT.sm, color: COLORS.textMuted },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10], flexGrow: 1 },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   info: { flex: 1, gap: 6 },
