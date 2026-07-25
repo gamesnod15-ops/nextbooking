@@ -9,9 +9,11 @@ import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import api from '@/lib/api';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface Appointment {
   id: string;
+  businessId?: string;
   businessName?: string;
   serviceName: string;
   serviceDurationMinutes?: number;
@@ -48,8 +50,9 @@ export default function CustomerAppointmentsScreen() {
   const { data: items = [], isLoading, refetch } = useQuery({
     queryKey: ['my-appointments'],
     queryFn: async () => {
-      const res = await api.get('/appointments');
-      return Array.isArray(res.data) ? res.data : res.data?.items ?? [];
+      const deviceId = await getDeviceId();
+      const res = await api.get(`/appointments/by-device?deviceId=${deviceId}`);
+      return Array.isArray(res.data) ? res.data : [];
     },
   });
 
@@ -93,7 +96,7 @@ export default function CustomerAppointmentsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingBottom: SPACE[3], gap: SPACE[2] }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center', paddingHorizontal: SPACE[5], paddingBottom: SPACE[3], gap: SPACE[2] }}>
         {STATUS_FILTERS.map((f) => (
           <TouchableOpacity key={f} style={[styles.chip, filter === f && styles.chipActive]} onPress={() => setFilter(f)} activeOpacity={0.8}>
             <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>{f}</Text>

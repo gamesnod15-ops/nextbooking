@@ -15,8 +15,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as SecureStore from 'expo-secure-store';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import api from '@/lib/api';
+import { getDeviceId } from '@/lib/deviceId';
+
+const GUEST_INFO_KEY = 'guest_customer_info';
 
 const MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
 const DAY_NAMES = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
@@ -73,6 +77,16 @@ export default function BookingScreen() {
     () => services.find(s => s.id === selectedService),
     [selectedService, services]
   );
+
+  useEffect(() => {
+    SecureStore.getItemAsync(GUEST_INFO_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        setForm((prev) => ({ ...prev, ...saved }));
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!businessId) return;
@@ -192,6 +206,7 @@ export default function BookingScreen() {
     setLoading(true);
     setError(null);
     try {
+      const deviceId = await getDeviceId();
       await api.post('/appointments', {
         serviceId: selectedService,
         employeeId: null,
@@ -203,7 +218,15 @@ export default function BookingScreen() {
         email: form.email,
         city: form.sehir,
         notes: form.aciklama,
+        deviceId,
       });
+      await SecureStore.setItemAsync(GUEST_INFO_KEY, JSON.stringify({
+        ad: form.ad,
+        soyad: form.soyad,
+        telefon: form.telefon,
+        email: form.email,
+        sehir: form.sehir,
+      }));
       setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Randevu oluşturulurken bir hata oluştu.');

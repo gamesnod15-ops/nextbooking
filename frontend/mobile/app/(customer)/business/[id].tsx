@@ -15,12 +15,14 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import api from '@/lib/api';
+import type { RootState } from '@/store';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -123,10 +125,40 @@ export default function BusinessDetailScreen() {
       .finally(() => setReviewsLoading(false));
   }, [id]);
 
-  function toggleFavorite() {
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+
+  useEffect(() => {
+    if (!id || !accessToken) return;
+    api.get('/favorites')
+      .then((res) => {
+        const items = Array.isArray(res.data) ? res.data : [];
+        if (items.some((f: any) => f.businessId === id)) {
+          setFavoriteIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+        }
+      })
+      .catch(() => {});
+  }, [id, accessToken]);
+
+  async function toggleFavorite() {
     if (!id) return;
-    const updated = favoriteIds.includes(id) ? favoriteIds.filter(x => x !== id) : [...favoriteIds, id];
-    setFavoriteIds(updated);
+    if (!accessToken) {
+      Alert.alert('Giriş gerekli', 'Favorilere eklemek için giriş yapmalısınız.');
+      return;
+    }
+
+    const isFavorite = favoriteIds.includes(id);
+    setFavoriteIds((prev) => (isFavorite ? prev.filter(x => x !== id) : [...prev, id]));
+
+    try {
+      if (isFavorite) {
+        await api.delete(`/favorites/${id}`);
+      } else {
+        await api.post(`/favorites/${id}`);
+      }
+    } catch {
+      setFavoriteIds((prev) => (isFavorite ? [...prev, id] : prev.filter(x => x !== id)));
+      Alert.alert('Hata', 'Favori işlemi sırasında bir hata oluştu.');
+    }
   }
 
   async function submitReview() {
