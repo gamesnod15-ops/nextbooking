@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RandevumKolay.Application.Features.Reviews.Commands.CreateReview;
 using RandevumKolay.Application.Features.Reviews.Queries.GetBusinessReviews;
+using RandevumKolay.Application.Features.Reviews.Queries.GetMyReviewsByDevice;
 
 namespace RandevumKolay.API.Controllers.v1;
 
@@ -19,6 +20,13 @@ public class ReviewsController : ControllerBase
     public async Task<IActionResult> GetReviews(Guid businessId, CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new GetBusinessReviewsQuery(businessId), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("by-device")]
+    public async Task<IActionResult> GetMyReviewsByDevice([FromQuery] string deviceId, CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetMyReviewsByDeviceQuery(deviceId), cancellationToken);
         return Ok(result);
     }
 

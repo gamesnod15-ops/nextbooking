@@ -10,7 +10,8 @@ public record CreateReviewCommand(
     Guid BusinessId,
     string AuthorName,
     int Rating,
-    string? Comment) : IRequest<ReviewDto>;
+    string? Comment,
+    string? DeviceId = null) : IRequest<ReviewDto>;
 
 public record ReviewDto(Guid Id, string AuthorName, int Rating, string? Comment, DateTimeOffset CreatedAt);
 
@@ -28,7 +29,7 @@ public sealed class CreateReviewCommandHandler : IRequestHandler<CreateReviewCom
         if (!businessExists)
             throw new KeyNotFoundException("İşletme bulunamadı.");
 
-        var review = Review.Create(request.BusinessId, request.AuthorName, request.Rating, request.Comment);
+        var review = Review.Create(request.BusinessId, request.AuthorName, request.Rating, request.Comment, request.DeviceId);
         _context.Reviews.Add(review);
         await _context.SaveChangesAsync(cancellationToken);
 

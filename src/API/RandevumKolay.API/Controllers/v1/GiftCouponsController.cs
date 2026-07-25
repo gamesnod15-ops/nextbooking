@@ -6,6 +6,7 @@ using RandevumKolay.Application.Features.GiftCoupons.Commands.CreateGiftCoupon;
 using RandevumKolay.Application.Features.GiftCoupons.Commands.DeleteGiftCoupon;
 using RandevumKolay.Application.Features.GiftCoupons.Commands.UpdateGiftCoupon;
 using RandevumKolay.Application.Features.GiftCoupons.Queries.GetGiftCoupons;
+using RandevumKolay.Application.Features.GiftCoupons.Queries.GetMyGiftCoupons;
 using RandevumKolay.Domain.Entities;
 
 namespace RandevumKolay.API.Controllers.v1;
@@ -19,6 +20,14 @@ public class GiftCouponsController : ControllerBase
     private readonly ISender _sender;
 
     public GiftCouponsController(ISender sender) => _sender = sender;
+
+    [HttpGet("by-email")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetMyGiftCoupons([FromQuery] string email, CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetMyGiftCouponsQuery(email), cancellationToken);
+        return Ok(result);
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetGiftCoupons(
