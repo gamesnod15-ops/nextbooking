@@ -278,7 +278,7 @@ const modal = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderTopLeftRadius: RADIUS['2xl'],
     borderTopRightRadius: RADIUS['2xl'],
-    maxHeight: '90%',
+    height: '85%',
   },
   handle: {
     width: 40,
