@@ -108,6 +108,15 @@ public class TenantResolutionMiddleware
     {
         // Remove port if present
         var hostname = host.Contains(':') ? host.Split(':')[0] : host;
+
+        // The API's own Azure App Service hostname (api-x.azurewebsites.net) is
+        // not a tenant subdomain — it's how mobile clients always reach the API.
+        // Without this, "api-x" gets misread as a tenant subdomain, fails to
+        // resolve, and requests 404 instead of falling back to JWT-based
+        // tenant resolution (or proceeding tenant-free for anonymous routes).
+        if (hostname.EndsWith(".azurewebsites.net", StringComparison.OrdinalIgnoreCase))
+            return null;
+
         var parts = hostname.Split('.');
 
         // If it's an IP address (all parts are numeric), it's not a subdomain
