@@ -88,7 +88,7 @@ export default function CustomerAppointmentsScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Randevularım</Text>
-        <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(customer)/businesses')} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(customer)/(tabs)')} activeOpacity={0.8}>
           <Ionicons name="add" size={22} color={COLORS.white} />
         </TouchableOpacity>
       </View>
@@ -118,7 +118,7 @@ export default function CustomerAppointmentsScreen() {
               title="Randevu yok"
               description="Henüz bir randevunuz yok"
               action={
-                <TouchableOpacity onPress={() => router.push('/(customer)/businesses')}>
+                <TouchableOpacity onPress={() => router.push('/(customer)/(tabs)')}>
                   <Text style={{ color: COLORS.primary, fontWeight: '600' }}>İşletmeleri Keşfet</Text>
                 </TouchableOpacity>
               }

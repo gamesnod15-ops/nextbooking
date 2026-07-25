@@ -251,7 +251,7 @@ export default function LoginScreen() {
             activeOpacity={0.85}
             onPress={() => {
               dispatch(setAppRole('customer'));
-              router.push('/(customer)/businesses');
+              router.push('/(customer)/(tabs)');
             }}
           >
             <LinearGradient
