@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RandevumKolay.Application.Features.Appointments.Commands.CancelAppointment;
+using RandevumKolay.Application.Features.Appointments.Commands.CancelAppointmentByDevice;
 using RandevumKolay.Application.Features.Appointments.Commands.ConfirmAppointment;
 using RandevumKolay.Application.Features.Appointments.Commands.CompleteAppointment;
 using RandevumKolay.Application.Features.Appointments.Commands.CreateAppointment;
@@ -97,6 +98,19 @@ public class AppointmentsController : ControllerBase
         return NoContent();
     }
 
+    [HttpPost("{id:guid}/cancel-by-device")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelAppointmentByDevice(
+        Guid id,
+        [FromBody] CancelByDeviceRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new CancelAppointmentByDeviceCommand(id, request.DeviceId, request.Reason), cancellationToken);
+        return NoContent();
+    }
+
     [HttpPost("{id:guid}/confirm")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -120,4 +134,5 @@ public class AppointmentsController : ControllerBase
     }
 
     public record CancelRequest(string Reason);
+    public record CancelByDeviceRequest(string DeviceId, string? Reason);
 }
