@@ -29,6 +29,7 @@ export default function LoginScreen() {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
 
+  const [selectedRole, setSelectedRole] = useState<'business' | 'customer'>(role === 'business' ? 'business' : 'customer');
   const [showLoginForm, setShowLoginForm] = useState(role === 'business');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,7 +38,7 @@ export default function LoginScreen() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
-  const isBusiness = role === 'business';
+  const isBusiness = selectedRole === 'business';
 
   async function handleLogin() {
     if (!email.trim() || !password.trim()) {
@@ -49,19 +50,19 @@ export default function LoginScreen() {
       const res = await api.post('/auth/login', { email: email.trim(), password });
       const { accessToken, refreshToken, userId, role: userRole, tenantId, fullName, email: userEmail, phone, jobTitle, avatarUrl, phoneVerified, emailVerified } = res.data;
 
-      const authData = { accessToken, userId, role: userRole, tenantId, fullName, email: userEmail, phone, jobTitle, avatarUrl, appRole: role };
+      const authData = { accessToken, userId, role: userRole, tenantId, fullName, email: userEmail, phone, jobTitle, avatarUrl, appRole: selectedRole };
       await SecureStore.setItemAsync('access_token', accessToken);
       if (refreshToken) await SecureStore.setItemAsync('refresh_token', refreshToken);
       await SecureStore.setItemAsync('auth_data', JSON.stringify(authData));
 
       dispatch(setCredentials(authData));
 
-      if (phone && !phoneVerified && role === 'customer') {
-        router.replace({ pathname: '/(auth)/verify-phone', params: { phone, role: role || 'customer' } } as any);
+      if (phone && !phoneVerified && selectedRole === 'customer') {
+        router.replace({ pathname: '/(auth)/verify-phone', params: { phone, role: selectedRole } } as any);
         return;
       }
 
-      if (role === 'business') {
+      if (selectedRole === 'business') {
         router.replace('/(business)');
       } else {
         router.replace('/(customer)');
@@ -176,7 +177,7 @@ export default function LoginScreen() {
 
             <View style={styles.registerRow}>
               <Text style={styles.registerText}>Hesabınız yok mu? </Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/register?role=business')} activeOpacity={0.7}>
+              <TouchableOpacity onPress={() => router.push(`/(auth)/register?role=${selectedRole}`)} activeOpacity={0.7}>
                 <Text style={styles.registerLink}>Kayıt Ol</Text>
               </TouchableOpacity>
             </View>
@@ -221,6 +222,7 @@ export default function LoginScreen() {
             style={styles.primaryCard}
             activeOpacity={0.85}
             onPress={() => {
+              setSelectedRole('business');
               dispatch(setAppRole('business'));
               setShowLoginForm(true);
             }}
