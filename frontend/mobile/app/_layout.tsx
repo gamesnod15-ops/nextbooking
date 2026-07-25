@@ -6,7 +6,8 @@ import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { NavigationBar } from 'expo-navigation-bar';
 import { store } from '@/store';
 
 const queryClient = new QueryClient({
@@ -22,6 +23,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <SafeAreaProvider>
             <StatusBar style="dark" />
+            {Platform.OS === 'android' && <NavigationBar hidden style="dark" />}
             <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="(auth)" />

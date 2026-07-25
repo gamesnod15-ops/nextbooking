@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { useSelector } from 'react-redux';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
@@ -10,7 +9,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import api from '@/lib/api';
-import type { RootState } from '@/store';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface FavoriteBusiness {
   id: string;
@@ -28,40 +27,31 @@ export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   const { data: items = [], refetch, isRefetching, isLoading } = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
-      const res = await api.get('/favorites');
+      const deviceId = await getDeviceId();
+      const res = await api.get(`/favorites/by-device?deviceId=${deviceId}`);
       return Array.isArray(res.data) ? res.data : [];
     },
-    enabled: !!accessToken,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const removeMutation = useMutation({
     mutationFn: async (businessId: string) => {
-      await api.delete(`/favorites/${businessId}`);
+      const deviceId = await getDeviceId();
+      await api.delete(`/favorites/by-device/${businessId}?deviceId=${deviceId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     },
   });
-
-  if (!accessToken) {
-    return (
-      <View style={[styles.root, { paddingTop: insets.top }]}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Favorilerim</Text>
-        </View>
-        <EmptyState
-          icon="lock-closed-outline"
-          title="Giriş yapmalısınız"
-          description="Favori işletmelerinizi görmek için giriş yapın"
-        />
-      </View>
-    );
-  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>

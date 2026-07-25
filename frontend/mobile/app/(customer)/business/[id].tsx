@@ -15,14 +15,13 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import api from '@/lib/api';
-import type { RootState } from '@/store';
+import { getDeviceId } from '@/lib/deviceId';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -125,11 +124,10 @@ export default function BusinessDetailScreen() {
       .finally(() => setReviewsLoading(false));
   }, [id]);
 
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
-
   useEffect(() => {
-    if (!id || !accessToken) return;
-    api.get('/favorites')
+    if (!id) return;
+    getDeviceId()
+      .then((deviceId) => api.get(`/favorites/by-device?deviceId=${deviceId}`))
       .then((res) => {
         const items = Array.isArray(res.data) ? res.data : [];
         if (items.some((f: any) => f.businessId === id)) {
@@ -137,23 +135,20 @@ export default function BusinessDetailScreen() {
         }
       })
       .catch(() => {});
-  }, [id, accessToken]);
+  }, [id]);
 
   async function toggleFavorite() {
     if (!id) return;
-    if (!accessToken) {
-      Alert.alert('Giriş gerekli', 'Favorilere eklemek için giriş yapmalısınız.');
-      return;
-    }
 
     const isFavorite = favoriteIds.includes(id);
     setFavoriteIds((prev) => (isFavorite ? prev.filter(x => x !== id) : [...prev, id]));
 
     try {
+      const deviceId = await getDeviceId();
       if (isFavorite) {
-        await api.delete(`/favorites/${id}`);
+        await api.delete(`/favorites/by-device/${id}?deviceId=${deviceId}`);
       } else {
-        await api.post(`/favorites/${id}`);
+        await api.post(`/favorites/by-device/${id}?deviceId=${deviceId}`);
       }
     } catch {
       setFavoriteIds((prev) => (isFavorite ? [...prev, id] : prev.filter(x => x !== id)));

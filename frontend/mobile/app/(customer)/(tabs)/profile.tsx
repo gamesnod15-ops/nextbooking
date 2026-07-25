@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -12,6 +12,16 @@ import { logout } from '@/store/slices/authSlice';
 import type { RootState } from '@/store';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
+
+const GUEST_INFO_KEY = 'guest_customer_info';
+
+interface GuestInfo {
+  ad?: string;
+  soyad?: string;
+  telefon?: string;
+  email?: string;
+  sehir?: string;
+}
 
 const MENU_ITEMS = [
   { icon: 'calendar-outline', label: 'Geçmiş Randevular', section: 'history' },
@@ -28,6 +38,13 @@ export default function CustomerProfileScreen() {
   const router = useRouter();
   const auth = useSelector((state: RootState) => state.auth);
   const accessToken = auth.accessToken;
+  const [guestInfo, setGuestInfo] = useState<GuestInfo | null>(null);
+
+  const loadGuestInfo = useCallback(() => {
+    SecureStore.getItemAsync(GUEST_INFO_KEY)
+      .then((raw) => setGuestInfo(raw ? JSON.parse(raw) : null))
+      .catch(() => setGuestInfo(null));
+  }, []);
 
   const { data: profile } = useQuery({
     queryKey: ['my-profile'],
@@ -50,17 +67,18 @@ export default function CustomerProfileScreen() {
   const { data: favorites = [], refetch: refetchFavorites } = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
-      const res = await api.get('/favorites');
+      const deviceId = await getDeviceId();
+      const res = await api.get(`/favorites/by-device?deviceId=${deviceId}`);
       return Array.isArray(res.data) ? res.data : [];
     },
-    enabled: !!accessToken,
   });
 
   useFocusEffect(
     useCallback(() => {
+      loadGuestInfo();
       refetchAppointments();
-      if (accessToken) refetchFavorites();
-    }, [refetchAppointments, refetchFavorites, accessToken])
+      refetchFavorites();
+    }, [loadGuestInfo, refetchAppointments, refetchFavorites])
   );
 
   const stats = [
@@ -77,27 +95,12 @@ export default function CustomerProfileScreen() {
     Alert.alert('Yakında', 'Bu özellik yakında eklenecek.');
   }
 
-  const displayName = profile?.fullName || auth.fullName || 'Kullanıcı';
-  const displayEmail = profile?.email || auth.email || null;
-  const displayPhone = profile?.phone || null;
-
-  if (!accessToken) {
-    return (
-      <View style={[styles.root, { paddingTop: insets.top }]}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Profilim</Text>
-        </View>
-        <View style={styles.guestContainer}>
-          <Ionicons name="person-circle-outline" size={64} color={COLORS.textMuted} />
-          <Text style={styles.guestTitle}>Giriş yapmadınız</Text>
-          <Text style={styles.guestText}>Profil bilgilerinizi görmek için giriş yapın</Text>
-          <TouchableOpacity style={styles.guestBtn} onPress={() => router.push('/(auth)/login')} activeOpacity={0.85}>
-            <Text style={styles.guestBtnText}>Giriş Yap</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+  const guestFullName = [guestInfo?.ad, guestInfo?.soyad].filter(Boolean).join(' ');
+  const displayName = profile?.fullName || auth.fullName || guestFullName || 'Kullanıcı';
+  const displayEmail = profile?.email || auth.email || guestInfo?.email || null;
+  const displayPhone = profile?.phone || guestInfo?.telefon || null;
+  const displayCity = guestInfo?.sehir || null;
+  const hasAnyInfo = !!(displayEmail || displayPhone || guestFullName || accessToken);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -112,6 +115,10 @@ export default function CustomerProfileScreen() {
             <Text style={styles.profileName}>{displayName}</Text>
             {displayEmail && <Text style={styles.profileEmail}>{displayEmail}</Text>}
             {displayPhone && <Text style={styles.profileEmail}>{displayPhone}</Text>}
+            {displayCity && <Text style={styles.profileEmail}>{displayCity}</Text>}
+            {!hasAnyInfo && (
+              <Text style={styles.profileEmpty}>İlk randevunuzu oluşturduğunuzda bilgileriniz burada görünecek</Text>
+            )}
           </View>
         </View>
 
@@ -143,11 +150,13 @@ export default function CustomerProfileScreen() {
           ))}
         </View>
 
-        {/* Logout */}
-        <TouchableOpacity style={styles.logoutBtn} onPress={async () => { await SecureStore.deleteItemAsync('access_token'); await SecureStore.deleteItemAsync('auth_data'); dispatch(logout()); }}>
-          <Ionicons name="log-out-outline" size={20} color={COLORS.error} />
-          <Text style={styles.logoutText}>Çıkış Yap</Text>
-        </TouchableOpacity>
+        {/* Logout — only relevant if a real account is logged in */}
+        {accessToken && (
+          <TouchableOpacity style={styles.logoutBtn} onPress={async () => { await SecureStore.deleteItemAsync('access_token'); await SecureStore.deleteItemAsync('auth_data'); dispatch(logout()); }}>
+            <Ionicons name="log-out-outline" size={20} color={COLORS.error} />
+            <Text style={styles.logoutText}>Çıkış Yap</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </View>
   );
@@ -157,15 +166,11 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   header: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },
   headerTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.text },
-  guestContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACE[3], paddingHorizontal: SPACE[6] },
-  guestTitle: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
-  guestText: { fontSize: FONT.sm, color: COLORS.textMuted, textAlign: 'center' },
-  guestBtn: { marginTop: SPACE[2], backgroundColor: COLORS.primary, paddingHorizontal: SPACE[6], paddingVertical: SPACE[3], borderRadius: RADIUS.lg, ...SHADOW.primary },
-  guestBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
   profileCard: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], borderRadius: RADIUS.xl, padding: SPACE[5], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   profileInfo: { flex: 1, gap: 4 },
   profileName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
   profileEmail: { fontSize: FONT.xs, color: COLORS.textMuted },
+  profileEmpty: { fontSize: FONT.xs, color: COLORS.textMuted, marginTop: 2 },
   statsRow: { flexDirection: 'row', gap: SPACE[3], paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },
   statCard: { flex: 1, backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], alignItems: 'center', gap: 3, borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   statValue: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.text },
