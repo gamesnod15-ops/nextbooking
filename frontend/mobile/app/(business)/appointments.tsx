@@ -69,6 +69,8 @@ function DetailModal({ apt, visible, onClose, onAction }: {
             {[
               { label: 'Müşteri', value: apt.customerName, icon: 'person-outline' },
               { label: 'Telefon', value: apt.customerPhone, icon: 'call-outline' },
+              ...(apt.customerEmail ? [{ label: 'E-posta', value: apt.customerEmail, icon: 'mail-outline' }] : []),
+              ...(apt.customerCity ? [{ label: 'Şehir', value: apt.customerCity, icon: 'location-outline' }] : []),
               { label: 'Hizmet', value: `${apt.serviceName} (${apt.serviceDurationMinutes} dk)`, icon: 'cut-outline' },
               { label: 'Personel', value: apt.employeeName, icon: 'person-circle-outline' },
               { label: 'Tarih', value: formatDate(apt.startTime), icon: 'calendar-outline' },

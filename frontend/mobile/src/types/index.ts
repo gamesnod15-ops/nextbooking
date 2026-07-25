@@ -70,6 +70,8 @@ export interface Appointment {
   id: string;
   customerName: string;
   customerPhone: string;
+  customerEmail?: string | null;
+  customerCity?: string | null;
   serviceName: string;
   serviceDurationMinutes: number;
   employeeName: string;

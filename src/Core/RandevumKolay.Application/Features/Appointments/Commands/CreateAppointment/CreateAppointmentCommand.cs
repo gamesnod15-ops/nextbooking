@@ -57,7 +57,7 @@ public sealed class CreateAppointmentCommandHandler
 
         if (customer is null)
         {
-            customer = Customer.Create(tenantId, $"{request.FirstName} {request.LastName}", phone, request.Email);
+            customer = Customer.Create(tenantId, $"{request.FirstName} {request.LastName}", phone, request.Email, request.City);
             _context.Customers.Add(customer);
         }
 

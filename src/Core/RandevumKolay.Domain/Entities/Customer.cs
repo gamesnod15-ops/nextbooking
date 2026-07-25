@@ -8,6 +8,7 @@ public class Customer : AuditableEntity, ITenantEntity
     public string Name { get; private set; } = string.Empty;
     public string Phone { get; private set; } = string.Empty;
     public string? Email { get; private set; }
+    public string? City { get; private set; }
     public string? Notes { get; private set; }
     public string? AvatarUrl { get; private set; }
     public DateOnly? BirthDate { get; private set; }
@@ -24,7 +25,8 @@ public class Customer : AuditableEntity, ITenantEntity
         Guid tenantId,
         string name,
         string phone,
-        string? email = null)
+        string? email = null,
+        string? city = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(phone);
@@ -34,7 +36,8 @@ public class Customer : AuditableEntity, ITenantEntity
             TenantId = tenantId,
             Name = name,
             Phone = phone,
-            Email = email
+            Email = email,
+            City = city
         };
     }
 
