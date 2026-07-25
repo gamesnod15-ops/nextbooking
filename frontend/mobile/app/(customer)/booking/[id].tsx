@@ -444,7 +444,7 @@ export default function BookingScreen() {
             ) : (
               <View style={styles.timeGrid}>
                 {timeSlots.filter(s => s.isAvailable).map((slot) => {
-                  const timeStr = new Date(slot.startTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                  const timeStr = new Date(slot.startTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
                   return (
                     <TouchableOpacity
                       key={slot.startTime}

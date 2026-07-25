@@ -11,6 +11,7 @@ import { tr } from 'date-fns/locale';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { Badge } from '@/components/ui/Badge';
 import api from '@/lib/api';
+import { appointmentLocalDate, formatAppointmentTime } from '@/lib/utils';
 import type { Appointment } from '@/types';
 
 const { width } = Dimensions.get('window');
@@ -19,7 +20,7 @@ const HOUR_HEIGHT = 60;
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 08:00 – 20:00
 
 function getEventTop(startIso: string) {
-  const d = parseISO(startIso);
+  const d = appointmentLocalDate(startIso);
   const minutesFromStart = (d.getHours() - 8) * 60 + d.getMinutes();
   return (minutesFromStart / 60) * HOUR_HEIGHT;
 }
@@ -49,7 +50,7 @@ export default function CalendarScreen() {
   });
 
   const dayEvents = (events ?? []).filter((e: { start: string }) =>
-    isSameDay(parseISO(e.start), selectedDate)
+    isSameDay(appointmentLocalDate(e.start), selectedDate)
   );
 
   return (
@@ -70,7 +71,7 @@ export default function CalendarScreen() {
         {weekDays.map((d) => {
           const isSelected = isSameDay(d, selectedDate);
           const isToday = isSameDay(d, today);
-          const hasEvents = (events ?? []).some((e: { start: string }) => isSameDay(parseISO(e.start), d));
+          const hasEvents = (events ?? []).some((e: { start: string }) => isSameDay(appointmentLocalDate(e.start), d));
           return (
             <TouchableOpacity
               key={d.toISOString()}
@@ -124,7 +125,7 @@ export default function CalendarScreen() {
                 <Text style={styles.eventTitle} numberOfLines={1}>{ev.title}</Text>
                 <Text style={styles.eventEmployee} numberOfLines={1}>{ev.employee}</Text>
                 <Text style={styles.eventTime}>
-                  {format(parseISO(ev.start), 'HH:mm')} – {format(parseISO(ev.end), 'HH:mm')}
+                  {formatAppointmentTime(ev.start)} – {formatAppointmentTime(ev.end)}
                 </Text>
               </View>
             );

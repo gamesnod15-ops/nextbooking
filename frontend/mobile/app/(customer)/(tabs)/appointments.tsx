@@ -8,6 +8,7 @@ import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
 
@@ -29,12 +30,12 @@ const STATUS_FILTERS = ['Tümü', 'Yaklaşan', 'Tamamlanan', 'İptal'];
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+  return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
 function formatTime(dateStr: string) {
   const d = new Date(dateStr);
-  return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
 }
 
 function formatCurrency(amount: number) {
@@ -46,6 +47,7 @@ export default function CustomerAppointmentsScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('Tümü');
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
   const { data: items = [], isLoading, refetch } = useQuery({
     queryKey: ['my-appointments'],
@@ -64,26 +66,22 @@ export default function CustomerAppointmentsScreen() {
 
   const cancelMutation = useMutation({
     mutationFn: async (id: string) => {
-      await api.post(`/appointments/${id}/cancel`);
+      const deviceId = await getDeviceId();
+      await api.post(`/appointments/${id}/cancel-by-device`, { deviceId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-appointments'] });
+      setCancelTarget(null);
       Alert.alert('Başarılı', 'Randevunuz iptal edildi.');
     },
     onError: () => {
+      setCancelTarget(null);
       Alert.alert('Hata', 'Randevu iptal edilirken bir hata oluştu.');
     },
   });
 
   function handleCancel(id: string) {
-    Alert.alert(
-      'Randevu İptali',
-      'Bu randevuyu iptal etmek istediğinize emin misiniz?',
-      [
-        { text: 'Hayır', style: 'cancel' },
-        { text: 'Evet, İptal Et', style: 'destructive', onPress: () => cancelMutation.mutate(id) },
-      ]
-    );
+    setCancelTarget(id);
   }
 
   const filtered = items.filter((a: Appointment) => {
@@ -197,6 +195,19 @@ export default function CustomerAppointmentsScreen() {
           )}
         />
       )}
+
+      <ConfirmModal
+        visible={!!cancelTarget}
+        title="Randevu İptali"
+        message="Bu randevuyu iptal etmek istediğinize emin misiniz?"
+        confirmLabel="Evet, İptal Et"
+        cancelLabel="Vazgeç"
+        destructive
+        icon="calendar-outline"
+        loading={cancelMutation.isPending}
+        onConfirm={() => cancelTarget && cancelMutation.mutate(cancelTarget)}
+        onCancel={() => setCancelTarget(null)}
+      />
     </View>
   );
 }

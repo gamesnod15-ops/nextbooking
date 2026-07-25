@@ -23,7 +23,7 @@ import { setBusiness } from '@/store/slices/businessSlice';
 import { updateProfile } from '@/store/slices/authSlice';
 import { MenuButton, NotifButton } from '@/components/DrawerMenu';
 import api from '@/lib/api';
-import { formatCurrency, formatTime } from '@/lib/utils';
+import { formatCurrency, formatAppointmentTime as formatTime } from '@/lib/utils';
 import type { DashboardStats, Business } from '@/types';
 
 const { width } = Dimensions.get('window');

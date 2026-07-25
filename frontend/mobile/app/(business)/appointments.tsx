@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MenuButton, NotifButton } from '@/components/DrawerMenu';
 import api from '@/lib/api';
-import { formatDate, formatTime, formatCurrency } from '@/lib/utils';
+import { formatAppointmentDate as formatDate, formatAppointmentTime as formatTime, formatCurrency } from '@/lib/utils';
 import type { Appointment } from '@/types';
 
 const STATUS_FILTERS = ['Tümü', 'Beklemede', 'Onaylandı', 'Tamamlandı', 'İptal'];
