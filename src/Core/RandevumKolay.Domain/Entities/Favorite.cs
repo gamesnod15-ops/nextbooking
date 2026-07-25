@@ -4,7 +4,8 @@ namespace RandevumKolay.Domain.Entities;
 
 public class Favorite : BaseEntity
 {
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
+    public string? DeviceId { get; private set; }
     public Guid BusinessId { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; } = DateTimeOffset.UtcNow;
 
@@ -13,11 +14,22 @@ public class Favorite : BaseEntity
 
     private Favorite() { }
 
-    public static Favorite Create(Guid userId, Guid businessId)
+    public static Favorite CreateForUser(Guid userId, Guid businessId)
     {
         return new Favorite
         {
             UserId = userId,
+            BusinessId = businessId,
+        };
+    }
+
+    public static Favorite CreateForDevice(string deviceId, Guid businessId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deviceId);
+
+        return new Favorite
+        {
+            DeviceId = deviceId,
             BusinessId = businessId,
         };
     }

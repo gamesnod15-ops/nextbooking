@@ -12,7 +12,6 @@ public class FavoriteConfiguration : IEntityTypeConfiguration<Favorite>
 
         builder.HasKey(f => f.Id);
 
-        builder.Property(f => f.UserId).IsRequired();
         builder.Property(f => f.BusinessId).IsRequired();
 
         builder.HasOne(f => f.Business)
@@ -20,6 +19,12 @@ public class FavoriteConfiguration : IEntityTypeConfiguration<Favorite>
             .HasForeignKey(f => f.BusinessId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(f => new { f.UserId, f.BusinessId }).IsUnique();
+        builder.HasIndex(f => new { f.UserId, f.BusinessId })
+            .IsUnique()
+            .HasFilter("\"user_id\" IS NOT NULL");
+
+        builder.HasIndex(f => new { f.DeviceId, f.BusinessId })
+            .IsUnique()
+            .HasFilter("\"device_id\" IS NOT NULL");
     }
 }

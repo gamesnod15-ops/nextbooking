@@ -138,7 +138,7 @@ public sealed class AddFavoriteCommandHandler : IRequestHandler<AddFavoriteComma
         if (existing is not null)
             return existing.Id;
 
-        var favorite = Favorite.Create(userId, request.BusinessId);
+        var favorite = Favorite.CreateForUser(userId, request.BusinessId);
         _context.Favorites.Add(favorite);
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -167,6 +167,113 @@ public sealed class RemoveFavoriteCommandHandler : IRequestHandler<RemoveFavorit
 
         var favorite = await _context.Favorites
             .FirstOrDefaultAsync(f => f.UserId == userId && f.BusinessId == request.BusinessId, cancellationToken);
+
+        if (favorite is not null)
+        {
+            _context.Favorites.Remove(favorite);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+    }
+}
+
+// ── Device-based variants (guest customers with no account) ─────────────────
+
+public record GetFavoritesByDeviceQuery(string DeviceId) : IRequest<List<FavoriteBusinessDto>>;
+
+public sealed class GetFavoritesByDeviceQueryHandler : IRequestHandler<GetFavoritesByDeviceQuery, List<FavoriteBusinessDto>>
+{
+    private readonly IApplicationDbContext _context;
+
+    public GetFavoritesByDeviceQueryHandler(IApplicationDbContext context) => _context = context;
+
+    public async Task<List<FavoriteBusinessDto>> Handle(GetFavoritesByDeviceQuery request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.DeviceId))
+            return [];
+
+        var favorites = await _context.Favorites
+            .AsNoTracking()
+            .Where(f => f.DeviceId == request.DeviceId)
+            .Include(f => f.Business)
+            .Where(f => f.Business != null)
+            .OrderByDescending(f => f.CreatedAt)
+            .Select(f => new
+            {
+                FavoriteId = f.Id,
+                f.CreatedAt,
+                BusinessId = f.Business!.Id,
+                f.Business.Name,
+                Category = (int)f.Business.Category,
+                f.Business.City,
+                f.Business.Phone,
+                f.Business.LogoUrl,
+                f.Business.CoverImageUrl,
+                f.Business.Description,
+                f.Business.IsActive,
+            })
+            .ToListAsync(cancellationToken);
+
+        return favorites
+            .Select(f => new FavoriteBusinessDto(
+                f.FavoriteId,
+                f.BusinessId,
+                f.Name,
+                f.Category,
+                FavoriteCategoryNames.Map.GetValueOrDefault((BusinessCategory)f.Category, "Diğer"),
+                f.City,
+                f.Phone,
+                f.LogoUrl,
+                f.CoverImageUrl,
+                f.Description,
+                f.IsActive,
+                f.CreatedAt))
+            .ToList();
+    }
+}
+
+public record AddFavoriteByDeviceCommand(string DeviceId, Guid BusinessId) : IRequest<Guid>;
+
+public sealed class AddFavoriteByDeviceCommandHandler : IRequestHandler<AddFavoriteByDeviceCommand, Guid>
+{
+    private readonly IApplicationDbContext _context;
+
+    public AddFavoriteByDeviceCommandHandler(IApplicationDbContext context) => _context = context;
+
+    public async Task<Guid> Handle(AddFavoriteByDeviceCommand request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.DeviceId))
+            throw new ValidationException("Device id is required.");
+
+        var businessExists = await _context.Businesses
+            .AnyAsync(b => b.Id == request.BusinessId && !b.IsDeleted, cancellationToken);
+        if (!businessExists)
+            throw new NotFoundException(nameof(Domain.Entities.Business), request.BusinessId);
+
+        var existing = await _context.Favorites
+            .FirstOrDefaultAsync(f => f.DeviceId == request.DeviceId && f.BusinessId == request.BusinessId, cancellationToken);
+        if (existing is not null)
+            return existing.Id;
+
+        var favorite = Favorite.CreateForDevice(request.DeviceId, request.BusinessId);
+        _context.Favorites.Add(favorite);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return favorite.Id;
+    }
+}
+
+public record RemoveFavoriteByDeviceCommand(string DeviceId, Guid BusinessId) : IRequest;
+
+public sealed class RemoveFavoriteByDeviceCommandHandler : IRequestHandler<RemoveFavoriteByDeviceCommand>
+{
+    private readonly IApplicationDbContext _context;
+
+    public RemoveFavoriteByDeviceCommandHandler(IApplicationDbContext context) => _context = context;
+
+    public async Task Handle(RemoveFavoriteByDeviceCommand request, CancellationToken cancellationToken)
+    {
+        var favorite = await _context.Favorites
+            .FirstOrDefaultAsync(f => f.DeviceId == request.DeviceId && f.BusinessId == request.BusinessId, cancellationToken);
 
         if (favorite is not null)
         {

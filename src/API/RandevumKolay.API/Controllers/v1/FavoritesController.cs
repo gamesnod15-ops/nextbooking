@@ -39,4 +39,31 @@ public class FavoritesController : ControllerBase
         await _sender.Send(new RemoveFavoriteCommand(businessId), cancellationToken);
         return NoContent();
     }
+
+    [HttpGet("by-device")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFavoritesByDevice([FromQuery] string deviceId, CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetFavoritesByDeviceQuery(deviceId), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("by-device/{businessId:guid}")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddFavoriteByDevice(Guid businessId, [FromQuery] string deviceId, CancellationToken cancellationToken = default)
+    {
+        var id = await _sender.Send(new AddFavoriteByDeviceCommand(deviceId, businessId), cancellationToken);
+        return Ok(new { id });
+    }
+
+    [HttpDelete("by-device/{businessId:guid}")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RemoveFavoriteByDevice(Guid businessId, [FromQuery] string deviceId, CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new RemoveFavoriteByDeviceCommand(deviceId, businessId), cancellationToken);
+        return NoContent();
+    }
 }
