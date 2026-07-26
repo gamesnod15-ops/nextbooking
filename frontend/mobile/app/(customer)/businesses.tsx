@@ -336,7 +336,7 @@ export default function BusinessesScreen() {
 
       <ScrollView
         horizontal
-        style={{ flexGrow: 0 }}
+        style={styles.quickCatsScroll}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.quickCats}
       >
@@ -367,7 +367,7 @@ export default function BusinessesScreen() {
       {activeFilterCount > 0 && (
         <ScrollView
           horizontal
-          style={{ flexGrow: 0 }}
+          style={styles.activeFiltersScroll}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.activeFilters}
         >
@@ -604,6 +604,7 @@ const styles = StyleSheet.create({
     height: 48,
   },
   searchInput: { flex: 1, fontSize: FONT.base, color: COLORS.text },
+  quickCatsScroll: { flexGrow: 0, flexShrink: 0, height: 64 },
   quickCats: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACE[4], paddingTop: SPACE[3], paddingBottom: SPACE[2], gap: SPACE[2] },
   quickChip: {
     flexDirection: 'row',
@@ -620,8 +621,10 @@ const styles = StyleSheet.create({
   quickChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   quickChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   quickChipTextActive: { color: COLORS.white },
+  activeFiltersScroll: { flexGrow: 0, flexShrink: 0, height: 54 },
   activeFilters: {
     flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
     gap: SPACE[2],
