@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
+  Image,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -27,6 +28,12 @@ import { isToday, parseISO } from 'date-fns';
 import type { DashboardStats, Business, RecentActivity } from '@/types';
 
 const { width } = Dimensions.get('window');
+
+const HERO_CALENDAR_IMG = require('../../assets/images/dashboard/hero-calendar.png');
+const PROMO_PHONE_IMG = require('../../assets/images/dashboard/promo-phone.png');
+const PLUS_3D_IMG = require('../../assets/images/dashboard/plus-3d.png');
+const PROFILE_3D_IMG = require('../../assets/images/dashboard/profile-3d.png');
+const STARS_3D_IMG = require('../../assets/images/dashboard/stars-3d.png');
 
 const EMPTY_STATS: DashboardStats = {
   todayAppointments: 0, todayCompleted: 0, todayCancelled: 0, todayPending: 0,
@@ -202,10 +209,7 @@ export default function DashboardScreen() {
             <Text style={[styles.trendPillText, { color: trend >= 0 ? '#86EFAC' : '#FCA5A5' }]}>{Math.abs(trend)}% bu ay</Text>
           </View>
           <View style={styles.heroIllustration}>
-            <Ionicons name="calendar" size={72} color="rgba(255,255,255,0.14)" />
-            <View style={styles.heroCheckBadge}>
-              <Ionicons name="checkmark" size={22} color={COLORS.primaryDark} />
-            </View>
+            <Image source={HERO_CALENDAR_IMG} style={styles.heroCalendarImg} resizeMode="contain" />
           </View>
         </LinearGradient>
 
@@ -240,6 +244,7 @@ export default function DashboardScreen() {
         {/* Promo card */}
         <View style={styles.promoCard}>
           <View style={styles.promoBlob} />
+          <Image source={STARS_3D_IMG} style={styles.promoStars} resizeMode="contain" />
           <View style={styles.promoBadge}>
             <Ionicons name="sparkles" size={11} color={COLORS.white} />
             <Text style={styles.promoBadgeText}>Yeni Özellik</Text>
@@ -251,10 +256,11 @@ export default function DashboardScreen() {
             <Ionicons name="chevron-forward" size={14} color={COLORS.primary} />
           </TouchableOpacity>
           <View style={styles.promoIllustration}>
-            <Ionicons name="phone-portrait-outline" size={56} color="rgba(1,84,240,0.15)" />
+            <Image source={PROMO_PHONE_IMG} style={styles.promoPhoneImg} resizeMode="contain" />
+            <Image source={PROFILE_3D_IMG} style={styles.promoProfileBadge} resizeMode="contain" />
           </View>
           <TouchableOpacity style={styles.promoFab} onPress={() => router.push('/(business)/appointments')} activeOpacity={0.85}>
-            <Ionicons name="add" size={26} color={COLORS.white} />
+            <Image source={PLUS_3D_IMG} style={styles.promoFabImg} resizeMode="contain" />
           </TouchableOpacity>
         </View>
 
@@ -473,14 +479,10 @@ const styles = StyleSheet.create({
   },
   trendPillText: { fontSize: FONT.xs, fontWeight: FONT.bold },
   heroIllustration: {
-    position: 'absolute', right: SPACE[5], bottom: SPACE[4],
+    position: 'absolute', right: SPACE[3], bottom: SPACE[2],
     alignItems: 'center', justifyContent: 'center',
   },
-  heroCheckBadge: {
-    position: 'absolute', bottom: -4, right: -4,
-    width: 30, height: 30, borderRadius: RADIUS.full, backgroundColor: COLORS.white,
-    alignItems: 'center', justifyContent: 'center',
-  },
+  heroCalendarImg: { width: 108, height: 108 },
 
   statRow: { flexDirection: 'row', gap: SPACE[3] },
   statCard: {
@@ -494,30 +496,36 @@ const styles = StyleSheet.create({
 
   promoCard: {
     backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: RADIUS['2xl'], padding: SPACE[5],
-    overflow: 'hidden', gap: 6,
+    overflow: 'hidden', gap: 6, minHeight: 200,
   },
   promoBlob: {
     position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: 70,
     backgroundColor: 'rgba(1,84,240,0.06)',
+  },
+  promoStars: {
+    position: 'absolute', top: SPACE[3], right: '38%', width: 60, height: 50,
   },
   promoBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
     backgroundColor: '#7C3AED', paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full,
   },
   promoBadgeText: { fontSize: 10, fontWeight: FONT.bold, color: COLORS.white },
-  promoTitle: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.text, lineHeight: 26, marginTop: 6 },
-  promoText: { fontSize: FONT.sm, color: COLORS.textSecondary, lineHeight: 19, maxWidth: '70%' },
+  promoTitle: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.text, lineHeight: 26, marginTop: 6, maxWidth: '62%' },
+  promoText: { fontSize: FONT.sm, color: COLORS.textSecondary, lineHeight: 19, maxWidth: '58%' },
   promoLink: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 4 },
   promoLinkText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.primary },
   promoIllustration: {
-    position: 'absolute', right: SPACE[5], bottom: SPACE[6],
+    position: 'absolute', right: SPACE[2], top: '28%',
+  },
+  promoPhoneImg: { width: 118, height: 118 },
+  promoProfileBadge: {
+    position: 'absolute', left: -14, top: -8, width: 44, height: 44,
   },
   promoFab: {
     position: 'absolute', right: SPACE[4], bottom: -18,
-    width: 52, height: 52, borderRadius: RADIUS.full, backgroundColor: COLORS.primary,
-    alignItems: 'center', justifyContent: 'center', ...SHADOW.primary,
-    borderWidth: 3, borderColor: COLORS.bg,
+    width: 52, height: 52, alignItems: 'center', justifyContent: 'center',
   },
+  promoFabImg: { width: 52, height: 52 },
 
   chartCard: { padding: SPACE[4], gap: SPACE[4] },
   weekPill: {
