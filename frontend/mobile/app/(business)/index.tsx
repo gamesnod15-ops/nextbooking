@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,10 +11,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
-import { StatCard } from '@/components/ui/StatCard';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -23,15 +22,17 @@ import { setBusiness } from '@/store/slices/businessSlice';
 import { updateProfile } from '@/store/slices/authSlice';
 import { MenuButton, NotifButton } from '@/components/DrawerMenu';
 import api from '@/lib/api';
-import { formatCurrency, formatAppointmentTime as formatTime } from '@/lib/utils';
-import type { DashboardStats, Business } from '@/types';
+import { formatCurrency, formatAppointmentTime as formatTime, formatDate, formatTime as formatRealTime } from '@/lib/utils';
+import { isToday, parseISO } from 'date-fns';
+import type { DashboardStats, Business, RecentActivity } from '@/types';
 
 const { width } = Dimensions.get('window');
 
 const EMPTY_STATS: DashboardStats = {
   todayAppointments: 0, todayCompleted: 0, todayCancelled: 0, todayPending: 0,
   todayRevenue: 0, monthAppointments: 0, monthRevenue: 0, occupancyRate: 0,
-  totalCustomers: 0, todayAppointmentList: [], weeklyStats: [], monthlyStats: [],
+  totalCustomers: 0, monthAppointmentsTrendPercent: 0,
+  todayAppointmentList: [], weeklyStats: [], monthlyStats: [], recentActivities: [],
 };
 
 const statusMap: Record<string, { label: string; variant: any }> = {
@@ -41,6 +42,18 @@ const statusMap: Record<string, { label: string; variant: any }> = {
   completed: { label: 'Tamamlandı',variant: 'completed' },
   no_show:   { label: 'Gelmedi',   variant: 'no_show' },
 };
+
+const ACTIVITY_ICON: Record<RecentActivity['type'], { icon: keyof typeof Ionicons.glyphMap; bg: string; color: string }> = {
+  appointmentCreated: { icon: 'checkmark', bg: '#DCFCE7', color: '#166534' },
+  appointmentCancelled: { icon: 'close', bg: '#FEE2E2', color: '#991B1B' },
+  customerAdded: { icon: 'person', bg: '#E0E7FF', color: '#4338CA' },
+};
+
+const TIPS = [
+  { title: 'Boş zamanlarınızı daha verimli kullanın!', text: 'Takviminizdeki boşlukları doldurarak gelirlerinizi artırabilirsiniz.' },
+  { title: 'Müşterilerinizi hatırlatmalarla elde tutun!', text: 'Randevu hatırlatmaları müşteri kaybını azaltır.' },
+  { title: 'Kampanyalarla gelirinizi artırın!', text: 'Sadık müşterilerinize özel indirimler sunabilirsiniz.' },
+];
 
 function useDashboard() {
   return useQuery<DashboardStats>({
@@ -100,7 +113,13 @@ const quickActions = [
   { icon: 'cube-outline', label: 'Ürünler', route: '/(pages)/products', color: '#FCE7F3', iconColor: '#DB2777' },
   { icon: 'people-outline', label: 'Personel', route: '/(pages)/employees', color: '#FFF7ED', iconColor: '#EA580C' },
   { icon: 'megaphone-outline', label: 'Kampanyalar', route: '/(pages)/campaigns', color: '#ECFDF5', iconColor: '#059669' },
+  { icon: 'chatbubbles-outline', label: 'Mesajlar', route: '/(pages)/whatsapp-bot', color: '#EFF6FF', iconColor: '#2563EB' },
 ] as const;
+
+function activityTime(iso: string) {
+  const d = parseISO(iso);
+  return isToday(d) ? formatRealTime(iso) : formatDate(iso);
+}
 
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
@@ -108,13 +127,9 @@ export default function DashboardScreen() {
   const auth = useAppSelector((s) => s.auth);
   const business = useAppSelector((s) => s.business.business);
   const { data, isLoading, refetch } = useDashboard();
-  const bizQuery = useBusiness();
+  useBusiness();
   useUserProfile();
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    console.log('[Dashboard] auth fullName:', auth.fullName, 'avatarUrl:', auth.avatarUrl);
-  }, [auth]);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -132,6 +147,18 @@ export default function DashboardScreen() {
   const stats = data ?? EMPTY_STATS;
   const weeklyStats = stats.weeklyStats ?? [];
   const maxCount = weeklyStats.length > 0 ? Math.max(...weeklyStats.map((d) => d.appointments), 1) : 1;
+  const weekTotals = useMemo(() => weeklyStats.reduce(
+    (acc, d) => ({
+      total: acc.total + d.appointments,
+      completed: acc.completed + d.completed,
+      cancelled: acc.cancelled + d.cancelled,
+      pending: acc.pending + d.pending,
+    }),
+    { total: 0, completed: 0, cancelled: 0, pending: 0 }
+  ), [weeklyStats]);
+
+  const trend = stats.monthAppointmentsTrendPercent;
+  const tip = TIPS[new Date().getDate() % TIPS.length];
 
   return (
     <View style={styles.root}>
@@ -149,7 +176,7 @@ export default function DashboardScreen() {
               url={auth.avatarUrl ?? ''}
             />
             <View>
-              <Text style={styles.greeting}>İyi günler</Text>
+              <Text style={styles.greeting}>{greeting()}</Text>
               <Text style={styles.userName} numberOfLines={1}>
                 {auth.fullName ?? business?.name ?? 'İşletme'}
               </Text>
@@ -161,40 +188,86 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* KPI Grid */}
-        <View style={styles.kpiGrid}>
-          <StatCard
-            label="Bugünkü Randevular"
-            value={isLoading ? '…' : stats.todayAppointments}
-            icon={<Ionicons name="calendar-outline" size={18} color={COLORS.info} />}
-            trend={{ value: 12, positive: true }}
-            accent
-            style={styles.kpiFull}
-          />
-          <View style={styles.kpiRow}>
-            <StatCard
-              label="Bekleyen"
-              value={isLoading ? '…' : stats.todayPending}
-              icon={<Ionicons name="time-outline" size={16} color={COLORS.warning} />}
-              style={styles.kpiHalf}
-            />
-            <StatCard
-              label="Müşteriler"
-              value={isLoading ? '…' : stats.totalCustomers}
-              icon={<Ionicons name="people-outline" size={16} color={COLORS.success} />}
-              style={styles.kpiHalf}
-            />
+        {/* Hero: today's appointments */}
+        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <View style={styles.heroBlobOne} />
+          <View style={styles.heroBlobTwo} />
+          <TouchableOpacity style={styles.heroCalBtn} onPress={() => router.push('/(pages)/calendar' as any)} activeOpacity={0.8}>
+            <Ionicons name="calendar-outline" size={18} color={COLORS.white} />
+          </TouchableOpacity>
+          <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>
+          <Text style={styles.heroValue}>{isLoading ? '…' : stats.todayAppointments}</Text>
+          <View style={[styles.trendPill, { backgroundColor: trend >= 0 ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)' }]}>
+            <Ionicons name={trend >= 0 ? 'arrow-up' : 'arrow-down'} size={12} color={trend >= 0 ? '#86EFAC' : '#FCA5A5'} />
+            <Text style={[styles.trendPillText, { color: trend >= 0 ? '#86EFAC' : '#FCA5A5' }]}>{Math.abs(trend)}% bu ay</Text>
           </View>
-          <StatCard
-            label="Bugünkü Gelir"
-            value={isLoading ? '…' : formatCurrency(stats.todayRevenue)}
-            icon={<Ionicons name="trending-up-outline" size={16} color={COLORS.success} />}
-            style={styles.kpiFull}
-          />
+          <View style={styles.heroIllustration}>
+            <Ionicons name="calendar" size={72} color="rgba(255,255,255,0.14)" />
+            <View style={styles.heroCheckBadge}>
+              <Ionicons name="checkmark" size={22} color={COLORS.primaryDark} />
+            </View>
+          </View>
+        </LinearGradient>
+
+        {/* 3-up stat row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCard}>
+            <View style={[styles.statIconWrap, { backgroundColor: '#DBEAFE' }]}>
+              <Ionicons name="time-outline" size={20} color="#2563EB" />
+            </View>
+            <Text style={styles.statValue}>{isLoading ? '…' : stats.todayPending}</Text>
+            <Text style={styles.statLabel}>Randevu</Text>
+            <Text style={styles.statLabelBold}>Bekleyen</Text>
+          </View>
+          <View style={styles.statCard}>
+            <View style={[styles.statIconWrap, { backgroundColor: '#DCFCE7' }]}>
+              <Ionicons name="people-outline" size={20} color="#16A34A" />
+            </View>
+            <Text style={styles.statValue}>{isLoading ? '…' : stats.totalCustomers}</Text>
+            <Text style={styles.statLabel}>Toplam</Text>
+            <Text style={styles.statLabelBold}>Müşteriler</Text>
+          </View>
+          <View style={styles.statCard}>
+            <View style={[styles.statIconWrap, { backgroundColor: '#F3E8FF' }]}>
+              <Ionicons name="trending-up-outline" size={20} color="#9333EA" />
+            </View>
+            <Text style={styles.statValue}>{isLoading ? '…' : formatCurrency(stats.todayRevenue)}</Text>
+            <Text style={styles.statLabel}>Toplam</Text>
+            <Text style={styles.statLabelBold}>Bugünkü Gelir</Text>
+          </View>
+        </View>
+
+        {/* Promo card */}
+        <View style={styles.promoCard}>
+          <View style={styles.promoBlob} />
+          <View style={styles.promoBadge}>
+            <Ionicons name="sparkles" size={11} color={COLORS.white} />
+            <Text style={styles.promoBadgeText}>Yeni Özellik</Text>
+          </View>
+          <Text style={styles.promoTitle}>Randevularınızı{'\n'}daha kolay yönetin</Text>
+          <Text style={styles.promoText}>Hızlı randevu oluşturun, müşterilerinizle iletişime geçin ve işlerinizi büyütün.</Text>
+          <TouchableOpacity style={styles.promoLink} onPress={() => router.push('/(business)/appointments')} activeOpacity={0.7}>
+            <Text style={styles.promoLinkText}>Keşfet</Text>
+            <Ionicons name="chevron-forward" size={14} color={COLORS.primary} />
+          </TouchableOpacity>
+          <View style={styles.promoIllustration}>
+            <Ionicons name="phone-portrait-outline" size={56} color="rgba(1,84,240,0.15)" />
+          </View>
+          <TouchableOpacity style={styles.promoFab} onPress={() => router.push('/(business)/appointments')} activeOpacity={0.85}>
+            <Ionicons name="add" size={26} color={COLORS.white} />
+          </TouchableOpacity>
         </View>
 
         {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>Hızlı İşlemler</Text>
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Hızlı İşlemler</Text>
+          <TouchableOpacity onPress={() => router.push('/(pages)/more' as any)}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <Text style={styles.seeAll}>Tümünü Gör</Text>
+              <Ionicons name="chevron-forward" size={13} color={COLORS.primaryDark} />
+            </View>
+          </TouchableOpacity>
+        </View>
         <View style={styles.quickGrid}>
           {quickActions.map((action) => (
             <TouchableOpacity key={action.label} style={styles.quickItem} activeOpacity={0.7} onPress={() => router.push(action.route as any)}>
@@ -206,24 +279,97 @@ export default function DashboardScreen() {
           ))}
         </View>
 
-        {/* Weekly Bar Chart */}
+        {/* Weekly Bar Chart + summary */}
         <Card style={styles.chartCard}>
-          <Text style={styles.sectionTitle}>Haftalık Randevular</Text>
-          <View style={styles.barChart}>
-            {weeklyStats.map((d) => {
-              const pct = d.appointments / maxCount;
-              return (
-                <View key={d.day} style={styles.barCol}>
-                  <Text style={styles.barValue}>{d.appointments}</Text>
-                  <View style={styles.barBg}>
-                    <View style={[styles.barFill, { height: `${Math.max(pct * 100, 4)}%`, backgroundColor: pct > 0.7 ? COLORS.primary : COLORS.primaryLight }]} />
+          <View style={styles.sectionRow}>
+            <Text style={styles.sectionTitle}>Haftalık Randevular</Text>
+            <TouchableOpacity style={styles.weekPill} activeOpacity={0.7}>
+              <Text style={styles.weekPillText}>Bu Hafta</Text>
+              <Ionicons name="chevron-down" size={13} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.chartRow}>
+            <View style={styles.barChart}>
+              {weeklyStats.map((d) => {
+                const pct = d.appointments / maxCount;
+                return (
+                  <View key={d.day} style={styles.barCol}>
+                    <Text style={styles.barValue}>{d.appointments}</Text>
+                    <View style={styles.barBg}>
+                      <View style={[styles.barFill, { height: `${Math.max(pct * 100, 4)}%`, backgroundColor: pct > 0.7 ? COLORS.primary : COLORS.primaryLight }]} />
+                    </View>
+                    <Text style={styles.barLabel}>{d.day}</Text>
                   </View>
-                  <Text style={styles.barLabel}>{d.day}</Text>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
+            <View style={styles.weekSummary}>
+              <View style={styles.weekSummaryRow}>
+                <Ionicons name="calendar-outline" size={13} color={COLORS.primary} />
+                <Text style={styles.weekSummaryLabel}>Toplam</Text>
+                <Text style={styles.weekSummaryValue}>{weekTotals.total}</Text>
+              </View>
+              <View style={styles.weekSummaryRow}>
+                <Ionicons name="checkmark-circle" size={13} color={COLORS.success} />
+                <Text style={styles.weekSummaryLabel}>Tamamlanan</Text>
+                <Text style={styles.weekSummaryValue}>{weekTotals.completed}</Text>
+              </View>
+              <View style={styles.weekSummaryRow}>
+                <Ionicons name="close-circle" size={13} color={COLORS.error} />
+                <Text style={styles.weekSummaryLabel}>İptal Edilen</Text>
+                <Text style={styles.weekSummaryValue}>{weekTotals.cancelled}</Text>
+              </View>
+              <View style={styles.weekSummaryRow}>
+                <Ionicons name="time-outline" size={13} color={COLORS.warning} />
+                <Text style={styles.weekSummaryLabel}>Bekleyen</Text>
+                <Text style={styles.weekSummaryValue}>{weekTotals.pending}</Text>
+              </View>
+            </View>
           </View>
         </Card>
+
+        {/* Recent Activity + Tip */}
+        <View style={styles.twoCol}>
+          <View style={styles.activityCard}>
+            <View style={styles.sectionRow}>
+              <Text style={styles.sectionTitle}>Son Aktiviteler</Text>
+            </View>
+            {stats.recentActivities.length === 0 ? (
+              <Text style={styles.activityEmpty}>Henüz aktivite yok</Text>
+            ) : (
+              stats.recentActivities.map((act, idx) => {
+                const meta = ACTIVITY_ICON[act.type] ?? ACTIVITY_ICON.customerAdded;
+                return (
+                  <View key={idx} style={styles.activityRow}>
+                    <View style={[styles.activityIcon, { backgroundColor: meta.bg }]}>
+                      <Ionicons name={meta.icon} size={14} color={meta.color} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.activityTitle}>{act.title}</Text>
+                      <Text style={styles.activitySub}>{act.subtitle}</Text>
+                    </View>
+                    <Text style={styles.activityTime}>{activityTime(act.occurredAt)}</Text>
+                  </View>
+                );
+              })
+            )}
+          </View>
+
+          <View style={styles.tipCard}>
+            <View style={styles.sectionRow}>
+              <Text style={styles.sectionTitle}>İpucu</Text>
+            </View>
+            <View style={styles.tipInner}>
+              <View style={styles.tipIconWrap}>
+                <Ionicons name="bulb-outline" size={20} color={COLORS.success} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tipTitle}>{tip.title}</Text>
+                <Text style={styles.tipText}>{tip.text}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
 
         {/* Today's Appointments */}
         <View style={styles.sectionRow}>
@@ -299,36 +445,89 @@ const styles = StyleSheet.create({
   },
   greeting: { fontSize: FONT.xs, color: COLORS.textMuted, fontWeight: FONT.medium },
   userName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text, marginTop: 1 },
-  notifBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOW.sm,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
+
+  hero: {
+    borderRadius: RADIUS['2xl'],
+    padding: SPACE[5],
+    overflow: 'hidden',
+    minHeight: 170,
   },
-  notifDot: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.error,
-    borderWidth: 1.5,
-    borderColor: COLORS.surface,
+  heroBlobOne: {
+    position: 'absolute', top: -40, right: -30, width: 160, height: 160, borderRadius: 80,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  heroBlobTwo: {
+    position: 'absolute', bottom: -60, left: -20, width: 140, height: 140, borderRadius: 70,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  heroCalBtn: {
+    position: 'absolute', top: SPACE[4], right: SPACE[4],
+    width: 36, height: 36, borderRadius: RADIUS.md,
+    backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center',
+  },
+  heroLabel: { fontSize: 11, fontWeight: FONT.bold, color: 'rgba(255,255,255,0.55)', letterSpacing: 0.8 },
+  heroValue: { fontSize: 48, fontWeight: FONT.extrabold, color: COLORS.white, marginTop: 4 },
+  trendPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
+    marginTop: SPACE[3], paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full,
+  },
+  trendPillText: { fontSize: FONT.xs, fontWeight: FONT.bold },
+  heroIllustration: {
+    position: 'absolute', right: SPACE[5], bottom: SPACE[4],
+    alignItems: 'center', justifyContent: 'center',
+  },
+  heroCheckBadge: {
+    position: 'absolute', bottom: -4, right: -4,
+    width: 30, height: 30, borderRadius: RADIUS.full, backgroundColor: COLORS.white,
+    alignItems: 'center', justifyContent: 'center',
   },
 
-  kpiGrid: { gap: SPACE[3] },
-  kpiFull: { width: '100%' },
-  kpiRow: { flexDirection: 'row', gap: SPACE[3] },
-  kpiHalf: { flex: 1 },
+  statRow: { flexDirection: 'row', gap: SPACE[3] },
+  statCard: {
+    flex: 1, backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4],
+    alignItems: 'center', gap: 4, borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm,
+  },
+  statIconWrap: { width: 40, height: 40, borderRadius: RADIUS.full, alignItems: 'center', justifyContent: 'center', marginBottom: 2 },
+  statValue: { fontSize: FONT.lg, fontWeight: FONT.extrabold, color: COLORS.text },
+  statLabel: { fontSize: 10, color: COLORS.textMuted },
+  statLabelBold: { fontSize: 10, color: COLORS.textSecondary, fontWeight: FONT.semibold, textAlign: 'center' },
+
+  promoCard: {
+    backgroundColor: '#EEF2FF', borderRadius: RADIUS['2xl'], padding: SPACE[5],
+    overflow: 'hidden', gap: 6,
+  },
+  promoBlob: {
+    position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: 70,
+    backgroundColor: 'rgba(1,84,240,0.06)',
+  },
+  promoBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
+    backgroundColor: '#7C3AED', paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full,
+  },
+  promoBadgeText: { fontSize: 10, fontWeight: FONT.bold, color: COLORS.white },
+  promoTitle: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.text, lineHeight: 26, marginTop: 6 },
+  promoText: { fontSize: FONT.sm, color: COLORS.textSecondary, lineHeight: 19, maxWidth: '70%' },
+  promoLink: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 4 },
+  promoLinkText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.primary },
+  promoIllustration: {
+    position: 'absolute', right: SPACE[5], bottom: SPACE[6],
+  },
+  promoFab: {
+    position: 'absolute', right: SPACE[4], bottom: -18,
+    width: 52, height: 52, borderRadius: RADIUS.full, backgroundColor: COLORS.primary,
+    alignItems: 'center', justifyContent: 'center', ...SHADOW.primary,
+    borderWidth: 3, borderColor: COLORS.bg,
+  },
 
   chartCard: { padding: SPACE[4], gap: SPACE[4] },
-  barChart: { flexDirection: 'row', alignItems: 'flex-end', height: 120, gap: 8 },
+  weekPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surfaceAlt,
+  },
+  weekPillText: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textSecondary },
+  chartRow: { flexDirection: 'row', gap: SPACE[3] },
+  barChart: { flex: 1.3, flexDirection: 'row', alignItems: 'flex-end', height: 130, gap: 6 },
   barCol: { flex: 1, alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: 4 },
   barValue: { fontSize: 9, color: COLORS.textMuted, fontWeight: FONT.bold },
   barBg: {
@@ -344,6 +543,12 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.sm,
   },
   barLabel: { fontSize: 9, color: COLORS.textMuted, fontWeight: FONT.medium },
+  weekSummary: {
+    flex: 1, backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, padding: SPACE[3], gap: SPACE[3], justifyContent: 'center',
+  },
+  weekSummaryRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  weekSummaryLabel: { flex: 1, fontSize: FONT.xs, color: COLORS.textSecondary },
+  weekSummaryValue: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
 
   section: { gap: SPACE[3] },
   sectionTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
@@ -352,23 +557,47 @@ const styles = StyleSheet.create({
 
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACE[3] },
   quickItem: {
-    width: (width - SPACE[5] * 2 - SPACE[3] * 3) / 4,
+    width: (width - SPACE[5] * 2 - SPACE[3] * 4) / 5,
     alignItems: 'center',
     gap: SPACE[2],
   },
   quickIcon: {
-    width: 54,
-    height: 54,
+    width: 50,
+    height: 50,
     borderRadius: RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
   quickLabel: {
-    fontSize: 10,
+    fontSize: 9.5,
     color: COLORS.textSecondary,
     fontWeight: FONT.medium,
     textAlign: 'center',
   },
+
+  twoCol: { gap: SPACE[3] },
+  activityCard: {
+    backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3],
+    borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm,
+  },
+  activityEmpty: { fontSize: FONT.sm, color: COLORS.textMuted, textAlign: 'center', paddingVertical: SPACE[3] },
+  activityRow: { flexDirection: 'row', alignItems: 'center', gap: SPACE[3] },
+  activityIcon: { width: 32, height: 32, borderRadius: RADIUS.full, alignItems: 'center', justifyContent: 'center' },
+  activityTitle: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
+  activitySub: { fontSize: FONT.xs, color: COLORS.textMuted, marginTop: 1 },
+  activityTime: { fontSize: FONT.xs, color: COLORS.textMuted },
+
+  tipCard: {
+    backgroundColor: '#ECFDF5', borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3],
+    borderWidth: 1, borderColor: '#A7F3D0',
+  },
+  tipInner: { flexDirection: 'row', gap: SPACE[3], alignItems: 'flex-start' },
+  tipIconWrap: {
+    width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.surface,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  tipTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  tipText: { fontSize: FONT.xs, color: COLORS.textSecondary, marginTop: 2, lineHeight: 17 },
 
   aptCard: {
     backgroundColor: '#ECFDF5',
@@ -428,8 +657,4 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     flex: 1,
   },
-
-  statusDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.success },
-  statusText: { fontSize: FONT.sm, color: COLORS.textSecondary, fontWeight: FONT.medium },
 });
-

@@ -197,9 +197,18 @@ export interface DashboardStats {
   monthRevenue: number;
   occupancyRate: number;
   totalCustomers: number;
+  monthAppointmentsTrendPercent: number;
   todayAppointmentList: TodayAppointment[];
   weeklyStats: WeeklyStat[];
   monthlyStats: MonthlyStat[];
+  recentActivities: RecentActivity[];
+}
+
+export interface RecentActivity {
+  type: 'appointmentCreated' | 'appointmentCancelled' | 'customerAdded';
+  title: string;
+  subtitle: string;
+  occurredAt: string;
 }
 
 export interface TodayAppointment {
@@ -220,6 +229,9 @@ export interface WeeklyStat {
   day: string;
   appointments: number;
   revenue: number;
+  completed: number;
+  cancelled: number;
+  pending: number;
 }
 
 export interface MonthlyStat {
