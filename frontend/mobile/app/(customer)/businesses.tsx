@@ -315,7 +315,7 @@ export default function BusinessesScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.heroSubtitle}>Hizmet almak istediğin işletmeyi keşfet, randevunu kolayca al.</Text>
+        <Text style={styles.heroSubtitle}>{'Hizmet almak istediğin işletmeyi\nkeşfet, randevunu kolayca al.'}</Text>
 
         <View style={styles.searchBox}>
           <Ionicons name="search-outline" size={18} color={COLORS.textMuted} />
@@ -569,7 +569,7 @@ export default function BusinessesScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
-  header: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[5], gap: SPACE[4] },
+  header: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[5], gap: SPACE[4], borderBottomLeftRadius: RADIUS['2xl'], borderBottomRightRadius: RADIUS['2xl'], overflow: 'hidden' },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: SPACE[4] },
   greet: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)' },
   heroTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.white },
