@@ -7,3 +7,8 @@ expo-env.d.ts
 # Local environment overrides (see .env.example)
 .env
 .env.local
+
+# Native projects are generated from app.config.ts by Expo prebuild (CNG).
+# Do not commit them — the checked-in copy went stale after the rebrand.
+/android
+/ios
