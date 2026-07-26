@@ -97,6 +97,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   // `runtimeVersion` is tied to the native ABI, so a build only accepts
   // updates compiled against the same native code.
   updates: {
+    url: 'https://u.expo.dev/a85921df-08a8-4f7a-aceb-b806e3a100b8',
     fallbackToCacheTimeout: 0,
     checkAutomatically: 'ON_LOAD',
   },
@@ -104,8 +105,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     typedRoutes: true,
   },
+  owner: 'dogancanaras49',
   extra: {
     apiUrl,
     appEnv: APP_ENV,
+    // Set by `eas init`. Also read at runtime by pushNotifications.ts when
+    // requesting the Expo push token.
+    eas: {
+      projectId: 'a85921df-08a8-4f7a-aceb-b806e3a100b8',
+    },
   },
 } as ExpoConfig);
