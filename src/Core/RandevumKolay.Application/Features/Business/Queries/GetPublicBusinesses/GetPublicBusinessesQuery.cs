@@ -24,7 +24,9 @@ public record PublicBusinessDto(
     string? Website,
     string? Description,
     bool IsActive,
-    string? CoverImageUrl);
+    string? CoverImageUrl,
+    double AverageRating,
+    int ReviewCount);
 
 public sealed class GetPublicBusinessesQueryHandler
     : IRequestHandler<GetPublicBusinessesQuery, PaginatedList<PublicBusinessDto>>
@@ -107,9 +109,21 @@ public sealed class GetPublicBusinessesQueryHandler
 
         var totalCount = businesses.Count;
 
-        var paged = businesses
+        var pageIds = businesses
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .Select(b => b.Id)
+            .ToList();
+
+        var ratings = await _context.Reviews
+            .AsNoTracking()
+            .Where(r => r.IsApproved && pageIds.Contains(r.BusinessId))
+            .GroupBy(r => r.BusinessId)
+            .Select(g => new { BusinessId = g.Key, Average = g.Average(r => r.Rating), Count = g.Count() })
+            .ToDictionaryAsync(g => g.BusinessId, g => (g.Average, g.Count), cancellationToken);
+
+        var paged = businesses
+            .Where(b => pageIds.Contains(b.Id))
             .Select(b => new PublicBusinessDto(
                 b.Id,
                 b.Name,
@@ -121,7 +135,9 @@ public sealed class GetPublicBusinessesQueryHandler
                 b.Website,
                 b.Description,
                 b.IsActive,
-                b.CoverImageUrl))
+                b.CoverImageUrl,
+                ratings.TryGetValue(b.Id, out var r) ? Math.Round(r.Average, 1) : 0,
+                ratings.TryGetValue(b.Id, out var r2) ? r2.Count : 0))
             .ToList();
 
         return new PaginatedList<PublicBusinessDto>(paged, totalCount, request.PageNumber, request.PageSize);
