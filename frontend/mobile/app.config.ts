@@ -19,13 +19,25 @@ const API_URLS: Record<typeof APP_ENV, string> = {
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? API_URLS[APP_ENV];
 
+/**
+ * Single source for the app version.
+ *
+ * This project is a bare workflow (android/ is checked in), where EAS does not
+ * accept a runtimeVersion *policy* — it must be a literal string. Deriving both
+ * from one constant keeps `version` and `runtimeVersion` from drifting apart.
+ *
+ * Bump this only when the native layer changes; existing installs can only
+ * receive OTA updates built against the same runtime version.
+ */
+const APP_VERSION = '1.0.0';
+
 // `androidNavigationBar` is a valid Expo key but is missing from ExpoConfig in
 // this SDK's types, so the literal is asserted rather than widened.
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'JetRandevu',
   slug: 'jetrandevu',
-  version: '1.0.0',
+  version: APP_VERSION,
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   scheme: 'jetrandevu',
@@ -88,9 +100,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     fallbackToCacheTimeout: 0,
     checkAutomatically: 'ON_LOAD',
   },
-  runtimeVersion: {
-    policy: 'appVersion',
-  },
+  runtimeVersion: APP_VERSION,
   experiments: {
     typedRoutes: true,
   },
