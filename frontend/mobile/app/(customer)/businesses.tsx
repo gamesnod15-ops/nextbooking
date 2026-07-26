@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -92,11 +92,6 @@ export default function BusinessesScreen() {
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [page, setPage] = useState(1);
-  const [data, setData] = useState<PaginatedResult<BusinessItem> | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState('');
-  const [filterSource, setFilterSource] = useState<BusinessItem[]>([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [citySearch, setCitySearch] = useState('');
   const [expandedCategories, setExpandedCategories] = useState(true);
@@ -122,41 +117,34 @@ export default function BusinessesScreen() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
   });
 
-  const fetchBusinesses = useCallback(async (pageNum: number, isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
-    setError('');
-    try {
+  const businessesQuery = useQuery({
+    queryKey: ['businesses-list', search, selectedCategories, selectedCities, page],
+    queryFn: async () => {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       if (selectedCategories.length > 0) params.set('categoryIds', selectedCategories.join(','));
       if (selectedCities.length > 0) params.set('cities', selectedCities.join(','));
-      params.set('pageNumber', String(pageNum));
+      params.set('pageNumber', String(page));
       params.set('pageSize', String(PAGE_SIZE));
-
       const res = await api.get(`/businesses?${params.toString()}`);
-      setData(res.data);
-    } catch (e: any) {
-      console.error('[businesses] fetch failed:', e?.message, e?.code, e?.response?.status);
-      setError('İşletmeler yüklenirken bir hata oluştu.');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [search, selectedCategories, selectedCities]);
+      return res.data as PaginatedResult<BusinessItem>;
+    },
+    staleTime: 60 * 1000,
+    placeholderData: (prev: PaginatedResult<BusinessItem> | undefined) => prev,
+  });
+  const data = businessesQuery.data ?? null;
+  const loading = businessesQuery.isLoading;
+  const refreshing = businessesQuery.isFetching && !businessesQuery.isLoading;
+  const error = businessesQuery.isError ? 'İşletmeler yüklenirken bir hata oluştu.' : '';
 
-  useEffect(() => {
-    fetchBusinesses(1);
-  }, [fetchBusinesses]);
-
-  useEffect(() => {
-    api.get('/businesses?pageNumber=1&pageSize=200')
-      .then((res) => {
-        const items = res.data?.items ?? (Array.isArray(res.data) ? res.data : []);
-        setFilterSource(items);
-      })
-      .catch(() => {});
-  }, []);
+  const { data: filterSource = [] } = useQuery({
+    queryKey: ['businesses-filter-source'],
+    queryFn: async () => {
+      const res = await api.get('/businesses?pageNumber=1&pageSize=200');
+      return (res.data?.items ?? (Array.isArray(res.data) ? res.data : [])) as BusinessItem[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const allCategories = useMemo(() => {
     const byId = new Map<number, { name: string; count: number }>();
@@ -412,7 +400,7 @@ export default function BusinessesScreen() {
         <View style={styles.center}>
           <Ionicons name="alert-circle-outline" size={48} color={COLORS.textSecondary} />
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => fetchBusinesses(1)} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => businessesQuery.refetch()} activeOpacity={0.8}>
             <Text style={styles.retryBtnText}>Tekrar Dene</Text>
           </TouchableOpacity>
         </View>
@@ -428,12 +416,10 @@ export default function BusinessesScreen() {
           renderItem={renderBusinessCard}
           contentContainerStyle={{ padding: SPACE[4], paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchBusinesses(page, true)} tintColor={COLORS.primary} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => businessesQuery.refetch()} tintColor={COLORS.primary} />}
           onEndReached={() => {
             if (data.hasNextPage) {
-              const nextPage = page + 1;
-              setPage(nextPage);
-              fetchBusinesses(nextPage);
+              setPage(page + 1);
             }
           }}
           onEndReachedThreshold={0.3}
@@ -555,7 +541,7 @@ export default function BusinessesScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.applyBtn}
-              onPress={() => { setShowFilterModal(false); fetchBusinesses(1); }}
+              onPress={() => setShowFilterModal(false)}
               activeOpacity={0.8}
             >
               <Text style={styles.applyBtnText}>Uygula</Text>
