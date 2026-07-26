@@ -78,6 +78,7 @@ export default function CustomerLayout() {
       <Stack.Screen name="privacy" options={{ headerShown: false, animation: 'slide_from_right' }} />
       <Stack.Screen name="notifications" options={{ headerShown: false, animation: 'slide_from_right' }} />
       <Stack.Screen name="support" options={{ headerShown: false, animation: 'slide_from_right' }} />
+      <Stack.Screen name="settings" options={{ headerShown: false, animation: 'slide_from_right' }} />
     </Stack>
   );
 }

@@ -135,7 +135,7 @@ export default function CustomerProfileScreen() {
   }
 
   function handleSettingsPress() {
-    Alert.alert('Yakında', 'Bu özellik yakında eklenecek.');
+    router.push('/(customer)/settings' as any);
   }
 
   const guestFullName = [guestInfo?.ad, guestInfo?.soyad].filter(Boolean).join(' ');

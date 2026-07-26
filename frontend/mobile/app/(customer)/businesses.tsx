@@ -10,15 +10,18 @@ import {
   ActivityIndicator,
   Modal,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
-import api from '@/lib/api';
+import api, { fixImageUrl } from '@/lib/api';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface BusinessItem {
   id: string;
@@ -31,15 +34,12 @@ interface BusinessItem {
   coverImageUrl: string | null;
   description: string | null;
   isActive: boolean;
+  averageRating: number;
+  reviewCount: number;
 }
 
 interface CategoryItem {
   id: number;
-  name: string;
-  count: number;
-}
-
-interface CityItem {
   name: string;
   count: number;
 }
@@ -56,9 +56,37 @@ interface PaginatedResult<T> {
 
 const PAGE_SIZE = 20;
 
+const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  'Kuaför & Berber': 'cut-outline',
+  'Güzellik Salonu': 'sparkles-outline',
+  'Spa & Masaj': 'flower-outline',
+  'Tırnak Salonu': 'hand-left-outline',
+  'Klinik': 'medkit-outline',
+  'Diş Hekimi': 'medical-outline',
+  'Fizyoterapi': 'body-outline',
+  'Spor Salonu': 'barbell-outline',
+  'Kişisel Antrenör': 'fitness-outline',
+  'Yoga': 'leaf-outline',
+  'Dövme': 'brush-outline',
+  'Veteriner': 'paw-outline',
+  'Oto Servis': 'car-outline',
+  'Oto Yıkama': 'water-outline',
+  'Tamir & Bakım': 'construct-outline',
+  'Danışmanlık': 'briefcase-outline',
+  'Psikolog': 'happy-outline',
+  'Diyetisyen': 'nutrition-outline',
+  'Özel Ders': 'book-outline',
+  'Fotoğrafçı': 'camera-outline',
+};
+
+function categoryIcon(name: string): keyof typeof Ionicons.glyphMap {
+  return CATEGORY_ICONS[name] ?? 'pricetag-outline';
+}
+
 export default function BusinessesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
@@ -73,6 +101,26 @@ export default function BusinessesScreen() {
   const [citySearch, setCitySearch] = useState('');
   const [expandedCategories, setExpandedCategories] = useState(true);
   const [expandedCities, setExpandedCities] = useState(true);
+
+  const { data: favorites = [], refetch: refetchFavorites } = useQuery({
+    queryKey: ['favorites'],
+    queryFn: async () => {
+      const deviceId = await getDeviceId();
+      const res = await api.get(`/favorites/by-device?deviceId=${deviceId}`);
+      return Array.isArray(res.data) ? res.data : [];
+    },
+  });
+  useFocusEffect(useCallback(() => { refetchFavorites(); }, [refetchFavorites]));
+  const favoriteIds = useMemo(() => new Set(favorites.map((f: any) => f.businessId)), [favorites]);
+
+  const favoriteMutation = useMutation({
+    mutationFn: async ({ businessId, isFavorite }: { businessId: string; isFavorite: boolean }) => {
+      const deviceId = await getDeviceId();
+      if (isFavorite) await api.delete(`/favorites/by-device/${businessId}?deviceId=${deviceId}`);
+      else await api.post(`/favorites/by-device/${businessId}?deviceId=${deviceId}`);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
+  });
 
   const fetchBusinesses = useCallback(async (pageNum: number, isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -146,6 +194,11 @@ export default function BusinessesScreen() {
     setPage(1);
   }
 
+  function selectQuickCategory(id: number | null) {
+    setSelectedCategories(id === null ? [] : [id]);
+    setPage(1);
+  }
+
   function toggleCity(cityName: string) {
     setSelectedCities(prev =>
       prev.includes(cityName) ? prev.filter(c => c !== cityName) : [...prev, cityName]
@@ -175,44 +228,66 @@ export default function BusinessesScreen() {
   }
 
   function renderBusinessCard({ item }: { item: BusinessItem }) {
-    const initials = item.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const imageUrl = item.coverImageUrl || item.logoUrl;
+    const isFavorite = favoriteIds.has(item.id);
     return (
       <TouchableOpacity
-        activeOpacity={0.9}
-        style={styles.listCard}
+        activeOpacity={0.92}
+        style={styles.card}
         onPress={() => router.push(`/(customer)/business/${item.id}`)}
       >
-        <View style={styles.listCardLeft}>
-          {item.coverImageUrl ? (
-            <Avatar name={item.name} size={56} url={item.coverImageUrl} />
-          ) : item.logoUrl ? (
-            <Avatar name={item.name} size={56} url={item.logoUrl} />
+        <View style={styles.cardImageWrap}>
+          {imageUrl ? (
+            <Image source={{ uri: fixImageUrl(imageUrl) }} style={styles.cardImage} />
           ) : (
-            <Avatar name={item.name} size={56} />
-          )}
-        </View>
-        <View style={styles.listInfo}>
-          <Text style={styles.listName} numberOfLines={1}>{item.name}</Text>
-          <View style={styles.metaRow}>
-            <Badge variant="default" size="sm">{item.categoryName}</Badge>
-            {item.city && (
-              <View style={styles.cityBadge}>
-                <Ionicons name="location-outline" size={11} color={COLORS.textMuted} />
-                <Text style={styles.cityText}>{item.city}</Text>
-              </View>
-            )}
-          </View>
-          {item.description && (
-            <Text style={styles.descText} numberOfLines={2}>{item.description}</Text>
+            <View style={[styles.cardImage, styles.cardImageFallback]}>
+              <Avatar name={item.name} size={56} />
+            </View>
           )}
           <TouchableOpacity
-            style={styles.bookBtn}
-            onPress={() => router.push(`/(customer)/business/${item.id}`)}
-            activeOpacity={0.8}
+            style={styles.bookmarkBtn}
+            onPress={() => favoriteMutation.mutate({ businessId: item.id, isFavorite })}
+            disabled={favoriteMutation.isPending}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="calendar-outline" size={14} color={COLORS.white} />
-            <Text style={styles.bookBtnText}>Randevu Al</Text>
+            <Ionicons name={isFavorite ? 'bookmark' : 'bookmark-outline'} size={18} color={isFavorite ? COLORS.primary : COLORS.textSecondary} />
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.cardBody}>
+          <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
+          <View style={styles.metaRow}>
+            <Badge variant="default" size="sm">{item.categoryName}</Badge>
+          </View>
+
+          <View style={styles.subRow}>
+            {item.reviewCount > 0 ? (
+              <View style={styles.ratingRow}>
+                <Ionicons name="star" size={13} color={COLORS.warning} />
+                <Text style={styles.ratingText}>{item.averageRating.toFixed(1)}</Text>
+                <Text style={styles.ratingCount}>({item.reviewCount} değerlendirme)</Text>
+              </View>
+            ) : (
+              <Text style={styles.ratingCount}>Henüz değerlendirme yok</Text>
+            )}
+          </View>
+
+          <View style={styles.bottomRow}>
+            {item.city ? (
+              <View style={styles.cityRow}>
+                <Ionicons name="location-outline" size={13} color={COLORS.textMuted} />
+                <Text style={styles.cityText}>{item.city}</Text>
+              </View>
+            ) : <View />}
+            <TouchableOpacity
+              style={styles.bookBtn}
+              onPress={() => router.push(`/(customer)/business/${item.id}`)}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="calendar-outline" size={14} color={COLORS.white} />
+              <Text style={styles.bookBtnText}>Randevu Al</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -257,9 +332,40 @@ export default function BusinessesScreen() {
         </View>
       </LinearGradient>
 
+      <ScrollView
+        horizontal
+        style={{ flexGrow: 0 }}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.quickCats}
+      >
+        <TouchableOpacity
+          style={[styles.quickChip, selectedCategories.length === 0 && styles.quickChipActive]}
+          onPress={() => selectQuickCategory(null)}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="apps-outline" size={15} color={selectedCategories.length === 0 ? COLORS.white : COLORS.text} />
+          <Text style={[styles.quickChipText, selectedCategories.length === 0 && styles.quickChipTextActive]}>Tümü</Text>
+        </TouchableOpacity>
+        {allCategories.map((cat) => {
+          const active = selectedCategories.length === 1 && selectedCategories[0] === cat.id;
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              style={[styles.quickChip, active && styles.quickChipActive]}
+              onPress={() => selectQuickCategory(active ? null : cat.id)}
+              activeOpacity={0.8}
+            >
+              <Ionicons name={categoryIcon(cat.name)} size={15} color={active ? COLORS.white : COLORS.text} />
+              <Text style={[styles.quickChipText, active && styles.quickChipTextActive]}>{cat.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
       {activeFilterCount > 0 && (
         <ScrollView
           horizontal
+          style={{ flexGrow: 0 }}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.activeFilters}
         >
@@ -283,6 +389,18 @@ export default function BusinessesScreen() {
           </TouchableOpacity>
         </ScrollView>
       )}
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Yakındaki İşletmeler</Text>
+        {activeFilterCount > 0 && (
+          <TouchableOpacity onPress={clearAllFilters} activeOpacity={0.7}>
+            <View style={styles.sectionAction}>
+              <Text style={styles.sectionActionText}>Tümünü Gör</Text>
+              <Ionicons name="chevron-forward" size={14} color={COLORS.primary} />
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
 
       {loading && !refreshing ? (
         <View style={styles.center}>
@@ -318,11 +436,22 @@ export default function BusinessesScreen() {
           }}
           onEndReachedThreshold={0.3}
           ListFooterComponent={
-            data.hasNextPage ? (
-              <View style={{ paddingVertical: SPACE[4] }}>
-                <ActivityIndicator size="small" color={COLORS.primary} />
+            <View style={{ gap: SPACE[3] }}>
+              {data.hasNextPage && (
+                <View style={{ paddingVertical: SPACE[3] }}>
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                </View>
+              )}
+              <View style={styles.promoCard}>
+                <View style={styles.promoIconWrap}>
+                  <Ionicons name="calendar-outline" size={22} color={COLORS.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.promoTitle}>Hızlı Randevu, Kolay Yönetim</Text>
+                  <Text style={styles.promoText}>İşletmelerle hızlıca iletişime geçin, randevunuzu kolayca oluşturun.</Text>
+                </View>
               </View>
-            ) : null
+            </View>
           }
         />
       )}
@@ -472,6 +601,22 @@ const styles = StyleSheet.create({
     height: 48,
   },
   searchInput: { flex: 1, fontSize: FONT.base, color: COLORS.text },
+  quickCats: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACE[4], paddingTop: SPACE[3], paddingBottom: SPACE[2], gap: SPACE[2] },
+  quickChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    ...SHADOW.sm,
+  },
+  quickChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  quickChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
+  quickChipTextActive: { color: COLORS.white },
   activeFilters: {
     flexDirection: 'row',
     paddingHorizontal: SPACE[4],
@@ -500,6 +645,10 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   clearChipText: { fontSize: FONT.xs, fontWeight: FONT.medium, color: COLORS.textMuted },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: SPACE[5], paddingTop: SPACE[3] },
+  sectionTitle: { fontSize: FONT.lg, fontWeight: FONT.extrabold, color: COLORS.text },
+  sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  sectionActionText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primary },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACE[3] },
   errorText: { fontSize: FONT.sm, color: COLORS.error, textAlign: 'center' },
   retryBtn: {
@@ -510,25 +659,40 @@ const styles = StyleSheet.create({
   },
   retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
   emptyText: { fontSize: FONT.sm, color: COLORS.textMuted },
-  listCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.xl,
-    padding: SPACE[4],
-    gap: SPACE[3],
-    marginBottom: SPACE[3],
+    marginBottom: SPACE[4],
     borderWidth: 1,
     borderColor: COLORS.borderLight,
+    overflow: 'hidden',
     ...SHADOW.sm,
   },
-  listCardLeft: {},
-  listInfo: { flex: 1, gap: 6 },
-  listName: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text },
+  cardImageWrap: { position: 'relative' },
+  cardImage: { width: '100%', height: 140 },
+  cardImageFallback: { backgroundColor: COLORS.surfaceAlt, alignItems: 'center', justifyContent: 'center' },
+  bookmarkBtn: {
+    position: 'absolute',
+    top: SPACE[3],
+    right: SPACE[3],
+    width: 34,
+    height: 34,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOW.sm,
+  },
+  cardBody: { padding: SPACE[4], gap: 6 },
+  cardName: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
-  cityBadge: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  subRow: { flexDirection: 'row', alignItems: 'center' },
+  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  ratingText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  ratingCount: { fontSize: FONT.xs, color: COLORS.textMuted },
+  bottomRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 },
+  cityRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   cityText: { fontSize: FONT.xs, color: COLORS.textMuted },
-  descText: { fontSize: FONT.xs, color: COLORS.textSecondary, lineHeight: 18 },
   bookBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -537,11 +701,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: RADIUS.full,
-    alignSelf: 'flex-start',
-    marginTop: 2,
     ...SHADOW.primary,
   },
   bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
+  promoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACE[3],
+    backgroundColor: COLORS.primaryMuted,
+    borderRadius: RADIUS.xl,
+    padding: SPACE[4],
+    marginTop: SPACE[1],
+  },
+  promoIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  promoTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  promoText: { fontSize: FONT.xs, color: COLORS.textSecondary, marginTop: 2, lineHeight: 17 },
   modalRoot: { flex: 1, backgroundColor: COLORS.bg },
   modalHeader: {
     flexDirection: 'row',
