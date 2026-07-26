@@ -544,37 +544,43 @@ export default function BusinessesScreen() {
         <View style={styles.center}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
-      ) : error ? (
-        <View style={styles.center}>
-          <Ionicons name="alert-circle-outline" size={48} color={COLORS.textSecondary} />
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => businessesQuery.refetch()} activeOpacity={0.8}>
-            <Text style={styles.retryBtnText}>Tekrar Dene</Text>
-          </TouchableOpacity>
-        </View>
-      ) : !data || data.items.length === 0 ? (
-        <View style={styles.center}>
-          <Ionicons name="business-outline" size={48} color={COLORS.textMuted} />
-          <Text style={styles.emptyText}>İşletme bulunamadı</Text>
-        </View>
       ) : (
         <FlatList
-          data={data.items}
+          data={data?.items ?? []}
           keyExtractor={(item) => item.id}
           renderItem={renderBusinessCard}
           contentContainerStyle={{ padding: SPACE[4], paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
+          // Kept as the list header (not a sibling) so the nearby slider and the
+          // location prompt scroll with the list — and stay visible even when the
+          // list below is empty or errored.
           ListHeaderComponent={renderNearbySection}
+          ListEmptyComponent={
+            error ? (
+              <View style={styles.inlineState}>
+                <Ionicons name="alert-circle-outline" size={44} color={COLORS.textSecondary} />
+                <Text style={styles.errorText}>{error}</Text>
+                <TouchableOpacity style={styles.retryBtn} onPress={() => businessesQuery.refetch()} activeOpacity={0.8}>
+                  <Text style={styles.retryBtnText}>Tekrar Dene</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.inlineState}>
+                <Ionicons name="business-outline" size={44} color={COLORS.textMuted} />
+                <Text style={styles.emptyText}>İşletme bulunamadı</Text>
+              </View>
+            )
+          }
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => businessesQuery.refetch()} tintColor={COLORS.primary} />}
           onEndReached={() => {
-            if (data.hasNextPage) {
+            if (data?.hasNextPage) {
               setPage(page + 1);
             }
           }}
           onEndReachedThreshold={0.3}
           ListFooterComponent={
             <View style={{ gap: SPACE[3] }}>
-              {data.hasNextPage && (
+              {data?.hasNextPage && (
                 <View style={{ paddingVertical: SPACE[3] }}>
                   <ActivityIndicator size="small" color={COLORS.primary} />
                 </View>
@@ -850,6 +856,7 @@ const styles = StyleSheet.create({
   sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   sectionActionText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primary },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACE[3] },
+  inlineState: { alignItems: 'center', justifyContent: 'center', gap: SPACE[3], paddingVertical: SPACE[8] },
   errorText: { fontSize: FONT.sm, color: COLORS.error, textAlign: 'center' },
   retryBtn: {
     paddingHorizontal: SPACE[5],
