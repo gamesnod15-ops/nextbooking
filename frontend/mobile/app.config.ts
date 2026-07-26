@@ -52,7 +52,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/images/adaptive-icon.png',
-      backgroundColor: '#0A0A0A',
+      backgroundColor: '#08224B',
     },
     package: 'com.jetrandevu.app',
     versionCode: 1,
