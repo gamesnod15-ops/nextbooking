@@ -30,6 +30,8 @@ public class TenantResolutionMiddleware
         "/api/v1/users",
         "/api/v1/reviews",
         "/api/v1/geocoding",
+        "/api/v1/push-tokens",
+        "/api/v1/client-errors",
         "/health",
         "/swagger",
         "/hangfire"

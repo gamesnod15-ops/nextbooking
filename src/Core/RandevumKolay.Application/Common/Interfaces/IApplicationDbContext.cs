@@ -33,6 +33,8 @@ public interface IApplicationDbContext
     DbSet<PaymentCard> PaymentCards { get; }
     DbSet<Review> Reviews { get; }
     DbSet<Favorite> Favorites { get; }
+    DbSet<PushToken> PushTokens { get; }
+    DbSet<ClientErrorLog> ClientErrorLogs { get; }
     DbSet<ProductPurchase> ProductPurchases { get; }
     DbSet<QueueItem> QueueItems { get; }
     DbSet<WaitingListEntry> WaitingListEntries { get; }
