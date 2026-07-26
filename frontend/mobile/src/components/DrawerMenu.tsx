@@ -1,13 +1,17 @@
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, ScrollView, Platform, Alert } from 'react-native';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, Dimensions, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
-import { COLORS, FONT, RADIUS, SPACE } from '@/lib/theme';
-import { useAppDispatch } from '@/store';
+import Constants from 'expo-constants';
+import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { logout as logoutAction } from '@/store/slices/authSlice';
 import { clearBusiness } from '@/store/slices/businessSlice';
+import { Avatar } from '@/components/ui/Avatar';
+
+const LOGO = require('../../assets/images/logo-jetrandevu.png');
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DRAWER_WIDTH = SCREEN_WIDTH * 0.75;
@@ -137,7 +141,12 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
 function DrawerContent({ anim, isOpen, onClose }: { anim: Animated.Value; isOpen: boolean; onClose: () => void }) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const auth = useAppSelector((s) => s.auth);
+  const business = useAppSelector((s) => s.business.business);
+  const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+  const year = new Date().getFullYear();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     'Yönetim': true,
     'Finans & Pazarlama': false,
@@ -169,43 +178,89 @@ function DrawerContent({ anim, isOpen, onClose }: { anim: Animated.Value; isOpen
       >
         <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
       </Animated.View>
-      <Animated.View style={[styles.drawer, { transform: [{ translateX }], paddingTop: insets.top + 50 }]}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+      <Animated.View style={[styles.drawer, { transform: [{ translateX }], paddingTop: insets.top + SPACE[4] }]}>
+        {/* Brand header */}
+        <View style={styles.brandBlock}>
+          <View style={styles.brandBlob} pointerEvents="none" />
+          <Image source={LOGO} style={styles.brandLogo} resizeMode="contain" />
+          <TouchableOpacity
+            style={styles.profileRow}
+            activeOpacity={0.75}
+            onPress={() => navigate('/(pages)/settings')}
+          >
+            <Avatar name={auth.fullName ?? business?.name ?? 'İşletme'} url={auth.avatarUrl ?? ''} size={40} />
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={styles.profileName} numberOfLines={1}>
+                {auth.fullName ?? business?.name ?? 'İşletme'}
+              </Text>
+              <Text style={styles.profileMeta} numberOfLines={1}>
+                {auth.email ?? business?.name ?? 'Hesabımı yönet'}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: SPACE[6] }}>
           {MENU_SECTIONS.map((section) => {
             const isOpen_ = openSections[section.title];
             return (
               <View key={section.title}>
                 <TouchableOpacity style={styles.sectionHeader} activeOpacity={0.7} onPress={() => toggleSection(section.title)}>
                   <Text style={styles.sectionTitle}>{section.title}</Text>
-                  <Ionicons name={isOpen_ ? 'chevron-up' : 'chevron-down'} size={16} color={COLORS.textMuted} />
+                  <Ionicons name={isOpen_ ? 'chevron-up' : 'chevron-down'} size={15} color={COLORS.textMuted} />
                 </TouchableOpacity>
-                {isOpen_ && section.items.map((item) => (
-                  <TouchableOpacity key={item.id} style={styles.menuItem} activeOpacity={0.7} onPress={() => navigate(item.route)}>
-                    <View style={[styles.menuIconBox, { backgroundColor: (item.color ?? COLORS.primaryDark) + '18' }]}>
-                      <Ionicons name={item.icon} size={20} color={item.color ?? COLORS.primaryDark} />
-                    </View>
-                    <Text style={styles.menuLabel}>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                {isOpen_ && section.items.map((item) => {
+                  const active = pathname?.includes(`/${item.id}`) ?? false;
+                  const tint = item.color ?? COLORS.primary;
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[styles.menuItem, active && styles.menuItemActive]}
+                      activeOpacity={0.7}
+                      onPress={() => navigate(item.route)}
+                    >
+                      <View style={[styles.menuIconBox, { backgroundColor: tint + '18' }]}>
+                        <Ionicons name={item.icon} size={19} color={tint} />
+                      </View>
+                      <Text style={[styles.menuLabel, active && styles.menuLabelActive]} numberOfLines={1}>
+                        {item.label}
+                      </Text>
+                      {active && <View style={styles.activeBar} />}
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             );
           })}
         </ScrollView>
-        <TouchableOpacity
-          style={[styles.logoutBtn, { paddingBottom: insets.bottom + 20 }]}
-          activeOpacity={0.8}
-          onPress={async () => {
-            onClose();
-            await SecureStore.deleteItemAsync('access_token');
-            await SecureStore.deleteItemAsync('auth_data');
-            dispatch(logoutAction());
-            dispatch(clearBusiness());
-            router.replace('/');
-          }}
-        >
-          <Ionicons name="log-out-outline" size={20} color={COLORS.textSecondary} />
-          <Text style={styles.logoutText}>Çıkış Yap</Text>
-        </TouchableOpacity>
+
+        {/* Footer */}
+        <View style={[styles.footer, { paddingBottom: insets.bottom + SPACE[3] }]}>
+          <TouchableOpacity
+            style={styles.logoutBtn}
+            activeOpacity={0.8}
+            onPress={async () => {
+              onClose();
+              await SecureStore.deleteItemAsync('access_token');
+              await SecureStore.deleteItemAsync('auth_data');
+              dispatch(logoutAction());
+              dispatch(clearBusiness());
+              router.replace('/');
+            }}
+          >
+            <Ionicons name="log-out-outline" size={19} color={COLORS.error} />
+            <Text style={styles.logoutText}>Çıkış Yap</Text>
+          </TouchableOpacity>
+
+          <View style={styles.legal}>
+            <Text style={styles.versionText}>Sürüm {appVersion}</Text>
+            <View style={styles.copyrightRow}>
+              <Ionicons name="shield-checkmark-outline" size={11} color={COLORS.textMuted} />
+              <Text style={styles.copyrightText}>© {year} JetRandevu</Text>
+            </View>
+          </View>
+        </View>
       </Animated.View>
     </View>
   );
@@ -244,19 +299,61 @@ const styles = StyleSheet.create({
     width: DRAWER_WIDTH,
     backgroundColor: COLORS.surface,
     paddingHorizontal: SPACE[4],
-    borderRightWidth: 1,
-    borderRightColor: COLORS.border,
+    borderTopRightRadius: RADIUS['2xl'],
+    borderBottomRightRadius: RADIUS['2xl'],
     shadowColor: COLORS.primaryDark,
     shadowOffset: { width: 4, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 20,
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    elevation: 24,
+    overflow: 'hidden',
+  },
+  brandBlock: {
+    paddingBottom: SPACE[4],
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderLight,
+    gap: SPACE[4],
+  },
+  brandBlob: {
+    position: 'absolute',
+    top: -80,
+    left: -50,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: COLORS.primary,
+    opacity: 0.06,
+  },
+  brandLogo: {
+    width: 132,
+    height: 30,
+    marginLeft: SPACE[1],
+  },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACE[3],
+    backgroundColor: COLORS.surfaceAlt,
+    borderRadius: RADIUS.xl,
+    padding: SPACE[3],
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
+  profileName: {
+    fontSize: FONT.sm,
+    fontWeight: FONT.bold,
+    color: COLORS.text,
+  },
+  profileMeta: {
+    fontSize: FONT.xs,
+    color: COLORS.textMuted,
+    marginTop: 1,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: SPACE[5],
+    marginTop: SPACE[4],
     marginBottom: SPACE[1],
     paddingHorizontal: SPACE[2],
     paddingVertical: SPACE[2],
@@ -272,9 +369,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACE[3],
-    paddingVertical: 12,
+    paddingVertical: 11,
     paddingHorizontal: SPACE[2],
     borderRadius: RADIUS.lg,
+    position: 'relative',
+  },
+  menuItemActive: {
+    backgroundColor: COLORS.primaryMuted,
+  },
+  activeBar: {
+    position: 'absolute',
+    left: 0,
+    top: 10,
+    bottom: 10,
+    width: 3,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.primary,
   },
   menuIconBox: {
     width: 36,
@@ -284,9 +394,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   menuLabel: {
+    flex: 1,
     fontSize: FONT.base,
     color: COLORS.text,
     fontWeight: FONT.medium,
+  },
+  menuLabelActive: {
+    color: COLORS.primaryDark,
+    fontWeight: FONT.bold,
   },
   menuBtn: {
     width: 40,
@@ -304,20 +419,45 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: COLORS.primary,
   },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderLight,
+    paddingTop: SPACE[3],
+    gap: SPACE[3],
+  },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACE[3],
-    paddingVertical: 14,
-    paddingHorizontal: SPACE[2],
-    marginHorizontal: SPACE[2],
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
+    justifyContent: 'center',
+    gap: SPACE[2],
+    paddingVertical: 12,
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.errorLight,
+    borderWidth: 1,
+    borderColor: COLORS.error + '33',
   },
   logoutText: {
     fontSize: FONT.base,
-    fontWeight: FONT.semibold,
-    color: COLORS.textSecondary,
+    fontWeight: FONT.bold,
+    color: COLORS.error,
+  },
+  legal: {
+    alignItems: 'center',
+    gap: 3,
+  },
+  versionText: {
+    fontSize: FONT.xs,
+    color: COLORS.textMuted,
+    fontWeight: FONT.medium,
+  },
+  copyrightRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  copyrightText: {
+    fontSize: 10,
+    color: COLORS.textMuted,
   },
   notifDot: {
     position: 'absolute',

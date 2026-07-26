@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,6 +13,7 @@ import Animated, {
 import { useAppDispatch } from '@/store';
 import { setCredentials } from '@/store/slices/authSlice';
 import { COLORS } from '@/lib/theme';
+import { ONBOARDING_KEY } from './welcome';
 
 const NO_REDUCE_MOTION = { reduceMotion: ReduceMotion.Never };
 
@@ -34,8 +36,9 @@ export default function SplashScreen() {
   }, []);
 
   async function init() {
-    let target: '/(business)' | '/(customer)' | '/(auth)/login' = '/(auth)/login';
+    let target: '/(business)' | '/(customer)' | '/(auth)/login' | '/welcome' = '/(auth)/login';
 
+    let signedIn = false;
     try {
       const raw = await SecureStore.getItemAsync('auth_data');
       if (raw) {
@@ -43,8 +46,17 @@ export default function SplashScreen() {
         dispatch(setCredentials(auth));
         const role = auth.appRole || 'business';
         target = role === 'business' ? '/(business)' : '/(customer)';
+        signedIn = true;
       }
     } catch { /* ignore */ }
+
+    // First launch (and not already signed in) → show onboarding before login.
+    if (!signedIn) {
+      try {
+        const seen = await AsyncStorage.getItem(ONBOARDING_KEY);
+        if (!seen) target = '/welcome';
+      } catch { /* a read failure just falls through to login */ }
+    }
 
     setTimeout(() => {
       screenOpacity.value = withTiming(0, { duration: FADE_DURATION, ...NO_REDUCE_MOTION });

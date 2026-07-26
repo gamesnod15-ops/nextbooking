@@ -26,6 +26,7 @@ export default function RootLayout() {
             {Platform.OS === 'android' && <NavigationBar hidden style="dark" />}
             <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
               <Stack.Screen name="index" />
+              <Stack.Screen name="welcome" />
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(business)" />
               <Stack.Screen name="(customer)" />

@@ -22,9 +22,16 @@ const api = axios.create({
 
 // ─── Request interceptor: attach JWT ────────────────────────────────────────
 api.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('access_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // A token read failure (e.g. SecureStore is unavailable on web) must not take
+  // down every request — plenty of endpoints are anonymous and work fine
+  // without an Authorization header.
+  try {
+    const token = await SecureStore.getItemAsync('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch {
+    /* send the request unauthenticated */
   }
   return config;
 });

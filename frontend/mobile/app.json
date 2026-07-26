@@ -30,7 +30,19 @@
       "expo-router",
       "expo-font",
       "expo-secure-store",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "JetRandevu, yakınındaki işletmeleri mesafeye göre listelemek için konumunu kullanır."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "JetRandevu, profil fotoğrafını değiştirebilmen için galerine erişir."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

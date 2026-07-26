@@ -11,6 +11,7 @@ import {
   Modal,
   RefreshControl,
   Image,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -22,6 +23,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import api, { fixImageUrl } from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
+import { useUserLocation } from '@/lib/useUserLocation';
 
 interface BusinessItem {
   id: string;
@@ -36,6 +38,14 @@ interface BusinessItem {
   isActive: boolean;
   averageRating: number;
   reviewCount: number;
+  latitude: number | null;
+  longitude: number | null;
+  distanceKm: number | null;
+}
+
+function formatDistance(km: number | null): string | null {
+  if (km == null) return null;
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 }
 
 interface CategoryItem {
@@ -55,6 +65,7 @@ interface PaginatedResult<T> {
 }
 
 const PAGE_SIZE = 20;
+const SLIDE_WIDTH = Math.round(Dimensions.get('window').width * 0.66);
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   'Kuaför & Berber': 'cut-outline',
@@ -97,6 +108,8 @@ export default function BusinessesScreen() {
   const [expandedCategories, setExpandedCategories] = useState(true);
   const [expandedCities, setExpandedCities] = useState(true);
 
+  const location = useUserLocation();
+
   const { data: favorites = [], refetch: refetchFavorites } = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
@@ -132,6 +145,23 @@ export default function BusinessesScreen() {
     staleTime: 60 * 1000,
     placeholderData: (prev: PaginatedResult<BusinessItem> | undefined) => prev,
   });
+  // Nearby slider — only meaningful once we have a GPS fix.
+  const nearbyQuery = useQuery({
+    queryKey: ['businesses-nearby', location.coords?.latitude, location.coords?.longitude],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('pageNumber', '1');
+      params.set('pageSize', '10');
+      params.set('lat', String(location.coords!.latitude));
+      params.set('lng', String(location.coords!.longitude));
+      const res = await api.get(`/businesses?${params.toString()}`);
+      return res.data as PaginatedResult<BusinessItem>;
+    },
+    enabled: !!location.coords,
+    staleTime: 2 * 60 * 1000,
+  });
+  const nearby = nearbyQuery.data?.items ?? [];
+
   const data = businessesQuery.data ?? null;
   const loading = businessesQuery.isLoading;
   const refreshing = businessesQuery.isFetching && !businessesQuery.isLoading;
@@ -213,6 +243,136 @@ export default function BusinessesScreen() {
   function handleSearch(text: string) {
     setSearch(text);
     setPage(1);
+  }
+
+  function renderNearbyCard({ item }: { item: BusinessItem }) {
+    const imageUrl = item.coverImageUrl || item.logoUrl;
+    const isFavorite = favoriteIds.has(item.id);
+    const dist = formatDistance(item.distanceKm);
+    return (
+      <TouchableOpacity
+        activeOpacity={0.92}
+        style={styles.slideCard}
+        onPress={() => router.push(`/(customer)/business/${item.id}`)}
+      >
+        <View style={styles.slideImageWrap}>
+          {imageUrl ? (
+            <Image source={{ uri: fixImageUrl(imageUrl) }} style={styles.slideImage} />
+          ) : (
+            <View style={[styles.slideImage, styles.cardImageFallback]}>
+              <Avatar name={item.name} size={48} />
+            </View>
+          )}
+          {dist && (
+            <View style={styles.distancePill}>
+              <Ionicons name="navigate" size={10} color={COLORS.white} />
+              <Text style={styles.distancePillText}>{dist}</Text>
+            </View>
+          )}
+          <TouchableOpacity
+            style={styles.slideBookmark}
+            onPress={() => favoriteMutation.mutate({ businessId: item.id, isFavorite })}
+            disabled={favoriteMutation.isPending}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name={isFavorite ? 'bookmark' : 'bookmark-outline'} size={15} color={isFavorite ? COLORS.primary : COLORS.textSecondary} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.slideBody}>
+          <Text style={styles.slideName} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.slideCategory} numberOfLines={1}>{item.categoryName}</Text>
+          <View style={styles.slideMetaRow}>
+            {item.reviewCount > 0 ? (
+              <View style={styles.ratingRow}>
+                <Ionicons name="star" size={12} color={COLORS.warning} />
+                <Text style={styles.ratingText}>{item.averageRating.toFixed(1)}</Text>
+                <Text style={styles.ratingCount}>({item.reviewCount})</Text>
+              </View>
+            ) : (
+              <Text style={styles.ratingCount}>Yeni</Text>
+            )}
+            {item.city ? <Text style={styles.slideCity} numberOfLines={1}>{item.city}</Text> : null}
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  function renderNearbySection() {
+    const granted = location.status === 'granted';
+    const asking = location.status === 'loading';
+
+    return (
+      <View style={styles.nearbyWrap}>
+        <View style={styles.sectionHeaderInline}>
+          <Text style={styles.sectionTitle}>Yakındaki İşletmeler</Text>
+          {granted && nearby.length > 0 && (
+            <View style={styles.sectionAction}>
+              <Ionicons name="location" size={13} color={COLORS.primary} />
+              <Text style={styles.sectionActionText}>Konumuna göre</Text>
+            </View>
+          )}
+        </View>
+
+        {!granted ? (
+          <View style={styles.locationCard}>
+            <View style={styles.locationIconWrap}>
+              <Ionicons name="location-outline" size={22} color={COLORS.primary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.locationTitle}>
+                {location.status === 'disabled' ? 'Konum servisi kapalı' : 'Yakınındakileri gör'}
+              </Text>
+              <Text style={styles.locationText}>
+                {location.status === 'denied'
+                  ? 'Konum izni reddedildi. Ayarlardan izin vererek en yakın işletmeleri sıralayabilirsin.'
+                  : location.status === 'disabled'
+                  ? 'Cihazının konum servisini açtıktan sonra tekrar dene.'
+                  : location.status === 'unavailable'
+                  ? 'Konum alınamadı. Tekrar denemek ister misin?'
+                  : 'Konumunu paylaş, sana en yakın işletmeleri mesafeye göre sıralayalım.'}
+              </Text>
+              <TouchableOpacity
+                style={styles.locationBtn}
+                onPress={location.status === 'denied' ? location.openSettings : location.request}
+                disabled={asking}
+                activeOpacity={0.85}
+              >
+                {asking ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <>
+                    <Ionicons name="navigate" size={14} color={COLORS.white} />
+                    <Text style={styles.locationBtnText}>
+                      {location.status === 'denied' ? 'Ayarları Aç' : 'Konumu Aç'}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : nearbyQuery.isLoading ? (
+          <View style={styles.nearbyLoading}>
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          </View>
+        ) : nearby.length === 0 ? (
+          <Text style={styles.nearbyEmpty}>Yakınında kayıtlı işletme bulunamadı.</Text>
+        ) : (
+          <FlatList
+            data={nearby}
+            keyExtractor={(i) => `nearby-${i.id}`}
+            renderItem={renderNearbyCard}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={SLIDE_WIDTH + SPACE[3]}
+            decelerationRate="fast"
+            contentContainerStyle={styles.sliderContent}
+          />
+        )}
+
+        <Text style={[styles.sectionTitle, styles.allTitle]}>Tüm İşletmeler</Text>
+      </View>
+    );
   }
 
   function renderBusinessCard({ item }: { item: BusinessItem }) {
@@ -380,18 +540,6 @@ export default function BusinessesScreen() {
         </ScrollView>
       )}
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Yakındaki İşletmeler</Text>
-        {activeFilterCount > 0 && (
-          <TouchableOpacity onPress={clearAllFilters} activeOpacity={0.7}>
-            <View style={styles.sectionAction}>
-              <Text style={styles.sectionActionText}>Tümünü Gör</Text>
-              <Ionicons name="chevron-forward" size={14} color={COLORS.primary} />
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
-
       {loading && !refreshing ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -416,6 +564,7 @@ export default function BusinessesScreen() {
           renderItem={renderBusinessCard}
           contentContainerStyle={{ padding: SPACE[4], paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={renderNearbySection}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => businessesQuery.refetch()} tintColor={COLORS.primary} />}
           onEndReached={() => {
             if (data.hasNextPage) {
@@ -638,6 +787,65 @@ const styles = StyleSheet.create({
   },
   clearChipText: { fontSize: FONT.xs, fontWeight: FONT.medium, color: COLORS.textMuted },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: SPACE[5], paddingTop: SPACE[3] },
+  nearbyWrap: { marginBottom: SPACE[2] },
+  sectionHeaderInline: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACE[3] },
+  allTitle: { marginTop: SPACE[5], marginBottom: SPACE[3] },
+  sliderContent: { gap: SPACE[3], paddingRight: SPACE[2] },
+  nearbyLoading: { paddingVertical: SPACE[6], alignItems: 'center' },
+  nearbyEmpty: { fontSize: FONT.sm, color: COLORS.textMuted, paddingVertical: SPACE[4] },
+
+  slideCard: {
+    width: SLIDE_WIDTH,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    overflow: 'hidden',
+    ...SHADOW.sm,
+  },
+  slideImageWrap: { position: 'relative' },
+  slideImage: { width: '100%', height: 104 },
+  slideBookmark: {
+    position: 'absolute', top: SPACE[2], right: SPACE[2],
+    width: 30, height: 30, borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surface, alignItems: 'center', justifyContent: 'center', ...SHADOW.sm,
+  },
+  distancePill: {
+    position: 'absolute', bottom: SPACE[2], left: SPACE[2],
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: 'rgba(8,34,75,0.82)',
+    paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.full,
+  },
+  distancePillText: { fontSize: 10, fontWeight: FONT.bold, color: COLORS.white },
+  slideBody: { padding: SPACE[3], gap: 3 },
+  slideName: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text },
+  slideCategory: { fontSize: FONT.xs, color: COLORS.textMuted },
+  slideMetaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2, gap: SPACE[2] },
+  slideCity: { fontSize: FONT.xs, color: COLORS.textMuted, flexShrink: 1 },
+
+  locationCard: {
+    flexDirection: 'row',
+    gap: SPACE[3],
+    backgroundColor: COLORS.primaryMuted,
+    borderRadius: RADIUS.xl,
+    padding: SPACE[4],
+    borderWidth: 1,
+    borderColor: COLORS.primary + '22',
+  },
+  locationIconWrap: {
+    width: 44, height: 44, borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surface, alignItems: 'center', justifyContent: 'center',
+  },
+  locationTitle: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text },
+  locationText: { fontSize: FONT.xs, color: COLORS.textSecondary, lineHeight: 17, marginTop: 3 },
+  locationBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    alignSelf: 'flex-start', marginTop: SPACE[3],
+    backgroundColor: COLORS.primary, borderRadius: RADIUS.full,
+    paddingHorizontal: 16, paddingVertical: 9, minWidth: 130,
+    ...SHADOW.primary,
+  },
+  locationBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
   sectionTitle: { fontSize: FONT.lg, fontWeight: FONT.extrabold, color: COLORS.text },
   sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   sectionActionText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primary },
