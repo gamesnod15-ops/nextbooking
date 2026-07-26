@@ -14,6 +14,7 @@ import { NetworkProvider } from '@/components/OfflineBanner';
 import { ToastProvider } from '@/components/ui/Toast';
 import { reportError } from '@/lib/errorReporting';
 import { usePushNotifications } from '@/lib/pushNotifications';
+import { UpdateGate } from '@/components/UpdateGate';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,16 +41,18 @@ export default function RootLayout() {
             <SafeAreaProvider>
               <NetworkProvider>
                 <ToastProvider>
-                  <PushBridge />
-                  <StatusBar style="dark" />
-                  {Platform.OS === 'android' && <NavigationBar hidden style="dark" />}
-                  <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
-                    <Stack.Screen name="index" />
-                    <Stack.Screen name="welcome" />
-                    <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="(business)" />
-                    <Stack.Screen name="(customer)" />
-                  </Stack>
+                  <UpdateGate>
+                    <PushBridge />
+                    <StatusBar style="dark" />
+                    {Platform.OS === 'android' && <NavigationBar hidden style="dark" />}
+                    <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+                      <Stack.Screen name="index" />
+                      <Stack.Screen name="welcome" />
+                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="(business)" />
+                      <Stack.Screen name="(customer)" />
+                    </Stack>
+                  </UpdateGate>
                 </ToastProvider>
               </NetworkProvider>
             </SafeAreaProvider>

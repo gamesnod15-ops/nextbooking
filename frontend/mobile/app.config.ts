@@ -81,6 +81,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
   ],
+  // OTA updates: ship JS-only fixes without another store review.
+  // `runtimeVersion` is tied to the native ABI, so a build only accepts
+  // updates compiled against the same native code.
+  updates: {
+    fallbackToCacheTimeout: 0,
+    checkAutomatically: 'ON_LOAD',
+  },
+  runtimeVersion: {
+    policy: 'appVersion',
+  },
   experiments: {
     typedRoutes: true,
   },
