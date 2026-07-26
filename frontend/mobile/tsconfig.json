@@ -15,6 +15,9 @@
     "target": "esnext",
     "strict": true,
     "ignoreDeprecations": "6.0",
+    "types": [
+      "jest"
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": [

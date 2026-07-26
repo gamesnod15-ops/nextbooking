@@ -15,6 +15,8 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { reportError } from '@/lib/errorReporting';
 import { usePushNotifications } from '@/lib/pushNotifications';
 import { UpdateGate } from '@/components/UpdateGate';
+import { I18nProvider } from '@/i18n';
+import { ThemeProvider } from '@/lib/themeContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +38,8 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <ErrorBoundary>
+        <ThemeProvider>
+        <I18nProvider>
         <Provider store={store}>
           <QueryClientProvider client={queryClient}>
             <SafeAreaProvider>
@@ -58,6 +62,8 @@ export default function RootLayout() {
             </SafeAreaProvider>
           </QueryClientProvider>
         </Provider>
+        </I18nProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>
   );

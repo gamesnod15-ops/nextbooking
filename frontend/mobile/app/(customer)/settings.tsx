@@ -8,6 +8,8 @@ import Constants from 'expo-constants';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { useToast } from '@/components/ui/Toast';
+import { useTheme } from '@/lib/themeContext';
+import { useI18n } from '@/i18n';
 import {
   authenticate,
   getBiometricSupport,
@@ -33,6 +35,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [clearing, setClearing] = useState(false);
   const toast = useToast();
+  const { preference, setPreference } = useTheme();
+  const { locale, setLocale } = useI18n();
   const [biometric, setBiometric] = useState<BiometricSupport | null>(null);
   const [lockEnabled, setLockEnabled] = useState(false);
 
@@ -100,6 +104,58 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Text style={styles.sectionLabel}>Görünüm ve Dil</Text>
+        <View style={styles.list}>
+          <View style={[styles.item, { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight }]}>
+            <View style={styles.iconBox}>
+              <Ionicons name="contrast-outline" size={18} color={COLORS.primary} />
+            </View>
+            <Text style={styles.label}>Tema</Text>
+            <View style={styles.segment}>
+              {([
+                ['light', 'Açık'],
+                ['dark', 'Koyu'],
+                ['system', 'Sistem'],
+              ] as const).map(([value, label]) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[styles.segmentBtn, preference === value && styles.segmentBtnActive]}
+                  onPress={() => setPreference(value)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.segmentText, preference === value && styles.segmentTextActive]}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.item}>
+            <View style={styles.iconBox}>
+              <Ionicons name="language-outline" size={18} color={COLORS.primary} />
+            </View>
+            <Text style={styles.label}>Dil</Text>
+            <View style={styles.segment}>
+              {([
+                ['tr', 'TR'],
+                ['en', 'EN'],
+              ] as const).map(([value, label]) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[styles.segmentBtn, locale === value && styles.segmentBtnActive]}
+                  onPress={() => setLocale(value)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.segmentText, locale === value && styles.segmentTextActive]}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
         <Text style={styles.sectionLabel}>Tercihler</Text>
         <View style={styles.list}>
           {LINK_ITEMS.map((item, idx) => (
@@ -207,6 +263,17 @@ const styles = StyleSheet.create({
   iconBoxDanger: { backgroundColor: COLORS.errorLight },
   label: { flex: 1, fontSize: FONT.base, fontWeight: FONT.semibold, color: COLORS.text },
   itemHint: { fontSize: FONT.xs, color: COLORS.textMuted, marginTop: 2 },
+  segment: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surfaceAlt,
+    borderRadius: RADIUS.full,
+    padding: 3,
+    gap: 2,
+  },
+  segmentBtn: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full },
+  segmentBtnActive: { backgroundColor: COLORS.primary },
+  segmentText: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textSecondary },
+  segmentTextActive: { color: COLORS.white },
   labelDanger: { color: COLORS.error },
   value: { fontSize: FONT.sm, color: COLORS.textMuted },
 });
