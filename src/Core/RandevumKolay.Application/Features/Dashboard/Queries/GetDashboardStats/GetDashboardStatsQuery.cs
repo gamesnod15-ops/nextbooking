@@ -37,7 +37,7 @@ public record AppointmentSummaryDto(
     AppointmentStatus Status,
     decimal Price);
 
-public record WeeklyStatDto(string Day, int Appointments, decimal Revenue);
+public record WeeklyStatDto(string Day, int Appointments, decimal Revenue, int Completed, int Cancelled, int Pending);
 
 public record MonthlyStatDto(string Month, int Appointments, decimal Revenue);
 
@@ -155,7 +155,10 @@ public sealed class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboard
             weekStats.Add(new WeeklyStatDto(
                 dayNames[(int)dayStart.DayOfWeek],
                 dayAppts.Count,
-                dayAppts.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => a.Price)));
+                dayAppts.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => a.Price),
+                dayAppts.Count(a => a.Status == AppointmentStatus.Completed),
+                dayAppts.Count(a => a.Status == AppointmentStatus.Cancelled),
+                dayAppts.Count(a => a.Status == AppointmentStatus.Pending)));
         }
 
         // Monthly stats (last 6 months)
