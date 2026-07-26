@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,14 @@ import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { DotGrid } from '@/components/ui/DotGrid';
+import { useToast } from '@/components/ui/Toast';
+import {
+  authenticate,
+  getBiometricSupport,
+  isBiometricLockEnabled,
+  setBiometricLockEnabled,
+  type BiometricSupport,
+} from '@/lib/biometricLock';
 
 const LINK_ITEMS = [
   { icon: 'notifications-outline', label: 'Bildirimler', route: '/(customer)/notifications' },
@@ -24,6 +32,31 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [clearing, setClearing] = useState(false);
+  const toast = useToast();
+  const [biometric, setBiometric] = useState<BiometricSupport | null>(null);
+  const [lockEnabled, setLockEnabled] = useState(false);
+
+  useEffect(() => {
+    getBiometricSupport().then(setBiometric).catch(() => setBiometric(null));
+    isBiometricLockEnabled().then(setLockEnabled).catch(() => {});
+  }, []);
+
+  async function toggleBiometricLock() {
+    const turningOn = !lockEnabled;
+
+    // Verify before enabling so nobody can lock the owner out by accident.
+    if (turningOn) {
+      const ok = await authenticate('Kilidi açmak için kimliğini doğrula');
+      if (!ok) {
+        toast.warning('Doğrulama başarısız. Kilit açılmadı.');
+        return;
+      }
+    }
+
+    await setBiometricLockEnabled(turningOn);
+    setLockEnabled(turningOn);
+    toast.success(turningOn ? 'Uygulama kilidi açıldı.' : 'Uygulama kilidi kapatıldı.');
+  }
 
   function handleClearData() {
     Alert.alert(
@@ -84,6 +117,33 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {biometric?.available && (
+          <>
+            <Text style={styles.sectionLabel}>Güvenlik</Text>
+            <View style={styles.list}>
+              <View style={styles.item}>
+                <View style={styles.iconBox}>
+                  <Ionicons
+                    name={biometric.kind === 'face' ? 'scan-outline' : 'finger-print-outline'}
+                    size={18}
+                    color={COLORS.primary}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>Uygulama Kilidi</Text>
+                  <Text style={styles.itemHint}>{biometric.label} ile aç</Text>
+                </View>
+                <Switch
+                  value={lockEnabled}
+                  onValueChange={toggleBiometricLock}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary }}
+                  thumbColor={COLORS.white}
+                />
+              </View>
+            </View>
+          </>
+        )}
 
         <Text style={styles.sectionLabel}>Veri</Text>
         <View style={styles.list}>
@@ -146,6 +206,7 @@ const styles = StyleSheet.create({
   iconBox: { width: 40, height: 40, borderRadius: RADIUS.md, backgroundColor: COLORS.primaryMuted, alignItems: 'center', justifyContent: 'center' },
   iconBoxDanger: { backgroundColor: COLORS.errorLight },
   label: { flex: 1, fontSize: FONT.base, fontWeight: FONT.semibold, color: COLORS.text },
+  itemHint: { fontSize: FONT.xs, color: COLORS.textMuted, marginTop: 2 },
   labelDanger: { color: COLORS.error },
   value: { fontSize: FONT.sm, color: COLORS.textMuted },
 });

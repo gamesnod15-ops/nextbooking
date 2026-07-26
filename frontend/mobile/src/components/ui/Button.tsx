@@ -9,6 +9,7 @@ import {
   TouchableOpacityProps,
 } from 'react-native';
 import { COLORS, FONT, RADIUS, SHADOW } from '@/lib/theme';
+import { tapFeedback, warningFeedback } from '@/lib/haptics';
 
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
 type Size = 'sm' | 'md' | 'lg';
@@ -22,6 +23,8 @@ interface ButtonProps extends TouchableOpacityProps {
   children: React.ReactNode;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  /** Set false to suppress the tactile tap (e.g. inside a rapid-fire list). */
+  haptic?: boolean;
 }
 
 export function Button({
@@ -34,6 +37,8 @@ export function Button({
   style,
   textStyle,
   disabled,
+  haptic = true,
+  onPress,
   ...props
 }: ButtonProps) {
   const variantStyle = styles[variant];
@@ -42,11 +47,21 @@ export function Button({
   const textSizeStyle = textSizeStyles[size];
   const shadow = variant === 'primary' ? SHADOW.primary : {};
 
+  const handlePress: ButtonProps['onPress'] = (event) => {
+    if (haptic) {
+      variant === 'destructive' ? warningFeedback() : tapFeedback();
+    }
+    onPress?.(event);
+  };
+
   return (
     <TouchableOpacity
       style={[styles.base, variantStyle, sizeStyle, shadow, disabled || loading ? styles.disabled : {}, style]}
       disabled={disabled || loading}
       activeOpacity={0.8}
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading, busy: loading }}
       {...props}
     >
       {loading ? (
