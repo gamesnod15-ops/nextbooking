@@ -11,7 +11,9 @@ public record GetPublicBusinessesQuery(
     List<int>? CategoryIds = null,
     List<string>? Cities = null,
     int PageNumber = 1,
-    int PageSize = 12) : IRequest<PaginatedList<PublicBusinessDto>>;
+    int PageSize = 12,
+    double? Latitude = null,
+    double? Longitude = null) : IRequest<PaginatedList<PublicBusinessDto>>;
 
 public record PublicBusinessDto(
     Guid Id,
@@ -26,7 +28,11 @@ public record PublicBusinessDto(
     bool IsActive,
     string? CoverImageUrl,
     double AverageRating,
-    int ReviewCount);
+    int ReviewCount,
+    double? Latitude,
+    double? Longitude,
+    /// <summary>Great-circle distance from the caller's coordinates, null when none were supplied.</summary>
+    double? DistanceKm);
 
 public sealed class GetPublicBusinessesQueryHandler
     : IRequestHandler<GetPublicBusinessesQuery, PaginatedList<PublicBusinessDto>>
@@ -90,8 +96,7 @@ public sealed class GetPublicBusinessesQueryHandler
             query = query.Where(b => b.City != null && lowerCities.Contains(b.City.ToLower()));
         }
 
-        var businesses = await query
-            .OrderBy(b => b.Name)
+        var rows = await query
             .Select(b => new
             {
                 b.Id,
@@ -104,16 +109,37 @@ public sealed class GetPublicBusinessesQueryHandler
                 b.Description,
                 b.IsActive,
                 b.CoverImageUrl,
+                b.Latitude,
+                b.Longitude,
             })
             .ToListAsync(cancellationToken);
 
+        // When the caller supplies coordinates, order by real distance (nearest first)
+        // and push businesses without coordinates to the end.
+        var businesses = (request.Latitude.HasValue && request.Longitude.HasValue)
+            ? rows
+                .Select(b => new
+                {
+                    Row = b,
+                    Distance = DistanceKm(request.Latitude.Value, request.Longitude.Value, b.Latitude, b.Longitude),
+                })
+                .OrderBy(x => x.Distance ?? double.MaxValue)
+                .ThenBy(x => x.Row.Name)
+                .Select(x => new { x.Row, x.Distance })
+                .ToList()
+            : rows
+                .OrderBy(b => b.Name)
+                .Select(b => new { Row = b, Distance = (double?)null })
+                .ToList();
+
         var totalCount = businesses.Count;
 
-        var pageIds = businesses
+        var page = businesses
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(b => b.Id)
             .ToList();
+
+        var pageIds = page.Select(x => x.Row.Id).ToList();
 
         var ratings = await _context.Reviews
             .AsNoTracking()
@@ -122,24 +148,44 @@ public sealed class GetPublicBusinessesQueryHandler
             .Select(g => new { BusinessId = g.Key, Average = g.Average(r => r.Rating), Count = g.Count() })
             .ToDictionaryAsync(g => g.BusinessId, g => (g.Average, g.Count), cancellationToken);
 
-        var paged = businesses
-            .Where(b => pageIds.Contains(b.Id))
-            .Select(b => new PublicBusinessDto(
-                b.Id,
-                b.Name,
-                b.CategoryId,
-                CategoryNames.GetValueOrDefault((BusinessCategory)b.CategoryId, "Diğer"),
-                b.City,
-                b.Phone,
-                b.LogoUrl,
-                b.Website,
-                b.Description,
-                b.IsActive,
-                b.CoverImageUrl,
-                ratings.TryGetValue(b.Id, out var r) ? Math.Round(r.Average, 1) : 0,
-                ratings.TryGetValue(b.Id, out var r2) ? r2.Count : 0))
+        var paged = page
+            .Select(x => new PublicBusinessDto(
+                x.Row.Id,
+                x.Row.Name,
+                x.Row.CategoryId,
+                CategoryNames.GetValueOrDefault((BusinessCategory)x.Row.CategoryId, "Diğer"),
+                x.Row.City,
+                x.Row.Phone,
+                x.Row.LogoUrl,
+                x.Row.Website,
+                x.Row.Description,
+                x.Row.IsActive,
+                x.Row.CoverImageUrl,
+                ratings.TryGetValue(x.Row.Id, out var r) ? Math.Round(r.Average, 1) : 0,
+                ratings.TryGetValue(x.Row.Id, out var r2) ? r2.Count : 0,
+                x.Row.Latitude,
+                x.Row.Longitude,
+                x.Distance.HasValue ? Math.Round(x.Distance.Value, 1) : null))
             .ToList();
 
         return new PaginatedList<PublicBusinessDto>(paged, totalCount, request.PageNumber, request.PageSize);
     }
+
+    /// <summary>Haversine great-circle distance in kilometres; null when the business has no coordinates.</summary>
+    private static double? DistanceKm(double fromLat, double fromLng, double? toLat, double? toLng)
+    {
+        if (!toLat.HasValue || !toLng.HasValue) return null;
+
+        const double earthRadiusKm = 6371.0;
+        var dLat = ToRadians(toLat.Value - fromLat);
+        var dLng = ToRadians(toLng.Value - fromLng);
+
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+              + Math.Cos(ToRadians(fromLat)) * Math.Cos(ToRadians(toLat.Value))
+              * Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+
+        return earthRadiusKm * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+    }
+
+    private static double ToRadians(double degrees) => degrees * Math.PI / 180.0;
 }

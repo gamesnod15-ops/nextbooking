@@ -25,6 +25,8 @@ public class BusinessesController : ControllerBase
         [FromQuery] string? cities,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 12,
+        [FromQuery] double? lat = null,
+        [FromQuery] double? lng = null,
         CancellationToken cancellationToken = default)
     {
         var parsedCategoryIds = new List<int>();
@@ -47,7 +49,7 @@ public class BusinessesController : ControllerBase
                 .ToList();
 
         var result = await _sender.Send(
-            new GetPublicBusinessesQuery(search, parsedCategoryIds, parsedCities, pageNumber, pageSize),
+            new GetPublicBusinessesQuery(search, parsedCategoryIds, parsedCities, pageNumber, pageSize, lat, lng),
             cancellationToken);
         return Ok(result);
     }
