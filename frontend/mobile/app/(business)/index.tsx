@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
   statLabelBold: { fontSize: 10, color: COLORS.textSecondary, fontWeight: FONT.semibold, textAlign: 'center' },
 
   promoCard: {
-    backgroundColor: '#EEF2FF', borderRadius: RADIUS['2xl'], padding: SPACE[5],
+    backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: RADIUS['2xl'], padding: SPACE[5],
     overflow: 'hidden', gap: 6,
   },
   promoBlob: {
