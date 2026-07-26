@@ -10,7 +10,7 @@ module.exports = function (api) {
           "@": "./src",
         },
       }],
-      "expo-router/babel",
+      // expo-router/babel was folded into babel-preset-expo in SDK 50.
       "react-native-reanimated/plugin"
     ],
   };
