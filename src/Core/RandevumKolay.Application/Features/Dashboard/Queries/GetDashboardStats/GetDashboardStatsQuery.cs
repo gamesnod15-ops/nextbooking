@@ -17,9 +17,15 @@ public record DashboardStatsDto(
     decimal MonthRevenue,
     decimal OccupancyRate,
     int TotalCustomers,
+    decimal MonthAppointmentsTrendPercent,
     List<AppointmentSummaryDto> TodayAppointmentList,
     List<WeeklyStatDto> WeeklyStats,
-    List<MonthlyStatDto> MonthlyStats);
+    List<MonthlyStatDto> MonthlyStats,
+    List<RecentActivityDto> RecentActivities);
+
+public enum RecentActivityType { AppointmentCreated, AppointmentCancelled, CustomerAdded }
+
+public record RecentActivityDto(RecentActivityType Type, string Title, string Subtitle, DateTimeOffset OccurredAt);
 
 public record AppointmentSummaryDto(
     Guid Id,
@@ -91,6 +97,50 @@ public sealed class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboard
         var totalCustomers = await _context.Customers
             .CountAsync(c => c.TenantId == tenantId, cancellationToken);
 
+        // Month-over-month appointment trend
+        var prevMonthStart = monthStart.AddMonths(-1);
+        var prevMonthAppointmentCount = await _context.Appointments
+            .AsNoTracking()
+            .CountAsync(a => a.TenantId == tenantId && a.StartTime >= prevMonthStart && a.StartTime < monthStart, cancellationToken);
+        var monthTrendPercent = prevMonthAppointmentCount > 0
+            ? Math.Round((decimal)(monthAppts.Count - prevMonthAppointmentCount) / prevMonthAppointmentCount * 100, 1)
+            : (monthAppts.Count > 0 ? 100m : 0m);
+
+        // Recent activity feed (real audit timestamps, no synthetic data)
+        var recentActivityWindowStart = now.AddDays(-14);
+        var recentAppointments = await _context.Appointments
+            .AsNoTracking()
+            .Include(a => a.Customer)
+            .Where(a => a.TenantId == tenantId && a.CreatedAt >= recentActivityWindowStart)
+            .OrderByDescending(a => a.CreatedAt)
+            .Take(10)
+            .Select(a => new RecentActivityDto(RecentActivityType.AppointmentCreated, "Yeni randevu oluşturuldu", a.Customer!.Name, a.CreatedAt))
+            .ToListAsync(cancellationToken);
+
+        var recentCancellations = await _context.Appointments
+            .AsNoTracking()
+            .Include(a => a.Customer)
+            .Where(a => a.TenantId == tenantId && a.Status == AppointmentStatus.Cancelled && a.LastModifiedAt != null && a.LastModifiedAt >= recentActivityWindowStart)
+            .OrderByDescending(a => a.LastModifiedAt)
+            .Take(10)
+            .Select(a => new RecentActivityDto(RecentActivityType.AppointmentCancelled, "Randevu iptal edildi", a.Customer!.Name, a.LastModifiedAt!.Value))
+            .ToListAsync(cancellationToken);
+
+        var recentCustomers = await _context.Customers
+            .AsNoTracking()
+            .Where(c => c.TenantId == tenantId && c.CreatedAt >= recentActivityWindowStart)
+            .OrderByDescending(c => c.CreatedAt)
+            .Take(10)
+            .Select(c => new RecentActivityDto(RecentActivityType.CustomerAdded, "Müşteri eklendi", c.Name, c.CreatedAt))
+            .ToListAsync(cancellationToken);
+
+        var recentActivities = recentAppointments
+            .Concat(recentCancellations)
+            .Concat(recentCustomers)
+            .OrderByDescending(a => a.OccurredAt)
+            .Take(6)
+            .ToList();
+
         // Weekly stats (last 7 days)
         var weekStats = new List<WeeklyStatDto>();
         var dayNames = new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" };
@@ -140,8 +190,10 @@ public sealed class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboard
             monthRevenue,
             (decimal)occupancyRate,
             totalCustomers,
+            monthTrendPercent,
             todayList,
             weekStats,
-            monthlyStats);
+            monthlyStats,
+            recentActivities);
     }
 }
