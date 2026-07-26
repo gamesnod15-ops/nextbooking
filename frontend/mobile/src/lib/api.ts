@@ -1,7 +1,16 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import Constants from 'expo-constants';
 
-const BASE_URL = 'https://api-randevumkolay.azurewebsites.net/api/v1';
+/**
+ * Resolved in app.config.ts from EXPO_PUBLIC_API_URL / APP_ENV, so the same
+ * build can be pointed at local, staging or production without a code change.
+ */
+const BASE_URL =
+  (Constants.expoConfig?.extra?.apiUrl as string | undefined) ??
+  'https://api-randevumkolay.azurewebsites.net/api/v1';
+
+export const APP_ENV = (Constants.expoConfig?.extra?.appEnv as string | undefined) ?? 'production';
 
 // Extract the server origin (scheme + host + port) from BASE_URL
 export const API_ORIGIN = BASE_URL.startsWith('http')

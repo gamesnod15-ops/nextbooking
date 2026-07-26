@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { DotGrid } from '@/components/ui/DotGrid';
+import { useToast } from '@/components/ui/Toast';
+import { registerForPushNotifications } from '@/lib/pushNotifications';
 
 const PREFS_KEY = 'notification_prefs';
 
@@ -24,6 +26,7 @@ export default function NotificationsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+  const toast = useToast();
 
   useEffect(() => {
     SecureStore.getItemAsync(PREFS_KEY)
@@ -31,7 +34,20 @@ export default function NotificationsScreen() {
       .catch(() => {});
   }, []);
 
-  function toggle(key: string) {
+  async function toggle(key: string) {
+    const turningOn = !prefs[key];
+
+    // Turning any preference on is meaningless without OS permission, so ask
+    // for it here — this is the one place a system prompt is expected.
+    if (turningOn) {
+      const result = await registerForPushNotifications();
+      if (result.status === 'denied') {
+        toast.warning('Bildirim izni verilmedi. Ayarlardan izin verebilirsin.');
+      } else if (result.status === 'error') {
+        toast.error('Bildirimler açılamadı. Daha sonra tekrar dene.');
+      }
+    }
+
     setPrefs((prev) => {
       const next = { ...prev, [key]: !prev[key] };
       SecureStore.setItemAsync(PREFS_KEY, JSON.stringify(next)).catch(() => {});
