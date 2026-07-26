@@ -297,7 +297,7 @@ export default function BusinessesScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <View style={styles.headerTop}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.greet}>İşletmeler</Text>
             <Text style={styles.heroTitle}>Keşfedin</Text>
           </View>
@@ -314,6 +314,8 @@ export default function BusinessesScreen() {
             )}
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.heroSubtitle}>Hizmet almak istediğin işletmeyi keşfet, randevunu kolayca al.</Text>
 
         <View style={styles.searchBox}>
           <Ionicons name="search-outline" size={18} color={COLORS.textMuted} />
@@ -571,6 +573,7 @@ const styles = StyleSheet.create({
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: SPACE[4] },
   greet: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)' },
   heroTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.white },
+  heroSubtitle: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.65)', lineHeight: 19 },
   filterBtn: {
     width: 44,
     height: 44,
