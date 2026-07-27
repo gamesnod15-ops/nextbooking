@@ -14,17 +14,58 @@ import api from '@/lib/api';
 const { width } = Dimensions.get('window');
 const PERIODS = ['Bugün', 'Bu Hafta', 'Bu Ay', 'Bu Yıl'];
 
+const STATUS_COLORS: Record<string, string> = {
+  'Tamamlandı': '#22C55E',
+  'Onaylandı': '#3B82F6',
+  'Beklemede': '#F59E0B',
+  'İptal': '#EF4444',
+  'Gelmedi': '#6B7280',
+};
+
+function toIsoDate(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+function getPeriodRange(period: string): { startDate: string; endDate: string } {
+  const now = new Date();
+  const today = toIsoDate(now);
+  if (period === 'Bugün') {
+    return { startDate: today, endDate: today };
+  }
+  if (period === 'Bu Hafta') {
+    const weekAgo = new Date(now);
+    weekAgo.setDate(now.getDate() - 6);
+    return { startDate: toIsoDate(weekAgo), endDate: today };
+  }
+  if (period === 'Bu Yıl') {
+    return { startDate: toIsoDate(new Date(now.getFullYear(), 0, 1)), endDate: today };
+  }
+  // 'Bu Ay' (default)
+  return { startDate: toIsoDate(new Date(now.getFullYear(), now.getMonth(), 1)), endDate: today };
+}
+
+// Matches ReportsDto in src/Core/RandevumKolay.Application/Features/Reports/Queries/GetReports/GetReportsQuery.cs
+const EMPTY_REPORT = {
+  kpis: { totalAppointments: 0, completedAppointments: 0, cancelledAppointments: 0, pendingAppointments: 0, totalRevenue: 0, averageBasket: 0, cancellationRate: 0, completionRate: 0, newCustomers: 0, uniqueCustomers: 0 },
+  revenueTimeline: [] as { label: string; revenue: number; appointments: number }[],
+  serviceBreakdown: [] as { serviceName: string; count: number; revenue: number; percentage: number }[],
+  statusBreakdown: [] as { status: string; count: number; percentage: number }[],
+};
+
 export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const [period, setPeriod] = useState('Bu Ay');
-  const EMPTY_REPORT = { revenue: 0, appointments: 0, newCustomers: 0, avgPerCustomer: 0, weeklyRevenue: [] as { label: string; value: number }[], serviceBreakdown: [] as { name: string; count: number; percentage: number }[], paymentMethods: [] as { name: string; amount: number; percentage: number }[] };
+  const { startDate, endDate } = getPeriodRange(period);
   const { data: reportData = EMPTY_REPORT } = useQuery({
-    queryKey: ['reports'],
-    queryFn: async () => { const res = await api.get('/reports'); return res.data ?? EMPTY_REPORT; },
+    queryKey: ['reports', startDate, endDate],
+    queryFn: async () => {
+      const res = await api.get('/reports', { params: { startDate, endDate } });
+      return res.data ?? EMPTY_REPORT;
+    },
   });
-  const maxRevenue = Math.max(...reportData.weeklyRevenue.map((d: any) => d.value));
+  const maxRevenue = Math.max(1, ...reportData.revenueTimeline.map((d: any) => d.revenue));
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -41,23 +82,23 @@ export default function ReportsScreen() {
 
         {/* KPI Cards */}
         <View style={styles.kpiGrid}>
-          <StatCard label="Toplam Gelir" value={formatCurrency(reportData.revenue)} accent trend={{ value: 12, positive: true }} style={{ flex: 1 }} />
-          <StatCard label="Randevular" value={reportData.appointments} style={{ flex: 1 }} trend={{ value: 8, positive: true }} />
+          <StatCard label="Toplam Gelir" value={formatCurrency(reportData.kpis.totalRevenue)} accent style={{ flex: 1 }} />
+          <StatCard label="Randevular" value={reportData.kpis.totalAppointments} style={{ flex: 1 }} />
         </View>
         <View style={styles.kpiGrid}>
-          <StatCard label="Yeni Müşteri" value={reportData.newCustomers} style={{ flex: 1 }} trend={{ value: 15, positive: true }} />
-          <StatCard label="Müşteri Başı Ort." value={formatCurrency(reportData.avgPerCustomer)} style={{ flex: 1 }} />
+          <StatCard label="Yeni Müşteri" value={reportData.kpis.newCustomers} style={{ flex: 1 }} />
+          <StatCard label="Ortalama Sepet" value={formatCurrency(reportData.kpis.averageBasket)} style={{ flex: 1 }} />
         </View>
 
         {/* Revenue Chart */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Haftalık Gelir</Text>
+          <Text style={styles.cardTitle}>Gelir Grafiği</Text>
           <View style={styles.barChart}>
-            {reportData.weeklyRevenue.map((d: any) => {
-              const pct = d.value / maxRevenue;
+            {reportData.revenueTimeline.map((d: any) => {
+              const pct = d.revenue / maxRevenue;
               return (
                 <View key={d.label} style={styles.barCol}>
-                  <Text style={styles.barVal}>{Math.round(d.value / 1000)}K</Text>
+                  <Text style={styles.barVal}>{Math.round(d.revenue / 1000)}K</Text>
                   <View style={styles.barBg}>
                     <LinearGradient
                       colors={[COLORS.primary, COLORS.primaryDark]}
@@ -76,32 +117,35 @@ export default function ReportsScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Hizmet Dağılımı</Text>
           {reportData.serviceBreakdown.map((s: any) => (
-            <View key={s.name} style={styles.breakdownRow}>
+            <View key={s.serviceName} style={styles.breakdownRow}>
               <View style={styles.breakdownLeft}>
-                <Text style={styles.breakdownName}>{s.name}</Text>
+                <Text style={styles.breakdownName}>{s.serviceName}</Text>
                 <Text style={styles.breakdownSub}>{s.count} randevu</Text>
               </View>
               <View style={styles.breakdownBar}>
-                <View style={[styles.breakdownFill, { width: `${s.pct}%`, backgroundColor: COLORS.primary }]} />
+                <View style={[styles.breakdownFill, { width: `${s.percentage}%`, backgroundColor: COLORS.primary }]} />
               </View>
               <Text style={styles.breakdownRevenue}>{formatCurrency(s.revenue)}</Text>
             </View>
           ))}
         </View>
 
-        {/* Payment Methods */}
+        {/* Status Breakdown */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Ödeme Yöntemleri</Text>
-          {reportData.paymentMethods.map((m: any) => (
-            <View key={m.method} style={styles.methodRow}>
-              <View style={[styles.methodDot, { backgroundColor: m.color }]} />
-              <Text style={styles.methodName}>{m.method}</Text>
-              <View style={styles.methodBarWrap}>
-                <View style={[styles.methodBar, { width: `${m.pct}%`, backgroundColor: m.color + '80' }]} />
+          <Text style={styles.cardTitle}>Randevu Durumları</Text>
+          {reportData.statusBreakdown.map((st: any) => {
+            const color = STATUS_COLORS[st.status] ?? COLORS.textMuted;
+            return (
+              <View key={st.status} style={styles.methodRow}>
+                <View style={[styles.methodDot, { backgroundColor: color }]} />
+                <Text style={styles.methodName}>{st.status}</Text>
+                <View style={styles.methodBarWrap}>
+                  <View style={[styles.methodBar, { width: `${st.percentage}%`, backgroundColor: color + '80' }]} />
+                </View>
+                <Text style={styles.methodPct}>{st.percentage}%</Text>
               </View>
-              <Text style={styles.methodPct}>{m.pct}%</Text>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
     </View>

@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import * as SecureStore from 'expo-secure-store';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -10,23 +11,48 @@ import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import api from '@/lib/api';
 
+// There is no ChatbotController / settings table on the backend yet, so these
+// toggles are not enforced anywhere in the actual bot behavior. They are
+// persisted locally only so the owner's choice survives an app restart.
+// See app/(pages)/settings.tsx's notification-preference toggles for the
+// same pattern.
+const CHATBOT_SETTINGS_KEY = 'business_chatbot_settings';
+
+const DEFAULT_CHATBOT_SETTINGS = [
+  { key: 'autoReply', label: 'Otomatik Yanıt', value: true },
+  { key: 'workingHoursOnly', label: 'Sadece Çalışma Saatlerinde', value: false },
+  { key: 'collectLeadInfo', label: 'Müşteri Bilgisi Topla', value: true },
+  { key: 'humanHandoff', label: 'Karmaşık Sorularda Temsilciye Aktar', value: true },
+];
+
 export default function ChatbotScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
-  const { data: settingsData = [] } = useQuery({
-    queryKey: ['chatbot-settings'],
-    queryFn: async () => { const res = await api.get('/chatbot/settings'); return Array.isArray(res.data) ? res.data : []; },
-  });
   const { data: messages = [] } = useQuery({
     queryKey: ['chatbot-messages'],
     queryFn: async () => { const res = await api.get('/chatbot/messages'); return Array.isArray(res.data) ? res.data : []; },
   });
-  const [settings, setSettings] = useState(settingsData);
+  const [settings, setSettings] = useState(DEFAULT_CHATBOT_SETTINGS);
   const [activeTab, setActiveTab] = useState<'settings' | 'preview'>('preview');
 
+  useEffect(() => {
+    SecureStore.getItemAsync(CHATBOT_SETTINGS_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved: Record<string, boolean> = JSON.parse(raw);
+        setSettings(prev => prev.map(s => (s.key in saved ? { ...s, value: saved[s.key] } : s)));
+      })
+      .catch(() => {});
+  }, []);
+
   function toggle(key: string) {
-    setSettings(prev => prev.map(s => s.key === key ? { ...s, value: !s.value } : s));
+    setSettings(prev => {
+      const next = prev.map(s => s.key === key ? { ...s, value: !s.value } : s);
+      const toPersist = Object.fromEntries(next.map(s => [s.key, s.value]));
+      SecureStore.setItemAsync(CHATBOT_SETTINGS_KEY, JSON.stringify(toPersist)).catch(() => {});
+      return next;
+    });
   }
 
   return (

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,10 +11,24 @@ import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { Button } from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Receivable } from '@/types';
 import api from '@/lib/api';
 import { useToast } from '@/components/ui/Toast';
+
+const STATUS_LABEL: Record<Receivable['status'], string> = {
+  open: 'Açık',
+  partiallyPaid: 'Kısmi Ödendi',
+  paid: 'Ödendi',
+  overdue: 'Gecikmiş',
+};
+const STATUS_BADGE: Record<Receivable['status'], 'success' | 'error' | 'warning' | 'info'> = {
+  open: 'info',
+  partiallyPaid: 'warning',
+  paid: 'success',
+  overdue: 'error',
+};
 
 export default function ReceivablesScreen() {
   const insets = useSafeAreaInsets();
@@ -26,40 +40,56 @@ export default function ReceivablesScreen() {
     queryKey: ['receivables'],
     queryFn: async () => { const res = await api.get('/receivables'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
   });
-  const TOTAL_PENDING = (data ?? []).filter(r => r.status !== 'paid').reduce((s, r) => s + r.amount, 0);
+  const TOTAL_PENDING = (data ?? []).filter(r => r.status !== 'paid').reduce((s, r) => s + r.remainingAmount, 0);
 
   const filtered = (data ?? []).filter(r => {
-    if (filter === 'Bekleyen') return r.status === 'pending';
+    if (filter === 'Açık') return r.status === 'open';
+    if (filter === 'Kısmi') return r.status === 'partiallyPaid';
     if (filter === 'Gecikmiş') return r.status === 'overdue';
     if (filter === 'Ödendi') return r.status === 'paid';
     return true;
   });
 
   const qc = useQueryClient();
-  const [modal, setModal] = useState<{ open: boolean; item?: Receivable }>({ open: false });
-  const [form, setForm] = useState({ customerName: '', description: '', amount: '', dueDate: '', status: 'pending' as 'pending' | 'partial' | 'paid' | 'overdue', notes: '' });
+  const [createOpen, setCreateOpen] = useState(false);
+  const [detailItem, setDetailItem] = useState<Receivable | null>(null);
+  const [form, setForm] = useState({ customerName: '', customerPhone: '', description: '', totalAmount: '', dueDate: '', installmentCount: '1' });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/receivables', { customerName: form.customerName, description: form.description, amount: Number(form.amount), dueDate: form.dueDate, status: form.status, notes: form.notes || undefined }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setModal({ open: false }); },
-    onError: () => toast.error('Alacak eklenemedi.'),
-  });
-  const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/receivables/${modal.item!.id}`, { customerName: form.customerName, description: form.description, amount: Number(form.amount), dueDate: form.dueDate, status: form.status, notes: form.notes || undefined }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setModal({ open: false }); },
-    onError: () => toast.error('Alacak güncellenemedi.'),
+    mutationFn: async () => api.post('/receivables', {
+      customerName: form.customerName,
+      customerPhone: form.customerPhone || undefined,
+      description: form.description || undefined,
+      totalAmount: Number(form.totalAmount),
+      dueDate: form.dueDate,
+      installmentCount: Number(form.installmentCount) || 1,
+    }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setCreateOpen(false); },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Alacak eklenemedi.'),
   });
   const deleteMutation = useMutation({
-    mutationFn: async () => api.delete(`/receivables/${modal.item!.id}`),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setModal({ open: false }); },
-    onError: () => toast.error('Alacak silinemedi.'),
+    mutationFn: async (id: string) => api.delete(`/receivables/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setDetailItem(null); },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Alacak silinemedi.'),
+  });
+  const payMutation = useMutation({
+    mutationFn: async (installmentId: string) => api.post(`/receivables/installments/${installmentId}/pay`),
+    onSuccess: (_res, installmentId) => {
+      qc.invalidateQueries({ queryKey: ['receivables'] });
+      toast.success('Taksit ödendi olarak işaretlendi.');
+      setDetailItem((cur) => cur ? {
+        ...cur,
+        installments: cur.installments.map(i => i.id === installmentId ? { ...i, isPaid: true } : i),
+      } : cur);
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Taksit ödenemedi.'),
   });
 
-  function openCreate() { setForm({ customerName: '', description: '', amount: '', dueDate: '', status: 'pending', notes: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Receivable) { setForm({ customerName: item.customerName, description: item.description ?? '', amount: String(item.amount), dueDate: item.dueDate, status: item.status, notes: item.notes ?? '' }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ customerName: '', customerPhone: '', description: '', totalAmount: '', dueDate: '', installmentCount: '1' }); setCreateOpen(true); }
   function handleSave() {
-    if (!form.customerName || !form.amount || !form.dueDate) { toast.warning('Müşteri adı, tutar ve vade tarihi zorunludur.'); return; }
-    if (modal.item) updateMutation.mutate(); else createMutation.mutate();
+    if (!form.customerName || !form.totalAmount || !form.dueDate) { toast.warning('Müşteri adı, tutar ve vade tarihi zorunludur.'); return; }
+    if (Number(form.installmentCount) <= 0) { toast.warning('Taksit sayısı 0\'dan büyük olmalıdır.'); return; }
+    createMutation.mutate();
   }
 
   return (
@@ -75,7 +105,7 @@ export default function ReceivablesScreen() {
         </View>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
-        {['Tümü', 'Bekleyen', 'Gecikmiş', 'Ödendi'].map((f) => (
+        {['Tümü', 'Açık', 'Kısmi', 'Gecikmiş', 'Ödendi'].map((f) => (
           <TouchableOpacity key={f} style={[styles.chip, filter === f && styles.chipActive]} onPress={() => setFilter(f)} activeOpacity={0.8}>
             <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>{f}</Text>
           </TouchableOpacity>
@@ -89,7 +119,7 @@ export default function ReceivablesScreen() {
         ItemSeparatorComponent={() => <View style={{ height: SPACE[3] }} />}
         ListEmptyComponent={<EmptyState icon="wallet-outline" title="Alacak yok" />}
         renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.9} onPress={() => openEdit(item)} style={styles.card}>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => setDetailItem(item)} style={styles.card}>
             <Avatar name={item.customerName} size={44} />
             <View style={styles.info}>
               <Text style={styles.name}>{item.customerName}</Text>
@@ -102,38 +132,77 @@ export default function ReceivablesScreen() {
               </View>
             </View>
             <View style={styles.right}>
-              <Text style={[styles.amount, item.status === 'paid' && { color: COLORS.success }]}>{formatCurrency(item.amount)}</Text>
-              <Badge variant={item.status === 'paid' ? 'success' : item.status === 'overdue' ? 'error' : 'warning'} size="sm">
-                {item.status === 'paid' ? 'Ödendi' : item.status === 'overdue' ? 'Gecikmiş' : 'Bekliyor'}
-              </Badge>
+              <Text style={[styles.amount, item.status === 'paid' && { color: COLORS.success }]}>{formatCurrency(item.remainingAmount)}</Text>
+              <Badge variant={STATUS_BADGE[item.status]} size="sm">{STATUS_LABEL[item.status]}</Badge>
             </View>
           </TouchableOpacity>
         )}
       />
       <FormModal
-        visible={modal.open}
-        onClose={() => setModal({ open: false })}
+        visible={createOpen}
+        onClose={() => setCreateOpen(false)}
         onSave={handleSave}
-        title={modal.item ? 'Alacak Düzenle' : 'Yeni Alacak'}
-        saving={createMutation.isPending || updateMutation.isPending}
-        deleteLabel={modal.item ? 'Sil' : undefined}
-        onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
+        title="Yeni Alacak"
+        saving={createMutation.isPending}
       >
         <FormField label="Müşteri Adı" value={form.customerName} onChangeText={v => setForm(p => ({ ...p, customerName: v }))} placeholder="Örn: Ahmet Yılmaz" />
+        <FormField label="Telefon (isteğe bağlı)" value={form.customerPhone} onChangeText={v => setForm(p => ({ ...p, customerPhone: v }))} placeholder="0555 555 55 55" keyboardType="phone-pad" />
         <FormField label="Açıklama" value={form.description} onChangeText={v => setForm(p => ({ ...p, description: v }))} placeholder="Örn: Saç kesimi ücreti" />
-        <FormField label="Tutar" value={form.amount} onChangeText={v => setForm(p => ({ ...p, amount: v }))} placeholder="Örn: 500" keyboardType="numeric" />
+        <FormField label="Toplam Tutar" value={form.totalAmount} onChangeText={v => setForm(p => ({ ...p, totalAmount: v }))} placeholder="Örn: 500" keyboardType="numeric" />
         <FormField label="Vade Tarihi" value={form.dueDate} onChangeText={v => setForm(p => ({ ...p, dueDate: v }))} placeholder="Örn: 2025-06-15" />
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Durum</Text>
-          <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.status === 'pending' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, status: 'pending' }))}><Text style={[styles.segmentText, form.status === 'pending' && styles.segmentTextActive]}>Bekliyor</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.status === 'partial' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, status: 'partial' }))}><Text style={[styles.segmentText, form.status === 'partial' && styles.segmentTextActive]}>Kısmi</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.status === 'paid' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, status: 'paid' }))}><Text style={[styles.segmentText, form.status === 'paid' && styles.segmentTextActive]}>Ödendi</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.status === 'overdue' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, status: 'overdue' }))}><Text style={[styles.segmentText, form.status === 'overdue' && styles.segmentTextActive]}>Gecikmiş</Text></TouchableOpacity>
+        <FormField label="Taksit Sayısı" value={form.installmentCount} onChangeText={v => setForm(p => ({ ...p, installmentCount: v }))} placeholder="Örn: 1" keyboardType="numeric" />
+      </FormModal>
+
+      <Modal visible={!!detailItem} animationType="slide" transparent presentationStyle="overFullScreen" onRequestClose={() => setDetailItem(null)}>
+        <View style={styles.overlay}>
+          <View style={styles.sheet}>
+            <View style={styles.handle} />
+            <View style={styles.detailHeader}>
+              <Text style={styles.title}>{detailItem?.customerName}</Text>
+              <TouchableOpacity onPress={() => setDetailItem(null)} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel="Kapat">
+                <Ionicons name="close" size={22} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            {detailItem && (
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.detailBody}>
+                {!!detailItem.description && <Text style={styles.desc}>{detailItem.description}</Text>}
+                <View style={styles.detailStatsRow}>
+                  <View style={styles.detailStat}>
+                    <Text style={styles.detailStatLabel}>Toplam</Text>
+                    <Text style={styles.detailStatValue}>{formatCurrency(detailItem.totalAmount)}</Text>
+                  </View>
+                  <View style={styles.detailStat}>
+                    <Text style={styles.detailStatLabel}>Ödenen</Text>
+                    <Text style={styles.detailStatValue}>{formatCurrency(detailItem.paidAmount)}</Text>
+                  </View>
+                  <View style={styles.detailStat}>
+                    <Text style={styles.detailStatLabel}>Kalan</Text>
+                    <Text style={styles.detailStatValue}>{formatCurrency(detailItem.remainingAmount)}</Text>
+                  </View>
+                </View>
+                <Badge variant={STATUS_BADGE[detailItem.status]} size="sm">{STATUS_LABEL[detailItem.status]}</Badge>
+                <Text style={styles.fieldLabel}>Taksitler</Text>
+                {detailItem.installments.map((inst) => (
+                  <View key={inst.id} style={styles.installmentRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.installmentTitle}>{inst.number}. Taksit — {formatCurrency(inst.amount)}</Text>
+                      <Text style={styles.desc}>Vade: {formatDate(inst.dueDate)}</Text>
+                    </View>
+                    {inst.isPaid ? (
+                      <Badge variant="success" size="sm">Ödendi</Badge>
+                    ) : (
+                      <Button size="sm" variant="outline" loading={payMutation.isPending} onPress={() => payMutation.mutate(inst.id)}>Öde</Button>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
+            )}
+            <View style={styles.detailFooter}>
+              <Button variant="destructive" style={{ flex: 1 }} onPress={() => detailItem && deleteMutation.mutate(detailItem.id)} loading={deleteMutation.isPending}>Sil</Button>
+            </View>
           </View>
         </View>
-        <FormField label="Notlar" value={form.notes} onChangeText={v => setForm(p => ({ ...p, notes: v }))} placeholder="Opsiyonel not" multiline />
-      </FormModal>
+      </Modal>
     </View>
   );
 }
@@ -161,9 +230,19 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   amount: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
   fieldGroup: { gap: SPACE[1] },
   fieldLabel: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
-  segmentRow: { flexDirection: 'row', backgroundColor: COLORS.bg, borderRadius: RADIUS.lg, padding: 3 },
-  segment: { flex: 1, paddingVertical: SPACE[2], alignItems: 'center', borderRadius: RADIUS.md },
-  segmentActive: { backgroundColor: COLORS.surface, ...SHADOW.sm },
-  segmentText: { fontSize: FONT.sm, fontWeight: FONT.medium, color: COLORS.textMuted },
-  segmentTextActive: { color: COLORS.text, fontWeight: FONT.semibold },
+  // Detail modal (view + pay installments; receivables have no PUT/edit endpoint on the backend)
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheet: { flex: 1, backgroundColor: COLORS.surface, borderTopLeftRadius: RADIUS['2xl'], borderTopRightRadius: RADIUS['2xl'], maxHeight: '85%' },
+  handle: { width: 40, height: 4, backgroundColor: COLORS.borderLight, borderRadius: 2, alignSelf: 'center', marginTop: SPACE[3] },
+  detailHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
+  title: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
+  closeBtn: { width: 32, height: 32, borderRadius: RADIUS.full, backgroundColor: COLORS.bg, alignItems: 'center', justifyContent: 'center' },
+  detailBody: { padding: SPACE[5], gap: SPACE[4] },
+  detailStatsRow: { flexDirection: 'row', gap: SPACE[3] },
+  detailStat: { flex: 1, backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, padding: SPACE[3], gap: 2 },
+  detailStatLabel: { fontSize: FONT.xs, color: COLORS.textMuted },
+  detailStatValue: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  installmentRow: { flexDirection: 'row', alignItems: 'center', gap: SPACE[3], backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, padding: SPACE[3] },
+  installmentTitle: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
+  detailFooter: { padding: SPACE[5], borderTopWidth: 1, borderTopColor: COLORS.borderLight, flexDirection: 'row', gap: SPACE[3] },
 });

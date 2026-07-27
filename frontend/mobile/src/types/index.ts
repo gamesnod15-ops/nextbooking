@@ -90,46 +90,58 @@ export interface Appointment {
 
 export interface Payment {
   id: string;
+  appointmentId: string;
   customerName: string;
+  serviceName: string;
+  provider: string;
   amount: number;
-  method: 'cash' | 'card' | 'transfer' | 'other';
-  status: 'pending' | 'completed' | 'refunded' | 'cancelled';
-  description?: string;
-  transactionId?: string;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded' | 'partiallyRefunded';
+  paidAt?: string;
   createdAt: string;
 }
 
 export interface Campaign {
   id: string;
-  title: string;
+  name: string;
   description?: string;
-  discountType: 'percent' | 'fixed';
+  discountType: 'percentage' | 'fixedAmount';
   discountValue: number;
   startDate: string;
   endDate: string;
-  isActive: boolean;
+  status: 'draft' | 'active' | 'paused' | 'ended';
   usageCount: number;
-  maxUsage?: number;
+  usageLimit?: number;
 }
 
 export interface GiftCoupon {
   id: string;
   code: string;
   amount: number;
-  remainingAmount: number;
-  customerName?: string;
-  isUsed: boolean;
-  expiresAt?: string;
+  recipientName: string;
+  recipientEmail?: string;
+  purchasedBy: string;
+  purchaseDate: string;
+  expiryDate?: string;
+  usedAmount: number;
+  status: 'active' | 'used' | 'expired';
+  message?: string;
+  createdAt: string;
 }
 
 export interface Product {
   id: string;
   name: string;
-  sku?: string;
-  price: number;
-  stock: number;
+  description?: string;
   category?: string;
+  barcode?: string;
+  salePrice: number;
+  costPrice?: number;
+  stockQuantity: number;
+  minStockLevel: number;
+  unit?: string;
   isActive: boolean;
+  isLowStock?: boolean;
 }
 
 export interface PackageItem {
@@ -152,11 +164,26 @@ export interface BusinessPackage {
 
 export interface LoyaltyMember {
   id: string;
-  customerName: string;
+  customerId: string;
+  name: string;
+  phone: string;
   points: number;
-  tier: 'bronze' | 'silver' | 'gold' | 'platinum';
   totalSpent: number;
+  visits: number;
+  tierId: string;
   joinedAt: string;
+  lastVisit?: string;
+}
+
+export interface LoyaltyTier {
+  id: string;
+  name: string;
+  minPoints: number;
+  multiplier: number;
+  color: string;
+  iconName: string;
+  benefits: string[];
+  sortOrder: number;
 }
 
 export interface WaitingListEntry {
@@ -264,7 +291,7 @@ export interface Branch {
   name: string;
   address: string;
   phone?: string;
-  isMain: boolean;
+  isMainBranch: boolean;
   isActive: boolean;
   coordinates?: { lat: number; lng: number };
 }
@@ -272,22 +299,36 @@ export interface Branch {
 export interface Performance {
   employeeId: string;
   employeeName: string;
-  avatarUrl?: string;
-  appointmentCount: number;
-  revenue: number;
-  rating: number;
-  cancellationRate: number;
+  title?: string | null;
+  totalAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totalRevenue: number;
+  completionRate: number;
+  avgDailyAppointments: number;
+}
+
+export interface ReceivableInstallment {
+  id: string;
+  number: number;
+  amount: number;
+  dueDate: string;
+  isPaid: boolean;
+  paidAt?: string | null;
 }
 
 export interface Receivable {
   id: string;
   customerName: string;
-  description: string;
-  amount: number;
-  paidAmount?: number;
+  customerPhone?: string | null;
+  description?: string | null;
+  totalAmount: number;
+  paidAmount: number;
+  remainingAmount: number;
   dueDate: string;
-  status: 'pending' | 'partial' | 'paid' | 'overdue';
-  notes?: string;
+  status: 'open' | 'partiallyPaid' | 'paid' | 'overdue';
+  installmentCount: number;
+  installments: ReceivableInstallment[];
   createdAt: string;
 }
 
@@ -339,18 +380,16 @@ export interface Advertisement {
 
 export interface Coupon {
   id: string;
-  name: string;
-  code?: string;
+  code: string;
   description?: string;
-  type: 'percentage' | 'fixed';
-  value: number;
-  isActive: boolean;
-  startDate: string;
-  endDate: string;
-  usageCount: number;
+  discountType: 'percentage' | 'fixedAmount';
+  discountValue: number;
+  minimumOrderAmount?: number;
+  expiresAt?: string;
   usageLimit?: number;
-  scope: 'all' | 'service' | 'package';
-  minAmount?: number;
+  usageCount: number;
+  isActive: boolean;
+  createdAt: string;
 }
 
 export interface Review {

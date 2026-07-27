@@ -1,14 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 
 /** Plan ids must match the backend's ChangePlanCommand validator:
@@ -40,6 +41,8 @@ export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
+  const qc = useQueryClient();
   const { data: sub, refetch, isRefetching } = useQuery({
     queryKey: ['my-subscription'],
     // There is no GET /business/me/plan endpoint — plan info lives on /business/me
@@ -50,6 +53,24 @@ export default function SubscriptionScreen() {
   const nextBilling = sub?.subscriptionEndsAt
     ? new Date(sub.subscriptionEndsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
     : undefined;
+
+  // Matches PATCH /business/me/plan -> ChangePlanCommand(string Plan, int Months = 1)
+  const changePlanMutation = useMutation({
+    mutationFn: (planId: string) => api.patch('/business/me/plan', { plan: planId, months: 1 }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['my-subscription'] }); toast.success('Plan güncellendi.'); },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Plan güncellenemedi.'),
+  });
+
+  const handleSelectPlan = (planId: string, planName: string) => {
+    Alert.alert(
+      'Planı Değiştir',
+      `${planName} planına geçmek istediğinize emin misiniz?`,
+      [
+        { text: 'Vazgeç', style: 'cancel' },
+        { text: 'Onayla', onPress: () => changePlanMutation.mutate(planId) },
+      ],
+    );
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -96,8 +117,9 @@ export default function SubscriptionScreen() {
               </View>
               <TouchableOpacity
                 style={[styles.planBtn, isCurrent ? styles.planBtnCurrent : plan.isPopular ? styles.planBtnPopular : styles.planBtnDefault]}
-                disabled={isCurrent}
+                disabled={isCurrent || changePlanMutation.isPending}
                 activeOpacity={0.85}
+                onPress={() => handleSelectPlan(plan.id, plan.name)}
               >
                 <Text style={[styles.planBtnText, isCurrent ? styles.planBtnTextCurrent : plan.isPopular ? styles.planBtnTextPopular : styles.planBtnTextDefault]}>
                   {isCurrent ? 'Mevcut Plan' : 'Planı Seç'}

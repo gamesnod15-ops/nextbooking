@@ -1,11 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
+
+// No backend endpoint exists yet for social auto-post settings. Persisted
+// locally only so the toggle survives an app restart; it is not enforced by
+// any actual post-scheduling pipeline server-side.
+const AUTO_POST_KEY = 'business_social_autopost';
 
 const PLATFORMS = [
   { id: 'instagram', label: 'Instagram', icon: 'logo-instagram', color: '#E1306C', bg: '#FCE4EC', connected: true, followers: 4280 },
@@ -24,6 +30,17 @@ export default function SocialMediaScreen() {
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const [autoPost, setAutoPost] = useState(true);
+
+  useEffect(() => {
+    SecureStore.getItemAsync(AUTO_POST_KEY)
+      .then((raw) => { if (raw !== null) setAutoPost(raw === '1'); })
+      .catch(() => {});
+  }, []);
+
+  function handleAutoPostChange(value: boolean) {
+    setAutoPost(value);
+    SecureStore.setItemAsync(AUTO_POST_KEY, value ? '1' : '0').catch(() => {});
+  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -63,7 +80,7 @@ export default function SocialMediaScreen() {
               <Text style={styles.autoPostSub}>Yeni kampanyaları otomatik paylaş</Text>
             </View>
           </View>
-          <Switch value={autoPost} onValueChange={setAutoPost} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
+          <Switch value={autoPost} onValueChange={handleAutoPostChange} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
         </View>
 
         {/* Recent Posts */}

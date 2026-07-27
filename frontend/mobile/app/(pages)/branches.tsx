@@ -26,28 +26,28 @@ export default function BranchesScreen() {
 
   const qc = useQueryClient();
   const [modal, setModal] = useState<{ open: boolean; item?: Branch }>({ open: false });
-  const [form, setForm] = useState({ name: '', address: '', phone: '' });
+  const [form, setForm] = useState({ name: '', address: '', phone: '', isActive: true });
 
   const createMutation = useMutation({
     mutationFn: async () => api.post('/branches', { name: form.name, address: form.address, phone: form.phone || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['branches'] }); setModal({ open: false }); },
-    onError: () => toast.error('Şube eklenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Şube eklenemedi.'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/branches/${modal.item!.id}`, { name: form.name, address: form.address, phone: form.phone || undefined }),
+    mutationFn: async () => api.put(`/branches/${modal.item!.id}`, { id: modal.item!.id, name: form.name, address: form.address, phone: form.phone || undefined, isActive: form.isActive }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['branches'] }); setModal({ open: false }); },
-    onError: () => toast.error('Şube güncellenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Şube güncellenemedi.'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/branches/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['branches'] }); setModal({ open: false }); },
-    onError: () => toast.error('Şube silinemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Şube silinemedi.'),
   });
 
-  function openCreate() { setForm({ name: '', address: '', phone: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Branch) { setForm({ name: item.name, address: item.address, phone: item.phone ?? '' }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ name: '', address: '', phone: '', isActive: true }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: Branch) { setForm({ name: item.name, address: item.address, phone: item.phone ?? '', isActive: item.isActive ?? true }); setModal({ open: true, item }); }
   function handleSave() {
     if (!form.name || !form.address) { toast.warning('Ad ve adres zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
@@ -73,7 +73,7 @@ export default function BranchesScreen() {
             <View style={styles.info}>
               <View style={styles.nameRow}>
                 <Text style={styles.name}>{item.name}</Text>
-                {item.isMain && (
+                {item.isMainBranch && (
                   <View style={styles.mainBadge}>
                     <Text style={styles.mainBadgeText}>Ana Şube</Text>
                   </View>

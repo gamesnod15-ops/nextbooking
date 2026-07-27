@@ -1,11 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
+
+// There is no PluginsController / integrations table on the backend yet, so
+// enabling/disabling a module here does not actually turn anything on or off
+// server-side. Persisted locally only so the toggle survives an app restart.
+const PLUGIN_STATE_KEY = 'business_plugin_states';
 
 const PLUGINS = [
   { id: 'whatsapp', name: 'WhatsApp Bot', desc: 'Müşteri iletişimi ve randevu otomasyonu', icon: 'logo-whatsapp', color: '#25D366', enabled: true, category: 'İletişim' },
@@ -28,8 +34,23 @@ export default function PluginsScreen() {
   const [plugins, setPlugins] = useState(PLUGINS);
   const [category, setCategory] = useState('Tümü');
 
+  useEffect(() => {
+    SecureStore.getItemAsync(PLUGIN_STATE_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved: Record<string, boolean> = JSON.parse(raw);
+        setPlugins(prev => prev.map(p => (p.id in saved ? { ...p, enabled: saved[p.id] } : p)));
+      })
+      .catch(() => {});
+  }, []);
+
   function toggle(id: string) {
-    setPlugins(prev => prev.map(p => p.id === id ? { ...p, enabled: !p.enabled } : p));
+    setPlugins(prev => {
+      const next = prev.map(p => p.id === id ? { ...p, enabled: !p.enabled } : p);
+      const toPersist = Object.fromEntries(next.map(p => [p.id, p.enabled]));
+      SecureStore.setItemAsync(PLUGIN_STATE_KEY, JSON.stringify(toPersist)).catch(() => {});
+      return next;
+    });
   }
 
   const filtered = plugins.filter(p => category === 'Tümü' || p.category === category);

@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -11,6 +12,13 @@ import { formatDateTime } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import type { NotificationItem } from '@/types';
+
+// There is no NotificationsController on the backend yet — GET /notifications
+// currently 404s and this list is always empty. Read-state is persisted
+// locally only so that, once a real endpoint exists, "read" markers survive
+// an app restart the same way the notification-preference toggles in
+// settings.tsx do; it is not enforced by any backend read-tracking today.
+const READ_IDS_KEY = 'business_notifications_read_ids';
 
 const FILTER_OPTIONS = ['Tümü', 'Okunmamış', 'Randevu', 'Ödeme', 'Sistem'];
 
@@ -30,6 +38,34 @@ export default function NotificationsScreen() {
     queryFn: async () => { const r = await api.get('/notifications'); return Array.isArray(r.data) ? r.data : r.data?.items ?? []; },
   });
   const [notifications, setNotifications] = useState<NotificationItem[]>(queryData);
+  const [readIds, setReadIds] = useState<string[]>([]);
+
+  // Seed local state from the query result whenever it (re)resolves — using
+  // useState(queryData) alone only captures the value present at first
+  // render, before the async fetch has completed.
+  useEffect(() => {
+    setNotifications((prev) => {
+      const merged = queryData.map((n) => readIds.includes(n.id) ? { ...n, isRead: true } : n);
+      return merged;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryData]);
+
+  useEffect(() => {
+    SecureStore.getItemAsync(READ_IDS_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved: string[] = JSON.parse(raw);
+        setReadIds(saved);
+        setNotifications(prev => prev.map(n => saved.includes(n.id) ? { ...n, isRead: true } : n));
+      })
+      .catch(() => {});
+  }, []);
+
+  function persistReadIds(ids: string[]) {
+    setReadIds(ids);
+    SecureStore.setItemAsync(READ_IDS_KEY, JSON.stringify(ids)).catch(() => {});
+  }
 
   const filtered = notifications.filter((n) => {
     if (filter === 'Okunmamış') return !n.isRead;
@@ -41,6 +77,7 @@ export default function NotificationsScreen() {
 
   function markAllRead() {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    persistReadIds(Array.from(new Set([...readIds, ...notifications.map(n => n.id)])));
   }
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -69,7 +106,10 @@ export default function NotificationsScreen() {
         ListEmptyComponent={<EmptyState icon="notifications-outline" title="Bildirim yok" />}
         ItemSeparatorComponent={() => <View style={{ height: SPACE[2] }} />}
         renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.9} style={[styles.card, !item.isRead && styles.cardUnread]} onPress={() => setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n))}>
+          <TouchableOpacity activeOpacity={0.9} style={[styles.card, !item.isRead && styles.cardUnread]} onPress={() => {
+            setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
+            if (!readIds.includes(item.id)) persistReadIds([...readIds, item.id]);
+          }}>
             <View style={[styles.iconBox, { backgroundColor: TYPE_BG[item.type] }]}>
               <Ionicons name={TYPE_ICON[item.type]} size={20} color={TYPE_COLOR[item.type]} />
             </View>

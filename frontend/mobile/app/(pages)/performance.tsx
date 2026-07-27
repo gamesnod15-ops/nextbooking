@@ -16,14 +16,37 @@ import api from '@/lib/api';
 
 const PERIODS = ['Bu Ay', 'Geçen Ay', 'Bu Yıl'];
 
+function toIsoDate(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+function getPeriodRange(period: string): { periodStart: string; periodEnd: string } {
+  const now = new Date();
+  const today = toIsoDate(now);
+  if (period === 'Geçen Ay') {
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+    return { periodStart: toIsoDate(lastMonthStart), periodEnd: toIsoDate(lastMonthEnd) };
+  }
+  if (period === 'Bu Yıl') {
+    return { periodStart: toIsoDate(new Date(now.getFullYear(), 0, 1)), periodEnd: today };
+  }
+  // 'Bu Ay' (default)
+  return { periodStart: toIsoDate(new Date(now.getFullYear(), now.getMonth(), 1)), periodEnd: today };
+}
+
 export default function PerformanceScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const [period, setPeriod] = useState('Bu Ay');
+  const { periodStart, periodEnd } = getPeriodRange(period);
   const { data = [] } = useQuery({
-    queryKey: ['performance'],
-    queryFn: async () => { const res = await api.get('/performance'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
+    queryKey: ['performance', periodStart, periodEnd],
+    queryFn: async () => {
+      const res = await api.get('/performance', { params: { periodStart, periodEnd, pageSize: 100 } });
+      return Array.isArray(res.data) ? res.data : res.data?.items ?? [];
+    },
   });
   const list = data as Performance[];
 
@@ -42,13 +65,13 @@ export default function PerformanceScreen() {
 
         {/* Team Summary */}
         <View style={styles.summaryRow}>
-          <StatCard label="Toplam Randevu" value={list.reduce((s, e) => s + e.appointmentCount, 0).toString()} style={{ flex: 1 }} />
-          <StatCard label="Toplam Gelir" value={formatCurrency(list.reduce((s, e) => s + e.revenue, 0))} style={{ flex: 1 }} accent />
+          <StatCard label="Toplam Randevu" value={list.reduce((s, e) => s + e.totalAppointments, 0).toString()} style={{ flex: 1 }} />
+          <StatCard label="Toplam Gelir" value={formatCurrency(list.reduce((s, e) => s + e.totalRevenue, 0))} style={{ flex: 1 }} accent />
         </View>
 
         {/* Leaderboard */}
         <Text style={styles.sectionTitle}>Liderlik Tablosu</Text>
-        {[...list].sort((a, b) => b.revenue - a.revenue).map((emp, idx) => (
+        {[...list].sort((a, b) => b.totalRevenue - a.totalRevenue).map((emp, idx) => (
           <View key={emp.employeeId} style={styles.empCard}>
             <View style={[styles.rank, idx === 0 ? styles.rankGold : idx === 1 ? styles.rankSilver : styles.rankBronze]}>
               <Text style={styles.rankText}>{idx + 1}</Text>
@@ -57,18 +80,18 @@ export default function PerformanceScreen() {
             <View style={styles.empInfo}>
               <Text style={styles.empName}>{emp.employeeName}</Text>
               <View style={styles.empStats}>
-                <Text style={styles.empStat}>{emp.appointmentCount} randevu</Text>
+                <Text style={styles.empStat}>{emp.totalAppointments} randevu</Text>
                 <Text style={styles.empDot}>·</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                  <Ionicons name="star" size={12} color={COLORS.warning} />
-                  <Text style={styles.empStat}>{emp.rating}</Text>
+                  <Ionicons name="checkmark-circle" size={12} color={COLORS.success} />
+                  <Text style={styles.empStat}>%{emp.completionRate} tamamlanma</Text>
                 </View>
               </View>
               <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${(emp.revenue / 40000) * 100}%` }]} />
+                <View style={[styles.progressFill, { width: `${Math.min((emp.totalRevenue / 40000) * 100, 100)}%` }]} />
               </View>
             </View>
-            <Text style={styles.empRevenue}>{formatCurrency(emp.revenue)}</Text>
+            <Text style={styles.empRevenue}>{formatCurrency(emp.totalRevenue)}</Text>
           </View>
         ))}
       </ScrollView>

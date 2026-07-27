@@ -29,34 +29,34 @@ export default function CampaignsScreen() {
 
   const qc = useQueryClient();
   const [modal, setModal] = useState<{ open: boolean; item?: Campaign }>({ open: false });
-  const [form, setForm] = useState({ title: '', description: '', discountType: 'percent' as 'percent' | 'fixed', discountValue: '', startDate: '', endDate: '', maxUsage: '' });
+  const [form, setForm] = useState({ name: '', description: '', discountType: 'percentage' as 'percentage' | 'fixedAmount', discountValue: '', startDate: '', endDate: '', usageLimit: '', status: 'active' as Campaign['status'] });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/campaigns', { title: form.title, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), startDate: form.startDate, endDate: form.endDate, maxUsage: form.maxUsage ? Number(form.maxUsage) : undefined }),
+    mutationFn: async () => api.post('/campaigns', { name: form.name, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['campaigns'] }); setModal({ open: false }); },
-    onError: () => toast.error('Kampanya eklenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Kampanya eklenemedi.'),
   });
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/campaigns/${modal.item!.id}`, { title: form.title, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), startDate: form.startDate, endDate: form.endDate, maxUsage: form.maxUsage ? Number(form.maxUsage) : undefined }),
+    mutationFn: async () => api.put(`/campaigns/${modal.item!.id}`, { name: form.name, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), startDate: form.startDate, endDate: form.endDate, status: form.status, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['campaigns'] }); setModal({ open: false }); },
-    onError: () => toast.error('Kampanya güncellenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Kampanya güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/campaigns/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['campaigns'] }); setModal({ open: false }); },
-    onError: () => toast.error('Kampanya silinemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Kampanya silinemedi.'),
   });
 
-  function openCreate() { setForm({ title: '', description: '', discountType: 'percent', discountValue: '', startDate: '', endDate: '', maxUsage: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Campaign) { setForm({ title: item.title, description: item.description ?? '', discountType: item.discountType, discountValue: String(item.discountValue), startDate: item.startDate, endDate: item.endDate, maxUsage: item.maxUsage ? String(item.maxUsage) : '' }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ name: '', description: '', discountType: 'percentage', discountValue: '', startDate: '', endDate: '', usageLimit: '', status: 'active' }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: Campaign) { setForm({ name: item.name, description: item.description ?? '', discountType: item.discountType, discountValue: String(item.discountValue), startDate: item.startDate, endDate: item.endDate, usageLimit: item.usageLimit ? String(item.usageLimit) : '', status: item.status }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.title || !form.discountValue || !form.startDate || !form.endDate) { toast.warning('Başlık, indirim değeri, başlangıç ve bitiş tarihi zorunludur.'); return; }
+    if (!form.name || !form.discountValue || !form.startDate || !form.endDate) { toast.warning('Başlık, indirim değeri, başlangıç ve bitiş tarihi zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Kampanyalar" subtitle={`${(list ?? []).filter(c => c.isActive).length} aktif`} showBack
+      <ScreenHeader title="Kampanyalar" subtitle={`${(list ?? []).filter(c => c.status === 'active').length} aktif`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
       <FlatList
@@ -71,15 +71,15 @@ export default function CampaignsScreen() {
             <View style={styles.cardTop}>
               <View style={styles.discountBadge}>
                 <Text style={styles.discountText}>
-                  {item.discountType === 'percent' ? `%${item.discountValue}` : `${item.discountValue}₺`}
+                  {item.discountType === 'percentage' ? `%${item.discountValue}` : `${item.discountValue}₺`}
                 </Text>
                 <Text style={styles.discountSub}>indirim</Text>
               </View>
               <View style={styles.info}>
-                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>{item.name}</Text>
                 <Text style={styles.desc}>{item.description}</Text>
               </View>
-              <Badge variant={item.isActive ? 'success' : 'default'} size="sm">{item.isActive ? 'Aktif' : 'Pasif'}</Badge>
+              <Badge variant={item.status === 'active' ? 'success' : 'default'} size="sm">{item.status === 'active' ? 'Aktif' : 'Pasif'}</Badge>
             </View>
             <View style={styles.cardFooter}>
               <View style={styles.footerItem}>
@@ -99,11 +99,11 @@ export default function CampaignsScreen() {
           <View style={styles.overlay}>
             <View style={styles.sheet}>
               <View style={styles.sheetHandle} />
-              <Text style={styles.sheetTitle}>{selected.title}</Text>
+              <Text style={styles.sheetTitle}>{selected.name}</Text>
               <Text style={styles.sheetDesc}>{selected.description}</Text>
               <View style={styles.sheetRow}>
                 <Text style={styles.sheetLabel}>İndirim</Text>
-                <Text style={styles.sheetValue}>{selected.discountType === 'percent' ? `%${selected.discountValue}` : `${selected.discountValue}₺`}</Text>
+                <Text style={styles.sheetValue}>{selected.discountType === 'percentage' ? `%${selected.discountValue}` : `${selected.discountValue}₺`}</Text>
               </View>
               <View style={styles.sheetRow}>
                 <Text style={styles.sheetLabel}>Tarih</Text>
@@ -129,19 +129,19 @@ export default function CampaignsScreen() {
         deleteLabel={modal.item ? 'Sil' : undefined}
         onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >
-        <FormField label="Başlık" value={form.title} onChangeText={v => setForm(p => ({ ...p, title: v }))} placeholder="Örn: Yaz İndirimi" />
+        <FormField label="Başlık" value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} placeholder="Örn: Yaz İndirimi" />
         <FormField label="Açıklama" value={form.description} onChangeText={v => setForm(p => ({ ...p, description: v }))} placeholder="Açıklama (isteğe bağlı)" multiline />
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>İndirim Türü</Text>
           <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.discountType === 'percent' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, discountType: 'percent' }))}><Text style={[styles.segmentText, form.discountType === 'percent' && styles.segmentTextActive]}>Yüzde</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.discountType === 'fixed' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, discountType: 'fixed' }))}><Text style={[styles.segmentText, form.discountType === 'fixed' && styles.segmentTextActive]}>Sabit</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.segment, form.discountType === 'percentage' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, discountType: 'percentage' }))}><Text style={[styles.segmentText, form.discountType === 'percentage' && styles.segmentTextActive]}>Yüzde</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.segment, form.discountType === 'fixedAmount' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, discountType: 'fixedAmount' }))}><Text style={[styles.segmentText, form.discountType === 'fixedAmount' && styles.segmentTextActive]}>Sabit</Text></TouchableOpacity>
           </View>
         </View>
-        <FormField label="İndirim Değeri" value={form.discountValue} onChangeText={v => setForm(p => ({ ...p, discountValue: v }))} placeholder={form.discountType === 'percent' ? 'Örn: 20' : 'Örn: 150'} keyboardType="numeric" />
+        <FormField label="İndirim Değeri" value={form.discountValue} onChangeText={v => setForm(p => ({ ...p, discountValue: v }))} placeholder={form.discountType === 'percentage' ? 'Örn: 20' : 'Örn: 150'} keyboardType="numeric" />
         <FormField label="Başlangıç Tarihi" value={form.startDate} onChangeText={v => setForm(p => ({ ...p, startDate: v }))} placeholder="Örn: 2025-01-01" />
         <FormField label="Bitiş Tarihi" value={form.endDate} onChangeText={v => setForm(p => ({ ...p, endDate: v }))} placeholder="Örn: 2025-12-31" />
-        <FormField label="Maks. Kullanım" value={form.maxUsage} onChangeText={v => setForm(p => ({ ...p, maxUsage: v }))} placeholder="Sınırsız için boş bırakın" keyboardType="numeric" />
+        <FormField label="Maks. Kullanım" value={form.usageLimit} onChangeText={v => setForm(p => ({ ...p, usageLimit: v }))} placeholder="Sınırsız için boş bırakın" keyboardType="numeric" />
       </FormModal>
     </View>
   );

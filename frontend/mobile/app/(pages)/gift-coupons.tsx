@@ -12,7 +12,7 @@ import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
 import { useToast } from '@/components/ui/Toast';
 import { formatDate, formatCurrency } from '@/lib/utils';
-import type { Coupon } from '@/types';
+import type { GiftCoupon } from '@/types';
 import api from '@/lib/api';
 
 export default function GiftCouponsScreen() {
@@ -24,38 +24,43 @@ export default function GiftCouponsScreen() {
     queryKey: ['gift-coupons'],
     queryFn: async () => { const res = await api.get('/gift-coupons'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
   });
-  const list = data as Coupon[] | undefined;
+  const list = data as GiftCoupon[] | undefined;
 
   const qc = useQueryClient();
-  const [modal, setModal] = useState<{ open: boolean; item?: Coupon }>({ open: false });
-  const [form, setForm] = useState({ name: '', code: '', type: 'percentage' as 'percentage' | 'fixed', value: '', minAmount: '', startDate: '', endDate: '', usageLimit: '', scope: 'all' });
+  const [modal, setModal] = useState<{ open: boolean; item?: GiftCoupon }>({ open: false });
+  // Gift coupons are a distinct entity from regular Coupons (see GiftCouponsController.cs /
+  // Features/GiftCoupons) — they carry a fixed pre-paid Amount and a recipient, not a
+  // percentage/scope discount rule. Code and Amount can only be set at creation time;
+  // UpdateGiftCouponCommand only allows editing the recipient/expiry/message.
+  const [form, setForm] = useState({ code: '', amount: '', recipientName: '', recipientEmail: '', purchasedBy: '', expiryDate: '', message: '' });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/coupons', { name: form.name, code: form.code || undefined, type: form.type, value: Number(form.value), minAmount: form.minAmount ? Number(form.minAmount) : undefined, startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, scope: form.scope }),
+    mutationFn: async () => api.post('/gift-coupons', { code: form.code, amount: Number(form.amount), recipientName: form.recipientName, recipientEmail: form.recipientEmail || undefined, purchasedBy: form.purchasedBy, expiryDate: form.expiryDate || undefined, message: form.message || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['gift-coupons'] }); setModal({ open: false }); },
-    onError: () => toast.error('Kupon eklenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Hediye kuponu eklenemedi.'),
   });
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/coupons/${modal.item!.id}`, { name: form.name, code: form.code || undefined, type: form.type, value: Number(form.value), minAmount: form.minAmount ? Number(form.minAmount) : undefined, startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, scope: form.scope }),
+    mutationFn: async () => api.put(`/gift-coupons/${modal.item!.id}`, { recipientName: form.recipientName, recipientEmail: form.recipientEmail || undefined, purchasedBy: form.purchasedBy, expiryDate: form.expiryDate || undefined, message: form.message || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['gift-coupons'] }); setModal({ open: false }); },
-    onError: () => toast.error('Kupon güncellenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Hediye kuponu güncellenemedi.'),
   });
   const deleteMutation = useMutation({
-    mutationFn: async () => api.delete(`/coupons/${modal.item!.id}`),
+    mutationFn: async () => api.delete(`/gift-coupons/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['gift-coupons'] }); setModal({ open: false }); },
-    onError: () => toast.error('Kupon silinemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Hediye kuponu silinemedi.'),
   });
 
-  function openCreate() { setForm({ name: '', code: '', type: 'percentage', value: '', minAmount: '', startDate: '', endDate: '', usageLimit: '', scope: 'all' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Coupon) { setForm({ name: item.name, code: item.code ?? '', type: item.type, value: String(item.value), minAmount: item.minAmount ? String(item.minAmount) : '', startDate: item.startDate, endDate: item.endDate, usageLimit: item.usageLimit ? String(item.usageLimit) : '', scope: item.scope }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ code: '', amount: '', recipientName: '', recipientEmail: '', purchasedBy: '', expiryDate: '', message: '' }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: GiftCoupon) { setForm({ code: item.code, amount: String(item.amount), recipientName: item.recipientName, recipientEmail: item.recipientEmail ?? '', purchasedBy: item.purchasedBy, expiryDate: item.expiryDate ?? '', message: item.message ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.value || !form.startDate || !form.endDate) { toast.warning('Ad, değer, başlangıç ve bitiş tarihi zorunludur.'); return; }
+    if (!modal.item && (!form.code || !form.amount)) { toast.warning('Kod ve tutar zorunludur.'); return; }
+    if (!form.recipientName || !form.purchasedBy) { toast.warning('Alıcı adı ve satın alan zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Hediye Kuponları" subtitle={`${(list ?? []).filter(c => c.isActive).length} aktif`} showBack
+      <ScreenHeader title="Hediye Kuponları" subtitle={`${(list ?? []).filter(c => c.status === 'active').length} aktif`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
       <FlatList
@@ -66,21 +71,21 @@ export default function GiftCouponsScreen() {
         ItemSeparatorComponent={() => <View style={{ height: SPACE[3] }} />}
         ListEmptyComponent={<EmptyState icon="gift-outline" title="Kupon yok" />}
         renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.9} onPress={() => openEdit(item)} style={[styles.card, !item.isActive && styles.cardUsed]}>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => openEdit(item)} style={[styles.card, item.status !== 'active' && styles.cardUsed]}>
             <View style={styles.left}>
-              <View style={[styles.iconBox, { backgroundColor: item.isActive ? COLORS.primaryLight : COLORS.surfaceAlt }]}>
-                <Ionicons name="gift" size={24} color={item.isActive ? COLORS.primaryDark : COLORS.textMuted} />
+              <View style={[styles.iconBox, { backgroundColor: item.status === 'active' ? COLORS.primaryLight : COLORS.surfaceAlt }]}>
+                <Ionicons name="gift" size={24} color={item.status === 'active' ? COLORS.primaryDark : COLORS.textMuted} />
               </View>
               <View style={styles.codeBox}>
-                <Text style={styles.code}>{item.code || item.name}</Text>
-                <Text style={styles.expires}>Son: {item.endDate ? formatDate(item.endDate) : '-'}</Text>
+                <Text style={styles.code}>{item.code}</Text>
+                <Text style={styles.expires}>{item.recipientName} · {item.expiryDate ? `Son: ${formatDate(item.expiryDate)}` : 'Süresiz'}</Text>
               </View>
             </View>
             <View style={styles.right}>
-              <Text style={[styles.amount, !item.isActive && styles.textMuted]}>
-                {item.type === 'percentage' ? `%${item.value}` : formatCurrency(item.value)}
+              <Text style={[styles.amount, item.status !== 'active' && styles.textMuted]}>
+                {formatCurrency(item.amount - item.usedAmount)}
               </Text>
-              <Badge variant={item.isActive ? 'success' : 'default'} size="sm">{item.isActive ? 'Aktif' : 'Bitti'}</Badge>
+              <Badge variant={item.status === 'active' ? 'success' : 'default'} size="sm">{item.status === 'active' ? 'Aktif' : item.status === 'used' ? 'Kullanıldı' : 'Süresi Doldu'}</Badge>
             </View>
           </TouchableOpacity>
         )}
@@ -94,28 +99,17 @@ export default function GiftCouponsScreen() {
         deleteLabel={modal.item ? 'Sil' : undefined}
         onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >
-        <FormField label="Ad" value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} placeholder="Örn: Hediye Kuponu" />
-        <FormField label="Kod" value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} placeholder="Opsiyonel: HEDİYE20" />
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>İndirim Türü</Text>
-          <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.type === 'percentage' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, type: 'percentage' }))}><Text style={[styles.segmentText, form.type === 'percentage' && styles.segmentTextActive]}>Yüzde</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.type === 'fixed' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, type: 'fixed' }))}><Text style={[styles.segmentText, form.type === 'fixed' && styles.segmentTextActive]}>Sabit</Text></TouchableOpacity>
-          </View>
-        </View>
-        <FormField label="Değer" value={form.value} onChangeText={v => setForm(p => ({ ...p, value: v }))} placeholder={form.type === 'percentage' ? 'Örn: 20' : 'Örn: 150'} keyboardType="numeric" />
-        <FormField label="Min. Tutar" value={form.minAmount} onChangeText={v => setForm(p => ({ ...p, minAmount: v }))} placeholder="Zorunlu değil" keyboardType="numeric" />
-        <FormField label="Başlangıç Tarihi" value={form.startDate} onChangeText={v => setForm(p => ({ ...p, startDate: v }))} placeholder="Örn: 2025-01-01" />
-        <FormField label="Bitiş Tarihi" value={form.endDate} onChangeText={v => setForm(p => ({ ...p, endDate: v }))} placeholder="Örn: 2025-12-31" />
-        <FormField label="Kullanım Limiti" value={form.usageLimit} onChangeText={v => setForm(p => ({ ...p, usageLimit: v }))} placeholder="Sınırsız için boş bırakın" keyboardType="numeric" />
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Kapsam</Text>
-          <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.scope === 'all' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, scope: 'all' }))}><Text style={[styles.segmentText, form.scope === 'all' && styles.segmentTextActive]}>Tümü</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.scope === 'service' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, scope: 'service' }))}><Text style={[styles.segmentText, form.scope === 'service' && styles.segmentTextActive]}>Hizmet</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.scope === 'package' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, scope: 'package' }))}><Text style={[styles.segmentText, form.scope === 'package' && styles.segmentTextActive]}>Paket</Text></TouchableOpacity>
-          </View>
-        </View>
+        {!modal.item && (
+          <>
+            <FormField label="Kod" value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} placeholder="Örn: HEDİYE20" />
+            <FormField label="Tutar" value={form.amount} onChangeText={v => setForm(p => ({ ...p, amount: v }))} placeholder="Örn: 150" keyboardType="numeric" />
+          </>
+        )}
+        <FormField label="Alıcı Adı" value={form.recipientName} onChangeText={v => setForm(p => ({ ...p, recipientName: v }))} placeholder="Örn: Ayşe Yılmaz" />
+        <FormField label="Alıcı E-postası" value={form.recipientEmail} onChangeText={v => setForm(p => ({ ...p, recipientEmail: v }))} placeholder="İsteğe bağlı" keyboardType="email-address" />
+        <FormField label="Satın Alan" value={form.purchasedBy} onChangeText={v => setForm(p => ({ ...p, purchasedBy: v }))} placeholder="Örn: Mehmet Kaya" />
+        <FormField label="Son Kullanım Tarihi" value={form.expiryDate} onChangeText={v => setForm(p => ({ ...p, expiryDate: v }))} placeholder="İsteğe bağlı, örn: 2025-12-31" />
+        <FormField label="Mesaj" value={form.message} onChangeText={v => setForm(p => ({ ...p, message: v }))} placeholder="İsteğe bağlı" multiline />
       </FormModal>
     </View>
   );

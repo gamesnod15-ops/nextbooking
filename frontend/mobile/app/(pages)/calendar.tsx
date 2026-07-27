@@ -425,11 +425,12 @@ export default function CalendarScreen() {
 
   const mutation = useMutation({
     mutationFn: ({ action, id }: { action: string; id: string }) => {
-      const ep = action === 'confirm' ? 'confirm' : action === 'complete' ? 'complete' : 'cancel';
-      return api.post(`/appointments/${id}/${ep}`);
+      if (action === 'confirm') return api.post(`/appointments/${id}/confirm`);
+      if (action === 'complete') return api.post(`/appointments/${id}/complete`);
+      return api.post(`/appointments/${id}/cancel`, { reason: 'İşletme tarafından iptal edildi.' });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['appointments'] }),
-    onError: () => toast.error('İşlem gerçekleştirilemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'İşlem gerçekleştirilemedi.'),
   });
 
   const activeFilterCount = statusFilters.length + employeeFilters.length;

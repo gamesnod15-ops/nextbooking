@@ -28,28 +28,34 @@ export default function DiscountsScreen() {
 
   const qc = useQueryClient();
   const [modal, setModal] = useState<{ open: boolean; item?: Coupon }>({ open: false });
-  const [form, setForm] = useState({ name: '', code: '', type: 'percentage' as 'percentage' | 'fixed', value: '', minAmount: '', startDate: '', endDate: '', usageLimit: '', scope: 'all' });
+  // Backend CouponDto/Create/UpdateCouponCommand (CouponsController.cs) has no "name",
+  // "startDate" or "scope" concept — coupons are identified by a unique Code, with an
+  // optional free-text Description, and apply account-wide (no scoping).
+  const [form, setForm] = useState({ code: '', description: '', discountType: 'percentage' as 'percentage' | 'fixedAmount', discountValue: '', minimumOrderAmount: '', expiresAt: '', usageLimit: '', isActive: true });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/coupons', { name: form.name, code: form.code || undefined, type: form.type, value: Number(form.value), minAmount: form.minAmount ? Number(form.minAmount) : undefined, startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, scope: form.scope }),
+    mutationFn: async () => api.post('/coupons', { code: form.code, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), minimumOrderAmount: form.minimumOrderAmount ? Number(form.minimumOrderAmount) : undefined, expiresAt: form.expiresAt || undefined, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['coupons'] }); setModal({ open: false }); },
-    onError: () => toast.error('İndirim eklenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'İndirim eklenemedi.'),
   });
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/coupons/${modal.item!.id}`, { name: form.name, code: form.code || undefined, type: form.type, value: Number(form.value), minAmount: form.minAmount ? Number(form.minAmount) : undefined, startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, scope: form.scope }),
+    // isActive must always be sent — UpdateCouponCommand.IsActive is a non-nullable
+    // bool, so omitting it defaults to false on deserialization and silently
+    // deactivates the coupon on every edit.
+    mutationFn: async () => api.put(`/coupons/${modal.item!.id}`, { code: form.code, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), minimumOrderAmount: form.minimumOrderAmount ? Number(form.minimumOrderAmount) : undefined, expiresAt: form.expiresAt || undefined, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, isActive: form.isActive }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['coupons'] }); setModal({ open: false }); },
-    onError: () => toast.error('İndirim güncellenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'İndirim güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/coupons/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['coupons'] }); setModal({ open: false }); },
-    onError: () => toast.error('İndirim silinemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'İndirim silinemedi.'),
   });
 
-  function openCreate() { setForm({ name: '', code: '', type: 'percentage', value: '', minAmount: '', startDate: '', endDate: '', usageLimit: '', scope: 'all' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Coupon) { setForm({ name: item.name, code: item.code ?? '', type: item.type, value: String(item.value), minAmount: item.minAmount ? String(item.minAmount) : '', startDate: item.startDate, endDate: item.endDate, usageLimit: item.usageLimit ? String(item.usageLimit) : '', scope: item.scope }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ code: '', description: '', discountType: 'percentage', discountValue: '', minimumOrderAmount: '', expiresAt: '', usageLimit: '', isActive: true }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: Coupon) { setForm({ code: item.code, description: item.description ?? '', discountType: item.discountType, discountValue: String(item.discountValue), minimumOrderAmount: item.minimumOrderAmount ? String(item.minimumOrderAmount) : '', expiresAt: item.expiresAt ?? '', usageLimit: item.usageLimit ? String(item.usageLimit) : '', isActive: item.isActive }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.value || !form.startDate || !form.endDate) { toast.warning('Ad, değer, başlangıç ve bitiş tarihi zorunludur.'); return; }
+    if (!form.code || !form.discountValue) { toast.warning('Kod ve indirim değeri zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
@@ -70,31 +76,28 @@ export default function DiscountsScreen() {
             <View style={styles.row}>
               <View style={[styles.discountCircle, { backgroundColor: item.isActive ? COLORS.primaryLight : COLORS.surfaceAlt }]}>
                 <Text style={[styles.discountValue, { color: item.isActive ? COLORS.primaryDark : COLORS.textMuted }]}>
-                  {item.type === 'percentage' ? `%${item.value}` : `${item.value}₺`}
+                  {item.discountType === 'percentage' ? `%${item.discountValue}` : `${item.discountValue}₺`}
                 </Text>
               </View>
               <View style={styles.info}>
-                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.name}>{item.code}</Text>
+                {item.description ? <Text style={styles.metaText}>{item.description}</Text> : null}
                 <View style={styles.meta}>
-                  <Text style={styles.metaText}>{formatDate(item.startDate)} – {formatDate(item.endDate)}</Text>
+                  <Text style={styles.metaText}>{item.expiresAt ? `Son: ${formatDate(item.expiresAt)}` : 'Süresiz'}</Text>
                 </View>
               </View>
-              <Badge variant={item.isActive ? 'success' : 'default'} size="sm">{item.isActive ? 'Aktif' : 'Bitti'}</Badge>
+              <Badge variant={item.isActive ? 'success' : 'default'} size="sm">{item.isActive ? 'Aktif' : 'Pasif'}</Badge>
             </View>
             <View style={styles.stats}>
-              {item.minAmount && (
+              {item.minimumOrderAmount && (
                 <View style={styles.stat}>
                   <Text style={styles.statLabel}>Min. Tutar</Text>
-                  <Text style={styles.statValue}>{formatCurrency(item.minAmount)}</Text>
+                  <Text style={styles.statValue}>{formatCurrency(item.minimumOrderAmount)}</Text>
                 </View>
               )}
               <View style={styles.stat}>
                 <Text style={styles.statLabel}>Kullanım</Text>
                 <Text style={styles.statValue}>{item.usageCount}{item.usageLimit ? `/${item.usageLimit}` : ''}</Text>
-              </View>
-              <View style={styles.stat}>
-                <Text style={styles.statLabel}>Kapsam</Text>
-                <Text style={styles.statValue}>{item.scope === 'all' ? 'Tüm Hizmetler' : item.scope === 'service' ? 'Hizmet' : 'Paket'}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -109,28 +112,19 @@ export default function DiscountsScreen() {
         deleteLabel={modal.item ? 'Sil' : undefined}
         onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >
-        <FormField label="Ad" value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} placeholder="Örn: Hoşgeldin İndirimi" />
-        <FormField label="Kod" value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} placeholder="Opsiyonel: HOŞGELDİN20" />
+        <FormField label="Kod" value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} placeholder="Örn: HOSGELDIN20" />
+        <FormField label="Açıklama" value={form.description} onChangeText={v => setForm(p => ({ ...p, description: v }))} placeholder="İsteğe bağlı" />
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>İndirim Türü</Text>
           <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.type === 'percentage' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, type: 'percentage' }))}><Text style={[styles.segmentText, form.type === 'percentage' && styles.segmentTextActive]}>Yüzde</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.type === 'fixed' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, type: 'fixed' }))}><Text style={[styles.segmentText, form.type === 'fixed' && styles.segmentTextActive]}>Sabit</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.segment, form.discountType === 'percentage' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, discountType: 'percentage' }))}><Text style={[styles.segmentText, form.discountType === 'percentage' && styles.segmentTextActive]}>Yüzde</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.segment, form.discountType === 'fixedAmount' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, discountType: 'fixedAmount' }))}><Text style={[styles.segmentText, form.discountType === 'fixedAmount' && styles.segmentTextActive]}>Sabit</Text></TouchableOpacity>
           </View>
         </View>
-        <FormField label="İndirim Değeri" value={form.value} onChangeText={v => setForm(p => ({ ...p, value: v }))} placeholder={form.type === 'percentage' ? 'Örn: 20' : 'Örn: 150'} keyboardType="numeric" />
-        <FormField label="Min. Tutar" value={form.minAmount} onChangeText={v => setForm(p => ({ ...p, minAmount: v }))} placeholder="Zorunlu değil" keyboardType="numeric" />
-        <FormField label="Başlangıç Tarihi" value={form.startDate} onChangeText={v => setForm(p => ({ ...p, startDate: v }))} placeholder="Örn: 2025-01-01" />
-        <FormField label="Bitiş Tarihi" value={form.endDate} onChangeText={v => setForm(p => ({ ...p, endDate: v }))} placeholder="Örn: 2025-12-31" />
+        <FormField label="İndirim Değeri" value={form.discountValue} onChangeText={v => setForm(p => ({ ...p, discountValue: v }))} placeholder={form.discountType === 'percentage' ? 'Örn: 20' : 'Örn: 150'} keyboardType="numeric" />
+        <FormField label="Min. Tutar" value={form.minimumOrderAmount} onChangeText={v => setForm(p => ({ ...p, minimumOrderAmount: v }))} placeholder="Zorunlu değil" keyboardType="numeric" />
+        <FormField label="Son Kullanım Tarihi" value={form.expiresAt} onChangeText={v => setForm(p => ({ ...p, expiresAt: v }))} placeholder="Zorunlu değil, örn: 2025-12-31" />
         <FormField label="Kullanım Limiti" value={form.usageLimit} onChangeText={v => setForm(p => ({ ...p, usageLimit: v }))} placeholder="Sınırsız için boş bırakın" keyboardType="numeric" />
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Kapsam</Text>
-          <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.scope === 'all' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, scope: 'all' }))}><Text style={[styles.segmentText, form.scope === 'all' && styles.segmentTextActive]}>Tümü</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.scope === 'service' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, scope: 'service' }))}><Text style={[styles.segmentText, form.scope === 'service' && styles.segmentTextActive]}>Hizmet</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.scope === 'package' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, scope: 'package' }))}><Text style={[styles.segmentText, form.scope === 'package' && styles.segmentTextActive]}>Paket</Text></TouchableOpacity>
-          </View>
-        </View>
       </FormModal>
     </View>
   );

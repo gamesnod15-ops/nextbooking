@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RandevumKolay.Application.Common.Exceptions;
 using RandevumKolay.Application.Common.Interfaces;
 using RandevumKolay.Application.Common.Models;
 using RandevumKolay.Domain.Entities;
@@ -122,6 +123,20 @@ public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductC
         var product = await _context.Products.FirstOrDefaultAsync(
             p => p.Id == request.Id && p.TenantId == _tenant.TenantId, ct)
             ?? throw new Exception("Product not found");
+
+        // CustomerRecommendation.RecommendedProductId has DeleteBehavior.Restrict, so deleting a
+        // product that a recommendation still points to throws an unhandled DbUpdateException that
+        // the global middleware turns into a generic 500 ("An unexpected error occurred.").
+        // Check up front and surface a clear, actionable message instead.
+        var hasRecommendations = await _context.CustomerRecommendations
+            .AnyAsync(r => r.RecommendedProductId == product.Id, ct);
+
+        if (hasRecommendations)
+        {
+            throw new ConflictException(
+                "Bu ürün müşteri önerilerinde kullanıldığı için silinemez.");
+        }
+
         _context.Products.Remove(product);
         await _context.SaveChangesAsync(ct);
     }

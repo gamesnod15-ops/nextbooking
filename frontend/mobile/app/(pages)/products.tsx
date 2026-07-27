@@ -12,11 +12,28 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
 import { formatCurrency } from '@/lib/utils';
-import type { Product } from '@/types';
 import api from '@/lib/api';
 import { useToast } from '@/components/ui/Toast';
 
 const LOW_STOCK_THRESHOLD = 5;
+
+// Local shape matching the backend's ProductDto (RandevumKolay.Application.Features.Products.ProductDto)
+// exactly — the shared `Product` type in `@/types` used different field names (price/stock/sku)
+// that don't exist on the API response, so it isn't used here.
+interface ProductRecord {
+  id: string;
+  name: string;
+  description?: string | null;
+  category?: string | null;
+  barcode?: string | null;
+  salePrice: number;
+  costPrice?: number | null;
+  stockQuantity: number;
+  minStockLevel: number;
+  unit: string;
+  isActive: boolean;
+  isLowStock: boolean;
+}
 
 export default function ProductsScreen() {
   const insets = useSafeAreaInsets();
@@ -28,31 +45,63 @@ export default function ProductsScreen() {
     queryKey: ['products'],
     queryFn: async () => { const res = await api.get('/products'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
   });
-  const safeItems = (items ?? []) as Product[];
-  const filtered = safeItems.filter((p) => (p.name?.toLowerCase() ?? '').includes(search.toLowerCase()) || (p.sku ?? '').toLowerCase().includes(search.toLowerCase()));
+  const safeItems = (items ?? []) as ProductRecord[];
+  const filtered = safeItems.filter((p) => (p.name?.toLowerCase() ?? '').includes(search.toLowerCase()) || (p.barcode ?? '').toLowerCase().includes(search.toLowerCase()));
 
   const qc = useQueryClient();
-  const [modal, setModal] = useState<{ open: boolean; item?: Product }>({ open: false });
-  const [form, setForm] = useState({ name: '', sku: '', price: '', stock: '', category: '' });
+  const [modal, setModal] = useState<{ open: boolean; item?: ProductRecord }>({ open: false });
+  const [form, setForm] = useState({ name: '', barcode: '', price: '', stock: '', category: '', description: '', costPrice: '', minStockLevel: '5', unit: 'adet' });
+
+  function buildPayload() {
+    return {
+      name: form.name,
+      salePrice: Number(form.price),
+      stockQuantity: Number(form.stock),
+      category: form.category || undefined,
+      barcode: form.barcode || undefined,
+      costPrice: form.costPrice ? Number(form.costPrice) : undefined,
+      // MinStockLevel and Unit are non-nullable on the backend's Create/UpdateProductCommand
+      // with no default value — omitting them (or sending undefined) resets MinStockLevel to 0
+      // and Unit to null on every save, so they must always be carried even without a form field.
+      minStockLevel: form.minStockLevel ? Number(form.minStockLevel) : 5,
+      unit: form.unit || 'adet',
+      description: form.description || undefined,
+    };
+  }
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/products', { name: form.name, sku: form.sku, price: Number(form.price), stock: Number(form.stock), category: form.category }),
+    mutationFn: async () => api.post('/products', buildPayload()),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); setModal({ open: false }); },
-    onError: () => toast.error('Ürün eklenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Ürün eklenemedi.'),
   });
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/products/${modal.item!.id}`, { name: form.name, sku: form.sku, price: Number(form.price), stock: Number(form.stock), category: form.category }),
+    // UpdateProductCommand.Id is bound from the request body and compared against the route id
+    // by ProductsController (`if (id != command.Id) return BadRequest()`) — it must be included here.
+    mutationFn: async () => api.put(`/products/${modal.item!.id}`, { id: modal.item!.id, ...buildPayload() }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); setModal({ open: false }); },
-    onError: () => toast.error('Ürün güncellenemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Ürün güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/products/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); setModal({ open: false }); },
-    onError: () => toast.error('Ürün silinemedi.'),
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Ürün silinemedi.'),
   });
 
-  function openCreate() { setForm({ name: '', sku: '', price: '', stock: '0', category: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Product) { setForm({ name: item.name, sku: item.sku ?? '', price: String(item.price), stock: String(item.stock), category: item.category ?? '' }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ name: '', barcode: '', price: '', stock: '0', category: '', description: '', costPrice: '', minStockLevel: '5', unit: 'adet' }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: ProductRecord) {
+    setForm({
+      name: item.name,
+      barcode: item.barcode ?? '',
+      price: String(item.salePrice),
+      stock: String(item.stockQuantity),
+      category: item.category ?? '',
+      description: item.description ?? '',
+      costPrice: item.costPrice != null ? String(item.costPrice) : '',
+      minStockLevel: String(item.minStockLevel ?? 5),
+      unit: item.unit || 'adet',
+    });
+    setModal({ open: true, item });
+  }
   function handleSave() {
     if (!form.name || !form.price) { toast.warning('Ad ve fiyat zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
@@ -64,10 +113,10 @@ export default function ProductsScreen() {
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
       {/* Low stock alert */}
-      {safeItems.some(p => p.stock <= LOW_STOCK_THRESHOLD && p.isActive) && (
+      {safeItems.some(p => p.stockQuantity <= LOW_STOCK_THRESHOLD && p.isActive) && (
         <View style={styles.alert}>
           <Ionicons name="warning" size={16} color={COLORS.warning} />
-          <Text style={styles.alertText}>{safeItems.filter(p => p.stock <= LOW_STOCK_THRESHOLD && p.isActive).length} ürün kritik stok seviyesinde</Text>
+          <Text style={styles.alertText}>{safeItems.filter(p => p.stockQuantity <= LOW_STOCK_THRESHOLD && p.isActive).length} ürün kritik stok seviyesinde</Text>
         </View>
       )}
       <SearchBar value={search} onChangeText={setSearch} placeholder="Ürün veya SKU ara…" style={{ marginHorizontal: SPACE[5], marginBottom: SPACE[3] }} />
@@ -79,8 +128,8 @@ export default function ProductsScreen() {
         ItemSeparatorComponent={() => <View style={{ height: SPACE[3] }} />}
         ListEmptyComponent={<EmptyState icon="cube-outline" title="Ürün bulunamadı" />}
         renderItem={({ item }) => {
-          const isLow = item.stock > 0 && item.stock <= LOW_STOCK_THRESHOLD;
-          const isOut = item.stock === 0;
+          const isLow = item.stockQuantity > 0 && item.stockQuantity <= LOW_STOCK_THRESHOLD;
+          const isOut = item.stockQuantity === 0;
           return (
             <TouchableOpacity style={styles.card} onPress={() => openEdit(item)} activeOpacity={0.7}>
               <View style={[styles.iconBox, { backgroundColor: isOut ? COLORS.errorLight : isLow ? COLORS.warningLight : COLORS.infoLight }]}>
@@ -88,14 +137,14 @@ export default function ProductsScreen() {
               </View>
               <View style={styles.info}>
                 <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.sku}>{item.sku} · {item.category}</Text>
+                <Text style={styles.sku}>{item.barcode} · {item.category}</Text>
               </View>
               <View style={styles.right}>
-                <Text style={styles.price}>{formatCurrency(item.price)}</Text>
+                <Text style={styles.price}>{formatCurrency(item.salePrice)}</Text>
                 <View style={styles.stockRow}>
                   <Ionicons name={isOut ? 'close-circle' : isLow ? 'alert-circle' : 'checkmark-circle'} size={14} color={isOut ? COLORS.error : isLow ? COLORS.warning : COLORS.success} />
                   <Text style={[styles.stock, { color: isOut ? COLORS.error : isLow ? COLORS.warning : COLORS.textMuted }]}>
-                    {item.stock} adet
+                    {item.stockQuantity} adet
                   </Text>
                 </View>
               </View>
@@ -110,7 +159,7 @@ export default function ProductsScreen() {
         deleteLabel={modal.item ? 'Sil' : undefined} onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >
         <FormField label="Ürün Adı" value={form.name} onChangeText={v => setForm(p => ({...p,name:v}))} placeholder="Örn: Şampuan Pro" />
-        <FormField label="SKU (stok kodu)" value={form.sku} onChangeText={v => setForm(p => ({...p,sku:v}))} placeholder="PRD-001" />
+        <FormField label="SKU (stok kodu)" value={form.barcode} onChangeText={v => setForm(p => ({...p,barcode:v}))} placeholder="PRD-001" />
         <FormField label="Kategori" value={form.category} onChangeText={v => setForm(p => ({...p,category:v}))} placeholder="Saç Bakım" />
         <FormField label="Fiyat (₺)" value={form.price} onChangeText={v => setForm(p => ({...p,price:v}))} keyboardType="numeric" />
         <FormField label="Stok Adedi" value={form.stock} onChangeText={v => setForm(p => ({...p,stock:v}))} keyboardType="numeric" />

@@ -1,41 +1,56 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatCurrency } from '@/lib/utils';
-import type { LoyaltyMember } from '@/types';
+import type { LoyaltyMember, LoyaltyTier } from '@/types';
 import api from '@/lib/api';
 
-const TIER_CONFIG = {
-  platinum: { label: 'Platin', color: '#8B5CF6', bg: '#EDE9FE', icon: '💎' },
-  gold:     { label: 'Altın',  color: '#F59E0B', bg: '#FEF3C7', icon: '🏆' },
-  silver:   { label: 'Gümüş', color: '#6B7280', bg: '#F3F4F6', icon: '🥈' },
-  bronze:   { label: 'Bronz', color: '#D97706', bg: '#FEF9C3', icon: '🥉' },
-};
-
-const TIER_THRESHOLDS = [
-  { tier: 'bronze', label: 'Bronz', min: 0, max: 100, color: '#D97706' },
-  { tier: 'silver', label: 'Gümüş', min: 100, max: 250, color: '#6B7280' },
-  { tier: 'gold', label: 'Altın', min: 250, max: 500, color: '#F59E0B' },
-  { tier: 'platinum', label: 'Platin', min: 500, max: Infinity, color: '#8B5CF6' },
+// Cosmetic config (emoji/color) keyed by a tier's position, since
+// LoyaltyTierDto (GetLoyaltyTiersQuery) only gives a Tailwind color class and a
+// web icon name (Star/Zap/Crown/Heart) — not something usable directly as an RN
+// color/Ionicons name. The seeded default tiers (LoyaltyTier.CreateDefaults) are
+// always Bronz/Gümüş/Altın/Platin in that sort order, so we match by position.
+const TIER_VISUALS = [
+  { color: '#D97706', bg: '#FEF9C3', icon: '🥉' }, // sortOrder 0 — Bronz
+  { color: '#6B7280', bg: '#F3F4F6', icon: '🥈' }, // sortOrder 1 — Gümüş
+  { color: '#F59E0B', bg: '#FEF3C7', icon: '🏆' }, // sortOrder 2 — Altın
+  { color: '#8B5CF6', bg: '#EDE9FE', icon: '💎' }, // sortOrder 3 — Platin
 ];
+const FALLBACK_VISUAL = { color: '#6B7280', bg: '#F3F4F6', icon: '⭐' };
 
 export default function LoyaltyScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+
+  // GetLoyaltyMembersQuery/GetLoyaltyTiersQuery (LoyaltyController.cs) return a
+  // PaginatedList (`{ items: [...] }`), not a bare array.
   const { data: list = [] } = useQuery<LoyaltyMember[]>({
     queryKey: ['loyalty-members'],
-    queryFn: async () => { const res = await api.get('/loyalty/members'); return Array.isArray(res.data) ? res.data : []; },
+    queryFn: async () => { const res = await api.get('/loyalty/members'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
   });
-  const tierCounts = list.reduce((acc, m) => { acc[m.tier] = (acc[m.tier] ?? 0) + 1; return acc; }, {} as Record<string, number>);
+  const { data: tiers = [] } = useQuery<LoyaltyTier[]>({
+    queryKey: ['loyalty-tiers'],
+    queryFn: async () => { const res = await api.get('/loyalty/tiers'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
+  });
+
+  const tierById = useMemo(() => {
+    const sorted = [...tiers].sort((a, b) => a.sortOrder - b.sortOrder);
+    return new Map(sorted.map((t, idx) => [t.id, { ...t, visual: TIER_VISUALS[idx] ?? FALLBACK_VISUAL }]));
+  }, [tiers]);
+
+  const tierCounts = list.reduce((acc, m) => {
+    const name = tierById.get(m.tierId)?.name ?? 'Diğer';
+    acc[name] = (acc[name] ?? 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -43,13 +58,16 @@ export default function LoyaltyScreen() {
 
       {/* Tier Cards */}
       <View style={styles.tierRow}>
-        {(Object.entries(TIER_CONFIG) as [keyof typeof TIER_CONFIG, typeof TIER_CONFIG[keyof typeof TIER_CONFIG]][]).map(([tier, cfg]) => (
-          <View key={tier} style={[styles.tierCard, { borderTopColor: cfg.color }]}>
-            <Text style={styles.tierEmoji}>{cfg.icon}</Text>
-            <Text style={styles.tierLabel}>{cfg.label}</Text>
-            <Text style={[styles.tierCount, { color: cfg.color }]}>{tierCounts[tier] ?? 0}</Text>
-          </View>
-        ))}
+        {[...tiers].sort((a, b) => a.sortOrder - b.sortOrder).map((t, idx) => {
+          const visual = TIER_VISUALS[idx] ?? FALLBACK_VISUAL;
+          return (
+            <View key={t.id} style={[styles.tierCard, { borderTopColor: visual.color }]}>
+              <Text style={styles.tierEmoji}>{visual.icon}</Text>
+              <Text style={styles.tierLabel}>{t.name}</Text>
+              <Text style={[styles.tierCount, { color: visual.color }]}>{tierCounts[t.name] ?? 0}</Text>
+            </View>
+          );
+        })}
       </View>
 
       {/* Members */}
@@ -62,18 +80,19 @@ export default function LoyaltyScreen() {
         ItemSeparatorComponent={() => <View style={{ height: SPACE[3] }} />}
         ListEmptyComponent={<EmptyState icon="star-outline" title="Üye yok" />}
         renderItem={({ item }) => {
-          const cfg = TIER_CONFIG[item.tier];
+          const tier = tierById.get(item.tierId);
+          const visual = tier?.visual ?? FALLBACK_VISUAL;
           return (
             <View style={styles.card}>
-              <Avatar name={item.customerName} size={46} />
+              <Avatar name={item.name} size={46} />
               <View style={styles.info}>
-                <Text style={styles.name}>{item.customerName}</Text>
+                <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.spent}>{formatCurrency(item.totalSpent)} toplam harcama</Text>
               </View>
               <View style={styles.right}>
-                <View style={[styles.tierBadge, { backgroundColor: cfg.bg }]}>
-                  <Text style={{ fontSize: 12 }}>{cfg.icon}</Text>
-                  <Text style={[styles.tierBadgeText, { color: cfg.color }]}>{cfg.label}</Text>
+                <View style={[styles.tierBadge, { backgroundColor: visual.bg }]}>
+                  <Text style={{ fontSize: 12 }}>{visual.icon}</Text>
+                  <Text style={[styles.tierBadgeText, { color: visual.color }]}>{tier?.name ?? 'Diğer'}</Text>
                 </View>
                 <View style={styles.pointsRow}>
                   <Ionicons name="star" size={12} color={COLORS.warning} />
@@ -107,4 +126,3 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   pointsRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   points: { fontSize: FONT.xs, fontWeight: FONT.bold, color: '#92400E' },
 });
-
