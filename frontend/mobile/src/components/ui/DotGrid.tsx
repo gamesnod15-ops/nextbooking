@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { COLORS } from '@/lib/theme';
+import { useColors } from '@/lib/themeContext';
 
 interface DotGridProps {
   rows?: number;
@@ -10,11 +10,13 @@ interface DotGridProps {
 }
 
 /** Decorative dot-grid texture used on auth screen backgrounds. */
-export function DotGrid({ rows = 5, cols = 4, color = COLORS.primary, style }: DotGridProps) {
+export function DotGrid({ rows = 5, cols = 4, color, style }: DotGridProps) {
+  const COLORS = useColors();
+  const dotColor = color ?? COLORS.primary;
   return (
     <View style={[styles.grid, style]} pointerEvents="none">
       {Array.from({ length: rows * cols }).map((_, i) => (
-        <View key={i} style={[styles.dot, { backgroundColor: color }]} />
+        <View key={i} style={[styles.dot, { backgroundColor: dotColor }]} />
       ))}
     </View>
   );

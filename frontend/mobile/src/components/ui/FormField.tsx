@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { COLORS, FONT, RADIUS, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 interface FormFieldProps {
   label: string;
@@ -13,6 +14,8 @@ interface FormFieldProps {
 }
 
 export function FormField({ label, value, onChangeText, placeholder, multiline, keyboardType, error }: FormFieldProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -30,10 +33,10 @@ export function FormField({ label, value, onChangeText, placeholder, multiline, 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   field: { gap: SPACE[1] },
   label: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
-  input: { backgroundColor: '#F5F5F3', borderRadius: RADIUS.lg, paddingHorizontal: SPACE[4], paddingVertical: SPACE[3], fontSize: FONT.base, color: COLORS.text, borderWidth: 1.5, borderColor: '#D0D0D0' },
+  input: { backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, paddingHorizontal: SPACE[4], paddingVertical: SPACE[3], fontSize: FONT.base, color: COLORS.text, borderWidth: 1.5, borderColor: COLORS.border },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   error: { fontSize: FONT.xs, color: COLORS.error },
 });

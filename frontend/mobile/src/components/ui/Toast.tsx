@@ -1,9 +1,10 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
 
@@ -33,12 +34,12 @@ export function useToast() {
   return useContext(ToastContext);
 }
 
-const VARIANTS: Record<ToastVariant, { icon: keyof typeof Ionicons.glyphMap; bg: string; fg: string }> = {
+const getVariants = (COLORS: Palette): Record<ToastVariant, { icon: keyof typeof Ionicons.glyphMap; bg: string; fg: string }> => ({
   success: { icon: 'checkmark-circle', bg: COLORS.successLight, fg: COLORS.successText },
   error: { icon: 'alert-circle', bg: COLORS.errorLight, fg: COLORS.errorText },
   info: { icon: 'information-circle', bg: COLORS.infoLight, fg: COLORS.infoText },
   warning: { icon: 'warning', bg: COLORS.warningLight, fg: COLORS.warningText },
-};
+});
 
 interface ToastState {
   message: string;
@@ -47,6 +48,9 @@ interface ToastState {
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const VARIANTS = useMemo(() => getVariants(COLORS), [COLORS]);
   const [toast, setToast] = useState<ToastState | null>(null);
   const anim = useRef(new Animated.Value(0)).current;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -133,7 +137,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   wrap: {
     position: 'absolute',
     left: SPACE[5],

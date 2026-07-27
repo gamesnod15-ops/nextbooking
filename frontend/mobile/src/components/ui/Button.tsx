@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -8,7 +8,8 @@ import {
   TextStyle,
   TouchableOpacityProps,
 } from 'react-native';
-import { COLORS, FONT, RADIUS, SHADOW } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { tapFeedback, warningFeedback } from '@/lib/haptics';
 
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
@@ -41,6 +42,9 @@ export function Button({
   onPress,
   ...props
 }: ButtonProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const textStyles = useMemo(() => createTextStyles(COLORS), [COLORS]);
   const variantStyle = styles[variant];
   const textVariant = textStyles[variant];
   const sizeStyle = sizeStyles[size];
@@ -77,7 +81,7 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   base: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -110,7 +114,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const textStyles = StyleSheet.create({
+const createTextStyles = (COLORS: Palette) => StyleSheet.create({
   primary: { color: COLORS.white },
   secondary: { color: COLORS.text },
   outline: { color: COLORS.text },

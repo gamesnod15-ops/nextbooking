@@ -1,11 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from '@/components/ui/Avatar';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { ProfileEditModal, type ProfileEditValues } from '@/components/ui/ProfileEditModal';
@@ -39,6 +40,8 @@ export default function CustomerProfileScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const router = useRouter();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const auth = useSelector((state: RootState) => state.auth);
   const accessToken = auth.accessToken;
   const [guestInfo, setGuestInfo] = useState<GuestInfo | null>(null);
@@ -244,7 +247,7 @@ export default function CustomerProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   blobBlue: {
     position: 'absolute',

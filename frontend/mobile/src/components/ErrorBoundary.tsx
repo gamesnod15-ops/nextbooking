@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { ThemeContext, LIGHT_COLORS, type Palette } from '@/lib/themeContext';
 import { reportError } from '@/lib/errorReporting';
 
 interface Props {
@@ -20,6 +21,8 @@ interface State {
  * those still need local try/catch.
  */
 export class ErrorBoundary extends React.Component<Props, State> {
+  static contextType = ThemeContext;
+
   state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
@@ -35,6 +38,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     const { error } = this.state;
     if (!error) return this.props.children;
+
+    const themeContext = this.context as React.ContextType<typeof ThemeContext> | undefined;
+    const COLORS = themeContext?.colors ?? LIGHT_COLORS;
+    const styles = createStyles(COLORS);
 
     return (
       <View style={styles.root}>
@@ -61,7 +68,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bg,

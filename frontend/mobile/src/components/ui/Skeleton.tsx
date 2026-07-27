@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Animated, ViewStyle, DimensionValue } from 'react-native';
-import { COLORS, RADIUS, SPACE } from '@/lib/theme';
+import { RADIUS, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -11,6 +12,7 @@ interface SkeletonProps {
 
 /** A single shimmering placeholder block. */
 export function Skeleton({ width = '100%', height = 14, radius = RADIUS.sm, style }: SkeletonProps) {
+  const COLORS = useColors();
   const pulse = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
@@ -38,6 +40,8 @@ export function Skeleton({ width = '100%', height = 14, radius = RADIUS.sm, styl
 
 /** Placeholder matching the shape of a list row with avatar + two lines. */
 export function SkeletonListItem() {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={styles.row}>
       <Skeleton width={46} height={46} radius={23} />
@@ -52,6 +56,8 @@ export function SkeletonListItem() {
 
 /** Placeholder matching the photo-banner business card. */
 export function SkeletonCard() {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={styles.card}>
       <Skeleton width="100%" height={120} radius={0} />
@@ -66,6 +72,8 @@ export function SkeletonCard() {
 
 /** Repeats a skeleton `count` times — the usual way these are used. */
 export function SkeletonList({ count = 5, variant = 'row' }: { count?: number; variant?: 'row' | 'card' }) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={styles.list}>
       {Array.from({ length: count }).map((_, i) =>
@@ -75,7 +83,7 @@ export function SkeletonList({ count = 5, variant = 'row' }: { count?: number; v
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   list: { gap: SPACE[3] },
   row: {
     flexDirection: 'row',

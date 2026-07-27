@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { DotGrid } from './DotGrid';
 
 interface ScreenHeaderProps {
@@ -18,6 +19,8 @@ interface ScreenHeaderProps {
 export function ScreenHeader({ title, subtitle, showBack = false, right, transparent = false }: ScreenHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   function goBack() {
     if (router.canGoBack()) router.back();
@@ -60,7 +63,7 @@ export function ScreenHeader({ title, subtitle, showBack = false, right, transpa
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   container: {
     paddingBottom: SPACE[4],
     paddingHorizontal: SPACE[5],

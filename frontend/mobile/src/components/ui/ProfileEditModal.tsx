@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
 
@@ -23,6 +24,8 @@ interface ProfileEditModalProps {
 }
 
 export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onClose, onSave }: ProfileEditModalProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const [values, setValues] = useState<ProfileEditValues>(initialValues);
   const [photoUri, setPhotoUri] = useState<string | null>(initialPhotoUri);
   const [saving, setSaving] = useState(false);
@@ -131,7 +134,7 @@ export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onCl
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(5,22,56,0.5)', justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: COLORS.surface,

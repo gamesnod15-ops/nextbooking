@@ -85,7 +85,7 @@ interface ThemeContextValue {
   setPreference: (preference: ThemePreference) => Promise<void>;
 }
 
-const ThemeContext = createContext<ThemeContextValue>({
+export const ThemeContext = createContext<ThemeContextValue>({
   preference: 'light',
   theme: 'light',
   colors: LIGHT_COLORS,

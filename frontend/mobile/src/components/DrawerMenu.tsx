@@ -1,11 +1,12 @@
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, Dimensions, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout as logoutAction } from '@/store/slices/authSlice';
 import { clearBusiness } from '@/store/slices/businessSlice';
@@ -31,7 +32,7 @@ interface MenuItem {
   color?: string;
 }
 
-const MENU_SECTIONS: MenuSection[] = [
+const getMenuSections = (COLORS: Palette): MenuSection[] => [
   {
     title: 'Yönetim',
     items: [
@@ -145,6 +146,9 @@ function DrawerContent({ anim, isOpen, onClose }: { anim: Animated.Value; isOpen
   const dispatch = useAppDispatch();
   const auth = useAppSelector((s) => s.auth);
   const business = useAppSelector((s) => s.business.business);
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const MENU_SECTIONS = useMemo(() => getMenuSections(COLORS), [COLORS]);
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
   const year = new Date().getFullYear();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -268,6 +272,8 @@ function DrawerContent({ anim, isOpen, onClose }: { anim: Animated.Value; isOpen
 
 export function MenuButton({ showBadge = true }: { showBadge?: boolean }) {
   const { openDrawer } = useDrawer();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <TouchableOpacity style={styles.menuBtn} onPress={openDrawer} activeOpacity={0.7}>
       <Ionicons name="menu-outline" size={24} color={COLORS.text} />
@@ -278,6 +284,8 @@ export function MenuButton({ showBadge = true }: { showBadge?: boolean }) {
 
 export function NotifButton() {
   const router = useRouter();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <TouchableOpacity style={styles.menuBtn} activeOpacity={0.7} onPress={() => router.push('/notifications' as any)}>
       <Ionicons name="notifications-outline" size={24} color={COLORS.text} />
@@ -286,7 +294,7 @@ export function NotifButton() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   backdrop: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: COLORS.overlay,

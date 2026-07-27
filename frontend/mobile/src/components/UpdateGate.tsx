@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { useOtaUpdates, useVersionGate } from '@/lib/appUpdates';
 
 const FALLBACK_STORE_URL = Platform.select({
@@ -17,6 +18,8 @@ const FALLBACK_STORE_URL = Platform.select({
 export function UpdateGate({ children }: { children: React.ReactNode }) {
   useOtaUpdates();
   const { updateRequired, storeUrl } = useVersionGate();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   if (!updateRequired) return <>{children}</>;
 
@@ -43,7 +46,7 @@ export function UpdateGate({ children }: { children: React.ReactNode }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bg,

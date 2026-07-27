@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ViewStyle, ImageStyle } from 'react-native';
-import { COLORS, FONT } from '@/lib/theme';
+import { FONT } from '@/lib/theme';
 import { initials } from '@/lib/utils';
 import { fixImageUrl } from '@/lib/api';
 

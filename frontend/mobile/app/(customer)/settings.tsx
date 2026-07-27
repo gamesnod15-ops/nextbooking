@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { useToast } from '@/components/ui/Toast';
-import { useTheme } from '@/lib/themeContext';
-import { useI18n } from '@/i18n';
+import { useTheme, useColors, type Palette } from '@/lib/themeContext';
 import {
   authenticate,
   getBiometricSupport,
@@ -36,7 +35,8 @@ export default function SettingsScreen() {
   const [clearing, setClearing] = useState(false);
   const toast = useToast();
   const { preference, setPreference } = useTheme();
-  const { locale, setLocale } = useI18n();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const [biometric, setBiometric] = useState<BiometricSupport | null>(null);
   const [lockEnabled, setLockEnabled] = useState(false);
 
@@ -104,9 +104,9 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionLabel}>Görünüm ve Dil</Text>
+        <Text style={styles.sectionLabel}>Görünüm</Text>
         <View style={styles.list}>
-          <View style={[styles.item, { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight }]}>
+          <View style={styles.item}>
             <View style={styles.iconBox}>
               <Ionicons name="contrast-outline" size={18} color={COLORS.primary} />
             </View>
@@ -124,30 +124,6 @@ export default function SettingsScreen() {
                   activeOpacity={0.8}
                 >
                   <Text style={[styles.segmentText, preference === value && styles.segmentTextActive]}>
-                    {label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.item}>
-            <View style={styles.iconBox}>
-              <Ionicons name="language-outline" size={18} color={COLORS.primary} />
-            </View>
-            <Text style={styles.label}>Dil</Text>
-            <View style={styles.segment}>
-              {([
-                ['tr', 'TR'],
-                ['en', 'EN'],
-              ] as const).map(([value, label]) => (
-                <TouchableOpacity
-                  key={value}
-                  style={[styles.segmentBtn, locale === value && styles.segmentBtnActive]}
-                  onPress={() => setLocale(value)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[styles.segmentText, locale === value && styles.segmentTextActive]}>
                     {label}
                   </Text>
                 </TouchableOpacity>
@@ -226,7 +202,7 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   blobBlue: {
     position: 'absolute',

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { COLORS, RADIUS, SHADOW } from '@/lib/theme';
+import { RADIUS, SHADOW } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 interface CardProps {
   children: React.ReactNode;
@@ -9,6 +10,8 @@ interface CardProps {
 }
 
 export function Card({ children, style, variant = 'default' }: CardProps) {
+  const COLORS = useColors();
+  const variantStyles = useMemo(() => createVariantStyles(COLORS), [COLORS]);
   return (
     <View style={[styles.base, variantStyles[variant], style]}>
       {children}
@@ -23,7 +26,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const variantStyles = StyleSheet.create({
+const createVariantStyles = (COLORS: Palette) => StyleSheet.create({
   default: {
     backgroundColor: COLORS.surface,
     borderWidth: 1,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { COLORS, FONT, RADIUS } from '@/lib/theme';
+import { FONT, RADIUS } from '@/lib/theme';
+import { useColors } from '@/lib/themeContext';
 
 type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'primary' | 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
 
@@ -12,21 +13,21 @@ interface BadgeProps {
   size?: 'sm' | 'md';
 }
 
-const variantColors: Record<BadgeVariant, { bg: string; text: string; border: string }> = {
-  default:   { bg: COLORS.surfaceAlt, text: COLORS.textSecondary, border: COLORS.border },
-  primary:   { bg: COLORS.primaryMuted, text: COLORS.primaryDark, border: COLORS.primaryLight },
-  success:   { bg: COLORS.successLight, text: COLORS.successText, border: '#BBF7D0' },
-  warning:   { bg: COLORS.warningLight, text: COLORS.warningText, border: '#FDE68A' },
-  error:     { bg: COLORS.errorLight, text: COLORS.errorText, border: '#FECACA' },
-  info:      { bg: COLORS.infoLight, text: COLORS.infoText, border: '#BFDBFE' },
-  pending:   { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
-  confirmed: { bg: '#DCFCE7', text: '#166534', border: '#BBF7D0' },
-  cancelled: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA' },
-  completed: { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE' },
-  no_show:   { bg: '#F3F4F6', text: '#6B7280', border: '#E5E7EB' },
-};
-
 export function Badge({ children, variant = 'default', style, textStyle, size = 'md' }: BadgeProps) {
+  const COLORS = useColors();
+  const variantColors: Record<BadgeVariant, { bg: string; text: string; border: string }> = {
+    default:   { bg: COLORS.surfaceAlt, text: COLORS.textSecondary, border: COLORS.border },
+    primary:   { bg: COLORS.primaryMuted, text: COLORS.primaryDark, border: COLORS.primaryLight },
+    success:   { bg: COLORS.successLight, text: COLORS.successText, border: '#BBF7D0' },
+    warning:   { bg: COLORS.warningLight, text: COLORS.warningText, border: '#FDE68A' },
+    error:     { bg: COLORS.errorLight, text: COLORS.errorText, border: '#FECACA' },
+    info:      { bg: COLORS.infoLight, text: COLORS.infoText, border: '#BFDBFE' },
+    pending:   COLORS.pending,
+    confirmed: COLORS.confirmed,
+    cancelled: COLORS.cancelled,
+    completed: COLORS.completed,
+    no_show:   COLORS.no_show,
+  };
   const colors = variantColors[variant];
   return (
     <View

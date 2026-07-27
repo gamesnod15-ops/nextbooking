@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface StatCardProps {
@@ -14,6 +15,8 @@ interface StatCardProps {
 }
 
 export function StatCard({ label, value, sublabel, icon, trend, accent = false, style }: StatCardProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   if (accent) {
     return (
       <LinearGradient
@@ -63,7 +66,7 @@ export function StatCard({ label, value, sublabel, icon, trend, accent = false, 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.xl,

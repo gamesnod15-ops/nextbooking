@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 const NetworkContext = createContext<{ isOnline: boolean }>({ isOnline: true });
 
@@ -19,6 +20,8 @@ export function useIsOnline() {
  */
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const [isOnline, setIsOnline] = useState(true);
   const anim = useRef(new Animated.Value(0)).current;
 
@@ -63,7 +66,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   wrap: {
     position: 'absolute',
     left: SPACE[5],

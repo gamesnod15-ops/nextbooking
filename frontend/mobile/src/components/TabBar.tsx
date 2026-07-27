@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 export interface TabBarItem {
   name: string;
@@ -28,6 +28,8 @@ export function TabBar({ basePath = '/(business)', tabs = BUSINESS_TABS }: TabBa
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   const currentName = (() => {
     if (pathname === basePath || pathname === '/' || pathname === `${basePath}/index`) return 'index';
@@ -69,7 +71,7 @@ export function TabBar({ basePath = '/(business)', tabs = BUSINESS_TABS }: TabBa
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     backgroundColor: COLORS.primaryDark,

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TextInput, StyleSheet, ViewStyle, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 interface SearchBarProps {
   value: string;
@@ -12,6 +13,8 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ value, onChangeText, placeholder = 'Ara...', style, onClear }: SearchBarProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={[styles.container, style]}>
       <Ionicons name="search-outline" size={18} color={COLORS.textMuted} />
@@ -33,7 +36,7 @@ export function SearchBar({ value, onChangeText, placeholder = 'Ara...', style, 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

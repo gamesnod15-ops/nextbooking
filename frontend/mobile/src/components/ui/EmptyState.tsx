@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, SPACE } from '@/lib/theme';
+import { FONT, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 interface EmptyStateProps {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -12,6 +13,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ icon = 'document-outline', title, description, action, style }: EmptyStateProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={[styles.container, style]}>
       <View style={styles.iconWrap}>
@@ -24,7 +27,7 @@ export function EmptyState({ icon = 'document-outline', title, description, acti
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { COLORS, FONT, RADIUS, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 interface SectionHeaderProps {
   title: string;
@@ -10,6 +11,8 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, subtitle, action, style }: SectionHeaderProps) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={[styles.container, style]}>
       <View style={styles.left}>
@@ -23,6 +26,8 @@ export function SectionHeader({ title, subtitle, action, style }: SectionHeaderP
 
 interface DividerProps { style?: ViewStyle }
 export function Divider({ style }: DividerProps) {
+  const COLORS = useColors();
+  const dividerStyles = useMemo(() => createDividerStyles(COLORS), [COLORS]);
   return <View style={[dividerStyles.line, style]} />;
 }
 
@@ -35,6 +40,8 @@ interface ChipProps {
 
 export function Chip({ label, selected, onPress, style }: ChipProps) {
   const { TouchableOpacity, Text: RNText } = require('react-native');
+  const COLORS = useColors();
+  const chipStyles = useMemo(() => createChipStyles(COLORS), [COLORS]);
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -52,7 +59,7 @@ export function Chip({ label, selected, onPress, style }: ChipProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -73,7 +80,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const dividerStyles = StyleSheet.create({
+const createDividerStyles = (COLORS: Palette) => StyleSheet.create({
   line: {
     height: 1,
     backgroundColor: COLORS.borderLight,
@@ -81,7 +88,7 @@ const dividerStyles = StyleSheet.create({
   },
 });
 
-const chipStyles = StyleSheet.create({
+const createChipStyles = (COLORS: Palette) => StyleSheet.create({
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 7,
