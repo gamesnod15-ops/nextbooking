@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
@@ -90,7 +90,7 @@ export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onCl
             <TouchableOpacity style={styles.avatarWrap} onPress={pickPhoto} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Fotoğrafı değiştir">
               <Avatar name={`${values.ad} ${values.soyad}`} url={photoUri} size={88} />
               <View style={styles.avatarEditBadge}>
-                <Ionicons name="camera" size={14} color={COLORS.white} />
+                <Ionicons name="camera" size={14} color={STATIC_WHITE} />
               </View>
             </TouchableOpacity>
             <Text style={styles.photoHint}>Fotoğrafı değiştirmek için dokunun</Text>

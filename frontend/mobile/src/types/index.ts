@@ -30,13 +30,15 @@ export interface Business {
 
 export interface Employee {
   id: string;
-  fullName: string;
+  name: string;
   phone?: string;
   email?: string;
-  jobTitle?: string;
+  title?: string;
+  bio?: string;
   avatarUrl?: string;
   isActive: boolean;
-  services?: string[];
+  acceptsOnlineBookings?: boolean;
+  serviceIds?: string[];
 }
 
 export interface Service {
@@ -130,15 +132,22 @@ export interface Product {
   isActive: boolean;
 }
 
+export interface PackageItem {
+  serviceId: string;
+  serviceName: string;
+  quantity: number;
+}
+
 export interface BusinessPackage {
   id: string;
   name: string;
   description?: string;
   price: number;
-  sessions: number;
-  durationDays?: number;
-  services: string[];
+  originalPrice?: number;
+  validityDays: number;
   isActive: boolean;
+  imageUrl?: string;
+  items: PackageItem[];
 }
 
 export interface LoyaltyMember {

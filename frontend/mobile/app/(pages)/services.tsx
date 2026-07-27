@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -36,16 +36,19 @@ export default function ServicesScreen() {
 
   const qc = useQueryClient();
   const [modal, setModal] = useState<{ open: boolean; item?: Service }>({ open: false });
-  const [form, setForm] = useState({ name: '', description: '', price: '', durationMinutes: '' });
+  const [form, setForm] = useState({ name: '', description: '', price: '', durationMinutes: '', isActive: true });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/services', { name: form.name, description: form.description, price: Number(form.price), durationMinutes: Number(form.durationMinutes) }),
+    mutationFn: async () => api.post('/services', { name: form.name, description: form.description, price: Number(form.price), durationMinutes: Number(form.durationMinutes), isActive: form.isActive }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['services'] }); setModal({ open: false }); },
     onError: () => toast.error('Servis eklenemedi.'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/services/${modal.item!.id}`, { name: form.name, description: form.description, price: Number(form.price), durationMinutes: Number(form.durationMinutes) }),
+    // isActive must always be sent as the service's current value — the backend's
+    // UpdateServiceRequest.IsActive is a non-nullable bool, so omitting it defaults
+    // to false on deserialization and silently deactivates the service on every edit.
+    mutationFn: async () => api.put(`/services/${modal.item!.id}`, { name: form.name, description: form.description, price: Number(form.price), durationMinutes: Number(form.durationMinutes), isActive: form.isActive }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['services'] }); setModal({ open: false }); },
     onError: () => toast.error('Servis güncellenemedi.'),
   });
@@ -53,11 +56,14 @@ export default function ServicesScreen() {
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/services/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['services'] }); setModal({ open: false }); },
-    onError: () => toast.error('Servis silinemedi.'),
+    onError: (err: any) => {
+      const message = err?.response?.data?.message;
+      toast.error(message || 'Servis silinemedi.');
+    },
   });
 
-  function openCreate() { setForm({ name: '', description: '', price: '', durationMinutes: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Service) { setForm({ name: item.name, description: item.description ?? '', price: String(item.price), durationMinutes: String(item.durationMinutes) }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ name: '', description: '', price: '', durationMinutes: '', isActive: true }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: Service) { setForm({ name: item.name, description: item.description ?? '', price: String(item.price), durationMinutes: String(item.durationMinutes), isActive: item.isActive }); setModal({ open: true, item }); }
   function handleSave() {
     if (!form.name || !form.price) { toast.warning('Ad ve fiyat zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
@@ -75,7 +81,7 @@ export default function ServicesScreen() {
       <ScreenHeader title="Hizmetler" subtitle={`${(data ?? []).length} hizmet`} showBack
         right={
           <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle">
-            <Ionicons name="add" size={22} color={COLORS.white} />
+            <Ionicons name="add" size={22} color={STATIC_WHITE} />
           </TouchableOpacity>
         }
       />
@@ -146,7 +152,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.white },
+  chipTextActive: { color: STATIC_WHITE },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   catDot: { width: 44, height: 44, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center' },

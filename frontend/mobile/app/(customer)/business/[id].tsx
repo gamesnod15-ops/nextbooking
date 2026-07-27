@@ -15,7 +15,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -221,7 +221,7 @@ export default function BusinessDetailScreen() {
         <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero}>
           <View style={[styles.heroNav, { paddingTop: insets.top + SPACE[3] }]}>
             <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
-              <Ionicons name="chevron-back" size={22} color={COLORS.white} />
+              <Ionicons name="chevron-back" size={22} color={STATIC_WHITE} />
             </TouchableOpacity>
             <View style={styles.heroActions}>
               <TouchableOpacity
@@ -234,11 +234,11 @@ export default function BusinessDetailScreen() {
                 <Ionicons
                   name={favoriteIds.includes(id!) ? 'heart' : 'heart-outline'}
                   size={20}
-                  color={favoriteIds.includes(id!) ? COLORS.error : COLORS.white}
+                  color={favoriteIds.includes(id!) ? COLORS.error : STATIC_WHITE}
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.heroActionBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Paylaş">
-                <Ionicons name="share-outline" size={20} color={COLORS.white} />
+                <Ionicons name="share-outline" size={20} color={STATIC_WHITE} />
               </TouchableOpacity>
             </View>
           </View>
@@ -492,7 +492,7 @@ export default function BusinessDetailScreen() {
           onPress={() => router.push(`/(customer)/booking/${biz.id}`)}
           activeOpacity={0.85}
         >
-          <Ionicons name="calendar-outline" size={18} color={COLORS.white} />
+          <Ionicons name="calendar-outline" size={18} color={STATIC_WHITE} />
           <Text style={styles.bookBtnText}>Randevu Al</Text>
         </TouchableOpacity>
       </View>
@@ -504,7 +504,7 @@ export default function BusinessDetailScreen() {
           onPress={() => setSelectedImage(null)}
         >
           <TouchableOpacity style={styles.lightboxClose} onPress={() => setSelectedImage(null)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
-            <Ionicons name="close" size={28} color={COLORS.white} />
+            <Ionicons name="close" size={28} color={STATIC_WHITE} />
           </TouchableOpacity>
           <Image source={{ uri: biz.galleryImages[selectedImage] }} style={styles.lightboxImage} resizeMode="contain" />
           <View style={styles.lightboxCounter}>
@@ -513,13 +513,13 @@ export default function BusinessDetailScreen() {
           <View style={styles.lightboxNav}>
             {selectedImage > 0 && (
               <TouchableOpacity style={styles.lightboxNavBtn} onPress={() => setSelectedImage(selectedImage - 1)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Önceki fotoğraf">
-                <Ionicons name="chevron-back" size={28} color={COLORS.white} />
+                <Ionicons name="chevron-back" size={28} color={STATIC_WHITE} />
               </TouchableOpacity>
             )}
             <View style={{ flex: 1 }} />
             {selectedImage < biz.galleryImages.length - 1 && (
               <TouchableOpacity style={styles.lightboxNavBtn} onPress={() => setSelectedImage(selectedImage + 1)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Sonraki fotoğraf">
-                <Ionicons name="chevron-forward" size={28} color={COLORS.white} />
+                <Ionicons name="chevron-forward" size={28} color={STATIC_WHITE} />
               </TouchableOpacity>
             )}
           </View>
@@ -539,7 +539,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.primary,
   },
-  retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   hero: { paddingBottom: SPACE[5] },
   heroNav: {
     flexDirection: 'row',
@@ -577,7 +577,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  galleryMoreText: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.white },
+  galleryMoreText: { fontSize: FONT.lg, fontWeight: FONT.bold, color: STATIC_WHITE },
   heroInfo: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -595,11 +595,11 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoText: { fontSize: FONT.xl, fontWeight: FONT.bold, color: COLORS.white },
+  logoText: { fontSize: FONT.xl, fontWeight: FONT.bold, color: STATIC_WHITE },
   businessName: {
     fontSize: FONT.xl,
     fontWeight: FONT.extrabold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   heroMeta: {
     flexDirection: 'row',
@@ -658,7 +658,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  employeeAvatarText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  employeeAvatarText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   employeeName: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text, textAlign: 'center' },
   employeeTitle: { fontSize: FONT.xs, color: COLORS.textMuted, textAlign: 'center' },
   contactRow: {
@@ -746,7 +746,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     ...SHADOW.primary,
   },
   submitBtnDisabled: { opacity: 0.5 },
-  submitBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  submitBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
@@ -775,7 +775,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.lg,
     ...SHADOW.primary,
   },
-  bookBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  bookBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
   lightbox: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.95)',

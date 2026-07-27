@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -111,7 +111,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   accentValue: {
     fontSize: FONT['2xl'],
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   sub: {
     fontSize: FONT.xs,

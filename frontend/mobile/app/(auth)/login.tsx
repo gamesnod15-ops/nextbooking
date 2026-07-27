@@ -15,7 +15,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useAppDispatch } from '@/store';
 import { setCredentials, setAppRole } from '@/store/slices/authSlice';
@@ -163,11 +163,11 @@ export default function LoginScreen() {
                 activeOpacity={0.85}
               >
                 {loading ? (
-                  <ActivityIndicator color={COLORS.white} />
+                  <ActivityIndicator color={STATIC_WHITE} />
                 ) : (
                   <>
                     <Text style={styles.loginBtnText}>Giriş Yap</Text>
-                    <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+                    <Ionicons name="arrow-forward" size={18} color={STATIC_WHITE} />
                   </>
                 )}
               </TouchableOpacity>
@@ -238,7 +238,7 @@ export default function LoginScreen() {
               end={{ x: 1, y: 1 }}
             >
               <View style={[styles.cardIcon, styles.primaryCardIcon]}>
-                <Ionicons name="business-outline" size={28} color={COLORS.white} />
+                <Ionicons name="business-outline" size={28} color={STATIC_WHITE} />
               </View>
               <View style={styles.cardContent}>
                 <Text style={[styles.cardTitle, styles.primaryCardTitle]}>İşletme Girişi</Text>
@@ -247,7 +247,7 @@ export default function LoginScreen() {
                 </Text>
               </View>
               <View style={[styles.cardArrow, styles.primaryCardArrow]}>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.white} />
+                <Ionicons name="chevron-forward" size={20} color={STATIC_WHITE} />
               </View>
             </LinearGradient>
           </TouchableOpacity>
@@ -449,7 +449,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   loginBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   dividerRow: {
     flexDirection: 'row',
@@ -576,7 +576,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   cardTitle: {
     fontSize: FONT.lg,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
     marginBottom: 3,
   },
   cardTitleBlue: {
@@ -586,7 +586,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     marginBottom: 3,
   },
   primaryCardTitle: {
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   cardDesc: {
     fontSize: FONT.sm,

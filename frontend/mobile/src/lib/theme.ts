@@ -58,6 +58,19 @@ export const COLORS = {
   overlayLight: 'rgba(5,22,56,0.15)',
 } as const;
 
+/**
+ * Always literally white/black, independent of the active theme.
+ *
+ * `COLORS.white`/`COLORS.black` intentionally flip in dark mode (a "white"
+ * card background becomes a dark card background) — that's correct for
+ * surfaces, but wrong for text/icons drawn on a permanently-colored element
+ * (a primary button, a gradient hero, a colored badge), which must stay
+ * legible regardless of theme. Use these two for that case instead of
+ * `useColors().white`/`.black`.
+ */
+export const STATIC_WHITE = '#FFFFFF';
+export const STATIC_BLACK = '#051638';
+
 // ─── Typography ─────────────────────────────────────────────────────────────
 export const FONT = {
   xs: 11,

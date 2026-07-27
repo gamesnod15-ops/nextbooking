@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { ThemeContext, LIGHT_COLORS, type Palette } from '@/lib/themeContext';
 import { reportError } from '@/lib/errorReporting';
 
@@ -60,7 +60,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
         )}
 
         <TouchableOpacity style={styles.btn} onPress={this.reset} activeOpacity={0.85}>
-          <Ionicons name="refresh" size={18} color={COLORS.white} />
+          <Ionicons name="refresh" size={18} color={STATIC_WHITE} />
           <Text style={styles.btnText}>Tekrar Dene</Text>
         </TouchableOpacity>
       </View>
@@ -109,5 +109,5 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     marginTop: SPACE[4],
     ...SHADOW.primary,
   },
-  btnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  btnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
 });

@@ -8,7 +8,7 @@ import {
   TextStyle,
   TouchableOpacityProps,
 } from 'react-native';
-import { FONT, RADIUS, SHADOW } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { tapFeedback, warningFeedback } from '@/lib/haptics';
 
@@ -69,7 +69,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={variant === 'primary' ? COLORS.white : COLORS.primary} />
+        <ActivityIndicator size="small" color={variant === 'primary' ? STATIC_WHITE : COLORS.primary} />
       ) : (
         <>
           {icon && <>{icon}</>}
@@ -115,7 +115,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
 });
 
 const createTextStyles = (COLORS: Palette) => StyleSheet.create({
-  primary: { color: COLORS.white },
+  primary: { color: STATIC_WHITE },
   secondary: { color: COLORS.text },
   outline: { color: COLORS.text },
   ghost: { color: COLORS.text },

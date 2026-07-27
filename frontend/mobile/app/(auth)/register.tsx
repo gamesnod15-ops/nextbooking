@@ -15,7 +15,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
@@ -135,9 +135,9 @@ export default function RegisterScreen() {
             <Ionicons
               name={isBusiness ? 'business-outline' : 'person-outline'}
               size={14}
-              color={COLORS.white}
+              color={STATIC_WHITE}
             />
-            <Text style={[styles.roleTagText, { color: COLORS.white }]}>
+            <Text style={[styles.roleTagText, { color: STATIC_WHITE }]}>
               {isBusiness ? 'İşletme' : 'Müşteri'}
             </Text>
           </View>
@@ -256,11 +256,11 @@ export default function RegisterScreen() {
             activeOpacity={0.85}
           >
             {loading ? (
-              <ActivityIndicator color={COLORS.white} />
+              <ActivityIndicator color={STATIC_WHITE} />
             ) : (
               <>
                 <Text style={styles.registerBtnText}>Kayıt Ol</Text>
-                <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+                <Ionicons name="arrow-forward" size={18} color={STATIC_WHITE} />
               </>
             )}
           </TouchableOpacity>
@@ -310,7 +310,7 @@ export default function RegisterScreen() {
               activeOpacity={0.85}
             >
               <Text style={styles.modalAcceptBtnText}>Okudum, Kabul Ediyorum</Text>
-              <Ionicons name="checkmark-circle" size={20} color={COLORS.white} />
+              <Ionicons name="checkmark-circle" size={20} color={STATIC_WHITE} />
             </TouchableOpacity>
           </View>
         </View>
@@ -365,7 +365,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   title: {
     fontSize: FONT['3xl'],
     fontWeight: FONT.extrabold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
     letterSpacing: -0.5,
   },
   subtitle: {
@@ -397,7 +397,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   input: {
     flex: 1,
     fontSize: FONT.base,
-    color: COLORS.white,
+    color: STATIC_WHITE,
     padding: 0,
   },
   agreements: {
@@ -440,7 +440,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   registerBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   loginRow: {
     flexDirection: 'row',
@@ -479,7 +479,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   modalTitle: {
     fontSize: FONT.lg,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   modalBody: {
     padding: SPACE[5],
@@ -504,6 +504,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   modalAcceptBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
 });

@@ -18,7 +18,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -269,7 +269,7 @@ export default function BusinessesScreen() {
           )}
           {dist && (
             <View style={styles.distancePill}>
-              <Ionicons name="navigate" size={10} color={COLORS.white} />
+              <Ionicons name="navigate" size={10} color={STATIC_WHITE} />
               <Text style={styles.distancePillText}>{dist}</Text>
             </View>
           )}
@@ -345,10 +345,10 @@ export default function BusinessesScreen() {
                 activeOpacity={0.85}
               >
                 {asking ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
+                  <ActivityIndicator size="small" color={STATIC_WHITE} />
                 ) : (
                   <>
-                    <Ionicons name="navigate" size={14} color={COLORS.white} />
+                    <Ionicons name="navigate" size={14} color={STATIC_WHITE} />
                     <Text style={styles.locationBtnText}>
                       {location.status === 'denied' ? 'Ayarları Aç' : 'Konumu Aç'}
                     </Text>
@@ -440,7 +440,7 @@ export default function BusinessesScreen() {
               onPress={() => router.push(`/(customer)/business/${item.id}`)}
               activeOpacity={0.8}
             >
-              <Ionicons name="calendar-outline" size={14} color={COLORS.white} />
+              <Ionicons name="calendar-outline" size={14} color={STATIC_WHITE} />
               <Text style={styles.bookBtnText}>Randevu Al</Text>
             </TouchableOpacity>
           </View>
@@ -464,7 +464,7 @@ export default function BusinessesScreen() {
             accessibilityRole="button"
             accessibilityLabel="Filtrele"
           >
-            <Ionicons name="options-outline" size={20} color={COLORS.white} />
+            <Ionicons name="options-outline" size={20} color={STATIC_WHITE} />
             {activeFilterCount > 0 && (
               <View style={styles.filterBadge}>
                 <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
@@ -504,7 +504,7 @@ export default function BusinessesScreen() {
           onPress={() => selectQuickCategory(null)}
           activeOpacity={0.8}
         >
-          <Ionicons name="apps-outline" size={15} color={selectedCategories.length === 0 ? COLORS.white : COLORS.text} />
+          <Ionicons name="apps-outline" size={15} color={selectedCategories.length === 0 ? STATIC_WHITE : COLORS.text} />
           <Text style={[styles.quickChipText, selectedCategories.length === 0 && styles.quickChipTextActive]}>Tümü</Text>
         </TouchableOpacity>
         {allCategories.map((cat) => {
@@ -516,7 +516,7 @@ export default function BusinessesScreen() {
               onPress={() => selectQuickCategory(active ? null : cat.id)}
               activeOpacity={0.8}
             >
-              <Ionicons name={categoryIcon(cat.name)} size={15} color={active ? COLORS.white : COLORS.text} />
+              <Ionicons name={categoryIcon(cat.name)} size={15} color={active ? STATIC_WHITE : COLORS.text} />
               <Text style={[styles.quickChipText, active && styles.quickChipTextActive]}>{cat.name}</Text>
             </TouchableOpacity>
           );
@@ -645,7 +645,7 @@ export default function BusinessesScreen() {
                   >
                     <View style={[styles.checkbox, selectedCategories.includes(cat.id) && styles.checkboxActive]}>
                       {selectedCategories.includes(cat.id) && (
-                        <Ionicons name="checkmark" size={12} color={COLORS.white} />
+                        <Ionicons name="checkmark" size={12} color={STATIC_WHITE} />
                       )}
                     </View>
                     <Text style={styles.filterItemText}>{cat.name}</Text>
@@ -691,7 +691,7 @@ export default function BusinessesScreen() {
                   >
                     <View style={[styles.checkbox, selectedCities.includes(cityItem.name) && styles.checkboxActive]}>
                       {selectedCities.includes(cityItem.name) && (
-                        <Ionicons name="checkmark" size={12} color={COLORS.white} />
+                        <Ionicons name="checkmark" size={12} color={STATIC_WHITE} />
                       )}
                     </View>
                     <Text style={styles.filterItemText}>{cityItem.name}</Text>
@@ -725,7 +725,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   header: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[5], gap: SPACE[4], borderBottomLeftRadius: RADIUS['2xl'], borderBottomRightRadius: RADIUS['2xl'], overflow: 'hidden' },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: SPACE[4] },
   greet: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)' },
-  heroTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.white },
+  heroTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: STATIC_WHITE },
   heroSubtitle: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.65)', lineHeight: 19 },
   filterBtn: {
     width: 44,
@@ -746,7 +746,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  filterBadgeText: { fontSize: 10, fontWeight: FONT.bold, color: COLORS.white },
+  filterBadgeText: { fontSize: 10, fontWeight: FONT.bold, color: STATIC_WHITE },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -773,7 +773,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   },
   quickChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   quickChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
-  quickChipTextActive: { color: COLORS.white },
+  quickChipTextActive: { color: STATIC_WHITE },
   activeFiltersScroll: { flexGrow: 0, flexShrink: 0, height: 54 },
   activeFilters: {
     flexDirection: 'row',
@@ -834,7 +834,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     backgroundColor: 'rgba(8,34,75,0.82)',
     paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.full,
   },
-  distancePillText: { fontSize: 10, fontWeight: FONT.bold, color: COLORS.white },
+  distancePillText: { fontSize: 10, fontWeight: FONT.bold, color: STATIC_WHITE },
   slideBody: { padding: SPACE[3], gap: 3 },
   slideName: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text },
   slideCategory: { fontSize: FONT.xs, color: COLORS.textMuted },
@@ -863,7 +863,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 9, minWidth: 130,
     ...SHADOW.primary,
   },
-  locationBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  locationBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   sectionTitle: { fontSize: FONT.lg, fontWeight: FONT.extrabold, color: COLORS.text },
   sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   sectionActionText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primary },
@@ -876,7 +876,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.primary,
   },
-  retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   emptyText: { fontSize: FONT.sm, color: COLORS.textMuted },
   card: {
     backgroundColor: COLORS.surface,
@@ -922,7 +922,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.full,
     ...SHADOW.primary,
   },
-  bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
+  bookBtnText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: STATIC_WHITE },
   promoCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1032,5 +1032,5 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     backgroundColor: COLORS.primary,
     ...SHADOW.primary,
   },
-  applyBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  applyBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
 });

@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { DotGrid } from '@/components/ui/DotGrid';
 
@@ -118,7 +118,7 @@ export default function OnboardingScreen() {
 
         <TouchableOpacity style={styles.primaryBtn} onPress={next} activeOpacity={0.85}>
           <Text style={styles.primaryBtnText}>{isLast ? 'Hemen Başla' : 'İleri'}</Text>
-          <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+          <Ionicons name="arrow-forward" size={18} color={STATIC_WHITE} />
         </TouchableOpacity>
       </View>
     </View>
@@ -221,5 +221,5 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     paddingVertical: 16,
     ...SHADOW.primary,
   },
-  primaryBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  primaryBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
 });

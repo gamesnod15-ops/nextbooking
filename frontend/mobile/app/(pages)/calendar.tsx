@@ -11,7 +11,7 @@ import {
   format, isSameDay, isSameMonth, isToday as isTodayFn,
 } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -245,7 +245,7 @@ function CreateModal({ visible, onClose, date, employees, services }: {
                     onPress={() => setEmployeeId(e.id)}
                     activeOpacity={0.8}
                   >
-                    <Text style={[form.chipText, employeeId === e.id && form.chipTextActive]}>{e.fullName}</Text>
+                    <Text style={[form.chipText, employeeId === e.id && form.chipTextActive]}>{e.name}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -338,7 +338,7 @@ function FilterModal({ visible, onClose, employees, statusFilters, setStatusFilt
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE[2] }}>
                 {employees.map((e) => (
                   <TouchableOpacity key={e.id} style={[form.chip, employeeFilters.includes(e.id) && form.chipActive]} onPress={() => toggleEmployee(e.id)} activeOpacity={0.8}>
-                    <Text style={[form.chipText, employeeFilters.includes(e.id) && form.chipTextActive]}>{e.fullName}</Text>
+                    <Text style={[form.chipText, employeeFilters.includes(e.id) && form.chipTextActive]}>{e.name}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -555,7 +555,7 @@ export default function CalendarScreen() {
             onPress={() => setViewMode(key)}
             activeOpacity={0.8}
           >
-            <Ionicons name="calendar" size={14} color={viewMode === key ? COLORS.white : COLORS.textSecondary} />
+            <Ionicons name="calendar" size={14} color={viewMode === key ? STATIC_WHITE : COLORS.textSecondary} />
             <Text style={[styles.viewBtnText, viewMode === key && styles.viewBtnTextActive]}>{label}</Text>
           </TouchableOpacity>
         ))}
@@ -726,7 +726,7 @@ export default function CalendarScreen() {
       )}
 
       <TouchableOpacity style={styles.fab} onPress={() => setCreateOpen(true)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Randevu ekle">
-        <Ionicons name="add" size={28} color={COLORS.white} />
+        <Ionicons name="add" size={28} color={STATIC_WHITE} />
       </TouchableOpacity>
 
       <DetailSheet
@@ -777,7 +777,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     position: 'absolute', top: -3, right: -3, width: 16, height: 16, borderRadius: 8,
     backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center',
   },
-  filterBadgeText: { fontSize: 9, fontWeight: FONT.bold, color: COLORS.white },
+  filterBadgeText: { fontSize: 9, fontWeight: FONT.bold, color: STATIC_WHITE },
   searchRow: {
     flexDirection: 'row', alignItems: 'center', gap: SPACE[2],
     marginHorizontal: SPACE[5], marginBottom: SPACE[2],
@@ -797,7 +797,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   },
   viewBtnActive: { backgroundColor: COLORS.primary },
   viewBtnText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  viewBtnTextActive: { color: COLORS.white },
+  viewBtnTextActive: { color: STATIC_WHITE },
 
   weekStripWrap: {
     flexDirection: 'row', alignItems: 'center',
@@ -813,7 +813,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   dayNumSelected: { backgroundColor: COLORS.primary },
   dayNumToday: { borderWidth: 2, borderColor: COLORS.primary },
   dayNumText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  dayNumTextSelected: { color: COLORS.white, fontWeight: FONT.bold },
+  dayNumTextSelected: { color: STATIC_WHITE, fontWeight: FONT.bold },
   dayNumTextToday: { color: COLORS.primaryDark, fontWeight: FONT.bold },
   eventDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: COLORS.textMuted },
   eventDotSelected: { backgroundColor: COLORS.primaryDark },
@@ -866,7 +866,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   monthCellNumToday: { borderWidth: 2, borderColor: COLORS.primary },
   monthCellNumText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   monthCellNumTextDim: { color: COLORS.textMuted },
-  monthCellNumTextSelected: { color: COLORS.white, fontWeight: FONT.bold },
+  monthCellNumTextSelected: { color: STATIC_WHITE, fontWeight: FONT.bold },
   monthCellNumTextToday: { color: COLORS.primaryDark, fontWeight: FONT.bold },
   monthDotsRow: { flexDirection: 'row', gap: 2 },
   monthDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: COLORS.primary },
@@ -918,7 +918,7 @@ const createFormStyles = (COLORS: Palette) => StyleSheet.create({
   chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.white },
+  chipTextActive: { color: STATIC_WHITE },
 });
 
 const createPickerStyles = (COLORS: Palette) => StyleSheet.create({
@@ -931,5 +931,5 @@ const createPickerStyles = (COLORS: Palette) => StyleSheet.create({
   monthBtn: { width: '30%', paddingVertical: SPACE[3], borderRadius: RADIUS.lg, alignItems: 'center', backgroundColor: COLORS.surfaceAlt },
   monthBtnActive: { backgroundColor: COLORS.primary },
   monthText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
-  monthTextActive: { color: COLORS.white },
+  monthTextActive: { color: STATIC_WHITE },
 });

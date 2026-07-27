@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useOtaUpdates, useVersionGate } from '@/lib/appUpdates';
 
@@ -39,7 +39,7 @@ export function UpdateGate({ children }: { children: React.ReactNode }) {
         onPress={() => Linking.openURL(target).catch(() => {})}
         activeOpacity={0.85}
       >
-        <Ionicons name="arrow-up-circle" size={18} color={COLORS.white} />
+        <Ionicons name="arrow-up-circle" size={18} color={STATIC_WHITE} />
         <Text style={styles.btnText}>Güncelle</Text>
       </TouchableOpacity>
     </View>
@@ -77,5 +77,5 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     marginTop: SPACE[4],
     ...SHADOW.primary,
   },
-  btnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  btnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
 });

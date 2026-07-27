@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Scr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -31,16 +31,16 @@ export default function EmployeesScreen() {
 
   const qc = useQueryClient();
   const [modal, setModal] = useState<{ open: boolean; item?: Employee }>({ open: false });
-  const [form, setForm] = useState({ fullName: '', phone: '', email: '', jobTitle: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', title: '' });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/employees', { fullName: form.fullName, phone: form.phone || undefined, email: form.email || undefined, jobTitle: form.jobTitle || undefined }),
+    mutationFn: async () => api.post('/employees', { name: form.name, phone: form.phone || undefined, email: form.email || undefined, title: form.title || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['employees'] }); setModal({ open: false }); },
     onError: () => toast.error('Personel eklenemedi.'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/employees/${modal.item!.id}`, { fullName: form.fullName, phone: form.phone || undefined, email: form.email || undefined, jobTitle: form.jobTitle || undefined }),
+    mutationFn: async () => api.put(`/employees/${modal.item!.id}`, { name: form.name, phone: form.phone || undefined, email: form.email || undefined, title: form.title || undefined, isActive: modal.item!.isActive, acceptsOnlineBookings: modal.item!.acceptsOnlineBookings ?? true, serviceIds: modal.item!.serviceIds }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['employees'] }); setModal({ open: false }); },
     onError: () => toast.error('Personel güncellenemedi.'),
   });
@@ -51,20 +51,20 @@ export default function EmployeesScreen() {
     onError: () => toast.error('Personel silinemedi.'),
   });
 
-  function openCreate() { setForm({ fullName: '', phone: '', email: '', jobTitle: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Employee) { setForm({ fullName: item.fullName, phone: item.phone ?? '', email: item.email ?? '', jobTitle: item.jobTitle ?? '' }); setModal({ open: true, item }); }
+  function openCreate() { setForm({ name: '', phone: '', email: '', title: '' }); setModal({ open: true, item: undefined }); }
+  function openEdit(item: Employee) { setForm({ name: item.name, phone: item.phone ?? '', email: item.email ?? '', title: item.title ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.fullName) { toast.warning('Ad zorunludur.'); return; }
+    if (!form.name) { toast.warning('Ad zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   async function onRefresh() { setRefreshing(true); await refetch(); setRefreshing(false); }
-  const filtered = (data ?? []).filter((e) => (e.fullName?.toLowerCase() ?? '').includes(search.toLowerCase()));
+  const filtered = (data ?? []).filter((e) => (e.name?.toLowerCase() ?? '').includes(search.toLowerCase()));
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Çalışanlar" subtitle={`${(data ?? []).length} personel`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
       <SearchBar value={search} onChangeText={setSearch} placeholder="Personel ara…" style={{ margin: SPACE[4] }} />
       <FlatList
@@ -78,23 +78,25 @@ export default function EmployeesScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={() => openEdit(item)}>
             <View>
-              <Avatar name={item.fullName} size={52} />
+              <Avatar name={item.name} size={52} />
               <View style={[styles.activeDot, { backgroundColor: item.isActive ? COLORS.success : COLORS.textMuted }]} />
             </View>
             <View style={styles.info}>
-              <Text style={styles.name}>{item.fullName}</Text>
-              {item.jobTitle && <Text style={styles.title}>{item.jobTitle}</Text>}
+              <Text style={styles.name}>{item.name}</Text>
+              {item.title && <Text style={styles.title}>{item.title}</Text>}
               {item.phone && (
                 <View style={styles.row}>
                   <Ionicons name="call-outline" size={12} color={COLORS.textMuted} />
                   <Text style={styles.detail}>{item.phone}</Text>
                 </View>
               )}
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: SPACE[2] }}>
-                <View style={{ flexDirection: 'row', gap: 4 }}>
-                  {item.services?.map((s) => <Badge key={s} variant="default" size="sm">{s}</Badge>)}
-                </View>
-              </ScrollView>
+              {item.serviceIds && item.serviceIds.length > 0 && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: SPACE[2] }}>
+                  <View style={{ flexDirection: 'row', gap: 4 }}>
+                    {item.serviceIds.map((s) => <Badge key={s} variant="default" size="sm">{s}</Badge>)}
+                  </View>
+                </ScrollView>
+              )}
             </View>
             <View>
               <TouchableOpacity style={styles.moreBtn} accessibilityRole="button" accessibilityLabel="Diğer işlemler">
@@ -113,10 +115,10 @@ export default function EmployeesScreen() {
         deleteLabel={modal.item ? 'Sil' : undefined}
         onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >
-        <FormField label="Ad Soyad" value={form.fullName} onChangeText={v => setForm(p => ({ ...p, fullName: v }))} placeholder="Örn: Ali Yılmaz" />
+        <FormField label="Ad Soyad" value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} placeholder="Örn: Ali Yılmaz" />
         <FormField label="Telefon" value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} placeholder="0555 555 55 55" keyboardType="phone-pad" />
         <FormField label="E-posta" value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} placeholder="ornek@email.com" keyboardType="email-address" />
-        <FormField label="Ünvan" value={form.jobTitle} onChangeText={v => setForm(p => ({ ...p, jobTitle: v }))} placeholder="Örn: Kalfası" />
+        <FormField label="Ünvan" value={form.title} onChangeText={v => setForm(p => ({ ...p, title: v }))} placeholder="Örn: Kalfası" />
       </FormModal>
     </View>
   );

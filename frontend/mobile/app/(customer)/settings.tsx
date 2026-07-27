@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { useToast } from '@/components/ui/Toast';
 import { useTheme, useColors, type Palette } from '@/lib/themeContext';
@@ -170,7 +170,7 @@ export default function SettingsScreen() {
                   value={lockEnabled}
                   onValueChange={toggleBiometricLock}
                   trackColor={{ false: COLORS.border, true: COLORS.primary }}
-                  thumbColor={COLORS.white}
+                  thumbColor={STATIC_WHITE}
                 />
               </View>
             </View>
@@ -249,7 +249,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   segmentBtn: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full },
   segmentBtnActive: { backgroundColor: COLORS.primary },
   segmentText: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  segmentTextActive: { color: COLORS.white },
+  segmentTextActive: { color: STATIC_WHITE },
   labelDanger: { color: COLORS.error },
   value: { fontSize: FONT.sm, color: COLORS.textMuted },
 });

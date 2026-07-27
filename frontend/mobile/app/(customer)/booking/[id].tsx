@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
 import { useQueryClient } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
@@ -295,7 +295,7 @@ export default function BookingScreen() {
 
       <View style={[styles.header, { paddingTop: insets.top + SPACE[3] }]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => step > 1 ? setStep(step - 1) : router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
-          <Ionicons name="chevron-back" size={22} color={COLORS.white} />
+          <Ionicons name="chevron-back" size={22} color={STATIC_WHITE} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Randevu Al</Text>
@@ -372,11 +372,11 @@ export default function BookingScreen() {
 
             <View style={styles.calendarNav}>
               <TouchableOpacity onPress={prevMonth} disabled={!canMonthGoBack()} activeOpacity={0.7} style={[styles.calNavBtn, !canMonthGoBack() && { opacity: 0.3 }]} accessibilityRole="button" accessibilityLabel="Önceki ay">
-                <Ionicons name="chevron-back" size={18} color={COLORS.white} />
+                <Ionicons name="chevron-back" size={18} color={STATIC_WHITE} />
               </TouchableOpacity>
               <Text style={styles.calMonth}>{MONTHS[calendarMonth]} {calendarYear}</Text>
               <TouchableOpacity onPress={nextMonth} activeOpacity={0.7} style={styles.calNavBtn} accessibilityRole="button" accessibilityLabel="Sonraki ay">
-                <Ionicons name="chevron-forward" size={18} color={COLORS.white} />
+                <Ionicons name="chevron-forward" size={18} color={STATIC_WHITE} />
               </TouchableOpacity>
             </View>
 
@@ -595,7 +595,7 @@ export default function BookingScreen() {
             activeOpacity={0.85}
           >
             <Text style={styles.nextBtnText}>Devam Et</Text>
-            <Ionicons name="chevron-forward" size={18} color={COLORS.white} />
+            <Ionicons name="chevron-forward" size={18} color={STATIC_WHITE} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -605,10 +605,10 @@ export default function BookingScreen() {
             activeOpacity={0.85}
           >
             {loading ? (
-              <ActivityIndicator color={COLORS.white} />
+              <ActivityIndicator color={STATIC_WHITE} />
             ) : (
               <>
-                <Ionicons name="checkmark-circle-outline" size={18} color={COLORS.white} />
+                <Ionicons name="checkmark-circle-outline" size={18} color={STATIC_WHITE} />
                 <Text style={styles.nextBtnText}>Randevu Oluştur</Text>
               </>
             )}
@@ -637,7 +637,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     justifyContent: 'center',
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  headerTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
   headerSub: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   stepBar: {
     flexDirection: 'row',
@@ -658,9 +658,9 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   },
   stepCircleActive: { backgroundColor: COLORS.primary },
   stepNumber: { fontSize: FONT.sm, fontWeight: FONT.bold, color: 'rgba(255,255,255,0.4)' },
-  stepNumberActive: { color: COLORS.white },
+  stepNumberActive: { color: STATIC_WHITE },
   stepLabel: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.3)' },
-  stepLabelActive: { color: COLORS.white },
+  stepLabelActive: { color: STATIC_WHITE },
   stepLine: { width: 30, height: 2, backgroundColor: 'rgba(255,255,255,0.1)', marginHorizontal: 4, marginBottom: 16 },
   stepLineActive: { backgroundColor: COLORS.primary },
   errorBox: {
@@ -680,7 +680,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[8] },
   stepContent: { gap: SPACE[4] },
-  stepTitle: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.white },
+  stepTitle: { fontSize: FONT.lg, fontWeight: FONT.bold, color: STATIC_WHITE },
   stepTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   stepTitleSub: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.5)' },
   emptyText: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginVertical: SPACE[6] },
@@ -699,7 +699,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderColor: COLORS.primary,
     backgroundColor: 'rgba(1,84,240,0.08)',
   },
-  serviceName: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.white },
+  serviceName: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: STATIC_WHITE },
   serviceDuration: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.4)', marginTop: 2 },
   servicePrice: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.primary },
   servicePriceActive: { color: COLORS.primary },
@@ -716,7 +716,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  calMonth: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  calMonth: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
   calDayHeaders: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -740,9 +740,9 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   calDayToday: { backgroundColor: 'rgba(1,84,240,0.15)' },
   calDayAvailable: { backgroundColor: 'rgba(34,197,94,0.1)' },
   calDayUnavailable: { backgroundColor: 'rgba(255,255,255,0.03)' },
-  calDayNum: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  calDayNum: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   calDayNumPast: { color: 'rgba(255,255,255,0.2)' },
-  calDayNumSelected: { color: COLORS.white },
+  calDayNumSelected: { color: STATIC_WHITE },
   calDayNumToday: { color: COLORS.primary },
   calDayAvailableText: { fontSize: 7, color: COLORS.success, fontWeight: FONT.semibold },
   calDayUnavailableText: { fontSize: 7, color: 'rgba(255,255,255,0.2)' },
@@ -779,7 +779,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
     fontSize: FONT.sm,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   phoneWrap: {
     flexDirection: 'row',
@@ -803,7 +803,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
     fontSize: FONT.sm,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   summaryCard: {
     backgroundColor: 'rgba(255,255,255,0.05)',
@@ -813,14 +813,14 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     padding: SPACE[4],
     gap: SPACE[3],
   },
-  summaryTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  summaryTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   summaryLabel: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.4)' },
-  summaryValue: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.white },
+  summaryValue: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: STATIC_WHITE },
   summaryPrice: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.primary },
   bottomBar: {
     flexDirection: 'row',
@@ -849,7 +849,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     ...SHADOW.primary,
   },
   nextBtnDisabled: { opacity: 0.4 },
-  nextBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.white },
+  nextBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   submitBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -867,7 +867,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     gap: SPACE[4],
   },
   successIcon: { marginBottom: SPACE[2] },
-  successTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.white, textAlign: 'center' },
+  successTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: STATIC_WHITE, textAlign: 'center' },
   successText: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 22 },
   successBtn: {
     width: '100%',
@@ -878,7 +878,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     marginTop: SPACE[4],
     ...SHADOW.primary,
   },
-  successBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  successBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
   successSecondaryBtn: {
     width: '100%',
     alignItems: 'center',

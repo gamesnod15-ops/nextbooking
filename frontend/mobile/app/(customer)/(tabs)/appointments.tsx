@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -109,7 +109,7 @@ export default function CustomerAppointmentsScreen() {
           <View style={styles.headerUnderline} />
         </View>
         <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(customer)/(tabs)')} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Yeni randevu oluştur">
-          <Ionicons name="add" size={22} color={COLORS.white} />
+          <Ionicons name="add" size={22} color={STATIC_WHITE} />
         </TouchableOpacity>
       </View>
 
@@ -250,7 +250,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.white },
+  chipTextActive: { color: STATIC_WHITE },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },

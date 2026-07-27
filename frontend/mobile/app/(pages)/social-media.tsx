@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
@@ -63,7 +63,7 @@ export default function SocialMediaScreen() {
               <Text style={styles.autoPostSub}>Yeni kampanyaları otomatik paylaş</Text>
             </View>
           </View>
-          <Switch value={autoPost} onValueChange={setAutoPost} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={COLORS.white} />
+          <Switch value={autoPost} onValueChange={setAutoPost} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
         </View>
 
         {/* Recent Posts */}

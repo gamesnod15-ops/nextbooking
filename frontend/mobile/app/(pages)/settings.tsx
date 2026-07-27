@@ -1,17 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import * as ImagePicker from 'expo-image-picker';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { logout } from '@/store/slices/authSlice';
+import { logout, updateProfile } from '@/store/slices/authSlice';
 import { clearBusiness } from '@/store/slices/businessSlice';
 import * as SecureStore from 'expo-secure-store';
 import { useToast } from '@/components/ui/Toast';
+import api from '@/lib/api';
 
 const DAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 const INITIAL_HOURS = DAYS.map((day, i) => ({
@@ -19,6 +21,22 @@ const INITIAL_HOURS = DAYS.map((day, i) => ({
 }));
 
 const TABS = ['Genel', 'Çalışma Saatleri', 'Bildirimler', 'Güvenlik'];
+
+// Business-side notification preferences persist locally only — there is no
+// backend NotificationPreference table/endpoint yet, so these toggles are not
+// enforced anywhere in the actual notification-dispatch pipeline (push/SMS/email
+// sends are not filtered by this key). They just remember the owner's choice
+// across app restarts. See app/(customer)/notifications.tsx for the same pattern.
+const NOTIF_PREFS_KEY = 'business_notification_prefs';
+
+const DEFAULT_NOTIF_SETTINGS = [
+  { key: 'newAppt', label: 'Yeni Randevu', value: true },
+  { key: 'cancelAppt', label: 'İptal Edilen Randevu', value: true },
+  { key: 'payment', label: 'Ödeme Bildirimi', value: true },
+  { key: 'reminder', label: 'Randevu Hatırlatıcı', value: true },
+  { key: 'lowStock', label: 'Düşük Stok', value: false },
+  { key: 'marketing', label: 'Pazarlama', value: false },
+];
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -39,14 +57,19 @@ export default function SettingsScreen() {
     email: business?.email ?? auth.email ?? '',
   });
   const [hours, setHours] = useState(INITIAL_HOURS);
-  const [notifSettings, setNotifSettings] = useState([
-    { key: 'newAppt', label: 'Yeni Randevu', value: true },
-    { key: 'cancelAppt', label: 'İptal Edilen Randevu', value: true },
-    { key: 'payment', label: 'Ödeme Bildirimi', value: true },
-    { key: 'reminder', label: 'Randevu Hatırlatıcı', value: true },
-    { key: 'lowStock', label: 'Düşük Stok', value: false },
-    { key: 'marketing', label: 'Pazarlama', value: false },
-  ]);
+  const [notifSettings, setNotifSettings] = useState(DEFAULT_NOTIF_SETTINGS);
+  const [localAvatarUri, setLocalAvatarUri] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  useEffect(() => {
+    SecureStore.getItemAsync(NOTIF_PREFS_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved: Record<string, boolean> = JSON.parse(raw);
+        setNotifSettings(prev => prev.map(s => (s.key in saved ? { ...s, value: saved[s.key] } : s)));
+      })
+      .catch(() => {});
+  }, []);
 
   const [securityItem, setSecurityItem] = useState<string | null>(null);
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
@@ -58,7 +81,92 @@ export default function SettingsScreen() {
   }
 
   function toggleNotif(key: string) {
-    setNotifSettings(prev => prev.map(s => s.key === key ? { ...s, value: !s.value } : s));
+    setNotifSettings(prev => {
+      const next = prev.map(s => s.key === key ? { ...s, value: !s.value } : s);
+      const toPersist = Object.fromEntries(next.map(s => [s.key, s.value]));
+      SecureStore.setItemAsync(NOTIF_PREFS_KEY, JSON.stringify(toPersist))
+        .then(() => toast.success('Bildirim tercihi kaydedildi.'))
+        .catch(() => toast.error('Bildirim tercihi kaydedilemedi.'));
+      return next;
+    });
+  }
+
+  function formatPhoneDisplay(raw: string) {
+    const digits = raw.replace(/\D/g, '');
+    const local = digits.startsWith('90') ? digits.slice(2) : digits.startsWith('0') ? digits.slice(1) : digits;
+    const d = local.slice(0, 10);
+    if (d.length <= 3) return d;
+    if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`;
+    if (d.length <= 8) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`;
+    return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
+  }
+
+  function handleBusinessPhoneChange(text: string) {
+    const digits = text.replace(/\D/g, '').slice(0, 10);
+    setBusinessInfo(prev => ({ ...prev, phone: digits ? `+90${digits}` : '' }));
+  }
+
+  function handleTwoFAPhoneChange(text: string) {
+    const digits = text.replace(/\D/g, '').slice(0, 10);
+    setTwoFA(prev => ({ ...prev, phone: digits ? `+90${digits}` : '' }));
+  }
+
+  async function uploadAvatar(uri: string) {
+    setLocalAvatarUri(uri);
+    setAvatarUploading(true);
+    try {
+      const filename = uri.split('/').pop() || `avatar_${Date.now()}.jpg`;
+      const extMatch = /\.(\w+)$/.exec(filename);
+      const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
+      const mimeType = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
+      const formData = new FormData();
+      formData.append('file', { uri, name: filename, type: mimeType } as any);
+      const res = await api.put<{ url: string }>('/users/me/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      dispatch(updateProfile({ avatarUrl: res.data.url }));
+      setLocalAvatarUri(null);
+      toast.success('Profil fotoğrafı güncellendi.');
+    } catch {
+      setLocalAvatarUri(null);
+      toast.error('Profil fotoğrafı güncellenemedi.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
+  async function pickAvatarFrom(source: 'camera' | 'library') {
+    try {
+      let result: ImagePicker.ImagePickerResult;
+      if (source === 'camera') {
+        const perm = await ImagePicker.requestCameraPermissionsAsync();
+        if (!perm.granted) {
+          toast.warning('Fotoğraf çekmek için kamera erişimine izin vermelisiniz.');
+          return;
+        }
+        result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.7 });
+      } else {
+        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!perm.granted) {
+          toast.warning('Fotoğraf seçmek için galeri erişimine izin vermelisiniz.');
+          return;
+        }
+        result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.7 });
+      }
+      if (result.canceled || !result.assets?.[0]?.uri) return;
+      await uploadAvatar(result.assets[0].uri);
+    } catch {
+      toast.error('Fotoğraf seçilirken bir hata oluştu.');
+    }
+  }
+
+  function handleAvatarPress() {
+    if (avatarUploading) return;
+    Alert.alert('Profil Fotoğrafı', 'Fotoğrafı nereden seçmek istersiniz?', [
+      { text: 'Kameradan Çek', onPress: () => pickAvatarFrom('camera') },
+      { text: 'Galeriden Seç', onPress: () => pickAvatarFrom('library') },
+      { text: 'Vazgeç', style: 'cancel' },
+    ]);
   }
 
   return (
@@ -78,7 +186,23 @@ export default function SettingsScreen() {
         {tab === 'Genel' && (
           <>
             <View style={styles.profileCard}>
-              <Avatar name={auth.fullName ?? businessInfo.name} size={64} url={auth.avatarUrl ?? ''} />
+              <TouchableOpacity
+                style={styles.avatarWrap}
+                onPress={handleAvatarPress}
+                activeOpacity={0.8}
+                disabled={avatarUploading}
+                accessibilityRole="button"
+                accessibilityLabel="Profil fotoğrafını değiştir"
+              >
+                <Avatar name={auth.fullName ?? businessInfo.name} size={64} url={localAvatarUri ?? auth.avatarUrl ?? ''} />
+                <View style={styles.avatarEditBadge}>
+                  {avatarUploading ? (
+                    <ActivityIndicator size="small" color={STATIC_WHITE} />
+                  ) : (
+                    <Ionicons name="camera" size={12} color={STATIC_WHITE} />
+                  )}
+                </View>
+              </TouchableOpacity>
               <View style={styles.profileInfo}>
                 <Text style={styles.profileName}>{businessInfo.name}</Text>
                 <Text style={styles.profileEmail}>{businessInfo.email}</Text>
@@ -101,8 +225,8 @@ export default function SettingsScreen() {
                     <Text style={styles.editLabel}>{field.label}</Text>
                     <TextInput
                       style={styles.editInput}
-                      value={(businessInfo as any)[field.key]}
-                      onChangeText={(v) => setBusinessInfo(p => ({ ...p, [field.key]: v }))}
+                      value={field.key === 'phone' ? formatPhoneDisplay(businessInfo.phone) : (businessInfo as any)[field.key]}
+                      onChangeText={(v) => field.key === 'phone' ? handleBusinessPhoneChange(v) : setBusinessInfo(p => ({ ...p, [field.key]: v }))}
                       placeholder={field.placeholder}
                       placeholderTextColor={COLORS.textMuted}
                       keyboardType={(field as any).keyboardType ?? 'default'}
@@ -137,7 +261,7 @@ export default function SettingsScreen() {
             {hours.map((h, idx) => (
               <View key={h.day} style={[styles.hourRow, idx < hours.length - 1 && { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight }]}>
                 <Text style={[styles.dayLabel, !h.isOpen && { color: COLORS.textMuted }]}>{h.day}</Text>
-                <Switch value={h.isOpen} onValueChange={() => toggleDay(idx)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={COLORS.white} />
+                <Switch value={h.isOpen} onValueChange={() => toggleDay(idx)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
                 {h.isOpen ? (
                   <Text style={styles.hourRange}>{h.open} – {h.close}</Text>
                 ) : (
@@ -153,7 +277,7 @@ export default function SettingsScreen() {
             {notifSettings.map((s, idx) => (
               <View key={s.key} style={[styles.settingRow, idx < notifSettings.length - 1 && { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight }]}>
                 <Text style={styles.settingLabel}>{s.label}</Text>
-                <Switch value={s.value} onValueChange={() => toggleNotif(s.key)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={COLORS.white} />
+                <Switch value={s.value} onValueChange={() => toggleNotif(s.key)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
               </View>
             ))}
           </View>
@@ -186,7 +310,7 @@ export default function SettingsScreen() {
                   setSavingPass(true);
                   setTimeout(() => { setSavingPass(false); setSecurityItem(null); setPasswordForm({current:'',newPass:'',confirm:''}); toast.success('Şifre değiştirildi.'); }, 1000);
                 }}>
-                  {savingPass ? <ActivityIndicator size="small" color={COLORS.white} /> : <Text style={styles.saveBtnText}>Şifreyi Değiştir</Text>}
+                  {savingPass ? <ActivityIndicator size="small" color={STATIC_WHITE} /> : <Text style={styles.saveBtnText}>Şifreyi Değiştir</Text>}
                 </TouchableOpacity>
               </View>
             )}
@@ -200,12 +324,12 @@ export default function SettingsScreen() {
               <View style={styles.securityForm}>
                 <View style={styles.switchRow}>
                   <Text style={styles.switchLabel}>2FA'yı Etkinleştir</Text>
-                  <Switch value={twoFA.enabled} onValueChange={v => setTwoFA(p => ({...p, enabled: v}))} trackColor={{false: COLORS.border, true: COLORS.primary}} thumbColor={COLORS.white} />
+                  <Switch value={twoFA.enabled} onValueChange={v => setTwoFA(p => ({...p, enabled: v}))} trackColor={{false: COLORS.border, true: COLORS.primary}} thumbColor={STATIC_WHITE} />
                 </View>
                 {twoFA.enabled && (
                   <View style={styles.editField}>
                     <Text style={styles.editLabel}>Doğrulama Telefonu</Text>
-                    <TextInput style={styles.editInput} value={twoFA.phone} onChangeText={v => setTwoFA(p => ({...p, phone: v}))} placeholder="05XX XXX XX XX" keyboardType="phone-pad" placeholderTextColor={COLORS.textMuted} />
+                    <TextInput style={styles.editInput} value={formatPhoneDisplay(twoFA.phone)} onChangeText={handleTwoFAPhoneChange} placeholder="05XX XXX XX XX" keyboardType="phone-pad" placeholderTextColor={COLORS.textMuted} />
                   </View>
                 )}
                 <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setSecurityItem(null); toast.success('2FA ayarları kaydedildi.'); }}>
@@ -231,8 +355,22 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.white },
+  chipTextActive: { color: STATIC_WHITE },
   profileCard: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginBottom: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
+  avatarWrap: { position: 'relative' },
+  avatarEditBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 24,
+    height: 24,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.surface,
+  },
   profileInfo: { flex: 1, gap: 4 },
   profileName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
   profileEmail: { fontSize: FONT.xs, color: COLORS.textMuted },
@@ -244,7 +382,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   editLabel: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textMuted, marginLeft: SPACE[1] },
   editInput: { backgroundColor: COLORS.surface, borderRadius: RADIUS.lg, paddingHorizontal: SPACE[4], paddingVertical: SPACE[3], fontSize: FONT.base, color: COLORS.text, borderWidth: 1.5, borderColor: COLORS.border },
   saveBtn: { marginHorizontal: SPACE[5], marginTop: SPACE[2], backgroundColor: COLORS.primary, borderRadius: RADIUS.lg, paddingVertical: SPACE[4], alignItems: 'center', ...SHADOW.primary },
-  saveBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.white },
+  saveBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
   hoursCard: { marginHorizontal: SPACE[5], backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.borderLight, overflow: 'hidden', ...SHADOW.sm },
   hourRow: { flexDirection: 'row', alignItems: 'center', padding: SPACE[4], gap: SPACE[4] },
   dayLabel: { width: 36, fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },

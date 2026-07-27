@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from '@/components/ui/Avatar';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -75,7 +75,10 @@ export default function CustomersScreen() {
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/customers/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); setModal({ open: false }); },
-    onError: () => toast.error('Müşteri silinemedi.'),
+    onError: (err: any) => {
+      const message = err?.response?.data?.message;
+      toast.error(message || 'Müşteri silinemedi.');
+    },
   });
 
   function openCreate() { setForm({ name: '', phone: '', email: '', tags: '' }); setModal({ open: true, item: undefined }); }
@@ -129,7 +132,7 @@ export default function CustomersScreen() {
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle">
-            <Ionicons name="add" size={22} color={COLORS.white} />
+            <Ionicons name="add" size={22} color={STATIC_WHITE} />
           </TouchableOpacity>
           <NotifButton />
           <MenuButton />

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { useToast } from '@/components/ui/Toast';
@@ -91,7 +91,7 @@ export default function NotificationsScreen() {
               value={prefs[item.key]}
               onValueChange={() => toggle(item.key)}
               trackColor={{ false: COLORS.border, true: COLORS.primary }}
-              thumbColor={COLORS.white}
+              thumbColor={STATIC_WHITE}
             />
           </View>
         ))}

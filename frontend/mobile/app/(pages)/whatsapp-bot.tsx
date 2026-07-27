@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
@@ -60,7 +60,7 @@ export default function WhatsappBotScreen() {
             {settings.map((s) => (
               <View key={s.key} style={styles.settingRow}>
                 <Text style={styles.settingLabel}>{s.label}</Text>
-                <Switch value={s.value} onValueChange={() => toggle(s.key)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={COLORS.white} />
+                <Switch value={s.value} onValueChange={() => toggle(s.key)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
               </View>
             ))}
           </View>

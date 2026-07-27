@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
@@ -99,11 +99,11 @@ export default function ForgotPasswordScreen() {
               activeOpacity={0.85}
             >
               {loading ? (
-                <ActivityIndicator color={COLORS.white} />
+                <ActivityIndicator color={STATIC_WHITE} />
               ) : (
                 <>
                   <Text style={styles.resetBtnText}>Sıfırlama Bağlantısı Gönder</Text>
-                  <Ionicons name="send-outline" size={18} color={COLORS.white} />
+                  <Ionicons name="send-outline" size={18} color={STATIC_WHITE} />
                 </>
               )}
             </TouchableOpacity>
@@ -115,7 +115,7 @@ export default function ForgotPasswordScreen() {
             activeOpacity={0.85}
           >
             <Text style={styles.resetBtnText}>Giriş Sayfasına Dön</Text>
-            <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+            <Ionicons name="arrow-forward" size={18} color={STATIC_WHITE} />
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -156,7 +156,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   title: {
     fontSize: FONT['3xl'],
     fontWeight: FONT.extrabold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
     letterSpacing: -0.5,
   },
   subtitle: {
@@ -190,7 +190,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   input: {
     flex: 1,
     fontSize: FONT.base,
-    color: COLORS.white,
+    color: STATIC_WHITE,
     padding: 0,
   },
   resetBtn: {
@@ -207,6 +207,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   resetBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
 });

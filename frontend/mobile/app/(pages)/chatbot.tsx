@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
@@ -75,7 +75,7 @@ export default function ChatbotScreen() {
             {settings.map((s) => (
               <View key={s.key} style={styles.settingRow}>
                 <Text style={styles.settingLabel}>{s.label}</Text>
-                <Switch value={s.value} onValueChange={() => toggle(s.key)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={COLORS.white} />
+                <Switch value={s.value} onValueChange={() => toggle(s.key)} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
               </View>
             ))}
           </View>
@@ -117,7 +117,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   bubbleContentUser: { backgroundColor: COLORS.primary, borderBottomRightRadius: 4 },
   bubbleText: { fontSize: FONT.sm, lineHeight: 20 },
   bubbleTextBot: { color: COLORS.text },
-  bubbleTextUser: { color: COLORS.white },
+  bubbleTextUser: { color: STATIC_WHITE },
   section: { marginHorizontal: SPACE[5], marginTop: SPACE[4], backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.borderLight, overflow: 'hidden' },
   settingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SPACE[4], borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
   settingLabel: { fontSize: FONT.base, color: COLORS.text },

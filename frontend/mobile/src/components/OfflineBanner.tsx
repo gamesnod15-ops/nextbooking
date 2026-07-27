@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 
 const NetworkContext = createContext<{ isOnline: boolean }>({ isOnline: true });
@@ -57,7 +57,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
           ]}
         >
           <View style={styles.banner} accessibilityRole="alert">
-            <Ionicons name="cloud-offline-outline" size={16} color={COLORS.white} />
+            <Ionicons name="cloud-offline-outline" size={16} color={STATIC_WHITE} />
             <Text style={styles.text}>İnternet bağlantısı yok</Text>
           </View>
         </Animated.View>
@@ -84,5 +84,5 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.full,
     ...SHADOW.sm,
   },
-  text: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
+  text: { fontSize: FONT.xs, fontWeight: FONT.bold, color: STATIC_WHITE },
 });

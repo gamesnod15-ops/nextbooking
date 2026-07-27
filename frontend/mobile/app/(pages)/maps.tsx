@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Platform
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
@@ -52,7 +52,7 @@ export default function MapsScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {BRANCHES.map((b) => (
           <TouchableOpacity key={b.id} style={[styles.branchChip, selected.id === b.id && styles.branchChipActive]} onPress={() => setSelected(b)} activeOpacity={0.8}>
-            <Ionicons name="business" size={14} color={selected.id === b.id ? COLORS.white : COLORS.textSecondary} />
+            <Ionicons name="business" size={14} color={selected.id === b.id ? STATIC_WHITE : COLORS.textSecondary} />
             <Text style={[styles.branchChipText, selected.id === b.id && styles.branchChipTextActive]}>{b.name}</Text>
           </TouchableOpacity>
         ))}
@@ -82,7 +82,7 @@ export default function MapsScreen() {
         </View>
         <View style={styles.actions}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => Linking.openURL(getMapUrl(selected.lat, selected.lng))}>
-            <Ionicons name="navigate" size={18} color={COLORS.white} />
+            <Ionicons name="navigate" size={18} color={STATIC_WHITE} />
             <Text style={styles.actionBtnText}>Yol Tarifi</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtnSecondary} onPress={() => Linking.openURL(`tel:${selected.phone}`)}>
@@ -100,7 +100,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   branchChip: { flexDirection: 'row', alignItems: 'center', gap: SPACE[2], paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.surface },
   branchChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   branchChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
-  branchChipTextActive: { color: COLORS.white },
+  branchChipTextActive: { color: STATIC_WHITE },
   mapContainer: { flex: 1, marginHorizontal: SPACE[5], borderRadius: RADIUS.xl, overflow: 'hidden', borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   infoCard: { backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginVertical: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], gap: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   infoHeader: { flexDirection: 'row', gap: SPACE[3] },
@@ -110,7 +110,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   branchAddress: { fontSize: FONT.sm, color: COLORS.textMuted, lineHeight: 18 },
   actions: { flexDirection: 'row', gap: SPACE[3] },
   actionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACE[2], backgroundColor: COLORS.primary, borderRadius: RADIUS.xl, padding: SPACE[4], ...SHADOW.primary },
-  actionBtnText: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.white },
+  actionBtnText: { fontSize: FONT.base, fontWeight: FONT.bold, color: STATIC_WHITE },
   actionBtnSecondary: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACE[2], backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.xl, padding: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight },
   actionBtnTextSecondary: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text },
 });

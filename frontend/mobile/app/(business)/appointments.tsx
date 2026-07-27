@@ -6,7 +6,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -250,7 +250,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     color: COLORS.textSecondary,
   },
   chipTextActive: {
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   search: { marginHorizontal: SPACE[5], marginVertical: SPACE[3] },
   chips: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[3], gap: SPACE[2], alignItems: 'center' },

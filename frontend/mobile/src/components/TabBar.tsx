@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { STATIC_WHITE } from '@/lib/theme';
 
 export interface TabBarItem {
   name: string;
@@ -58,7 +59,7 @@ export function TabBar({ basePath = '/(business)', tabs = BUSINESS_TABS }: TabBa
           >
             {active ? (
               <View style={styles.iconCircle}>
-                <Ionicons name={tab.icon} size={20} color={COLORS.white} />
+                <Ionicons name={tab.icon} size={20} color={STATIC_WHITE} />
               </View>
             ) : (
               <Ionicons name={tab.icon} size={22} color={COLORS.textMuted} />

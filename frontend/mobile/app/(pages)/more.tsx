@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { logout } from '@/store/slices/authSlice';
@@ -189,7 +189,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   profileName: {
     fontSize: FONT.lg,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
   profileEmail: {
     fontSize: FONT.xs,
@@ -276,7 +276,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   badgeText: {
     fontSize: 9,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
 
   logoutBtn: {

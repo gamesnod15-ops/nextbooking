@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -203,7 +203,7 @@ export default function DashboardScreen() {
           <View style={styles.heroBlobOne} />
           <View style={styles.heroBlobTwo} />
           <TouchableOpacity style={styles.heroCalBtn} onPress={() => router.push('/(pages)/calendar' as any)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Takvim">
-            <Ionicons name="calendar-outline" size={18} color={COLORS.white} />
+            <Ionicons name="calendar-outline" size={18} color={STATIC_WHITE} />
           </TouchableOpacity>
           <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>
           <Text style={styles.heroValue}>{isLoading ? '…' : stats.todayAppointments}</Text>
@@ -249,7 +249,7 @@ export default function DashboardScreen() {
           <View style={styles.promoBlob} />
           <Image source={STARS_3D_IMG} style={styles.promoStars} resizeMode="contain" />
           <View style={styles.promoBadge}>
-            <Ionicons name="sparkles" size={11} color={COLORS.white} />
+            <Ionicons name="sparkles" size={11} color={STATIC_WHITE} />
             <Text style={styles.promoBadgeText}>Yeni Özellik</Text>
           </View>
           <Text style={styles.promoTitle}>Randevularınızı{'\n'}daha kolay yönetin</Text>
@@ -475,7 +475,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center',
   },
   heroLabel: { fontSize: 11, fontWeight: FONT.bold, color: 'rgba(255,255,255,0.55)', letterSpacing: 0.8 },
-  heroValue: { fontSize: 48, fontWeight: FONT.extrabold, color: COLORS.white, marginTop: 4 },
+  heroValue: { fontSize: 48, fontWeight: FONT.extrabold, color: STATIC_WHITE, marginTop: 4 },
   trendPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
     marginTop: SPACE[3], paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full,
@@ -512,7 +512,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
     backgroundColor: '#7C3AED', paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full,
   },
-  promoBadgeText: { fontSize: 10, fontWeight: FONT.bold, color: COLORS.white },
+  promoBadgeText: { fontSize: 10, fontWeight: FONT.bold, color: STATIC_WHITE },
   promoTitle: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.text, lineHeight: 26, marginTop: 6, maxWidth: '62%' },
   promoText: { fontSize: FONT.sm, color: COLORS.textSecondary, lineHeight: 19, maxWidth: '58%' },
   promoLink: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 4 },

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { FONT, RADIUS, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 
 interface SectionHeaderProps {
@@ -107,6 +107,6 @@ const createChipStyles = (COLORS: Palette) => StyleSheet.create({
     fontSize: FONT.sm,
     fontWeight: FONT.semibold,
   },
-  selectedLabel: { color: COLORS.white },
+  selectedLabel: { color: STATIC_WHITE },
   unselectedLabel: { color: COLORS.textSecondary },
 });

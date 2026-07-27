@@ -13,7 +13,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
@@ -140,7 +140,7 @@ export default function VerifyPhoneScreen() {
             activeOpacity={0.8}
           >
             {loading ? (
-              <ActivityIndicator color={COLORS.white} size="small" />
+              <ActivityIndicator color={STATIC_WHITE} size="small" />
             ) : (
               <Text style={styles.verifyBtnText}>Doğrula</Text>
             )}
@@ -190,7 +190,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     justifyContent: 'center',
     marginBottom: SPACE[5],
   },
-  title: { fontSize: 24, fontWeight: '800', color: COLORS.white, marginBottom: SPACE[2] },
+  title: { fontSize: 24, fontWeight: '800', color: STATIC_WHITE, marginBottom: SPACE[2] },
   subtitle: { fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 20, paddingHorizontal: SPACE[4], marginBottom: SPACE[8] },
   otpRow: { flexDirection: 'row', gap: 10, marginBottom: SPACE[6] },
   otpInput: {
@@ -200,7 +200,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.15)',
     backgroundColor: 'rgba(255,255,255,0.05)',
-    color: COLORS.white,
+    color: STATIC_WHITE,
     fontSize: 22,
     fontWeight: '700',
     textAlign: 'center',
@@ -217,7 +217,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     marginBottom: SPACE[4],
   },
   verifyBtnDisabled: { opacity: 0.4 },
-  verifyBtnText: { fontSize: 16, fontWeight: '700', color: COLORS.white },
+  verifyBtnText: { fontSize: 16, fontWeight: '700', color: STATIC_WHITE },
   resendBtn: { alignItems: 'center', padding: SPACE[2] },
   resendText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
   resendDisabled: { color: 'rgba(255,185,0,0.35)' },

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Scr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -66,12 +66,12 @@ export default function PaymentsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Ödemeler" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
       <View style={styles.summary}>
         <View style={styles.summaryCard}>
           <Text style={[styles.summaryLabel, { color: 'rgba(255,255,255,0.7)' }]}>Toplam Gelir</Text>
-          <Text style={[styles.summaryValue, { color: COLORS.white }]}>{formatCurrency(total)}</Text>
+          <Text style={[styles.summaryValue, { color: STATIC_WHITE }]}>{formatCurrency(total)}</Text>
         </View>
         <View style={[styles.summaryCard, styles.summaryCardAlt]}>
           <Text style={styles.summaryLabel}>İşlem Sayısı</Text>

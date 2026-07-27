@@ -11,7 +11,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 
 const { width } = Dimensions.get('window');
@@ -126,7 +126,7 @@ export default function OnboardingScreen() {
               <Text style={styles.nextBtnText}>
                 {step < totalSteps - 1 ? 'Devam Et' : 'Başla'}
               </Text>
-              <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
+              <Ionicons name="arrow-forward" size={20} color={STATIC_WHITE} />
             </TouchableOpacity>
           </View>
         </View>
@@ -172,7 +172,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   stepTitle: {
     fontSize: FONT['2xl'],
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
     textAlign: 'center',
   },
   stepDesc: {
@@ -223,6 +223,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   nextBtnText: {
     fontSize: FONT.md,
     fontWeight: FONT.bold,
-    color: COLORS.white,
+    color: STATIC_WHITE,
   },
 });

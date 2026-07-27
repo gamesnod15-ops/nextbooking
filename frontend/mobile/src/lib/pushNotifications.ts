@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import api from './api';
 import { getDeviceId } from './deviceId';
+import { reportError } from './errorReporting';
 
 /** Foreground behaviour: show reminders even while the app is open. */
 Notifications.setNotificationHandler({
@@ -71,7 +72,13 @@ export async function registerForPushNotifications(): Promise<PushRegistrationRe
     });
 
     return { status: 'granted', token };
-  } catch {
+  } catch (error) {
+    // Swallowing this silently is why "Bildirimler açılamadı" gives no clue —
+    // report it through the same pipeline as every other client error so the
+    // real cause (missing EAS push credentials, Expo Go's lack of remote-push
+    // support, a rejected /push-tokens/register call, etc.) is visible on the
+    // next occurrence instead of just "error".
+    reportError(error, { scope: 'push-notifications' });
     return { status: 'error' };
   }
 }

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@tanstack/react-query';
-import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
@@ -120,7 +120,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   currentBanner: { marginHorizontal: SPACE[5], marginTop: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[6], flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   currentLeft: { gap: 4 },
   currentLabel: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.5)', fontWeight: FONT.medium },
-  currentPlan: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.white },
+  currentPlan: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: STATIC_WHITE },
   currentBilling: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.5)' },
   currentRight: { flexDirection: 'row', alignItems: 'flex-end' },
   currentPrice: { fontSize: FONT['3xl'], fontWeight: FONT.extrabold, color: COLORS.primary },
@@ -130,7 +130,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   planCardCurrent: { borderColor: COLORS.primary, borderWidth: 2 },
   planCardPopular: { backgroundColor: COLORS.primaryLight, borderColor: COLORS.primary, borderWidth: 2 },
   popularBadge: { backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 4, borderRadius: RADIUS.full, alignSelf: 'flex-start' },
-  popularBadgeText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.white },
+  popularBadgeText: { fontSize: FONT.xs, fontWeight: FONT.bold, color: STATIC_WHITE },
   planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
   planName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
   priceRow: { flexDirection: 'row', alignItems: 'flex-end' },
