@@ -212,7 +212,7 @@ export default function DebtsScreen() {
         <FormField label="Vade Tarihi" value={form.dueDate} onChangeText={v => setForm(p => ({ ...p, dueDate: v }))} placeholder="Örn: 2025-06-15" />
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>Kategori</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={styles.chipRow}>
             {CATEGORY_OPTIONS.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
@@ -272,7 +272,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   fieldGroup: { gap: SPACE[1] },
   fieldLabel: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   chipRow: { gap: SPACE[2], paddingVertical: 2 },
-  chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
+  chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },

@@ -194,7 +194,7 @@ export default function AppointmentsScreen() {
       <SearchBar value={search} onChangeText={setSearch} placeholder="Müşteri veya hizmet ara…" style={styles.search} />
 
       {/* Filter Chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={styles.chips}>
         {STATUS_FILTERS.map((f) => (
           <TouchableOpacity
             key={f}
@@ -239,6 +239,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderColor: COLORS.border,
     backgroundColor: 'transparent',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   chipActive: {
     backgroundColor: COLORS.primary,

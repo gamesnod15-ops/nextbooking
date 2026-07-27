@@ -13,11 +13,6 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import type { NotificationItem } from '@/types';
 
-// There is no NotificationsController on the backend yet — GET /notifications
-// currently 404s and this list is always empty. Read-state is persisted
-// locally only so that, once a real endpoint exists, "read" markers survive
-// an app restart the same way the notification-preference toggles in
-// settings.tsx do; it is not enforced by any backend read-tracking today.
 const READ_IDS_KEY = 'business_notifications_read_ids';
 
 const FILTER_OPTIONS = ['Tümü', 'Okunmamış', 'Randevu', 'Ödeme', 'Sistem'];
@@ -33,34 +28,33 @@ export default function NotificationsScreen() {
   const TYPE_COLOR = useMemo(() => getTypeColor(COLORS), [COLORS]);
   const TYPE_BG = useMemo(() => getTypeBg(COLORS), [COLORS]);
   const [filter, setFilter] = useState('Tümü');
-  const { data: queryData = [] } = useQuery<NotificationItem[]>({
+  const { data: queryData } = useQuery<NotificationItem[]>({
     queryKey: ['notifications'],
     queryFn: async () => { const r = await api.get('/notifications'); return Array.isArray(r.data) ? r.data : r.data?.items ?? []; },
+    staleTime: 1000 * 60,
   });
-  const [notifications, setNotifications] = useState<NotificationItem[]>(queryData);
+  const notificationsData = queryData ?? [];
   const [readIds, setReadIds] = useState<string[]>([]);
-
-  // Seed local state from the query result whenever it (re)resolves — using
-  // useState(queryData) alone only captures the value present at first
-  // render, before the async fetch has completed.
-  useEffect(() => {
-    setNotifications((prev) => {
-      const merged = queryData.map((n) => readIds.includes(n.id) ? { ...n, isRead: true } : n);
-      return merged;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryData]);
+  const [localReadIds, setLocalReadIds] = useState(false);
 
   useEffect(() => {
     SecureStore.getItemAsync(READ_IDS_KEY)
       .then((raw) => {
-        if (!raw) return;
-        const saved: string[] = JSON.parse(raw);
-        setReadIds(saved);
-        setNotifications(prev => prev.map(n => saved.includes(n.id) ? { ...n, isRead: true } : n));
+        if (raw) {
+          const saved: string[] = JSON.parse(raw);
+          setReadIds(saved);
+        }
+        setLocalReadIds(true);
       })
-      .catch(() => {});
+      .catch(() => setLocalReadIds(true));
   }, []);
+
+  const notifications = useMemo(() => {
+    return notificationsData.map((n) => ({
+      ...n,
+      isRead: readIds.includes(n.id) ? true : n.isRead,
+    }));
+  }, [notificationsData, readIds]);
 
   function persistReadIds(ids: string[]) {
     setReadIds(ids);
@@ -76,8 +70,8 @@ export default function NotificationsScreen() {
   });
 
   function markAllRead() {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    persistReadIds(Array.from(new Set([...readIds, ...notifications.map(n => n.id)])));
+    const allIds = Array.from(new Set([...readIds, ...notifications.map(n => n.id)]));
+    persistReadIds(allIds);
   }
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -91,7 +85,7 @@ export default function NotificationsScreen() {
           </TouchableOpacity>
         ) : undefined}
       />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {FILTER_OPTIONS.map((f) => (
           <TouchableOpacity key={f} style={[styles.chip, filter === f && styles.chipActive]} onPress={() => setFilter(f)} activeOpacity={0.8}>
             <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>{f}</Text>
@@ -107,7 +101,6 @@ export default function NotificationsScreen() {
         ItemSeparatorComponent={() => <View style={{ height: SPACE[2] }} />}
         renderItem={({ item }) => (
           <TouchableOpacity activeOpacity={0.9} style={[styles.card, !item.isRead && styles.cardUnread]} onPress={() => {
-            setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
             if (!readIds.includes(item.id)) persistReadIds([...readIds, item.id]);
           }}>
             <View style={[styles.iconBox, { backgroundColor: TYPE_BG[item.type] }]}>
@@ -131,7 +124,7 @@ export default function NotificationsScreen() {
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   markAllRead: { fontSize: FONT.sm, color: COLORS.primaryDark, fontWeight: FONT.semibold },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
+  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },

@@ -49,7 +49,7 @@ export default function MapsScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Harita & Konum" showBack />
       {/* Branch Selector */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {BRANCHES.map((b) => (
           <TouchableOpacity key={b.id} style={[styles.branchChip, selected.id === b.id && styles.branchChipActive]} onPress={() => setSelected(b)} activeOpacity={0.8}>
             <Ionicons name="business" size={14} color={selected.id === b.id ? STATIC_WHITE : COLORS.textSecondary} />
@@ -97,7 +97,7 @@ export default function MapsScreen() {
 
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
-  branchChip: { flexDirection: 'row', alignItems: 'center', gap: SPACE[2], paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.surface },
+  branchChip: { flexDirection: 'row', alignItems: 'center', gap: SPACE[2], paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.surface, flexShrink: 0 },
   branchChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   branchChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   branchChipTextActive: { color: STATIC_WHITE },

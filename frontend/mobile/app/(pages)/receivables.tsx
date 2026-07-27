@@ -104,7 +104,7 @@ export default function ReceivablesScreen() {
           <Text style={styles.summaryMetaText}>{(data ?? []).filter(r => r.status === 'overdue').length} gecikmiş ödeme</Text>
         </View>
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {['Tümü', 'Açık', 'Kısmi', 'Gecikmiş', 'Ödendi'].map((f) => (
           <TouchableOpacity key={f} style={[styles.chip, filter === f && styles.chipActive]} onPress={() => setFilter(f)} activeOpacity={0.8}>
             <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>{f}</Text>
@@ -215,7 +215,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   summaryValue: { fontSize: FONT['3xl'], fontWeight: FONT.extrabold, color: STATIC_WHITE },
   summaryMeta: { marginTop: 4 },
   summaryMetaText: { fontSize: FONT.xs, color: 'rgba(0,0,0,0.5)' },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
+  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },
