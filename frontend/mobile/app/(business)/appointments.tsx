@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  RefreshControl, Modal, ScrollView, TextInput, Alert,
+  RefreshControl, Modal, ScrollView, TextInput,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -14,6 +15,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/Button';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MenuButton, NotifButton } from '@/components/DrawerMenu';
+import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 import { formatAppointmentDate as formatDate, formatAppointmentTime as formatTime, formatCurrency } from '@/lib/utils';
 import type { Appointment } from '@/types';
@@ -51,6 +53,8 @@ function DetailModal({ apt, visible, onClose, onAction }: {
   onClose: () => void;
   onAction: (action: 'confirm' | 'complete' | 'cancel', id: string) => void;
 }) {
+  const COLORS = useColors();
+  const modal = useMemo(() => createModalStyles(COLORS), [COLORS]);
   if (!apt) return null;
   const s = statusMap[apt.status];
   return (
@@ -60,7 +64,7 @@ function DetailModal({ apt, visible, onClose, onAction }: {
           <View style={modal.handle} />
           <View style={modal.header}>
             <Text style={modal.title}>Randevu Detayı</Text>
-            <TouchableOpacity onPress={onClose} style={modal.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={onClose} style={modal.closeBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -115,8 +119,11 @@ function DetailModal({ apt, visible, onClose, onAction }: {
 
 export default function AppointmentsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const { data = [], isLoading, refetch } = useAppointments();
   const qc = useQueryClient();
+  const toast = useToast();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('Tümü');
   const [selected, setSelected] = useState<Appointment | null>(null);
@@ -128,7 +135,7 @@ export default function AppointmentsScreen() {
       return api.post(`/appointments/${id}/${ep}`);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['appointments'] }),
-    onError: () => Alert.alert('Hata', 'İşlem gerçekleştirilemedi.'),
+    onError: () => toast.error('İşlem gerçekleştirilemedi.'),
   });
 
   async function onRefresh() {
@@ -222,7 +229,7 @@ export default function AppointmentsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   chip: {
     paddingHorizontal: 16,
@@ -268,7 +275,7 @@ const styles = StyleSheet.create({
   price: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
 });
 
-const modal = StyleSheet.create({
+const createModalStyles = (COLORS: Palette) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',

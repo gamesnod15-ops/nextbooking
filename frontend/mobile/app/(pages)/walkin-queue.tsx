@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -12,8 +13,9 @@ import { FormField } from '@/components/ui/FormField';
 import { useState } from 'react';
 import type { QueueEntry } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
-const COLUMNS: { status: QueueEntry['status']; label: string; color: string }[] = [
+const getColumns = (COLORS: Palette): { status: QueueEntry['status']; label: string; color: string }[] => [
   { status: 'waiting', label: 'Bekliyor', color: COLORS.warning },
   { status: 'in_service', label: 'Hizmette', color: COLORS.info },
   { status: 'completed', label: 'Tamamlandı', color: COLORS.success },
@@ -21,6 +23,10 @@ const COLUMNS: { status: QueueEntry['status']; label: string; color: string }[] 
 
 export default function WalkinQueueScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const COLUMNS = useMemo(() => getColumns(COLORS), [COLORS]);
+  const toast = useToast();
   const { data: queue = [] } = useQuery<QueueEntry[]>({
     queryKey: ['walkin-queue'],
     queryFn: async () => { const res = await api.get('/walkin-queue'); return Array.isArray(res.data) ? res.data : []; },
@@ -33,18 +39,18 @@ export default function WalkinQueueScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/walkin-queue', { customerName: form.customerName, serviceName: form.serviceName || undefined, employeeName: form.employeeName || undefined, status: 'waiting', waitingMinutes: 0 }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['walkin-queue'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Müşteri eklenemedi.'),
+    onError: () => toast.error('Müşteri eklenemedi.'),
   });
 
   function handleSave() {
-    if (!form.customerName) { Alert.alert('Uyarı', 'Müşteri adı zorunludur.'); return; }
+    if (!form.customerName) { toast.warning('Müşteri adı zorunludur.'); return; }
     createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Sıra Takibi" subtitle={`${queue.filter(e => e.status !== 'completed').length} aktif müşteri`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',serviceName:'',employeeName:''}); setModal({open:true}); }}><Ionicons name="person-add" size={18} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',serviceName:'',employeeName:''}); setModal({open:true}); }} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="person-add" size={18} color={COLORS.white} /></TouchableOpacity>}
       />
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: SPACE[4], gap: SPACE[3] }}>
@@ -110,7 +116,7 @@ export default function WalkinQueueScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   column: { width: 230, backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, overflow: 'hidden', borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm, alignSelf: 'flex-start' },

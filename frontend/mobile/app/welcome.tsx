@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, NativeSyntheticEvent, NativeScrollEvent,
@@ -7,7 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { DotGrid } from '@/components/ui/DotGrid';
 
 const { width } = Dimensions.get('window');
@@ -40,6 +41,8 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const [index, setIndex] = useState(0);
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   const isLast = index === SLIDES.length - 1;
 
@@ -122,7 +125,7 @@ export default function OnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   blobTop: {
     position: 'absolute', top: -90, right: -70, width: 260, height: 260, borderRadius: 130,

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatDateTime } from '@/lib/utils';
@@ -14,6 +15,8 @@ import type { Review } from '@/types';
 
 export default function ReviewsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const businessId = useSelector((s: RootState) => s.business.business?.id);
 
   const { data: reviews = [], refetch, isRefetching } = useQuery({
@@ -60,7 +63,7 @@ export default function ReviewsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },
   card: {

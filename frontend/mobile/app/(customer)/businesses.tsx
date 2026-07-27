@@ -18,9 +18,11 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import api, { fixImageUrl } from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
 import { useUserLocation } from '@/lib/useUserLocation';
@@ -98,6 +100,8 @@ export default function BusinessesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   const [search, setSearch] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
@@ -274,6 +278,8 @@ export default function BusinessesScreen() {
             onPress={() => favoriteMutation.mutate({ businessId: item.id, isFavorite })}
             disabled={favoriteMutation.isPending}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={isFavorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
           >
             <Ionicons name={isFavorite ? 'bookmark' : 'bookmark-outline'} size={15} color={isFavorite ? COLORS.primary : COLORS.textSecondary} />
           </TouchableOpacity>
@@ -397,6 +403,8 @@ export default function BusinessesScreen() {
             onPress={() => favoriteMutation.mutate({ businessId: item.id, isFavorite })}
             disabled={favoriteMutation.isPending}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={isFavorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
           >
             <Ionicons name={isFavorite ? 'bookmark' : 'bookmark-outline'} size={18} color={isFavorite ? COLORS.primary : COLORS.textSecondary} />
           </TouchableOpacity>
@@ -453,6 +461,8 @@ export default function BusinessesScreen() {
             style={styles.filterBtn}
             onPress={() => setShowFilterModal(true)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Filtrele"
           >
             <Ionicons name="options-outline" size={20} color={COLORS.white} />
             {activeFilterCount > 0 && (
@@ -473,9 +483,10 @@ export default function BusinessesScreen() {
             placeholderTextColor={COLORS.textMuted}
             value={search}
             onChangeText={handleSearch}
+            accessibilityLabel="İşletme ara"
           />
           {search ? (
-            <TouchableOpacity onPress={() => handleSearch('')}>
+            <TouchableOpacity onPress={() => handleSearch('')} accessibilityRole="button" accessibilityLabel="Aramayı temizle">
               <Ionicons name="close-circle" size={18} color={COLORS.textMuted} />
             </TouchableOpacity>
           ) : null}
@@ -541,8 +552,8 @@ export default function BusinessesScreen() {
       )}
 
       {loading && !refreshing ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={{ paddingHorizontal: SPACE[5] }}>
+          <SkeletonList variant="card" count={4} />
         </View>
       ) : (
         <FlatList
@@ -603,7 +614,7 @@ export default function BusinessesScreen() {
         <View style={[styles.modalRoot, { paddingTop: insets.top }]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Filtreler</Text>
-            <TouchableOpacity onPress={() => setShowFilterModal(false)} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => setShowFilterModal(false)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={24} color={COLORS.text} />
             </TouchableOpacity>
           </View>
@@ -668,6 +679,7 @@ export default function BusinessesScreen() {
                     placeholderTextColor={COLORS.textMuted}
                     value={citySearch}
                     onChangeText={setCitySearch}
+                    accessibilityLabel="Şehir ara"
                   />
                 </View>
                 {filteredCities.map((cityItem) => (
@@ -708,7 +720,7 @@ export default function BusinessesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   header: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[5], gap: SPACE[4], borderBottomLeftRadius: RADIUS['2xl'], borderBottomRightRadius: RADIUS['2xl'], overflow: 'hidden' },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: SPACE[4] },

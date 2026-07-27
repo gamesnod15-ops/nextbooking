@@ -1,4 +1,4 @@
-import { initials, formatCurrency, appointmentLocalDate, formatAppointmentTime } from '../utils';
+import { initials, formatCurrency, appointmentLocalDate, formatAppointmentTime, formatDate, formatAppointmentDate, cn } from '../utils';
 
 describe('initials', () => {
   it('takes the first letter of the first two words, uppercased', () => {
@@ -45,5 +45,46 @@ describe('appointment time handling', () => {
   it('formats to HH:mm', () => {
     expect(formatAppointmentTime('2026-07-26T09:05:00+00:00')).toBe('09:05');
     expect(formatAppointmentTime('2026-07-26T17:00:00+00:00')).toBe('17:00');
+  });
+});
+
+describe('formatDate', () => {
+  it('labels today, tomorrow and yesterday in Turkish', () => {
+    const now = new Date();
+    const iso = now.toISOString();
+    expect(formatDate(iso)).toBe('Bugün');
+
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    expect(formatDate(tomorrow.toISOString())).toBe('Yarın');
+
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    expect(formatDate(yesterday.toISOString())).toBe('Dün');
+  });
+
+  it('falls back to a day-month-year format further out', () => {
+    // Far enough from "today" in any timezone the tests run in.
+    expect(formatDate('2020-03-15T12:00:00.000Z')).toBe('15 Mar 2020');
+  });
+});
+
+describe('formatAppointmentDate', () => {
+  it('reads the stored date as UTC components, not the device timezone', () => {
+    expect(formatAppointmentDate('2020-03-15T12:00:00+00:00')).toBe('15 Mar 2020');
+  });
+});
+
+describe('cn', () => {
+  it('joins truthy class names with a space', () => {
+    expect(cn('a', 'b', 'c')).toBe('a b c');
+  });
+
+  it('drops falsy values', () => {
+    expect(cn('a', undefined, null, false, 'b')).toBe('a b');
+  });
+
+  it('returns an empty string when nothing is truthy', () => {
+    expect(cn(undefined, null, false)).toBe('');
   });
 });

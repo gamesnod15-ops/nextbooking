@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -10,24 +10,28 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { useAppDispatch } from '@/store';
 import { setCredentials, setAppRole } from '@/store/slices/authSlice';
 import api from '@/lib/api';
 import * as SecureStore from 'expo-secure-store';
 import { DotGrid } from '@/components/ui/DotGrid';
+import { useToast } from '@/components/ui/Toast';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { role } = useLocalSearchParams<{ role: 'business' | 'customer' }>();
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
 
   const [selectedRole, setSelectedRole] = useState<'business' | 'customer'>(role === 'business' ? 'business' : 'customer');
   const [showLoginForm, setShowLoginForm] = useState(role === 'business');
@@ -42,7 +46,7 @@ export default function LoginScreen() {
 
   async function handleLogin() {
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Uyarı', 'E-posta ve şifre zorunludur.');
+      toast.warning('E-posta ve şifre zorunludur.');
       return;
     }
     setLoading(true);
@@ -69,7 +73,7 @@ export default function LoginScreen() {
       }
     } catch (err: any) {
       const message = err.response?.data?.message || err.response?.data?.detail || err.message || 'Bir hata oluştu';
-      Alert.alert('Giriş Hatası', message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -142,7 +146,7 @@ export default function LoginScreen() {
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7}>
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}>
                     <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={COLORS.textMuted} />
                   </TouchableOpacity>
                 </View>
@@ -313,7 +317,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1 },
   blobBlue: {
     position: 'absolute',

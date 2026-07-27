@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -12,12 +13,16 @@ import { FormField } from '@/components/ui/FormField';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import type { Advertisement } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 const PLATFORM_ICONS: Record<string, any> = { instagram: 'logo-instagram', facebook: 'logo-facebook', google: 'logo-google', twitter: 'logo-twitter' };
 const PLATFORM_COLORS: Record<string, string> = { instagram: '#E1306C', facebook: '#1877F2', google: '#4285F4', twitter: '#1DA1F2' };
 
 export default function AdvertisementsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data } = useQuery({
     queryKey: ['advertisements'],
     queryFn: async () => { const res = await api.get('/advertisements'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
@@ -35,30 +40,30 @@ export default function AdvertisementsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/advertisements', { title: form.title, description: form.description || undefined, type: form.type, targetUrl: form.targetUrl || undefined, startDate: form.startDate, endDate: form.endDate, position: form.position || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['advertisements'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Reklam eklenemedi.'),
+    onError: () => toast.error('Reklam eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/advertisements/${modal.item!.id}`, { title: form.title, description: form.description || undefined, type: form.type, targetUrl: form.targetUrl || undefined, startDate: form.startDate, endDate: form.endDate, position: form.position || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['advertisements'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Reklam güncellenemedi.'),
+    onError: () => toast.error('Reklam güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/advertisements/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['advertisements'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Reklam silinemedi.'),
+    onError: () => toast.error('Reklam silinemedi.'),
   });
 
   function openCreate() { setForm({ title: '', description: '', type: 'banner', targetUrl: '', startDate: '', endDate: '', position: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Advertisement) { setForm({ title: item.title, description: item.description ?? '', type: item.type ?? 'banner', targetUrl: item.targetUrl ?? '', startDate: item.startDate, endDate: item.endDate ?? '', position: item.position ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.title || !form.startDate || !form.endDate) { Alert.alert('Uyarı', 'Başlık, başlangıç ve bitiş tarihi zorunludur.'); return; }
+    if (!form.title || !form.startDate || !form.endDate) { toast.warning('Başlık, başlangıç ve bitiş tarihi zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Reklamlar" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
@@ -135,7 +140,7 @@ export default function AdvertisementsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   statsRow: { flexDirection: 'row', gap: SPACE[3], paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },

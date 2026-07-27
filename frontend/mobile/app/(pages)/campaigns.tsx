@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -12,9 +13,13 @@ import { FormField } from '@/components/ui/FormField';
 import { formatDate } from '@/lib/utils';
 import type { Campaign } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 export default function CampaignsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [selected, setSelected] = useState<Campaign | null>(null);
   const { data } = useQuery({
     queryKey: ['campaigns'],
@@ -29,30 +34,30 @@ export default function CampaignsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/campaigns', { title: form.title, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), startDate: form.startDate, endDate: form.endDate, maxUsage: form.maxUsage ? Number(form.maxUsage) : undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['campaigns'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kampanya eklenemedi.'),
+    onError: () => toast.error('Kampanya eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/campaigns/${modal.item!.id}`, { title: form.title, description: form.description || undefined, discountType: form.discountType, discountValue: Number(form.discountValue), startDate: form.startDate, endDate: form.endDate, maxUsage: form.maxUsage ? Number(form.maxUsage) : undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['campaigns'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kampanya güncellenemedi.'),
+    onError: () => toast.error('Kampanya güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/campaigns/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['campaigns'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kampanya silinemedi.'),
+    onError: () => toast.error('Kampanya silinemedi.'),
   });
 
   function openCreate() { setForm({ title: '', description: '', discountType: 'percent', discountValue: '', startDate: '', endDate: '', maxUsage: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Campaign) { setForm({ title: item.title, description: item.description ?? '', discountType: item.discountType, discountValue: String(item.discountValue), startDate: item.startDate, endDate: item.endDate, maxUsage: item.maxUsage ? String(item.maxUsage) : '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.title || !form.discountValue || !form.startDate || !form.endDate) { Alert.alert('Uyarı', 'Başlık, indirim değeri, başlangıç ve bitiş tarihi zorunludur.'); return; }
+    if (!form.title || !form.discountValue || !form.startDate || !form.endDate) { toast.warning('Başlık, indirim değeri, başlangıç ve bitiş tarihi zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Kampanyalar" subtitle={`${(list ?? []).filter(c => c.isActive).length} aktif`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <FlatList
         data={list}
@@ -142,7 +147,7 @@ export default function CampaignsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   list: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], paddingBottom: SPACE[10] },

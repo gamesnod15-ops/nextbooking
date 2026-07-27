@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -9,25 +9,29 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
+import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
   async function handleReset() {
     if (!email.trim()) {
-      Alert.alert('Uyarı', 'E-posta adresi zorunludur.');
+      toast.warning('E-posta adresi zorunludur.');
       return;
     }
     setLoading(true);
@@ -36,7 +40,7 @@ export default function ForgotPasswordScreen() {
       setSent(true);
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Bir hata oluştu';
-      Alert.alert('Hata', msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -119,7 +123,7 @@ export default function ForgotPasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1 },
   blob: {
     position: 'absolute',

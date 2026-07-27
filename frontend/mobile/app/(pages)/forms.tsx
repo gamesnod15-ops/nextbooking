@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 import { formatDate } from '@/lib/utils';
 import api from '@/lib/api';
 
 export default function FormsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data: list = [] } = useQuery({
     queryKey: ['forms'],
     queryFn: async () => { const res = await api.get('/forms'); return Array.isArray(res.data) ? res.data : []; },
@@ -26,18 +31,18 @@ export default function FormsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/forms', { title: form.title, fieldCount: Number(form.fields) || 0 }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['forms'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Form eklenemedi.'),
+    onError: () => toast.error('Form eklenemedi.'),
   });
 
   function handleSave() {
-    if (!form.title) { Alert.alert('Uyarı', 'Form adı zorunludur.'); return; }
+    if (!form.title) { toast.warning('Form adı zorunludur.'); return; }
     createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Formlar" subtitle={`${list.length} form`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={() => setModal({ open: true })}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={() => setModal({ open: true })} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <FlatList
         data={list}
@@ -61,7 +66,7 @@ export default function FormsScreen() {
             </View>
             <View style={styles.right}>
               <Badge variant={item.isActive ? 'success' : 'default'} size="sm">{item.isActive ? 'Aktif' : 'Pasif'}</Badge>
-              <TouchableOpacity>
+              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Bağlantıyı kopyala">
                 <Ionicons name="link-outline" size={18} color={COLORS.textMuted} />
               </TouchableOpacity>
             </View>
@@ -82,7 +87,7 @@ export default function FormsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   list: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], paddingBottom: SPACE[10] },

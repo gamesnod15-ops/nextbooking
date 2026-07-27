@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  RefreshControl, Modal, ScrollView, Alert,
+  RefreshControl, Modal, ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from '@/components/ui/Avatar';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Badge } from '@/components/ui/Badge';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 import { MenuButton, NotifButton } from '@/components/DrawerMenu';
 import api from '@/lib/api';
 import { formatCurrency } from '@/lib/utils';
@@ -33,6 +35,9 @@ function useCustomers() {
 export default function CustomersScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data, isLoading, refetch } = useCustomers();
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -54,7 +59,7 @@ export default function CustomersScreen() {
       email: form.email || undefined,
     }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Müşteri eklenemedi.'),
+    onError: () => toast.error('Müşteri eklenemedi.'),
   });
 
   const updateMutation = useMutation({
@@ -64,19 +69,19 @@ export default function CustomersScreen() {
       email: form.email || undefined,
     }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Müşteri güncellenemedi.'),
+    onError: () => toast.error('Müşteri güncellenemedi.'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/customers/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Müşteri silinemedi.'),
+    onError: () => toast.error('Müşteri silinemedi.'),
   });
 
   function openCreate() { setForm({ name: '', phone: '', email: '', tags: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Customer) { setForm({ name: item.name, phone: item.phone, email: item.email ?? '', tags: (item.tags ?? []).join(', ') }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.phone) { Alert.alert('Uyarı', 'Ad ve telefon zorunludur.'); return; }
+    if (!form.name || !form.phone) { toast.warning('Ad ve telefon zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
@@ -114,7 +119,7 @@ export default function CustomersScreen() {
       <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACE[2] }}>
-          <TouchableOpacity onPress={() => router.replace('/(business)')} activeOpacity={0.7}>
+          <TouchableOpacity onPress={() => router.replace('/(business)')} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
           <View>
@@ -123,7 +128,7 @@ export default function CustomersScreen() {
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}>
+          <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle">
             <Ionicons name="add" size={22} color={COLORS.white} />
           </TouchableOpacity>
           <NotifButton />
@@ -159,7 +164,7 @@ export default function CustomersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   header: {
     flexDirection: 'row',

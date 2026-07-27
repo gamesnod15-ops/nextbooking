@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAppDispatch } from '@/store';
 import { setCredentials } from '@/store/slices/authSlice';
-import { COLORS } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ONBOARDING_KEY } from './welcome';
 
 const NO_REDUCE_MOTION = { reduceMotion: ReduceMotion.Never };
@@ -23,6 +23,8 @@ const FADE_DURATION = 300;
 export default function SplashScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   const logoOpacity = useSharedValue(0);
   const logoScale = useSharedValue(0.85);
@@ -84,7 +86,7 @@ export default function SplashScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bg,

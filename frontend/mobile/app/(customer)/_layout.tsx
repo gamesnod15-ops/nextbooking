@@ -1,13 +1,17 @@
+import { useMemo } from 'react';
 import { Tabs, Stack } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StyleSheet, View } from 'react-native';
 import type { RootState } from '@/store';
-import { COLORS, FONT, RADIUS } from '@/lib/theme';
+import { FONT, RADIUS } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 function TabIcon({ name, focused, color }: { name: IoniconsName; focused: boolean; color: string | import('react-native').ColorValue }) {
+  const COLORS = useColors();
+  const tabStyles = useMemo(() => createTabStyles(COLORS), [COLORS]);
   return (
     <View style={[tabStyles.iconWrap, focused && tabStyles.iconWrapActive]}>
       <Ionicons name={name} size={24} color={color} />
@@ -15,7 +19,7 @@ function TabIcon({ name, focused, color }: { name: IoniconsName; focused: boolea
   );
 }
 
-const tabStyles = StyleSheet.create({
+const createTabStyles = (COLORS: Palette) => StyleSheet.create({
   iconWrap: {
     width: 48,
     height: 36,
@@ -44,6 +48,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
 export default function CustomerLayout() {
   const { accessToken } = useSelector((state: RootState) => state.auth);
+  const COLORS = useColors();
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

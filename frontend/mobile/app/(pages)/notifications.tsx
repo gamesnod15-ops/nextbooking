@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -14,11 +15,15 @@ import type { NotificationItem } from '@/types';
 const FILTER_OPTIONS = ['Tümü', 'Okunmamış', 'Randevu', 'Ödeme', 'Sistem'];
 
 const TYPE_ICON: Record<string, any> = { appointment: 'calendar', message: 'chatbubble', payment: 'card', system: 'settings' };
-const TYPE_COLOR: Record<string, string> = { appointment: COLORS.info, message: COLORS.success, payment: COLORS.primary, system: COLORS.warning };
-const TYPE_BG: Record<string, string> = { appointment: COLORS.infoLight, message: COLORS.successLight, payment: COLORS.primaryLight, system: COLORS.warningLight };
+const getTypeColor = (COLORS: Palette): Record<string, string> => ({ appointment: COLORS.info, message: COLORS.success, payment: COLORS.primary, system: COLORS.warning });
+const getTypeBg = (COLORS: Palette): Record<string, string> => ({ appointment: COLORS.infoLight, message: COLORS.successLight, payment: COLORS.primaryLight, system: COLORS.warningLight });
 
 export default function NotificationsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const TYPE_COLOR = useMemo(() => getTypeColor(COLORS), [COLORS]);
+  const TYPE_BG = useMemo(() => getTypeBg(COLORS), [COLORS]);
   const [filter, setFilter] = useState('Tümü');
   const { data: queryData = [] } = useQuery<NotificationItem[]>({
     queryKey: ['notifications'],
@@ -83,7 +88,7 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   markAllRead: { fontSize: FONT.sm, color: COLORS.primaryDark, fontWeight: FONT.semibold },
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },

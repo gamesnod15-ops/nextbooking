@@ -44,7 +44,7 @@ export function ScreenHeader({ title, subtitle, showBack = false, right, transpa
 
       <View style={styles.inner}>
         {showBack ? (
-          <TouchableOpacity style={styles.backBtn} onPress={goBack} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.backBtn} onPress={goBack} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Geri">
             <Ionicons name="chevron-back" size={20} color={COLORS.text} />
           </TouchableOpacity>
         ) : (

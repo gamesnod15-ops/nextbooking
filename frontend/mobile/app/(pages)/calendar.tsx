@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  RefreshControl, Modal, TextInput, Alert, Linking,
+  RefreshControl, Modal, TextInput, Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,13 +11,15 @@ import {
   format, isSameDay, isSameMonth, isToday as isTodayFn,
 } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { MenuButton } from '@/components/DrawerMenu';
 import api from '@/lib/api';
 import { appointmentLocalDate, formatAppointmentTime, formatAppointmentDate, formatCurrency } from '@/lib/utils';
 import type { Appointment, Employee, Service } from '@/types';
+import { useToast } from '@/components/ui/Toast';
 
 const HOUR_HEIGHT = 60;
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 08:00 – 20:00
@@ -28,13 +30,13 @@ const STATUS_FILTERS = ['Beklemede', 'Onaylandı', 'Tamamlandı', 'İptal'];
 const STATUS_KEYS: Record<string, string> = {
   'Beklemede': 'pending', 'Onaylandı': 'confirmed', 'Tamamlandı': 'completed', 'İptal': 'cancelled',
 };
-const statusMap: Record<string, { label: string; variant: any; bg: string; bar: string }> = {
+const getStatusMap = (COLORS: Palette): Record<string, { label: string; variant: any; bg: string; bar: string }> => ({
   pending:   { label: 'Beklemede', variant: 'pending', bg: COLORS.warningLight, bar: COLORS.warning },
   confirmed: { label: 'Onaylandı', variant: 'confirmed', bg: COLORS.infoLight, bar: COLORS.info },
   cancelled: { label: 'İptal', variant: 'cancelled', bg: COLORS.errorLight, bar: COLORS.error },
   completed: { label: 'Tamamlandı', variant: 'completed', bg: COLORS.successLight, bar: COLORS.success },
   no_show:   { label: 'Gelmedi', variant: 'no_show', bg: COLORS.surfaceAlt, bar: COLORS.textMuted },
-};
+});
 
 function getEventTop(startIso: string) {
   const d = appointmentLocalDate(startIso);
@@ -89,6 +91,9 @@ function DetailSheet({ apt, visible, onClose, onAction }: {
   onClose: () => void;
   onAction: (action: 'confirm' | 'complete' | 'cancel', id: string) => void;
 }) {
+  const COLORS = useColors();
+  const sheet = useMemo(() => createSheetStyles(COLORS), [COLORS]);
+  const statusMap = useMemo(() => getStatusMap(COLORS), [COLORS]);
   if (!apt) return null;
   const s = statusMap[apt.status];
   return (
@@ -98,7 +103,7 @@ function DetailSheet({ apt, visible, onClose, onAction }: {
           <View style={sheet.handle} />
           <View style={sheet.header}>
             <Text style={sheet.title}>Randevu Detayı</Text>
-            <TouchableOpacity onPress={onClose} style={sheet.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={onClose} style={sheet.closeBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -147,6 +152,10 @@ function DetailSheet({ apt, visible, onClose, onAction }: {
 function CreateModal({ visible, onClose, date, employees, services }: {
   visible: boolean; onClose: () => void; date: Date; employees: Employee[]; services: Service[];
 }) {
+  const COLORS = useColors();
+  const sheet = useMemo(() => createSheetStyles(COLORS), [COLORS]);
+  const form = useMemo(() => createFormStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const qc = useQueryClient();
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [employeeId, setEmployeeId] = useState<string | null>(null);
@@ -175,10 +184,10 @@ function CreateModal({ visible, onClose, date, employees, services }: {
       qc.invalidateQueries({ queryKey: ['appointments'] });
       reset();
       onClose();
-      Alert.alert('Başarılı', 'Randevu oluşturuldu.');
+      toast.success('Randevu oluşturuldu.');
     },
     onError: (e: any) => {
-      Alert.alert('Hata', e?.response?.data?.message || 'Randevu oluşturulamadı. Bilgileri kontrol edin.');
+      toast.error(e?.response?.data?.message || 'Randevu oluşturulamadı. Bilgileri kontrol edin.');
     },
   });
 
@@ -198,7 +207,7 @@ function CreateModal({ visible, onClose, date, employees, services }: {
           <View style={sheet.handle} />
           <View style={sheet.header}>
             <Text style={sheet.title}>Yeni Randevu · {format(date, 'd MMMM', { locale: tr })}</Text>
-            <TouchableOpacity onPress={handleClose} style={sheet.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={handleClose} style={sheet.closeBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -293,6 +302,9 @@ function FilterModal({ visible, onClose, employees, statusFilters, setStatusFilt
   statusFilters: string[]; setStatusFilters: (v: string[]) => void;
   employeeFilters: string[]; setEmployeeFilters: (v: string[]) => void;
 }) {
+  const COLORS = useColors();
+  const sheet = useMemo(() => createSheetStyles(COLORS), [COLORS]);
+  const form = useMemo(() => createFormStyles(COLORS), [COLORS]);
   function toggleStatus(s: string) {
     setStatusFilters(statusFilters.includes(s) ? statusFilters.filter((x) => x !== s) : [...statusFilters, s]);
   }
@@ -306,7 +318,7 @@ function FilterModal({ visible, onClose, employees, statusFilters, setStatusFilt
           <View style={sheet.handle} />
           <View style={sheet.header}>
             <Text style={sheet.title}>Filtrele</Text>
-            <TouchableOpacity onPress={onClose} style={sheet.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={onClose} style={sheet.closeBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -346,17 +358,19 @@ function FilterModal({ visible, onClose, employees, statusFilters, setStatusFilt
 function MonthPickerModal({ visible, onClose, cursor, onSelect }: {
   visible: boolean; onClose: () => void; cursor: Date; onSelect: (d: Date) => void;
 }) {
+  const COLORS = useColors();
+  const picker = useMemo(() => createPickerStyles(COLORS), [COLORS]);
   const [year, setYear] = useState(cursor.getFullYear());
   return (
     <Modal visible={visible} animationType="fade" transparent>
       <TouchableOpacity style={picker.overlay} activeOpacity={1} onPress={onClose}>
         <TouchableOpacity activeOpacity={1} style={picker.card} onPress={() => {}}>
           <View style={picker.yearRow}>
-            <TouchableOpacity onPress={() => setYear(year - 1)} style={picker.yearBtn}>
+            <TouchableOpacity onPress={() => setYear(year - 1)} style={picker.yearBtn} accessibilityRole="button" accessibilityLabel="Önceki yıl">
               <Ionicons name="chevron-back" size={18} color={COLORS.text} />
             </TouchableOpacity>
             <Text style={picker.yearText}>{year}</Text>
-            <TouchableOpacity onPress={() => setYear(year + 1)} style={picker.yearBtn}>
+            <TouchableOpacity onPress={() => setYear(year + 1)} style={picker.yearBtn} accessibilityRole="button" accessibilityLabel="Sonraki yıl">
               <Ionicons name="chevron-forward" size={18} color={COLORS.text} />
             </TouchableOpacity>
           </View>
@@ -384,6 +398,11 @@ function MonthPickerModal({ visible, onClose, cursor, onSelect }: {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 export default function CalendarScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const eventCard = useMemo(() => createEventCardStyles(COLORS), [COLORS]);
+  const statusMap = useMemo(() => getStatusMap(COLORS), [COLORS]);
+  const toast = useToast();
   const today = new Date();
   const qc = useQueryClient();
 
@@ -410,7 +429,7 @@ export default function CalendarScreen() {
       return api.post(`/appointments/${id}/${ep}`);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['appointments'] }),
-    onError: () => Alert.alert('Hata', 'İşlem gerçekleştirilemedi.'),
+    onError: () => toast.error('İşlem gerçekleştirilemedi.'),
   });
 
   const activeFilterCount = statusFilters.length + employeeFilters.length;
@@ -441,7 +460,7 @@ export default function CalendarScreen() {
   }
 
   function callCustomer(phone: string) {
-    Linking.openURL(`tel:${phone.replace(/\s+/g, '')}`).catch(() => Alert.alert('Hata', 'Arama başlatılamadı.'));
+    Linking.openURL(`tel:${phone.replace(/\s+/g, '')}`).catch(() => toast.error('Arama başlatılamadı.'));
   }
 
   function renderEventCard(ev: Appointment, compact = false) {
@@ -467,10 +486,10 @@ export default function CalendarScreen() {
         </View>
         {!compact && (
           <View style={eventCard.actions}>
-            <TouchableOpacity style={[eventCard.callBtn, { backgroundColor: s.bar + '22' }]} onPress={() => callCustomer(ev.customerPhone)} activeOpacity={0.8}>
+            <TouchableOpacity style={[eventCard.callBtn, { backgroundColor: s.bar + '22' }]} onPress={() => callCustomer(ev.customerPhone)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Müşteriyi ara">
               <Ionicons name="call" size={16} color={s.bar} />
             </TouchableOpacity>
-            <TouchableOpacity style={eventCard.kebabBtn} onPress={() => setSelectedAppt(ev)} activeOpacity={0.7}>
+            <TouchableOpacity style={eventCard.kebabBtn} onPress={() => setSelectedAppt(ev)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Diğer işlemler">
               <Ionicons name="ellipsis-vertical" size={16} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -496,10 +515,10 @@ export default function CalendarScreen() {
             <Ionicons name="chevron-down" size={14} color={COLORS.textMuted} />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => setSearchOpen((v) => !v)} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => setSearchOpen((v) => !v)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Ara">
           <Ionicons name="search" size={20} color={COLORS.text} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => setFilterOpen(true)} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => setFilterOpen(true)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Filtrele">
           <Ionicons name="filter" size={19} color={COLORS.text} />
           {activeFilterCount > 0 && (
             <View style={styles.filterBadge}><Text style={styles.filterBadgeText}>{activeFilterCount}</Text></View>
@@ -517,9 +536,10 @@ export default function CalendarScreen() {
             placeholder="Müşteri veya hizmet ara…"
             placeholderTextColor={COLORS.textMuted}
             autoFocus
+            accessibilityLabel="Müşteri veya hizmet ara"
           />
           {search ? (
-            <TouchableOpacity onPress={() => setSearch('')}>
+            <TouchableOpacity onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel="Aramayı temizle">
               <Ionicons name="close-circle" size={16} color={COLORS.textMuted} />
             </TouchableOpacity>
           ) : null}
@@ -543,7 +563,7 @@ export default function CalendarScreen() {
 
       {viewMode !== 'month' && (
         <View style={styles.weekStripWrap}>
-          <TouchableOpacity onPress={() => setWeekAnchor(addWeeks(weekAnchor, -1))} style={styles.weekNavBtn}>
+          <TouchableOpacity onPress={() => setWeekAnchor(addWeeks(weekAnchor, -1))} style={styles.weekNavBtn} accessibilityRole="button" accessibilityLabel="Önceki hafta">
             <Ionicons name="chevron-back" size={18} color={COLORS.textSecondary} />
           </TouchableOpacity>
           <View style={styles.weekStrip}>
@@ -562,7 +582,7 @@ export default function CalendarScreen() {
               );
             })}
           </View>
-          <TouchableOpacity onPress={() => setWeekAnchor(addWeeks(weekAnchor, 1))} style={styles.weekNavBtn}>
+          <TouchableOpacity onPress={() => setWeekAnchor(addWeeks(weekAnchor, 1))} style={styles.weekNavBtn} accessibilityRole="button" accessibilityLabel="Sonraki hafta">
             <Ionicons name="chevron-forward" size={18} color={COLORS.textSecondary} />
           </TouchableOpacity>
         </View>
@@ -611,10 +631,10 @@ export default function CalendarScreen() {
                       </View>
                     </View>
                     <View style={styles.eventActions}>
-                      <TouchableOpacity style={[styles.eventCallBtn, { backgroundColor: s.bar + '22' }]} onPress={() => callCustomer(ev.customerPhone)} activeOpacity={0.8}>
+                      <TouchableOpacity style={[styles.eventCallBtn, { backgroundColor: s.bar + '22' }]} onPress={() => callCustomer(ev.customerPhone)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Müşteriyi ara">
                         <Ionicons name="call" size={15} color={s.bar} />
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.eventKebabBtn} onPress={() => setSelectedAppt(ev)} activeOpacity={0.7}>
+                      <TouchableOpacity style={styles.eventKebabBtn} onPress={() => setSelectedAppt(ev)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Diğer işlemler">
                         <Ionicons name="ellipsis-vertical" size={15} color={COLORS.textSecondary} />
                       </TouchableOpacity>
                     </View>
@@ -705,7 +725,7 @@ export default function CalendarScreen() {
         </ScrollView>
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={() => setCreateOpen(true)} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.fab} onPress={() => setCreateOpen(true)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Randevu ekle">
         <Ionicons name="add" size={28} color={COLORS.white} />
       </TouchableOpacity>
 
@@ -741,7 +761,7 @@ export default function CalendarScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   header: {
     flexDirection: 'row', alignItems: 'center',
@@ -858,7 +878,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const eventCard = StyleSheet.create({
+const createEventCardStyles = (COLORS: Palette) => StyleSheet.create({
   row: {
     flexDirection: 'row', alignItems: 'center', gap: SPACE[3],
     borderRadius: RADIUS.lg, borderLeftWidth: 3, padding: SPACE[3],
@@ -875,7 +895,7 @@ const eventCard = StyleSheet.create({
   kebabBtn: { width: 24, height: 30, alignItems: 'center', justifyContent: 'center' },
 });
 
-const sheet = StyleSheet.create({
+const createSheetStyles = (COLORS: Palette) => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   sheet: { backgroundColor: COLORS.surface, borderTopLeftRadius: RADIUS['2xl'], borderTopRightRadius: RADIUS['2xl'], height: '85%' },
   handle: { width: 40, height: 4, backgroundColor: COLORS.border, borderRadius: RADIUS.full, alignSelf: 'center', marginTop: SPACE[3] },
@@ -889,7 +909,7 @@ const sheet = StyleSheet.create({
   actions: { flexDirection: 'row', gap: SPACE[3], padding: SPACE[5], borderTopWidth: 1, borderTopColor: COLORS.borderLight },
 });
 
-const form = StyleSheet.create({
+const createFormStyles = (COLORS: Palette) => StyleSheet.create({
   label: { fontSize: FONT.xs, fontWeight: FONT.bold, color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.3 },
   input: {
     borderWidth: 1.5, borderColor: COLORS.border, borderRadius: RADIUS.lg,
@@ -901,7 +921,7 @@ const form = StyleSheet.create({
   chipTextActive: { color: COLORS.white },
 });
 
-const picker = StyleSheet.create({
+const createPickerStyles = (COLORS: Palette) => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },
   card: { width: '84%', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[5], gap: SPACE[4] },
   yearRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

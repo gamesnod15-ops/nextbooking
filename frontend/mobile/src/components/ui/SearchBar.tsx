@@ -26,9 +26,10 @@ export function SearchBar({ value, onChangeText, placeholder = 'Ara...', style, 
         placeholderTextColor={COLORS.textMuted}
         autoCorrect={false}
         autoCapitalize="none"
+        accessibilityLabel={placeholder}
       />
       {value.length > 0 && (
-        <TouchableOpacity onPress={() => { onChangeText(''); onClear?.(); }} activeOpacity={0.7}>
+        <TouchableOpacity onPress={() => { onChangeText(''); onClear?.(); }} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Temizle">
           <Ionicons name="close-circle" size={18} color={COLORS.textMuted} />
         </TouchableOpacity>
       )}

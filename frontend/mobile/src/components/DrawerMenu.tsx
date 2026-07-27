@@ -275,7 +275,7 @@ export function MenuButton({ showBadge = true }: { showBadge?: boolean }) {
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
-    <TouchableOpacity style={styles.menuBtn} onPress={openDrawer} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.menuBtn} onPress={openDrawer} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Menü">
       <Ionicons name="menu-outline" size={24} color={COLORS.text} />
       {showBadge && <View style={styles.menuDot} />}
     </TouchableOpacity>
@@ -287,7 +287,7 @@ export function NotifButton() {
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
-    <TouchableOpacity style={styles.menuBtn} activeOpacity={0.7} onPress={() => router.push('/notifications' as any)}>
+    <TouchableOpacity style={styles.menuBtn} activeOpacity={0.7} onPress={() => router.push('/notifications' as any)} accessibilityRole="button" accessibilityLabel="Bildirimler">
       <Ionicons name="notifications-outline" size={24} color={COLORS.text} />
       <View style={styles.notifDot} />
     </TouchableOpacity>

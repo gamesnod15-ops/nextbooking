@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -13,11 +14,15 @@ import { FormField } from '@/components/ui/FormField';
 import { formatCurrency } from '@/lib/utils';
 import type { Product } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 const LOW_STOCK_THRESHOLD = 5;
 
 export default function ProductsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [search, setSearch] = useState('');
   const { data: items } = useQuery({
     queryKey: ['products'],
@@ -33,30 +38,30 @@ export default function ProductsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/products', { name: form.name, sku: form.sku, price: Number(form.price), stock: Number(form.stock), category: form.category }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Ürün eklenemedi.'),
+    onError: () => toast.error('Ürün eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/products/${modal.item!.id}`, { name: form.name, sku: form.sku, price: Number(form.price), stock: Number(form.stock), category: form.category }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Ürün güncellenemedi.'),
+    onError: () => toast.error('Ürün güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/products/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Ürün silinemedi.'),
+    onError: () => toast.error('Ürün silinemedi.'),
   });
 
   function openCreate() { setForm({ name: '', sku: '', price: '', stock: '0', category: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Product) { setForm({ name: item.name, sku: item.sku ?? '', price: String(item.price), stock: String(item.stock), category: item.category ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.price) { Alert.alert('Uyarı', 'Ad ve fiyat zorunludur.'); return; }
+    if (!form.name || !form.price) { toast.warning('Ad ve fiyat zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Ürünler & Stok" subtitle={`${safeItems.length} ürün`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       {/* Low stock alert */}
       {safeItems.some(p => p.stock <= LOW_STOCK_THRESHOLD && p.isActive) && (
@@ -114,7 +119,7 @@ export default function ProductsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   alert: { flexDirection: 'row', alignItems: 'center', gap: SPACE[2], backgroundColor: COLORS.warningLight, marginHorizontal: SPACE[5], marginTop: SPACE[3], borderRadius: RADIUS.lg, padding: SPACE[3] },

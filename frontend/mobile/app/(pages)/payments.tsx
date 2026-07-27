@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Badge } from '@/components/ui/Badge';
@@ -13,12 +14,16 @@ import { FormField } from '@/components/ui/FormField';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Payment } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 const METHOD_LABELS: Record<string, string> = { cash: 'Nakit', card: 'Kart', transfer: 'Havale', other: 'Diğer' };
 const METHOD_ICONS: Record<string, any> = { cash: 'cash-outline', card: 'card-outline', transfer: 'swap-horizontal-outline', other: 'ellipsis-horizontal-outline' };
 
 export default function PaymentsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data, refetch } = useQuery<Payment[]>({
     queryKey: ['payments'],
     queryFn: async () => { const r = await api.get('/payments'); return Array.isArray(r.data) ? r.data : r.data?.items ?? []; },
@@ -34,23 +39,23 @@ export default function PaymentsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/payments', { customerName: form.customerName, amount: Number(form.amount), method: form.method, status: form.status, description: form.description || undefined, transactionId: form.transactionId || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['payments'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Ödeme eklenemedi.'),
+    onError: () => toast.error('Ödeme eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/payments/${modal.item!.id}`, { customerName: form.customerName, amount: Number(form.amount), method: form.method, status: form.status, description: form.description || undefined, transactionId: form.transactionId || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['payments'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Ödeme güncellenemedi.'),
+    onError: () => toast.error('Ödeme güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/payments/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['payments'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Ödeme silinemedi.'),
+    onError: () => toast.error('Ödeme silinemedi.'),
   });
 
   function openCreate() { setForm({ customerName: '', amount: '', method: 'cash', status: 'pending', description: '', transactionId: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Payment) { setForm({ customerName: item.customerName, amount: String(item.amount), method: item.method as any, status: item.status as any, description: (item as any).description ?? '', transactionId: (item as any).transactionId ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.customerName || !form.amount) { Alert.alert('Uyarı', 'Müşteri adı ve tutar zorunludur.'); return; }
+    if (!form.customerName || !form.amount) { toast.warning('Müşteri adı ve tutar zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
@@ -61,7 +66,7 @@ export default function PaymentsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Ödemeler" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.summary}>
         <View style={styles.summaryCard}>
@@ -141,7 +146,7 @@ export default function PaymentsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   summary: { flexDirection: 'row', gap: SPACE[3], paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },

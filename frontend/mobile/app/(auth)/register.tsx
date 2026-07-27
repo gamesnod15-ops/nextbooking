@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,15 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
-  Alert,
   Modal,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
+import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 
 const TERMS_TEXT = `
@@ -69,6 +70,9 @@ export default function RegisterScreen() {
   const router = useRouter();
   const { role } = useLocalSearchParams<{ role: 'business' | 'customer' }>();
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -102,7 +106,7 @@ export default function RegisterScreen() {
       router.replace({ pathname: '/(auth)/verify-phone', params: { phone: phone.trim(), role } } as any);
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Bir hata oluştu';
-      Alert.alert('Hata', msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -201,7 +205,7 @@ export default function RegisterScreen() {
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7}>
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}>
                 <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color="rgba(255,255,255,0.35)" />
               </TouchableOpacity>
             </View>
@@ -285,6 +289,8 @@ export default function RegisterScreen() {
                   if (modalContent === 'privacy') setAgreedPrivacy(true);
                 }}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="Kapat"
               >
                 <Ionicons name="close-circle" size={28} color={COLORS.primary} />
               </TouchableOpacity>
@@ -313,7 +319,7 @@ export default function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1 },
   blob: {
     position: 'absolute',

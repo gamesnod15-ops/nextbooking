@@ -1,15 +1,18 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { DotGrid } from '@/components/ui/DotGrid';
+import { SkeletonList } from '@/components/ui/Skeleton';
+import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
 
@@ -47,6 +50,9 @@ export default function CustomerAppointmentsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [filter, setFilter] = useState('Tümü');
   const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
@@ -73,11 +79,11 @@ export default function CustomerAppointmentsScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-appointments'] });
       setCancelTarget(null);
-      Alert.alert('Başarılı', 'Randevunuz iptal edildi.');
+      toast.success('Randevunuz iptal edildi.');
     },
     onError: () => {
       setCancelTarget(null);
-      Alert.alert('Hata', 'Randevu iptal edilirken bir hata oluştu.');
+      toast.error('Randevu iptal edilirken bir hata oluştu.');
     },
   });
 
@@ -102,7 +108,7 @@ export default function CustomerAppointmentsScreen() {
           <Text style={styles.headerTitle}>Randevularım</Text>
           <View style={styles.headerUnderline} />
         </View>
-        <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(customer)/(tabs)')} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(customer)/(tabs)')} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Yeni randevu oluştur">
           <Ionicons name="add" size={22} color={COLORS.white} />
         </TouchableOpacity>
       </View>
@@ -116,8 +122,8 @@ export default function CustomerAppointmentsScreen() {
       </ScrollView>
 
       {isLoading ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={styles.list}>
+          <SkeletonList variant="row" count={5} />
         </View>
       ) : (
         <FlatList
@@ -219,7 +225,7 @@ export default function CustomerAppointmentsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   blobBlue: {

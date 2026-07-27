@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
+import { useToast } from './Toast';
 
 export interface ProfileEditValues {
   ad: string;
@@ -26,6 +27,7 @@ interface ProfileEditModalProps {
 export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onClose, onSave }: ProfileEditModalProps) {
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [values, setValues] = useState<ProfileEditValues>(initialValues);
   const [photoUri, setPhotoUri] = useState<string | null>(initialPhotoUri);
   const [saving, setSaving] = useState(false);
@@ -44,7 +46,7 @@ export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onCl
   async function pickPhoto() {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert('İzin gerekli', 'Fotoğraf seçmek için galeri erişimine izin vermelisiniz.');
+      toast.warning('Fotoğraf seçmek için galeri erişimine izin vermelisiniz.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -60,7 +62,7 @@ export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onCl
 
   async function handleSave() {
     if (!values.ad.trim() || !values.soyad.trim()) {
-      Alert.alert('Eksik bilgi', 'Ad ve soyad zorunludur.');
+      toast.warning('Ad ve soyad zorunludur.');
       return;
     }
     setSaving(true);
@@ -79,13 +81,13 @@ export function ProfileEditModal({ visible, initialValues, initialPhotoUri, onCl
           <View style={styles.handle} />
           <View style={styles.header}>
             <Text style={styles.title}>Profili Düzenle</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
 
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            <TouchableOpacity style={styles.avatarWrap} onPress={pickPhoto} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.avatarWrap} onPress={pickPhoto} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Fotoğrafı değiştir">
               <Avatar name={`${values.ad} ${values.soyad}`} url={photoUri} size={88} />
               <View style={styles.avatarEditBadge}>
                 <Ionicons name="camera" size={14} color={COLORS.white} />

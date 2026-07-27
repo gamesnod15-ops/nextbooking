@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Image,
 } from 'react-native';
@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { Avatar } from '@/components/ui/Avatar';
@@ -28,7 +29,7 @@ interface MenuItem {
   color?: string;
 }
 
-const MENU_SECTIONS: MenuSection[] = [
+const getMenuSections = (COLORS: Palette): MenuSection[] => [
   {
     title: 'Yönetim',
     items: [
@@ -93,6 +94,9 @@ const MENU_SECTIONS: MenuSection[] = [
 export default function MoreScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const MENU_SECTIONS = useMemo(() => getMenuSections(COLORS), [COLORS]);
   const dispatch = useAppDispatch();
   const auth = useAppSelector((s) => s.auth);
   const business = useAppSelector((s) => s.business.business);
@@ -125,6 +129,8 @@ export default function MoreScreen() {
               style={styles.editBtn}
               activeOpacity={0.8}
               onPress={() => router.push('/(pages)/settings' as any)}
+              accessibilityRole="button"
+              accessibilityLabel="Düzenle"
             >
               <Ionicons name="pencil-outline" size={16} color={COLORS.primary} />
             </TouchableOpacity>
@@ -168,7 +174,7 @@ export default function MoreScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
 
   profileHeader: {

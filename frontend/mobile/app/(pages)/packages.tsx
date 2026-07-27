@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Badge } from '@/components/ui/Badge';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 import { formatCurrency } from '@/lib/utils';
 import type { BusinessPackage } from '@/types';
 import api from '@/lib/api';
 
 export default function PackagesScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [search, setSearch] = useState('');
   const { data: items } = useQuery({
     queryKey: ['packages'],
@@ -31,30 +36,30 @@ export default function PackagesScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/packages', { name: form.name, description: form.description || undefined, price: Number(form.price), sessions: Number(form.sessions), services: form.services.split(',').map(s => s.trim()).filter(Boolean), isActive: form.isActive }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['packages'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Paket eklenemedi.'),
+    onError: () => toast.error('Paket eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/packages/${modal.item!.id}`, { name: form.name, description: form.description || undefined, price: Number(form.price), sessions: Number(form.sessions), services: form.services.split(',').map(s => s.trim()).filter(Boolean), isActive: form.isActive }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['packages'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Paket güncellenemedi.'),
+    onError: () => toast.error('Paket güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/packages/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['packages'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Paket silinemedi.'),
+    onError: () => toast.error('Paket silinemedi.'),
   });
 
   function openCreate() { setForm({ name: '', description: '', price: '', sessions: '', services: '', isActive: true }); setModal({ open: true, item: undefined }); }
   function openEdit(item: BusinessPackage) { setForm({ name: item.name, description: item.description ?? '', price: String(item.price), sessions: String(item.sessions), services: (item.services ?? []).join(', '), isActive: item.isActive }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.price || !form.sessions) { Alert.alert('Uyarı', 'Ad, fiyat ve seans sayısı zorunludur.'); return; }
+    if (!form.name || !form.price || !form.sessions) { toast.warning('Ad, fiyat ve seans sayısı zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Paketler" subtitle={`${list.length} paket`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <SearchBar value={search} onChangeText={setSearch} placeholder="Paket ara…" style={{ margin: SPACE[4] }} />
       <FlatList
@@ -106,7 +111,7 @@ export default function PackagesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   list: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[10] },

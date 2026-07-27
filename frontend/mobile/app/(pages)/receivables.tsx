@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -13,9 +14,13 @@ import { FormField } from '@/components/ui/FormField';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Receivable } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 export default function ReceivablesScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [filter, setFilter] = useState('Tümü');
   const { data } = useQuery<Receivable[]>({
     queryKey: ['receivables'],
@@ -37,30 +42,30 @@ export default function ReceivablesScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/receivables', { customerName: form.customerName, description: form.description, amount: Number(form.amount), dueDate: form.dueDate, status: form.status, notes: form.notes || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Alacak eklenemedi.'),
+    onError: () => toast.error('Alacak eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/receivables/${modal.item!.id}`, { customerName: form.customerName, description: form.description, amount: Number(form.amount), dueDate: form.dueDate, status: form.status, notes: form.notes || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Alacak güncellenemedi.'),
+    onError: () => toast.error('Alacak güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/receivables/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['receivables'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Alacak silinemedi.'),
+    onError: () => toast.error('Alacak silinemedi.'),
   });
 
   function openCreate() { setForm({ customerName: '', description: '', amount: '', dueDate: '', status: 'pending', notes: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Receivable) { setForm({ customerName: item.customerName, description: item.description ?? '', amount: String(item.amount), dueDate: item.dueDate, status: item.status, notes: item.notes ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.customerName || !form.amount || !form.dueDate) { Alert.alert('Uyarı', 'Müşteri adı, tutar ve vade tarihi zorunludur.'); return; }
+    if (!form.customerName || !form.amount || !form.dueDate) { toast.warning('Müşteri adı, tutar ve vade tarihi zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Alacaklar" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.summaryCard}>
         <Text style={styles.summaryLabel}>Toplam Alacak</Text>
@@ -133,7 +138,7 @@ export default function ReceivablesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   summaryCard: { backgroundColor: COLORS.primary, marginHorizontal: SPACE[5], marginTop: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], gap: SPACE[1] },

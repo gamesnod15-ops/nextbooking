@@ -26,7 +26,7 @@ export function FormModal({ visible, onClose, onSave, title, saving, deleteLabel
           <View style={styles.handle} />
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>

@@ -202,7 +202,7 @@ export default function DashboardScreen() {
         <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <View style={styles.heroBlobOne} />
           <View style={styles.heroBlobTwo} />
-          <TouchableOpacity style={styles.heroCalBtn} onPress={() => router.push('/(pages)/calendar' as any)} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.heroCalBtn} onPress={() => router.push('/(pages)/calendar' as any)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Takvim">
             <Ionicons name="calendar-outline" size={18} color={COLORS.white} />
           </TouchableOpacity>
           <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>
@@ -262,7 +262,7 @@ export default function DashboardScreen() {
             <Image source={PROMO_PHONE_IMG} style={styles.promoPhoneImg} resizeMode="contain" />
             <Image source={PROFILE_3D_IMG} style={styles.promoProfileBadge} resizeMode="contain" />
           </View>
-          <TouchableOpacity style={styles.promoFab} onPress={() => router.push('/(business)/appointments')} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.promoFab} onPress={() => router.push('/(business)/appointments')} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Yeni randevu oluştur">
             <Image source={PLUS_3D_IMG} style={styles.promoFabImg} resizeMode="contain" />
           </TouchableOpacity>
         </View>

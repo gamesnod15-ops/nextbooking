@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
   Image,
   FlatList,
   TextInput,
-  Alert,
   Linking,
   Dimensions,
 } from 'react-native';
@@ -17,11 +15,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
+import { useToast } from '@/components/ui/Toast';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -73,6 +74,7 @@ interface BusinessDetail {
 }
 
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
+  const COLORS = useColors();
   return (
     <View style={{ flexDirection: 'row', gap: 1 }}>
       {[1, 2, 3, 4, 5].map((s) => (
@@ -91,6 +93,9 @@ export default function BusinessDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
 
   const [biz, setBiz] = useState<BusinessDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -152,7 +157,7 @@ export default function BusinessDetailScreen() {
       }
     } catch {
       setFavoriteIds((prev) => (isFavorite ? [...prev, id] : prev.filter(x => x !== id)));
-      Alert.alert('Hata', 'Favori işlemi sırasında bir hata oluştu.');
+      toast.error('Favori işlemi sırasında bir hata oluştu.');
     }
   }
 
@@ -173,7 +178,7 @@ export default function BusinessDetailScreen() {
       setRating(0);
       setComment('');
     } catch {
-      Alert.alert('Hata', 'Değerlendirme gönderilirken bir hata oluştu.');
+      toast.error('Değerlendirme gönderilirken bir hata oluştu.');
     } finally {
       setSubmitting(false);
     }
@@ -182,8 +187,8 @@ export default function BusinessDetailScreen() {
   if (loading) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={{ padding: SPACE[5] }}>
+          <SkeletonList variant="card" count={1} />
         </View>
       </View>
     );
@@ -215,18 +220,24 @@ export default function BusinessDetailScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero}>
           <View style={[styles.heroNav, { paddingTop: insets.top + SPACE[3] }]}>
-            <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
               <Ionicons name="chevron-back" size={22} color={COLORS.white} />
             </TouchableOpacity>
             <View style={styles.heroActions}>
-              <TouchableOpacity style={styles.heroActionBtn} onPress={toggleFavorite} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={styles.heroActionBtn}
+                onPress={toggleFavorite}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={favoriteIds.includes(id!) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+              >
                 <Ionicons
                   name={favoriteIds.includes(id!) ? 'heart' : 'heart-outline'}
                   size={20}
                   color={favoriteIds.includes(id!) ? COLORS.error : COLORS.white}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.heroActionBtn} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.heroActionBtn} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Paylaş">
                 <Ionicons name="share-outline" size={20} color={COLORS.white} />
               </TouchableOpacity>
             </View>
@@ -409,7 +420,7 @@ export default function BusinessDetailScreen() {
             </View>
 
             {reviewsLoading ? (
-              <ActivityIndicator size="small" color={COLORS.primary} style={{ marginVertical: SPACE[4] }} />
+              <SkeletonList variant="row" count={3} />
             ) : reviews.length > 0 ? (
               reviews.map((r) => (
                 <View key={r.id} style={styles.reviewItem}>
@@ -433,11 +444,12 @@ export default function BusinessDetailScreen() {
                 placeholderTextColor={COLORS.textMuted}
                 value={authorName}
                 onChangeText={setAuthorName}
+                accessibilityLabel="Adınız"
               />
               <View style={styles.starInput}>
                 <Text style={styles.starInputLabel}>Puan: </Text>
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <TouchableOpacity key={s} onPress={() => setRating(s)} activeOpacity={0.7}>
+                  <TouchableOpacity key={s} onPress={() => setRating(s)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={`${s} yıldız`}>
                     <Ionicons
                       name={s <= rating ? 'star' : 'star-outline'}
                       size={28}
@@ -453,6 +465,7 @@ export default function BusinessDetailScreen() {
                 value={comment}
                 onChangeText={setComment}
                 multiline
+                accessibilityLabel="Yorumunuz"
               />
               <TouchableOpacity
                 style={[styles.submitBtn, (!authorName.trim() || rating === 0 || submitting) && styles.submitBtnDisabled]}
@@ -490,7 +503,7 @@ export default function BusinessDetailScreen() {
           activeOpacity={1}
           onPress={() => setSelectedImage(null)}
         >
-          <TouchableOpacity style={styles.lightboxClose} onPress={() => setSelectedImage(null)} activeOpacity={0.7}>
+          <TouchableOpacity style={styles.lightboxClose} onPress={() => setSelectedImage(null)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Kapat">
             <Ionicons name="close" size={28} color={COLORS.white} />
           </TouchableOpacity>
           <Image source={{ uri: biz.galleryImages[selectedImage] }} style={styles.lightboxImage} resizeMode="contain" />
@@ -499,13 +512,13 @@ export default function BusinessDetailScreen() {
           </View>
           <View style={styles.lightboxNav}>
             {selectedImage > 0 && (
-              <TouchableOpacity style={styles.lightboxNavBtn} onPress={() => setSelectedImage(selectedImage - 1)} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.lightboxNavBtn} onPress={() => setSelectedImage(selectedImage - 1)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Önceki fotoğraf">
                 <Ionicons name="chevron-back" size={28} color={COLORS.white} />
               </TouchableOpacity>
             )}
             <View style={{ flex: 1 }} />
             {selectedImage < biz.galleryImages.length - 1 && (
-              <TouchableOpacity style={styles.lightboxNavBtn} onPress={() => setSelectedImage(selectedImage + 1)} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.lightboxNavBtn} onPress={() => setSelectedImage(selectedImage + 1)} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Sonraki fotoğraf">
                 <Ionicons name="chevron-forward" size={28} color={COLORS.white} />
               </TouchableOpacity>
             )}
@@ -516,7 +529,7 @@ export default function BusinessDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACE[3] },
   emptyText: { fontSize: FONT.sm, color: COLORS.textMuted },

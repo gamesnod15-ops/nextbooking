@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import type { Coupon } from '@/types';
 import api from '@/lib/api';
 
 export default function GiftCouponsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data } = useQuery({
     queryKey: ['gift-coupons'],
     queryFn: async () => { const res = await api.get('/gift-coupons'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
@@ -28,30 +33,30 @@ export default function GiftCouponsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/coupons', { name: form.name, code: form.code || undefined, type: form.type, value: Number(form.value), minAmount: form.minAmount ? Number(form.minAmount) : undefined, startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, scope: form.scope }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['gift-coupons'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kupon eklenemedi.'),
+    onError: () => toast.error('Kupon eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/coupons/${modal.item!.id}`, { name: form.name, code: form.code || undefined, type: form.type, value: Number(form.value), minAmount: form.minAmount ? Number(form.minAmount) : undefined, startDate: form.startDate, endDate: form.endDate, usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined, scope: form.scope }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['gift-coupons'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kupon güncellenemedi.'),
+    onError: () => toast.error('Kupon güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/coupons/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['gift-coupons'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kupon silinemedi.'),
+    onError: () => toast.error('Kupon silinemedi.'),
   });
 
   function openCreate() { setForm({ name: '', code: '', type: 'percentage', value: '', minAmount: '', startDate: '', endDate: '', usageLimit: '', scope: 'all' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Coupon) { setForm({ name: item.name, code: item.code ?? '', type: item.type, value: String(item.value), minAmount: item.minAmount ? String(item.minAmount) : '', startDate: item.startDate, endDate: item.endDate, usageLimit: item.usageLimit ? String(item.usageLimit) : '', scope: item.scope }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.value || !form.startDate || !form.endDate) { Alert.alert('Uyarı', 'Ad, değer, başlangıç ve bitiş tarihi zorunludur.'); return; }
+    if (!form.name || !form.value || !form.startDate || !form.endDate) { toast.warning('Ad, değer, başlangıç ve bitiş tarihi zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Hediye Kuponları" subtitle={`${(list ?? []).filter(c => c.isActive).length} aktif`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <FlatList
         data={list}
@@ -116,7 +121,7 @@ export default function GiftCouponsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   list: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], paddingBottom: SPACE[10] },

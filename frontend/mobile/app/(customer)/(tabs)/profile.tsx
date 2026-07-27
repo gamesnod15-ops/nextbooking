@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from '@/components/ui/Avatar';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { ProfileEditModal, type ProfileEditValues } from '@/components/ui/ProfileEditModal';
+import { useToast } from '@/components/ui/Toast';
 import * as SecureStore from 'expo-secure-store';
 import { logout } from '@/store/slices/authSlice';
 import type { RootState } from '@/store';
@@ -42,6 +43,7 @@ export default function CustomerProfileScreen() {
   const router = useRouter();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const auth = useSelector((state: RootState) => state.auth);
   const accessToken = auth.accessToken;
   const [guestInfo, setGuestInfo] = useState<GuestInfo | null>(null);
@@ -134,7 +136,7 @@ export default function CustomerProfileScreen() {
       router.push('/(customer)/support' as any);
       return;
     }
-    Alert.alert('Yakında', 'Bu özellik yakında eklenecek.');
+    toast.info('Bu özellik yakında eklenecek.');
   }
 
   function handleSettingsPress() {
@@ -158,7 +160,7 @@ export default function CustomerProfileScreen() {
           <Text style={styles.headerTitle}>Profilim</Text>
           <View style={styles.headerUnderline} />
         </View>
-        <TouchableOpacity style={styles.settingsBtn} onPress={handleSettingsPress} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.settingsBtn} onPress={handleSettingsPress} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Ayarlar">
           <Ionicons name="settings-outline" size={20} color={COLORS.primaryDark} />
         </TouchableOpacity>
       </View>
@@ -167,7 +169,7 @@ export default function CustomerProfileScreen() {
         {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.profileCardBlob} />
-          <TouchableOpacity style={styles.avatarWrap} onPress={() => setEditVisible(true)} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.avatarWrap} onPress={() => setEditVisible(true)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Profil fotoğrafını değiştir">
             <Avatar name={displayName} url={photoUri} size={72} />
             <View style={styles.editBadge}>
               <Ionicons name="pencil" size={12} color={COLORS.primary} />

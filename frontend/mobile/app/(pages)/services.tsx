@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Modal, ScrollView, Switch, Alert,
+  View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Modal, ScrollView, Switch,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Badge } from '@/components/ui/Badge';
@@ -16,11 +17,15 @@ import type { Service } from '@/types';
 import api from '@/lib/api';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 
 const CATEGORIES = ['Tümü', 'Saç', 'Bakım', 'Tırnak', 'Yüz'];
 
 export default function ServicesScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data, refetch } = useQuery<Service[]>({
     queryKey: ['services'],
     queryFn: async () => { const res = await api.get('/services'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
@@ -36,25 +41,25 @@ export default function ServicesScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/services', { name: form.name, description: form.description, price: Number(form.price), durationMinutes: Number(form.durationMinutes) }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['services'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Servis eklenemedi.'),
+    onError: () => toast.error('Servis eklenemedi.'),
   });
 
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/services/${modal.item!.id}`, { name: form.name, description: form.description, price: Number(form.price), durationMinutes: Number(form.durationMinutes) }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['services'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Servis güncellenemedi.'),
+    onError: () => toast.error('Servis güncellenemedi.'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/services/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['services'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Servis silinemedi.'),
+    onError: () => toast.error('Servis silinemedi.'),
   });
 
   function openCreate() { setForm({ name: '', description: '', price: '', durationMinutes: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Service) { setForm({ name: item.name, description: item.description ?? '', price: String(item.price), durationMinutes: String(item.durationMinutes) }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.price) { Alert.alert('Uyarı', 'Ad ve fiyat zorunludur.'); return; }
+    if (!form.name || !form.price) { toast.warning('Ad ve fiyat zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
@@ -69,7 +74,7 @@ export default function ServicesScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Hizmetler" subtitle={`${(data ?? []).length} hizmet`} showBack
         right={
-          <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}>
+          <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle">
             <Ionicons name="add" size={22} color={COLORS.white} />
           </TouchableOpacity>
         }
@@ -135,7 +140,7 @@ export default function ServicesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },

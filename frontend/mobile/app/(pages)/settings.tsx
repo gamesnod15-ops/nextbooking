@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { clearBusiness } from '@/store/slices/businessSlice';
 import * as SecureStore from 'expo-secure-store';
+import { useToast } from '@/components/ui/Toast';
 
 const DAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 const INITIAL_HOURS = DAYS.map((day, i) => ({
@@ -22,6 +24,9 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const auth = useAppSelector((s) => s.auth);
   const business = useAppSelector((s) => s.business.business);
   const [tab, setTab] = useState('Genel');
@@ -78,7 +83,7 @@ export default function SettingsScreen() {
                 <Text style={styles.profileName}>{businessInfo.name}</Text>
                 <Text style={styles.profileEmail}>{businessInfo.email}</Text>
               </View>
-              <TouchableOpacity style={styles.editBtn} onPress={() => setEditMode(!editMode)}>
+              <TouchableOpacity style={styles.editBtn} onPress={() => setEditMode(!editMode)} accessibilityRole="button" accessibilityLabel={editMode ? 'Kapat' : 'Düzenle'}>
                 <Ionicons name={editMode ? 'close' : 'pencil'} size={16} color={COLORS.textMuted} />
               </TouchableOpacity>
             </View>
@@ -104,7 +109,7 @@ export default function SettingsScreen() {
                     />
                   </View>
                 ))}
-                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setEditMode(false); Alert.alert('Başarılı', 'İşletme bilgileri kaydedildi.'); }}>
+                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setEditMode(false); toast.success('İşletme bilgileri kaydedildi.'); }}>
                   <Text style={styles.saveBtnText}>Kaydet</Text>
                 </TouchableOpacity>
               </>
@@ -176,10 +181,10 @@ export default function SettingsScreen() {
                   <TextInput style={styles.editInput} value={passwordForm.confirm} onChangeText={v => setPasswordForm(p => ({...p, confirm: v}))} placeholder="••••••••" secureTextEntry placeholderTextColor={COLORS.textMuted} />
                 </View>
                 <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => {
-                  if (!passwordForm.current || !passwordForm.newPass) { Alert.alert('Uyarı', 'Tüm alanları doldurun.'); return; }
-                  if (passwordForm.newPass !== passwordForm.confirm) { Alert.alert('Uyarı', 'Yeni şifreler eşleşmiyor.'); return; }
+                  if (!passwordForm.current || !passwordForm.newPass) { toast.warning('Tüm alanları doldurun.'); return; }
+                  if (passwordForm.newPass !== passwordForm.confirm) { toast.warning('Yeni şifreler eşleşmiyor.'); return; }
                   setSavingPass(true);
-                  setTimeout(() => { setSavingPass(false); setSecurityItem(null); setPasswordForm({current:'',newPass:'',confirm:''}); Alert.alert('Başarılı', 'Şifre değiştirildi.'); }, 1000);
+                  setTimeout(() => { setSavingPass(false); setSecurityItem(null); setPasswordForm({current:'',newPass:'',confirm:''}); toast.success('Şifre değiştirildi.'); }, 1000);
                 }}>
                   {savingPass ? <ActivityIndicator size="small" color={COLORS.white} /> : <Text style={styles.saveBtnText}>Şifreyi Değiştir</Text>}
                 </TouchableOpacity>
@@ -203,7 +208,7 @@ export default function SettingsScreen() {
                     <TextInput style={styles.editInput} value={twoFA.phone} onChangeText={v => setTwoFA(p => ({...p, phone: v}))} placeholder="05XX XXX XX XX" keyboardType="phone-pad" placeholderTextColor={COLORS.textMuted} />
                   </View>
                 )}
-                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setSecurityItem(null); Alert.alert('Başarılı', '2FA ayarları kaydedildi.'); }}>
+                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setSecurityItem(null); toast.success('2FA ayarları kaydedildi.'); }}>
                   <Text style={styles.saveBtnText}>Kaydet</Text>
                 </TouchableOpacity>
               </View>
@@ -221,7 +226,7 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },

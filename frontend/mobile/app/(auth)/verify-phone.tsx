@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,19 +8,23 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
+import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 
 export default function VerifyPhoneScreen() {
   const router = useRouter();
   const { phone, role } = useLocalSearchParams<{ phone: string; role: string }>();
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -46,7 +50,7 @@ export default function VerifyPhoneScreen() {
       await api.post('/auth/send-phone-otp', { phone });
       setTimer(60);
     } catch (err: any) {
-      Alert.alert('Hata', 'OTP gönderilemedi. Lütfen tekrar deneyin.');
+      toast.error('OTP gönderilemedi. Lütfen tekrar deneyin.');
     } finally {
       setSending(false);
     }
@@ -76,12 +80,11 @@ export default function VerifyPhoneScreen() {
     setLoading(true);
     try {
       await api.post('/auth/verify-phone-otp', { phone, otp: code });
-      Alert.alert('Başarılı', 'Telefon numaranız doğrulandı.', [
-        { text: 'Giriş Yap', onPress: () => router.replace(`/(auth)/login?role=${role || 'customer'}`) },
-      ]);
+      toast.success('Telefon numaranız doğrulandı.');
+      router.replace(`/(auth)/login?role=${role || 'customer'}`);
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Doğrulama başarısız.';
-      Alert.alert('Hata', msg);
+      toast.error(msg);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } finally {
@@ -125,6 +128,7 @@ export default function VerifyPhoneScreen() {
                 keyboardType="number-pad"
                 maxLength={1}
                 selectTextOnFocus
+                accessibilityLabel={`Doğrulama kodu ${i + 1}. hane`}
               />
             ))}
           </View>
@@ -162,7 +166,7 @@ export default function VerifyPhoneScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1 },
   blob: {
     position: 'absolute',

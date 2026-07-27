@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -28,6 +29,8 @@ export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   const { data: items = [], refetch, isRefetching, isLoading } = useQuery({
     queryKey: ['favorites'],
@@ -117,6 +120,8 @@ export default function FavoritesScreen() {
               style={styles.heartBtn}
               onPress={() => removeMutation.mutate(item.businessId)}
               disabled={removeMutation.isPending}
+              accessibilityRole="button"
+              accessibilityLabel="Favorilerden çıkar"
             >
               <Ionicons name="heart" size={20} color={COLORS.error} />
             </TouchableOpacity>
@@ -127,7 +132,7 @@ export default function FavoritesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   blobBlue: {
     position: 'absolute',

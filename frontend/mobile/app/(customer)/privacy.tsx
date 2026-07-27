@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { DotGrid } from '@/components/ui/DotGrid';
 
 const SECTIONS: { title: string; body: string[] }[] = [
@@ -58,6 +59,8 @@ const SECTIONS: { title: string; body: string[] }[] = [
 export default function PrivacyScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -65,7 +68,7 @@ export default function PrivacyScreen() {
       <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Geri">
           <Ionicons name="chevron-back" size={20} color={COLORS.text} />
         </TouchableOpacity>
         <View>
@@ -91,7 +94,7 @@ export default function PrivacyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   blobBlue: {
     position: 'absolute',

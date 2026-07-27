@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 import { formatCurrency } from '@/lib/utils';
 import type { Commission } from '@/types';
 import api from '@/lib/api';
 
 export default function CommissionsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data } = useQuery({
     queryKey: ['commissions'],
     queryFn: async () => { const res = await api.get('/commissions'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
@@ -29,30 +34,30 @@ export default function CommissionsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/commissions', { employeeName: form.employeeName, period: form.period, amount: Number(form.amount), status: form.status, description: form.description || undefined, notes: form.notes || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['commissions'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Komisyon eklenemedi.'),
+    onError: () => toast.error('Komisyon eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/commissions/${modal.item!.id}`, { employeeName: form.employeeName, period: form.period, amount: Number(form.amount), status: form.status, description: form.description || undefined, notes: form.notes || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['commissions'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Komisyon güncellenemedi.'),
+    onError: () => toast.error('Komisyon güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/commissions/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['commissions'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Komisyon silinemedi.'),
+    onError: () => toast.error('Komisyon silinemedi.'),
   });
 
   function openCreate() { setForm({ employeeName: '', period: '', amount: '', status: 'pending', description: '', notes: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Commission) { setForm({ employeeName: item.employeeName, period: item.period, amount: String(item.amount), status: item.status, description: item.description ?? '', notes: item.notes ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.employeeName || !form.period || !form.amount) { Alert.alert('Uyarı', 'Çalışan adı, dönem ve tutar zorunludur.'); return; }
+    if (!form.employeeName || !form.period || !form.amount) { toast.warning('Çalışan adı, dönem ve tutar zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Komisyonlar" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.banner}>
         <Text style={styles.bannerLabel}>Bekleyen Ödemeler</Text>
@@ -105,7 +110,7 @@ export default function CommissionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   banner: { backgroundColor: COLORS.surface, margin: SPACE[5], borderRadius: RADIUS.xl, padding: SPACE[5], gap: SPACE[1], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },

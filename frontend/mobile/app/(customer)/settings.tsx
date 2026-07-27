@@ -75,7 +75,7 @@ export default function SettingsScreen() {
             setClearing(true);
             try {
               await Promise.all(DEVICE_KEYS_TO_CLEAR.map((k) => SecureStore.deleteItemAsync(k)));
-              Alert.alert('Tamamlandı', 'Verileriniz sıfırlandı.');
+              toast.success('Verileriniz sıfırlandı.');
             } finally {
               setClearing(false);
             }
@@ -93,7 +93,7 @@ export default function SettingsScreen() {
       <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Geri">
           <Ionicons name="chevron-back" size={20} color={COLORS.text} />
         </TouchableOpacity>
         <View>

@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
@@ -14,11 +15,15 @@ import api from '@/lib/api';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/components/ui/Toast';
 
 const STATUS_FILTERS = ['Tümü', 'Bekliyor', 'Bildirim Gitti', 'Onaylandı'];
 
 export default function WaitingListScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [filter, setFilter] = useState('Tümü');
   const { data: list = [] } = useQuery<WaitingListEntry[]>({
     queryKey: ['waiting-list'],
@@ -31,11 +36,11 @@ export default function WaitingListScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/waiting-list', { customerName: form.customerName, customerPhone: form.customerPhone, serviceName: form.serviceName || undefined, notes: form.notes || undefined, status: 'waiting' }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['waiting-list'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Kişi eklenemedi.'),
+    onError: () => toast.error('Kişi eklenemedi.'),
   });
 
   function handleSave() {
-    if (!form.customerName) { Alert.alert('Uyarı', 'Müşteri adı zorunludur.'); return; }
+    if (!form.customerName) { toast.warning('Müşteri adı zorunludur.'); return; }
     createMutation.mutate();
   }
 
@@ -50,7 +55,7 @@ export default function WaitingListScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Bekleme Listesi" subtitle={`${list.length} kişi`} showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',customerPhone:'',serviceName:'',notes:''}); setModal({open:true}); }}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',customerPhone:'',serviceName:'',notes:''}); setModal({open:true}); }} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {STATUS_FILTERS.map((f) => (
@@ -107,7 +112,7 @@ export default function WaitingListScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center' },

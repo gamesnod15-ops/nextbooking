@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -17,9 +16,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
 import { useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
+import { useToast } from '@/components/ui/Toast';
+import { SkeletonList } from '@/components/ui/Skeleton';
 
 const GUEST_INFO_KEY = 'guest_customer_info';
 
@@ -51,6 +53,9 @@ export default function BookingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
 
   const [step, setStep] = useState(1);
   const [services, setServices] = useState<ServiceDto[]>([]);
@@ -98,7 +103,7 @@ export default function BookingScreen() {
         setBusinessName(res.data.name);
         setServices(res.data.services || []);
       })
-      .catch(() => Alert.alert('Hata', 'İşletme bilgileri yüklenemedi.'))
+      .catch(() => toast.error('İşletme bilgileri yüklenemedi.'))
       .finally(() => setLoadingServices(false));
   }, [businessId]);
 
@@ -243,8 +248,8 @@ export default function BookingScreen() {
   if (loadingServices) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={{ padding: SPACE[5] }}>
+          <SkeletonList variant="row" count={4} />
         </View>
       </View>
     );
@@ -289,7 +294,7 @@ export default function BookingScreen() {
       <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
 
       <View style={[styles.header, { paddingTop: insets.top + SPACE[3] }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => step > 1 ? setStep(step - 1) : router.back()} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => step > 1 ? setStep(step - 1) : router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
           <Ionicons name="chevron-back" size={22} color={COLORS.white} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -366,11 +371,11 @@ export default function BookingScreen() {
             </View>
 
             <View style={styles.calendarNav}>
-              <TouchableOpacity onPress={prevMonth} disabled={!canMonthGoBack()} activeOpacity={0.7} style={[styles.calNavBtn, !canMonthGoBack() && { opacity: 0.3 }]}>
+              <TouchableOpacity onPress={prevMonth} disabled={!canMonthGoBack()} activeOpacity={0.7} style={[styles.calNavBtn, !canMonthGoBack() && { opacity: 0.3 }]} accessibilityRole="button" accessibilityLabel="Önceki ay">
                 <Ionicons name="chevron-back" size={18} color={COLORS.white} />
               </TouchableOpacity>
               <Text style={styles.calMonth}>{MONTHS[calendarMonth]} {calendarYear}</Text>
-              <TouchableOpacity onPress={nextMonth} activeOpacity={0.7} style={styles.calNavBtn}>
+              <TouchableOpacity onPress={nextMonth} activeOpacity={0.7} style={styles.calNavBtn} accessibilityRole="button" accessibilityLabel="Sonraki ay">
                 <Ionicons name="chevron-forward" size={18} color={COLORS.white} />
               </TouchableOpacity>
             </View>
@@ -614,7 +619,7 @@ export default function BookingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   header: {

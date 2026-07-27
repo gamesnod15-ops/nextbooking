@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -11,9 +12,13 @@ import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
 import api from '@/lib/api';
 import type { Branch } from '@/types';
+import { useToast } from '@/components/ui/Toast';
 
 export default function BranchesScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data } = useQuery({
     queryKey: ['branches'],
     queryFn: async () => { const res = await api.get('/branches'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
@@ -26,32 +31,32 @@ export default function BranchesScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/branches', { name: form.name, address: form.address, phone: form.phone || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['branches'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Şube eklenemedi.'),
+    onError: () => toast.error('Şube eklenemedi.'),
   });
 
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/branches/${modal.item!.id}`, { name: form.name, address: form.address, phone: form.phone || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['branches'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Şube güncellenemedi.'),
+    onError: () => toast.error('Şube güncellenemedi.'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/branches/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['branches'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Şube silinemedi.'),
+    onError: () => toast.error('Şube silinemedi.'),
   });
 
   function openCreate() { setForm({ name: '', address: '', phone: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Branch) { setForm({ name: item.name, address: item.address, phone: item.phone ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.name || !form.address) { Alert.alert('Uyarı', 'Ad ve adres zorunludur.'); return; }
+    if (!form.name || !form.address) { toast.warning('Ad ve adres zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Şubeler" subtitle={`${(data ?? []).length} şube`} showBack
-        right={<TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <FlatList
         data={data ?? []}
@@ -109,7 +114,7 @@ export default function BranchesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   list: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], paddingBottom: SPACE[10] },

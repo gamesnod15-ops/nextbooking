@@ -3,15 +3,19 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshContr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatDate } from '@/lib/utils';
 import type { Survey } from '@/types';
 import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 function Stars({ rating }: { rating: number }) {
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   return (
     <View style={styles.starsRow}>
       {[1, 2, 3, 4, 5].map((n) => (
@@ -28,6 +32,9 @@ function Stars({ rating }: { rating: number }) {
 
 export default function SurveysScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data: list = [], refetch, isRefetching } = useQuery<Survey[]>({
     queryKey: ['surveys'],
     queryFn: async () => { const res = await api.get('/surveys'); return Array.isArray(res.data) ? res.data : []; },
@@ -39,13 +46,13 @@ export default function SurveysScreen() {
     mutationFn: async ({ id, isApproved }: { id: string; isApproved: boolean }) =>
       api.patch(`/surveys/${id}/approval`, { isApproved }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['surveys'] }),
-    onError: () => Alert.alert('Hata', 'Durum güncellenemedi.'),
+    onError: () => toast.error('Durum güncellenemedi.'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => api.delete(`/surveys/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['surveys'] }),
-    onError: () => Alert.alert('Hata', 'Silinemedi.'),
+    onError: () => toast.error('Silinemedi.'),
   });
 
   const avgRating = useMemo(() => {
@@ -114,7 +121,7 @@ export default function SurveysScreen() {
                 />
                 <Text style={styles.actionText}>{item.isApproved ? 'Gizle' : 'Yayınla'}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.deleteBtn} onPress={() => confirmDelete(item.id)}>
+              <TouchableOpacity style={styles.deleteBtn} onPress={() => confirmDelete(item.id)} accessibilityRole="button" accessibilityLabel="Sil">
                 <Ionicons name="trash-outline" size={14} color={COLORS.error} />
               </TouchableOpacity>
             </View>
@@ -125,7 +132,7 @@ export default function SurveysScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   list: { paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], paddingBottom: SPACE[10] },
   card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], gap: SPACE[3], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },

@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { useToast } from '@/components/ui/Toast';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Debt } from '@/types';
 import api from '@/lib/api';
 
 export default function DebtsScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const { data } = useQuery({
     queryKey: ['debts'],
     queryFn: async () => { const res = await api.get('/debts'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
@@ -30,30 +35,30 @@ export default function DebtsScreen() {
   const createMutation = useMutation({
     mutationFn: async () => api.post('/debts', { customerName: form.customerName, description: form.description, amount: Number(form.amount), dueDate: form.dueDate, status: form.status, notes: form.notes || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['debts'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Borç eklenemedi.'),
+    onError: () => toast.error('Borç eklenemedi.'),
   });
   const updateMutation = useMutation({
     mutationFn: async () => api.put(`/debts/${modal.item!.id}`, { customerName: form.customerName, description: form.description, amount: Number(form.amount), dueDate: form.dueDate, status: form.status, notes: form.notes || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['debts'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Borç güncellenemedi.'),
+    onError: () => toast.error('Borç güncellenemedi.'),
   });
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/debts/${modal.item!.id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['debts'] }); setModal({ open: false }); },
-    onError: () => Alert.alert('Hata', 'Borç silinemedi.'),
+    onError: () => toast.error('Borç silinemedi.'),
   });
 
   function openCreate() { setForm({ customerName: '', description: '', amount: '', dueDate: '', status: 'pending', notes: '' }); setModal({ open: true, item: undefined }); }
   function openEdit(item: Debt) { setForm({ customerName: item.customerName ?? '', description: item.description ?? '', amount: String(item.amount), dueDate: item.dueDate ?? '', status: item.status, notes: item.notes ?? '' }); setModal({ open: true, item }); }
   function handleSave() {
-    if (!form.customerName || !form.amount || !form.dueDate) { Alert.alert('Uyarı', 'Müşteri adı, tutar ve vade tarihi zorunludur.'); return; }
+    if (!form.customerName || !form.amount || !form.dueDate) { toast.warning('Müşteri adı, tutar ve vade tarihi zorunludur.'); return; }
     if (modal.item) updateMutation.mutate(); else createMutation.mutate();
   }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Borçlar" showBack
-        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate}><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
+        right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={COLORS.white} /></TouchableOpacity>}
       />
       <View style={styles.banner}>
         <Ionicons name="trending-down" size={24} color={COLORS.error} />
@@ -121,7 +126,7 @@ export default function DebtsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   addBtn: { width: 36, height: 36, borderRadius: RADIUS.full, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', ...SHADOW.primary },
   banner: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.errorLight, marginHorizontal: SPACE[5], marginTop: SPACE[4], marginBottom: SPACE[2], borderRadius: RADIUS.xl, padding: SPACE[4], borderWidth: 1, borderColor: COLORS.error + '30' },

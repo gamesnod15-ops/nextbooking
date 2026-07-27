@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import { COLORS, FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
+import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -11,6 +12,8 @@ import api from '@/lib/api';
 
 export default function WhatsappBotScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
+  const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const { data: settingsData = [] } = useQuery({
     queryKey: ['whatsapp-bot-settings'],
     queryFn: async () => { const res = await api.get('/whatsapp-bot/settings'); return Array.isArray(res.data) ? res.data : []; },
@@ -69,6 +72,7 @@ export default function WhatsappBotScreen() {
               numberOfLines={4}
               defaultValue="Merhaba! Şu anda çalışma saatleri dışındayız. Çalışma saatlerimiz: Pzt-Cts 09:00-20:00. En kısa sürede size dönüş yapacağız."
               placeholderTextColor={COLORS.textMuted}
+              accessibilityLabel="Mesai dışı mesajı"
             />
           </View>
         </ScrollView>
@@ -87,7 +91,7 @@ export default function WhatsappBotScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   statusBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginTop: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   statusLeft: { flexDirection: 'row', alignItems: 'center', gap: SPACE[3] },
