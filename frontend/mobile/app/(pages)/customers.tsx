@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  RefreshControl, Modal, ScrollView,
+  RefreshControl, Modal, ScrollView, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -74,10 +74,18 @@ export default function CustomersScreen() {
 
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/customers/${modal.item!.id}`),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); setModal({ open: false }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); setModal({ open: false }); toast.success('Müşteri silindi.'); },
     onError: (err: any) => {
-      const message = err?.response?.data?.message;
-      toast.error(message || 'Müşteri silinemedi.');
+      const status = err?.response?.status;
+      const message = err?.response?.data?.message || err?.message || 'Bilinmeyen hata';
+      const traceId = err?.response?.data?.traceId;
+      const detail = [
+        `HTTP ${status ?? '?'}`,
+        message,
+        traceId ? `Trace: ${traceId}` : '',
+      ].filter(Boolean).join('\n');
+      Alert.alert('Müşteri Silinemedi', detail);
+      toast.error(message);
     },
   });
 
@@ -154,7 +162,7 @@ export default function CustomersScreen() {
         onClose={() => setModal({ open: false })}
         onSave={handleSave}
         title={modal.item ? 'Müşteri Düzenle' : 'Yeni Müşteri'}
-        saving={createMutation.isPending || updateMutation.isPending}
+        saving={createMutation.isPending || updateMutation.isPending || deleteMutation.isPending}
         deleteLabel={modal.item ? 'Sil' : undefined}
         onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >

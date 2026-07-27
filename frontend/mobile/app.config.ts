@@ -69,6 +69,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     'expo-font',
     'expo-secure-store',
+    'expo-image',
+    'expo-splash-screen',
+    'expo-web-browser',
     '@react-native-community/datetimepicker',
     [
       'expo-location',
@@ -97,7 +100,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     url: 'https://u.expo.dev/a85921df-08a8-4f7a-aceb-b806e3a100b8',
     fallbackToCacheTimeout: 0,
-    checkAutomatically: 'ON_LOAD',
+    checkAutomatically: 'NEVER',
   },
   runtimeVersion: {
     policy: 'appVersion',

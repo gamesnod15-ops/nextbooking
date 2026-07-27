@@ -22,20 +22,38 @@ public sealed class DeleteCustomerCommandHandler : IRequestHandler<DeleteCustome
     {
         var customer = await _context.Customers
             .FirstOrDefaultAsync(c => c.Id == request.Id && c.TenantId == _tenantService.TenantId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Customer {request.Id} not found.");
+            ?? throw new NotFoundException($"Customer {request.Id} not found.");
 
-        // Appointments.CustomerId has DeleteBehavior.Restrict, so deleting a customer
-        // with appointment history throws an unhandled DbUpdateException that the
-        // global middleware turns into a generic 500 ("An unexpected error occurred.").
-        // Check up front and surface a clear, actionable message instead.
-        var hasAppointments = await _context.Appointments
-            .AnyAsync(a => a.CustomerId == customer.Id, cancellationToken);
+        var appointmentIds = await _context.Appointments
+            .Where(a => a.CustomerId == customer.Id)
+            .Select(a => a.Id)
+            .ToListAsync(cancellationToken);
 
-        if (hasAppointments)
+        if (appointmentIds.Count > 0)
         {
-            throw new ConflictException(
-                "Bu müşterinin randevu geçmişi bulunduğu için silinemez. Müşteriyi engelleyebilirsiniz.");
+            var noShowPredictions = await _context.NoShowPredictions
+                .Where(p => appointmentIds.Contains(p.AppointmentId))
+                .ToListAsync(cancellationToken);
+            if (noShowPredictions.Count > 0)
+                _context.NoShowPredictions.RemoveRange(noShowPredictions);
+
+            var deposits = await _context.Deposits
+                .Where(d => appointmentIds.Contains(d.AppointmentId))
+                .ToListAsync(cancellationToken);
+            if (deposits.Count > 0)
+                _context.Deposits.RemoveRange(deposits);
+
+            var appointments = await _context.Appointments
+                .Where(a => a.CustomerId == customer.Id)
+                .ToListAsync(cancellationToken);
+            _context.Appointments.RemoveRange(appointments);
         }
+
+        var recommendations = await _context.CustomerRecommendations
+            .Where(r => r.CustomerId == customer.Id)
+            .ToListAsync(cancellationToken);
+        if (recommendations.Count > 0)
+            _context.CustomerRecommendations.RemoveRange(recommendations);
 
         _context.Customers.Remove(customer);
         await _context.SaveChangesAsync(cancellationToken);

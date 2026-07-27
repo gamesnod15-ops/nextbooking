@@ -199,22 +199,21 @@ export default function DashboardScreen() {
         </View>
 
         {/* Hero: today's appointments */}
-        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <View style={styles.heroBlobOne} />
-          <View style={styles.heroBlobTwo} />
-          <TouchableOpacity style={styles.heroCalBtn} onPress={() => router.push('/(pages)/calendar' as any)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Takvim">
-            <Ionicons name="calendar-outline" size={18} color={STATIC_WHITE} />
-          </TouchableOpacity>
-          <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>
-          <Text style={styles.heroValue}>{isLoading ? '…' : stats.todayAppointments}</Text>
-          <View style={[styles.trendPill, { backgroundColor: trend >= 0 ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)' }]}>
-            <Ionicons name={trend >= 0 ? 'arrow-up' : 'arrow-down'} size={12} color={trend >= 0 ? '#86EFAC' : '#FCA5A5'} />
-            <Text style={[styles.trendPillText, { color: trend >= 0 ? '#86EFAC' : '#FCA5A5' }]}>{Math.abs(trend)}% bu ay</Text>
-          </View>
-          <View style={styles.heroIllustration}>
-            <Image source={HERO_CALENDAR_IMG} style={styles.heroCalendarImg} resizeMode="contain" />
-          </View>
-        </LinearGradient>
+        <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/(business)/appointments')}>
+          <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <View style={styles.heroBlobOne} />
+            <View style={styles.heroBlobTwo} />
+            <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>
+            <Text style={styles.heroValue}>{isLoading ? '…' : stats.todayAppointments}</Text>
+            <View style={[styles.trendPill, { backgroundColor: trend >= 0 ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)' }]}>
+              <Ionicons name={trend >= 0 ? 'arrow-up' : 'arrow-down'} size={12} color={trend >= 0 ? '#86EFAC' : '#FCA5A5'} />
+              <Text style={[styles.trendPillText, { color: trend >= 0 ? '#86EFAC' : '#FCA5A5' }]}>{Math.abs(trend)}% bu ay</Text>
+            </View>
+            <View style={styles.heroIllustration}>
+              <Image source={HERO_CALENDAR_IMG} style={styles.heroCalendarImg} resizeMode="contain" />
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
 
         {/* 3-up stat row */}
         <View style={styles.statRow}>
@@ -226,14 +225,14 @@ export default function DashboardScreen() {
             <Text style={styles.statLabel}>Randevu</Text>
             <Text style={styles.statLabelBold}>Bekleyen</Text>
           </View>
-          <View style={styles.statCard}>
+          <TouchableOpacity style={styles.statCard} activeOpacity={0.7} onPress={() => router.push('/(business)/customers')}>
             <View style={[styles.statIconWrap, { backgroundColor: '#DCFCE7' }]}>
               <Ionicons name="people-outline" size={20} color="#16A34A" />
             </View>
             <Text style={styles.statValue}>{isLoading ? '…' : stats.totalCustomers}</Text>
             <Text style={styles.statLabel}>Toplam</Text>
             <Text style={styles.statLabelBold}>Müşteriler</Text>
-          </View>
+          </TouchableOpacity>
           <View style={styles.statCard}>
             <View style={[styles.statIconWrap, { backgroundColor: '#F3E8FF' }]}>
               <Ionicons name="trending-up-outline" size={20} color="#9333EA" />
@@ -468,11 +467,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   heroBlobTwo: {
     position: 'absolute', bottom: -60, left: -20, width: 140, height: 140, borderRadius: 70,
     backgroundColor: 'rgba(255,255,255,0.03)',
-  },
-  heroCalBtn: {
-    position: 'absolute', top: SPACE[4], right: SPACE[4],
-    width: 36, height: 36, borderRadius: RADIUS.md,
-    backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center',
   },
   heroLabel: { fontSize: 11, fontWeight: FONT.bold, color: 'rgba(255,255,255,0.55)', letterSpacing: 0.8 },
   heroValue: { fontSize: 48, fontWeight: FONT.extrabold, color: STATIC_WHITE, marginTop: 4 },

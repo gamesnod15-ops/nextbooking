@@ -5,12 +5,15 @@ import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
+import { useQuery } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout as logoutAction } from '@/store/slices/authSlice';
 import { clearBusiness } from '@/store/slices/businessSlice';
 import { Avatar } from '@/components/ui/Avatar';
+import api from '@/lib/api';
+import type { NotificationItem } from '@/types';
 
 const LOGO = require('../../assets/images/logo-jetrandevu.png');
 
@@ -270,7 +273,7 @@ function DrawerContent({ anim, isOpen, onClose }: { anim: Animated.Value; isOpen
   );
 }
 
-export function MenuButton({ showBadge = true }: { showBadge?: boolean }) {
+export function MenuButton({ showBadge = false }: { showBadge?: boolean }) {
   const { openDrawer } = useDrawer();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
@@ -282,14 +285,28 @@ export function MenuButton({ showBadge = true }: { showBadge?: boolean }) {
   );
 }
 
+const READ_IDS_KEY = 'business_notifications_read_ids';
+
 export function NotifButton() {
   const router = useRouter();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const { data } = useQuery<NotificationItem[]>({
+    queryKey: ['notifications'],
+    queryFn: async () => {
+      const r = await api.get('/notifications');
+      return Array.isArray(r.data) ? r.data : r.data?.items ?? [];
+    },
+    staleTime: 1000 * 60,
+  });
+  const unreadCount = useMemo(() => {
+    if (!data || data.length === 0) return 0;
+    return data.filter((n) => !n.isRead).length;
+  }, [data]);
   return (
     <TouchableOpacity style={styles.menuBtn} activeOpacity={0.7} onPress={() => router.push('/notifications' as any)} accessibilityRole="button" accessibilityLabel="Bildirimler">
       <Ionicons name="notifications-outline" size={24} color={COLORS.text} />
-      <View style={styles.notifDot} />
+      {unreadCount > 0 && <View style={styles.notifDot} />}
     </TouchableOpacity>
   );
 }
