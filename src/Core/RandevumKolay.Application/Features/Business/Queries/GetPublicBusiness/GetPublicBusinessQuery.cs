@@ -99,9 +99,13 @@ public sealed class GetPublicBusinessQueryHandler
             business.Longitude,
             workingHoursJson,
             business.GalleryImages ?? new(),
-            business.Services.Select(s => new PublicServiceDto(
-                s.Id, s.Name, s.Description, s.DurationMinutes, s.Price, s.ImageUrl)).ToList(),
-            business.Employees.Select(e => new PublicEmployeeDto(
-                e.Id, e.Name, e.Title, e.AvatarUrl)).ToList());
+            business.Services
+                .Where(s => s.IsActive && !s.IsDeleted)
+                .Select(s => new PublicServiceDto(
+                    s.Id, s.Name, s.Description, s.DurationMinutes, s.Price, s.ImageUrl)).ToList(),
+            business.Employees
+                .Where(e => e.IsActive && !e.IsDeleted)
+                .Select(e => new PublicEmployeeDto(
+                    e.Id, e.Name, e.Title, e.AvatarUrl)).ToList());
     }
 }
