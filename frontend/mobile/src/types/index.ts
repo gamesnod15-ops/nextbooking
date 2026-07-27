@@ -332,50 +332,67 @@ export interface Receivable {
   createdAt: string;
 }
 
+export type CommissionType = 'service' | 'sales' | 'mixed';
+export type CommissionStatus = 'pending' | 'approved' | 'paid';
+
 export interface Commission {
   id: string;
-  employeeId?: string;
+  employeeId: string;
   employeeName: string;
   period: string;
-  amount: number;
-  status: 'pending' | 'paid';
-  description?: string;
+  type: CommissionType;
+  baseAmount: number;
+  commissionRate: number;
+  commissionAmount: number;
+  bonusAmount: number;
+  totalAmount: number;
+  status: CommissionStatus;
   notes?: string;
-  createdAt?: string;
+  createdAt: string;
 }
+
+export type DebtCategory = 'supplier' | 'rent' | 'equipment' | 'loan' | 'tax' | 'other';
 
 export interface Debt {
   id: string;
-  customerId?: string;
-  customerName?: string;
-  creditorName?: string;
-  description: string;
-  amount: number;
-  remainingAmount?: number;
+  title: string;
+  creditorName?: string | null;
+  description?: string | null;
+  totalAmount: number;
+  paidAmount: number;
+  remainingAmount: number;
   dueDate: string;
-  status: 'pending' | 'paid' | 'overdue';
-  notes?: string;
+  category: DebtCategory;
+  status: 'open' | 'partiallyPaid' | 'paid' | 'overdue';
   createdAt?: string;
 }
 
+/** Ad-boost purchase package. Matches `AdPackageType` in Domain/Entities/Advertisement.cs. */
+export type AdPackageType = 'BasicBoost' | 'ProfessionalBoost' | 'PremiumSpotlight';
+
+/** Business category the ad targets. Matches `AdTargetCategory`. */
+export type AdTargetCategory = 'All' | 'Hair' | 'Beauty' | 'Wellness' | 'Fitness' | 'Healthcare' | 'Nail' | 'Massage' | 'Other';
+
+/** Matches `AdStatus`. Only the backend/system transitions into Pending/Expired/Rejected — the
+ *  business can only toggle Active <-> Paused via PATCH /advertisements/{id}/status. */
+export type AdStatus = 'Active' | 'Pending' | 'Expired' | 'Rejected' | 'Paused';
+
+/** Ad-boost purchase. There is no edit endpoint — only create, list, status-patch and delete. */
 export interface Advertisement {
   id: string;
   title: string;
   description?: string;
-  type?: 'banner' | 'popup' | 'video';
-  targetUrl?: string;
-  imageUrl?: string;
+  packageType: AdPackageType;
+  targetCategory: AdTargetCategory;
+  targetLocation?: string;
+  budget: number;
   startDate: string;
   endDate: string;
-  isActive?: boolean;
-  clicks?: number;
-  views?: number;
-  position?: string;
-  platform?: 'google' | 'facebook' | 'instagram' | 'internal';
-  status?: 'active' | 'paused' | 'ended' | 'pending';
-  budget?: number;
-  spent?: number;
-  impressions?: number;
+  status: AdStatus;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  createdAt: string;
 }
 
 export interface Coupon {

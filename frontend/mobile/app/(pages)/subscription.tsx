@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Alert, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -37,6 +37,11 @@ const PLANS = [
   },
 ];
 
+/** Relative ranking of the fixed-price, self-service plans, used to detect
+ *  downgrades. 'custom' is deliberately excluded — it has no fixed price and
+ *  is handled via a "Bize Ulaşın" contact flow instead of self-service. */
+const PLAN_TIER: Record<string, number> = { starter: 1, business: 2, professional: 3 };
+
 export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
@@ -62,13 +67,34 @@ export default function SubscriptionScreen() {
   });
 
   const handleSelectPlan = (planId: string, planName: string) => {
+    const isDowngrade =
+      currentPlanId != null &&
+      PLAN_TIER[currentPlanId] != null &&
+      PLAN_TIER[planId] != null &&
+      PLAN_TIER[planId] < PLAN_TIER[currentPlanId];
+
     Alert.alert(
       'Planı Değiştir',
-      `${planName} planına geçmek istediğinize emin misiniz?`,
+      isDowngrade
+        ? `${planName} planına geçmek istediğinize emin misiniz? Daha düşük plana geçtiğinizde, mevcut planınıza özel bazı özelliklere (ör. çoklu şube, kampanya/kupon yönetimi, gelişmiş raporlar) erişiminizi kaybedebilirsiniz.`
+        : `${planName} planına geçmek istediğinize emin misiniz?`,
       [
         { text: 'Vazgeç', style: 'cancel' },
-        { text: 'Onayla', onPress: () => changePlanMutation.mutate(planId) },
+        { text: 'Onayla', style: isDowngrade ? 'destructive' : 'default', onPress: () => changePlanMutation.mutate(planId) },
       ],
+    );
+  };
+
+  // 'custom' (Kurumsal) has no fixed price and requires negotiated pricing —
+  // it must not be self-service-selectable via ChangePlanCommand like the
+  // other three plans. Route it to a sales contact instead.
+  const handleContactSales = () => {
+    const subject = encodeURIComponent('Kurumsal Plan Talebi');
+    const body = encodeURIComponent(
+      `Merhaba,\n\nKurumsal (özel fiyatlandırma) plana geçmek istiyorum. Lütfen benimle iletişime geçin.\n\nİşletme mevcut plan: ${currentPlan?.name ?? currentPlanId ?? '-'}`
+    );
+    Linking.openURL(`mailto:destek@jetrandevu.com?subject=${subject}&body=${body}`).catch(() =>
+      toast.error('E-posta uygulaması açılamadı.')
     );
   };
 
@@ -117,12 +143,12 @@ export default function SubscriptionScreen() {
               </View>
               <TouchableOpacity
                 style={[styles.planBtn, isCurrent ? styles.planBtnCurrent : plan.isPopular ? styles.planBtnPopular : styles.planBtnDefault]}
-                disabled={isCurrent || changePlanMutation.isPending}
+                disabled={isCurrent || (plan.id !== 'custom' && changePlanMutation.isPending)}
                 activeOpacity={0.85}
-                onPress={() => handleSelectPlan(plan.id, plan.name)}
+                onPress={() => (plan.id === 'custom' ? handleContactSales() : handleSelectPlan(plan.id, plan.name))}
               >
                 <Text style={[styles.planBtnText, isCurrent ? styles.planBtnTextCurrent : plan.isPopular ? styles.planBtnTextPopular : styles.planBtnTextDefault]}>
-                  {isCurrent ? 'Mevcut Plan' : 'Planı Seç'}
+                  {isCurrent ? 'Mevcut Plan' : plan.id === 'custom' ? 'Bize Ulaşın' : 'Planı Seç'}
                 </Text>
               </TouchableOpacity>
             </View>

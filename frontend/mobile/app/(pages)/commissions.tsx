@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -7,52 +7,140 @@ import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { SearchBar } from '@/components/ui/SearchBar';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { formatCurrency } from '@/lib/utils';
-import type { Commission } from '@/types';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import type { Commission, CommissionStatus, CommissionType, Employee } from '@/types';
 import api from '@/lib/api';
+
+const TYPE_LABEL: Record<CommissionType, string> = {
+  service: 'Hizmet',
+  sales: 'Satış',
+  mixed: 'Karma',
+};
+const TYPE_OPTIONS: CommissionType[] = ['service', 'sales', 'mixed'];
+
+const STATUS_LABEL: Record<CommissionStatus, string> = {
+  pending: 'Bekliyor',
+  approved: 'Onaylandı',
+  paid: 'Ödendi',
+};
+const STATUS_BADGE: Record<CommissionStatus, 'warning' | 'info' | 'success'> = {
+  pending: 'warning',
+  approved: 'info',
+  paid: 'success',
+};
+
+function currentPeriod() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
 
 export default function CommissionsScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const toast = useToast();
-  const { data } = useQuery({
+
+  const { data, isLoading } = useQuery({
     queryKey: ['commissions'],
     queryFn: async () => { const res = await api.get('/commissions'); return Array.isArray(res.data) ? res.data : res.data?.items ?? []; },
   });
-  const list = data as Commission[] | undefined;
-  const totalPending = (list ?? []).filter(c => c.status === 'pending').reduce((s, c) => s + c.amount, 0);
+  const list = (data ?? []) as Commission[];
+  const totalPending = list.filter(c => c.status !== 'paid').reduce((s, c) => s + c.totalAmount, 0);
+
+  const { data: employeesData } = useQuery({
+    queryKey: ['employees'],
+    queryFn: async () => { const r = await api.get('/employees'); return Array.isArray(r.data) ? r.data : r.data?.items ?? []; },
+  });
+  const employees = (employeesData ?? []) as Employee[];
 
   const qc = useQueryClient();
-  const [modal, setModal] = useState<{ open: boolean; item?: Commission }>({ open: false });
-  const [form, setForm] = useState({ employeeName: '', period: '', amount: '', status: 'pending' as 'pending' | 'paid', description: '', notes: '' });
+  const [createOpen, setCreateOpen] = useState(false);
+  const [detailItem, setDetailItem] = useState<Commission | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [employeeSearch, setEmployeeSearch] = useState('');
+  const [form, setForm] = useState({
+    employeeId: '',
+    employeeName: '',
+    period: currentPeriod(),
+    type: 'service' as CommissionType,
+    baseAmount: '',
+    commissionRate: '',
+    bonusAmount: '',
+    notes: '',
+  });
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ['commissions'] });
 
   const createMutation = useMutation({
-    mutationFn: async () => api.post('/commissions', { employeeName: form.employeeName, period: form.period, amount: Number(form.amount), status: form.status, description: form.description || undefined, notes: form.notes || undefined }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['commissions'] }); setModal({ open: false }); },
-    onError: () => toast.error('Komisyon eklenemedi.'),
-  });
-  const updateMutation = useMutation({
-    mutationFn: async () => api.put(`/commissions/${modal.item!.id}`, { employeeName: form.employeeName, period: form.period, amount: Number(form.amount), status: form.status, description: form.description || undefined, notes: form.notes || undefined }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['commissions'] }); setModal({ open: false }); },
-    onError: () => toast.error('Komisyon güncellenemedi.'),
-  });
-  const deleteMutation = useMutation({
-    mutationFn: async () => api.delete(`/commissions/${modal.item!.id}`),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['commissions'] }); setModal({ open: false }); },
-    onError: () => toast.error('Komisyon silinemedi.'),
+    mutationFn: async () => api.post('/commissions', {
+      employeeId: form.employeeId,
+      employeeName: form.employeeName,
+      period: form.period,
+      type: form.type,
+      baseAmount: Number(form.baseAmount) || 0,
+      commissionRate: Number(form.commissionRate) || 0,
+      bonusAmount: Number(form.bonusAmount) || 0,
+      notes: form.notes || undefined,
+    }),
+    onSuccess: () => { invalidate(); setCreateOpen(false); },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Komisyon eklenemedi.'),
   });
 
-  function openCreate() { setForm({ employeeName: '', period: '', amount: '', status: 'pending', description: '', notes: '' }); setModal({ open: true, item: undefined }); }
-  function openEdit(item: Commission) { setForm({ employeeName: item.employeeName, period: item.period, amount: String(item.amount), status: item.status, description: item.description ?? '', notes: item.notes ?? '' }); setModal({ open: true, item }); }
-  function handleSave() {
-    if (!form.employeeName || !form.period || !form.amount) { toast.warning('Çalışan adı, dönem ve tutar zorunludur.'); return; }
-    if (modal.item) updateMutation.mutate(); else createMutation.mutate();
+  const approveMutation = useMutation({
+    mutationFn: async (id: string) => api.post(`/commissions/${id}/approve`),
+    onSuccess: () => {
+      invalidate();
+      toast.success('Komisyon onaylandı.');
+      setDetailItem((cur) => cur ? { ...cur, status: 'approved' } : cur);
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Komisyon onaylanamadı.'),
+  });
+
+  const payMutation = useMutation({
+    mutationFn: async (id: string) => api.post(`/commissions/${id}/pay`),
+    onSuccess: () => {
+      invalidate();
+      toast.success('Komisyon ödendi olarak işaretlendi.');
+      setDetailItem((cur) => cur ? { ...cur, status: 'paid' } : cur);
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Komisyon ödenemedi.'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => api.delete(`/commissions/${id}`),
+    onSuccess: () => { invalidate(); setDetailItem(null); },
+    onError: (err: any) => toast.error(err?.response?.data?.message || 'Komisyon silinemedi.'),
+  });
+
+  function openCreate() {
+    setForm({ employeeId: '', employeeName: '', period: currentPeriod(), type: 'service', baseAmount: '', commissionRate: '', bonusAmount: '', notes: '' });
+    setCreateOpen(true);
   }
+
+  function handleSave() {
+    if (!form.employeeId) { toast.warning('Lütfen bir personel seçin.'); return; }
+    if (!form.period.trim()) { toast.warning('Dönem zorunludur.'); return; }
+    if (!form.baseAmount || Number(form.baseAmount) <= 0) { toast.warning('Baz tutar 0\'dan büyük olmalıdır.'); return; }
+    const rate = Number(form.commissionRate);
+    if (form.commissionRate === '' || rate < 0 || rate > 100) { toast.warning('Komisyon oranı 0-100 arasında olmalıdır.'); return; }
+    createMutation.mutate();
+  }
+
+  function selectEmployee(e: Employee) {
+    setForm((p) => ({ ...p, employeeId: e.id, employeeName: e.name }));
+    setPickerOpen(false);
+    setEmployeeSearch('');
+  }
+
+  const filteredEmployees = employees.filter((e) => (e.name?.toLowerCase() ?? '').includes(employeeSearch.toLowerCase()));
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -63,49 +151,176 @@ export default function CommissionsScreen() {
         <Text style={styles.bannerLabel}>Bekleyen Ödemeler</Text>
         <Text style={styles.bannerValue}>{formatCurrency(totalPending)}</Text>
       </View>
-      <FlatList
-        data={list}
-        keyExtractor={(i) => i.id}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{ height: SPACE[3] }} />}
-        ListEmptyComponent={<EmptyState icon="cash-outline" title="Komisyon yok" />}
-        renderItem={({ item }) => (
-          <TouchableOpacity activeOpacity={0.9} onPress={() => openEdit(item)} style={styles.card}>
-            <Avatar name={item.employeeName} size={44} />
-            <View style={styles.info}>
-              <Text style={styles.name}>{item.employeeName}</Text>
-              <Text style={styles.period}>{item.period}{item.description ? ` · ${item.description}` : ''}</Text>
-            </View>
-            <View style={styles.right}>
-              <Text style={styles.amount}>{formatCurrency(item.amount)}</Text>
-              <View style={[styles.statusDot, { backgroundColor: item.status === 'paid' ? COLORS.success : COLORS.warning }]} />
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+      {isLoading ? (
+        <SkeletonList count={6} />
+      ) : (
+        <FlatList
+          data={list}
+          keyExtractor={(i) => i.id}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{ height: SPACE[3] }} />}
+          ListEmptyComponent={<EmptyState icon="cash-outline" title="Komisyon yok" />}
+          renderItem={({ item }) => (
+            <TouchableOpacity activeOpacity={0.9} onPress={() => setDetailItem(item)} style={styles.card}>
+              <Avatar name={item.employeeName} size={44} />
+              <View style={styles.info}>
+                <Text style={styles.name}>{item.employeeName}</Text>
+                <Text style={styles.period}>{item.period} · {TYPE_LABEL[item.type]} · %{item.commissionRate}</Text>
+              </View>
+              <View style={styles.right}>
+                <Text style={styles.amount}>{formatCurrency(item.totalAmount)}</Text>
+                <Badge variant={STATUS_BADGE[item.status]} size="sm">{STATUS_LABEL[item.status]}</Badge>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+
+      {/* Create commission */}
       <FormModal
-        visible={modal.open}
-        onClose={() => setModal({ open: false })}
+        visible={createOpen}
+        onClose={() => setCreateOpen(false)}
         onSave={handleSave}
-        title={modal.item ? 'Komisyon Düzenle' : 'Yeni Komisyon'}
-        saving={createMutation.isPending || updateMutation.isPending}
-        deleteLabel={modal.item ? 'Sil' : undefined}
-        onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
+        title="Yeni Komisyon"
+        saving={createMutation.isPending}
       >
-        <FormField label="Çalışan Adı" value={form.employeeName} onChangeText={v => setForm(p => ({ ...p, employeeName: v }))} placeholder="Örn: Ayşe Demir" />
-        <FormField label="Dönem" value={form.period} onChangeText={v => setForm(p => ({ ...p, period: v }))} placeholder="Örn: 2025-06" />
-        <FormField label="Tutar" value={form.amount} onChangeText={v => setForm(p => ({ ...p, amount: v }))} placeholder="Örn: 2500" keyboardType="numeric" />
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Durum</Text>
+          <Text style={styles.fieldLabel}>Personel</Text>
+          <TouchableOpacity
+            style={styles.pickerBtn}
+            onPress={() => setPickerOpen(true)}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Personel seç"
+          >
+            <Text style={form.employeeId ? styles.pickerBtnText : styles.pickerBtnPlaceholder}>
+              {form.employeeId ? form.employeeName : 'Personel seçin'}
+            </Text>
+            <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
+
+        <FormField label="Dönem" value={form.period} onChangeText={v => setForm(p => ({ ...p, period: v }))} placeholder="Örn: 2026-07" />
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Komisyon Türü</Text>
           <View style={styles.segmentRow}>
-            <TouchableOpacity style={[styles.segment, form.status === 'pending' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, status: 'pending' }))}><Text style={[styles.segmentText, form.status === 'pending' && styles.segmentTextActive]}>Bekliyor</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.segment, form.status === 'paid' && styles.segmentActive]} onPress={() => setForm(p => ({ ...p, status: 'paid' }))}><Text style={[styles.segmentText, form.status === 'paid' && styles.segmentTextActive]}>Ödendi</Text></TouchableOpacity>
+            {TYPE_OPTIONS.map((t) => (
+              <TouchableOpacity
+                key={t}
+                style={[styles.segment, form.type === t && styles.segmentActive]}
+                onPress={() => setForm(p => ({ ...p, type: t }))}
+              >
+                <Text style={[styles.segmentText, form.type === t && styles.segmentTextActive]}>{TYPE_LABEL[t]}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
-        <FormField label="Açıklama" value={form.description} onChangeText={v => setForm(p => ({ ...p, description: v }))} placeholder="Opsiyonel açıklama" />
+
+        <FormField label="Baz Tutar (₺)" value={form.baseAmount} onChangeText={v => setForm(p => ({ ...p, baseAmount: v }))} placeholder="Örn: 5000" keyboardType="numeric" />
+        <FormField label="Komisyon Oranı (%)" value={form.commissionRate} onChangeText={v => setForm(p => ({ ...p, commissionRate: v }))} placeholder="Örn: 10" keyboardType="numeric" />
+        <FormField label="Bonus Tutarı (₺, isteğe bağlı)" value={form.bonusAmount} onChangeText={v => setForm(p => ({ ...p, bonusAmount: v }))} placeholder="Örn: 200" keyboardType="numeric" />
         <FormField label="Notlar" value={form.notes} onChangeText={v => setForm(p => ({ ...p, notes: v }))} placeholder="Opsiyonel not" multiline />
+
+        {form.baseAmount && form.commissionRate ? (
+          <View style={styles.previewBox}>
+            <Text style={styles.previewLabel}>Tahmini Toplam</Text>
+            <Text style={styles.previewValue}>
+              {formatCurrency(Math.round((Number(form.baseAmount) || 0) * (Number(form.commissionRate) || 0) / 100 * 100) / 100 + (Number(form.bonusAmount) || 0))}
+            </Text>
+          </View>
+        ) : null}
       </FormModal>
+
+      {/* Employee picker */}
+      <Modal visible={pickerOpen} animationType="slide" transparent presentationStyle="overFullScreen" onRequestClose={() => setPickerOpen(false)}>
+        <View style={styles.overlay}>
+          <View style={styles.pickerSheet}>
+            <View style={styles.handle} />
+            <View style={styles.detailHeader}>
+              <Text style={styles.title}>Personel Seç</Text>
+              <TouchableOpacity onPress={() => setPickerOpen(false)} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel="Kapat">
+                <Ionicons name="close" size={22} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            <SearchBar value={employeeSearch} onChangeText={setEmployeeSearch} placeholder="Personel ara…" style={{ margin: SPACE[4] }} />
+            <FlatList
+              data={filteredEmployees}
+              keyExtractor={(i) => i.id}
+              contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingBottom: SPACE[8] }}
+              ItemSeparatorComponent={() => <View style={{ height: SPACE[2] }} />}
+              ListEmptyComponent={<EmptyState icon="people-circle-outline" title="Personel bulunamadı" />}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.employeeRow} activeOpacity={0.8} onPress={() => selectEmployee(item)}>
+                  <Avatar name={item.name} size={36} />
+                  <Text style={styles.employeeRowText}>{item.name}</Text>
+                  {form.employeeId === item.id && <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Detail + workflow actions (no PUT/edit endpoint on the backend) */}
+      <Modal visible={!!detailItem} animationType="slide" transparent presentationStyle="overFullScreen" onRequestClose={() => setDetailItem(null)}>
+        <View style={styles.overlay}>
+          <View style={styles.sheet}>
+            <View style={styles.handle} />
+            <View style={styles.detailHeader}>
+              <Text style={styles.title}>{detailItem?.employeeName}</Text>
+              <TouchableOpacity onPress={() => setDetailItem(null)} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel="Kapat">
+                <Ionicons name="close" size={22} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            {detailItem && (
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.detailBody}>
+                <View style={styles.detailTopRow}>
+                  <Badge variant={STATUS_BADGE[detailItem.status]}>{STATUS_LABEL[detailItem.status]}</Badge>
+                  <Text style={styles.detailPeriod}>{detailItem.period} · {TYPE_LABEL[detailItem.type]}</Text>
+                </View>
+                <View style={styles.detailStatsRow}>
+                  <View style={styles.detailStat}>
+                    <Text style={styles.detailStatLabel}>Baz Tutar</Text>
+                    <Text style={styles.detailStatValue}>{formatCurrency(detailItem.baseAmount)}</Text>
+                  </View>
+                  <View style={styles.detailStat}>
+                    <Text style={styles.detailStatLabel}>Oran</Text>
+                    <Text style={styles.detailStatValue}>%{detailItem.commissionRate}</Text>
+                  </View>
+                  <View style={styles.detailStat}>
+                    <Text style={styles.detailStatLabel}>Bonus</Text>
+                    <Text style={styles.detailStatValue}>{formatCurrency(detailItem.bonusAmount)}</Text>
+                  </View>
+                </View>
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>Toplam Komisyon</Text>
+                  <Text style={styles.totalValue}>{formatCurrency(detailItem.totalAmount)}</Text>
+                </View>
+                {!!detailItem.notes && (
+                  <View>
+                    <Text style={styles.fieldLabel}>Notlar</Text>
+                    <Text style={styles.desc}>{detailItem.notes}</Text>
+                  </View>
+                )}
+                {!!detailItem.createdAt && (
+                  <Text style={styles.desc}>Oluşturulma: {formatDate(detailItem.createdAt)}</Text>
+                )}
+              </ScrollView>
+            )}
+            <View style={styles.detailFooter}>
+              <Button variant="destructive" style={{ flex: 1 }} onPress={() => detailItem && deleteMutation.mutate(detailItem.id)} loading={deleteMutation.isPending}>Sil</Button>
+              {detailItem?.status === 'pending' && (
+                <Button style={{ flex: 1 }} onPress={() => detailItem && approveMutation.mutate(detailItem.id)} loading={approveMutation.isPending}>Onayla</Button>
+              )}
+              {detailItem?.status === 'approved' && (
+                <Button style={{ flex: 1 }} onPress={() => detailItem && payMutation.mutate(detailItem.id)} loading={payMutation.isPending}>Öde</Button>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -123,7 +338,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   period: { fontSize: FONT.xs, color: COLORS.textMuted },
   right: { alignItems: 'flex-end', gap: SPACE[2] },
   amount: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
-  statusDot: { width: 10, height: 10, borderRadius: 5 },
   fieldGroup: { gap: SPACE[1] },
   fieldLabel: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   segmentRow: { flexDirection: 'row', backgroundColor: COLORS.bg, borderRadius: RADIUS.lg, padding: 3 },
@@ -131,4 +345,32 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   segmentActive: { backgroundColor: COLORS.surface, ...SHADOW.sm },
   segmentText: { fontSize: FONT.sm, fontWeight: FONT.medium, color: COLORS.textMuted },
   segmentTextActive: { color: COLORS.text, fontWeight: FONT.semibold },
+  pickerBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, paddingHorizontal: SPACE[4], paddingVertical: SPACE[3], borderWidth: 1.5, borderColor: COLORS.border },
+  pickerBtnText: { fontSize: FONT.base, color: COLORS.text, fontWeight: FONT.medium },
+  pickerBtnPlaceholder: { fontSize: FONT.base, color: COLORS.textMuted },
+  previewBox: { backgroundColor: COLORS.primaryMuted, borderRadius: RADIUS.lg, padding: SPACE[4], flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  previewLabel: { fontSize: FONT.sm, color: COLORS.primaryDark, fontWeight: FONT.semibold },
+  previewValue: { fontSize: FONT.lg, color: COLORS.primaryDark, fontWeight: FONT.extrabold },
+  // Shared modal sheet chrome
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheet: { flex: 1, backgroundColor: COLORS.surface, borderTopLeftRadius: RADIUS['2xl'], borderTopRightRadius: RADIUS['2xl'], maxHeight: '85%' },
+  pickerSheet: { backgroundColor: COLORS.surface, borderTopLeftRadius: RADIUS['2xl'], borderTopRightRadius: RADIUS['2xl'], maxHeight: '85%', minHeight: '60%' },
+  handle: { width: 40, height: 4, backgroundColor: COLORS.borderLight, borderRadius: 2, alignSelf: 'center', marginTop: SPACE[3] },
+  detailHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACE[5], paddingVertical: SPACE[4], borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
+  title: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
+  closeBtn: { width: 32, height: 32, borderRadius: RADIUS.full, backgroundColor: COLORS.bg, alignItems: 'center', justifyContent: 'center' },
+  employeeRow: { flexDirection: 'row', alignItems: 'center', gap: SPACE[3], backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, padding: SPACE[3] },
+  employeeRowText: { flex: 1, fontSize: FONT.base, fontWeight: FONT.medium, color: COLORS.text },
+  detailBody: { padding: SPACE[5], gap: SPACE[4] },
+  detailTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  detailPeriod: { fontSize: FONT.sm, color: COLORS.textMuted, fontWeight: FONT.medium },
+  detailStatsRow: { flexDirection: 'row', gap: SPACE[3] },
+  detailStat: { flex: 1, backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.lg, padding: SPACE[3], gap: 2 },
+  detailStatLabel: { fontSize: FONT.xs, color: COLORS.textMuted },
+  detailStatValue: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  totalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.primaryMuted, borderRadius: RADIUS.lg, padding: SPACE[4] },
+  totalLabel: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primaryDark },
+  totalValue: { fontSize: FONT.lg, fontWeight: FONT.extrabold, color: COLORS.primaryDark },
+  desc: { fontSize: FONT.sm, color: COLORS.textMuted, marginTop: 2 },
+  detailFooter: { padding: SPACE[5], borderTopWidth: 1, borderTopColor: COLORS.borderLight, flexDirection: 'row', gap: SPACE[3] },
 });
