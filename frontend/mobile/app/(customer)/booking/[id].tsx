@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import Animated, { FadeIn, FadeOut, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -258,30 +259,72 @@ export default function BookingScreen() {
   if (success) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={StyleSheet.absoluteFill} />
-        <View style={styles.successContainer}>
-          <View style={styles.successIcon}>
-            <Ionicons name="checkmark-circle" size={80} color={COLORS.success} />
-          </View>
-          <Text style={styles.successTitle}>Randevu Oluşturuldu!</Text>
-          <Text style={styles.successText}>
-            Randevu talebiniz alındı. İşletme sizinle iletişime geçecektir.
-          </Text>
-          <TouchableOpacity
-            style={styles.successBtn}
-            onPress={() => { resetForm(); router.replace('/(customer)/(tabs)/appointments'); }}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.successBtnText}>Randevularımı Gör</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.successSecondaryBtn}
-            onPress={() => { resetForm(); router.back(); }}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.successSecondaryText}>Geri Dön</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView contentContainerStyle={styles.successScroll} showsVerticalScrollIndicator={false}>
+          <Animated.View entering={FadeInDown.duration(450)} style={styles.successContainer}>
+            <View style={styles.successIconOuter}>
+              <LinearGradient
+                colors={[COLORS.primaryLight, COLORS.primaryMuted]}
+                style={styles.successIconGlow}
+              />
+              <View style={styles.successIconCircle}>
+                <Ionicons name="checkmark" size={54} color={STATIC_WHITE} />
+              </View>
+            </View>
+
+            <Text style={styles.successTitle}>Randevunuz Alındı!</Text>
+            <Text style={styles.successText}>
+              Randevu talebiniz başarıyla iletildi. İşletme en kısa sürede sizinle iletişime geçecektir.
+            </Text>
+
+            <View style={styles.successSummaryCard}>
+              <View style={styles.successSummaryRow}>
+                <View style={styles.successSummaryIcon}>
+                  <Ionicons name="business-outline" size={16} color={COLORS.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.successSummaryLabel}>İşletme</Text>
+                  <Text style={styles.successSummaryValue} numberOfLines={1}>{businessName}</Text>
+                </View>
+              </View>
+              <View style={styles.successDivider} />
+              <View style={styles.successSummaryRow}>
+                <View style={styles.successSummaryIcon}>
+                  <Ionicons name="cut-outline" size={16} color={COLORS.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.successSummaryLabel}>Hizmet</Text>
+                  <Text style={styles.successSummaryValue} numberOfLines={1}>{selectedServiceData?.name}</Text>
+                </View>
+              </View>
+              <View style={styles.successDivider} />
+              <View style={styles.successSummaryRow}>
+                <View style={styles.successSummaryIcon}>
+                  <Ionicons name="calendar-outline" size={16} color={COLORS.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.successSummaryLabel}>Tarih ve Saat</Text>
+                  <Text style={styles.successSummaryValue}>{selectedDate} · {selectedTime}</Text>
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.successBtn}
+              onPress={() => { resetForm(); router.replace('/(customer)/(tabs)/appointments'); }}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="calendar" size={18} color={STATIC_WHITE} />
+              <Text style={styles.successBtnText}>Randevularımı Gör</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.successSecondaryBtn}
+              onPress={() => { resetForm(); router.back(); }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.successSecondaryText}>İşletmeye Geri Dön</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
       </View>
     );
   }
@@ -291,11 +334,9 @@ export default function BookingScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
-
       <View style={[styles.header, { paddingTop: insets.top + SPACE[3] }]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => step > 1 ? setStep(step - 1) : router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
-          <Ionicons name="chevron-back" size={22} color={STATIC_WHITE} />
+          <Ionicons name="chevron-back" size={20} color={COLORS.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Randevu Al</Text>
@@ -304,16 +345,22 @@ export default function BookingScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <View style={styles.stepBar}>
+      <View style={styles.stepBarCard}>
         {stepLabels.map((label, i) => {
           const s = i + 1;
+          const isDone = step > s;
+          const isActive = step === s;
           return (
             <React.Fragment key={s}>
               <View style={styles.stepItem}>
-                <View style={[styles.stepCircle, step >= s && styles.stepCircleActive]}>
-                  <Text style={[styles.stepNumber, step >= s && styles.stepNumberActive]}>{s}</Text>
+                <View style={[styles.stepCircle, isActive && styles.stepCircleActive, isDone && styles.stepCircleDone]}>
+                  {isDone ? (
+                    <Ionicons name="checkmark" size={16} color={STATIC_WHITE} />
+                  ) : (
+                    <Text style={[styles.stepNumber, isActive && styles.stepNumberActive]}>{s}</Text>
+                  )}
                 </View>
-                <Text style={[styles.stepLabel, step >= s && styles.stepLabelActive]}>{label}</Text>
+                <Text style={[styles.stepLabel, (isActive || isDone) && styles.stepLabelActive]} numberOfLines={1}>{label}</Text>
               </View>
               {s < stepLabels.length && <View style={[styles.stepLine, step > s && styles.stepLineActive]} />}
             </React.Fragment>
@@ -322,10 +369,10 @@ export default function BookingScreen() {
       </View>
 
       {error && (
-        <View style={styles.errorBox}>
+        <Animated.View entering={FadeIn.duration(200)} style={styles.errorBox}>
           <Ionicons name="alert-circle" size={16} color={COLORS.error} />
           <Text style={styles.errorText}>{error}</Text>
-        </View>
+        </Animated.View>
       )}
 
       <ScrollView
@@ -335,112 +382,144 @@ export default function BookingScreen() {
         showsVerticalScrollIndicator={false}
       >
         {step === 1 && (
-          <View style={styles.stepContent}>
+          <Animated.View entering={FadeIn.duration(220)} style={styles.stepContent}>
             <Text style={styles.stepTitle}>Hizmet Seçin</Text>
+            <Text style={styles.stepSubtitle}>Randevu almak istediğiniz hizmeti seçerek devam edin.</Text>
             {services.length === 0 ? (
               <Text style={styles.emptyText}>Henüz hizmet eklenmemiş.</Text>
             ) : (
-              services.map((svc) => (
-                <TouchableOpacity
-                  key={svc.id}
-                  style={[styles.serviceCard, selectedService === svc.id && styles.serviceCardActive]}
-                  onPress={() => setSelectedService(svc.id)}
-                  activeOpacity={0.8}
-                >
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.serviceName}>{svc.name}</Text>
-                    <Text style={styles.serviceDuration}>{svc.durationMinutes} dk</Text>
-                  </View>
-                  <Text style={[styles.servicePrice, selectedService === svc.id && styles.servicePriceActive]}>
-                    ₺{svc.price.toLocaleString('tr-TR')}
-                  </Text>
-                  {selectedService === svc.id && (
-                    <Ionicons name="checkmark-circle" size={22} color={COLORS.primary} />
-                  )}
-                </TouchableOpacity>
-              ))
+              services.map((svc, idx) => {
+                const active = selectedService === svc.id;
+                return (
+                  <Animated.View key={svc.id} entering={FadeInUp.duration(280).delay(idx * 40)}>
+                    <TouchableOpacity
+                      style={[styles.serviceCard, active && styles.serviceCardActive]}
+                      onPress={() => setSelectedService(svc.id)}
+                      activeOpacity={0.85}
+                    >
+                      <View style={[styles.serviceIcon, active && styles.serviceIconActive]}>
+                        <Ionicons name="cut-outline" size={18} color={active ? STATIC_WHITE : COLORS.primary} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.serviceName}>{svc.name}</Text>
+                        <View style={styles.serviceMetaRow}>
+                          <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
+                          <Text style={styles.serviceDuration}>{svc.durationMinutes} dk</Text>
+                        </View>
+                      </View>
+                      <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                        <Text style={styles.servicePrice}>₺{svc.price.toLocaleString('tr-TR')}</Text>
+                        {active && <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />}
+                      </View>
+                    </TouchableOpacity>
+                  </Animated.View>
+                );
+              })
             )}
-          </View>
+          </Animated.View>
         )}
 
         {step === 2 && (
-          <View style={styles.stepContent}>
+          <Animated.View entering={FadeIn.duration(220)} style={styles.stepContent}>
             <View style={styles.stepTitleRow}>
-              <Text style={styles.stepTitle}>Tarih Seçin</Text>
-              {selectedServiceData && <Text style={styles.stepTitleSub}>{selectedServiceData.name}</Text>}
-            </View>
-
-            <View style={styles.calendarNav}>
-              <TouchableOpacity onPress={prevMonth} disabled={!canMonthGoBack()} activeOpacity={0.7} style={[styles.calNavBtn, !canMonthGoBack() && { opacity: 0.3 }]} accessibilityRole="button" accessibilityLabel="Önceki ay">
-                <Ionicons name="chevron-back" size={18} color={STATIC_WHITE} />
-              </TouchableOpacity>
-              <Text style={styles.calMonth}>{MONTHS[calendarMonth]} {calendarYear}</Text>
-              <TouchableOpacity onPress={nextMonth} activeOpacity={0.7} style={styles.calNavBtn} accessibilityRole="button" accessibilityLabel="Sonraki ay">
-                <Ionicons name="chevron-forward" size={18} color={STATIC_WHITE} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.calDayHeaders}>
-              {DAY_NAMES.map(d => <Text key={d} style={styles.calDayHeader}>{d}</Text>)}
-            </View>
-
-            {availabilityLoading ? (
-              <ActivityIndicator size="large" color={COLORS.primary} style={{ marginVertical: SPACE[8] }} />
-            ) : (
-              <View style={styles.calGrid}>
-                {calendarDays.map((d, i) => {
-                  if (!d) return <View key={`empty-${i}`} style={styles.calDay} />;
-                  const dateStr = formatDate(d);
-                  const isPast = isDateInPast(d);
-                  const isSelected = selectedDate === dateStr;
-                  const isToday = dateStr === formatDate(today);
-                  const dayAvail = availability.get(dateStr);
-                  const hasSlots = dayAvail?.hasAvailability ?? false;
-
-                  return (
-                    <TouchableOpacity
-                      key={dateStr}
-                      style={[
-                        styles.calDay,
-                        isPast && styles.calDayPast,
-                        isSelected && styles.calDaySelected,
-                        isToday && !isSelected && styles.calDayToday,
-                        hasSlots && !isPast && !isSelected && styles.calDayAvailable,
-                        !hasSlots && !isPast && !isSelected && !isToday && styles.calDayUnavailable,
-                      ]}
-                      onPress={() => { if (!isPast && hasSlots) { setSelectedDate(dateStr); setSelectedTime(null); } }}
-                      disabled={isPast || !hasSlots}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={[
-                        styles.calDayNum,
-                        isPast && styles.calDayNumPast,
-                        isSelected && styles.calDayNumSelected,
-                        isToday && !isSelected && styles.calDayNumToday,
-                      ]}>
-                        {d.getDate()}
-                      </Text>
-                      {!isPast && hasSlots && <Text style={styles.calDayAvailableText}>Uygun</Text>}
-                      {!isPast && !hasSlots && !isSelected && <Text style={styles.calDayUnavailableText}>Dolu</Text>}
-                    </TouchableOpacity>
-                  );
-                })}
+              <View>
+                <Text style={styles.stepTitle}>Tarih Seçin</Text>
+                {selectedServiceData && <Text style={styles.stepTitleSub}>{selectedServiceData.name}</Text>}
               </View>
-            )}
-          </View>
+            </View>
+
+            <View style={styles.calCard}>
+              <View style={styles.calendarNav}>
+                <TouchableOpacity onPress={prevMonth} disabled={!canMonthGoBack()} activeOpacity={0.7} style={[styles.calNavBtn, !canMonthGoBack() && styles.calNavBtnDisabled]} accessibilityRole="button" accessibilityLabel="Önceki ay">
+                  <Ionicons name="chevron-back" size={18} color={canMonthGoBack() ? COLORS.text : COLORS.textMuted} />
+                </TouchableOpacity>
+                <Text style={styles.calMonth}>{MONTHS[calendarMonth]} {calendarYear}</Text>
+                <TouchableOpacity onPress={nextMonth} activeOpacity={0.7} style={styles.calNavBtn} accessibilityRole="button" accessibilityLabel="Sonraki ay">
+                  <Ionicons name="chevron-forward" size={18} color={COLORS.text} />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.calDayHeaders}>
+                {DAY_NAMES.map(d => <Text key={d} style={styles.calDayHeader}>{d}</Text>)}
+              </View>
+
+              {availabilityLoading ? (
+                <ActivityIndicator size="large" color={COLORS.primary} style={{ marginVertical: SPACE[8] }} />
+              ) : (
+                <View style={styles.calGrid}>
+                  {calendarDays.map((d, i) => {
+                    if (!d) return <View key={`empty-${i}`} style={styles.calDay} />;
+                    const dateStr = formatDate(d);
+                    const isPast = isDateInPast(d);
+                    const isSelected = selectedDate === dateStr;
+                    const isToday = dateStr === formatDate(today);
+                    const dayAvail = availability.get(dateStr);
+                    const hasSlots = dayAvail?.hasAvailability ?? false;
+
+                    return (
+                      <TouchableOpacity
+                        key={dateStr}
+                        style={[
+                          styles.calDay,
+                          isPast && styles.calDayPast,
+                          !isPast && hasSlots && !isSelected && styles.calDayAvailable,
+                          !isPast && !hasSlots && !isSelected && styles.calDayUnavailable,
+                          isToday && !isSelected && styles.calDayToday,
+                          isSelected && styles.calDaySelected,
+                        ]}
+                        onPress={() => { if (!isPast && hasSlots) { setSelectedDate(dateStr); setSelectedTime(null); } }}
+                        disabled={isPast || !hasSlots}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={[
+                          styles.calDayNum,
+                          isPast && styles.calDayNumPast,
+                          !isPast && !hasSlots && !isSelected && styles.calDayNumUnavailable,
+                          isToday && !isSelected && styles.calDayNumToday,
+                          isSelected && styles.calDayNumSelected,
+                        ]}>
+                          {d.getDate()}
+                        </Text>
+                        {!isPast && hasSlots && !isSelected && <View style={styles.calDayDot} />}
+                        {isSelected && <View style={styles.calDayDotSelected} />}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
+              <View style={styles.calLegend}>
+                <View style={styles.calLegendItem}>
+                  <View style={[styles.calLegendDot, { backgroundColor: COLORS.success }]} />
+                  <Text style={styles.calLegendText}>Uygun</Text>
+                </View>
+                <View style={styles.calLegendItem}>
+                  <View style={[styles.calLegendDot, { backgroundColor: COLORS.border }]} />
+                  <Text style={styles.calLegendText}>Dolu</Text>
+                </View>
+                <View style={styles.calLegendItem}>
+                  <View style={[styles.calLegendDot, { backgroundColor: COLORS.primary }]} />
+                  <Text style={styles.calLegendText}>Bugün</Text>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
         )}
 
         {step === 3 && (
-          <View style={styles.stepContent}>
+          <Animated.View entering={FadeIn.duration(220)} style={styles.stepContent}>
             <View style={styles.stepTitleRow}>
-              <Text style={styles.stepTitle}>Saat Seçin</Text>
-              <Text style={styles.stepTitleSub}>{selectedDate}</Text>
+              <View>
+                <Text style={styles.stepTitle}>Saat Seçin</Text>
+                <Text style={styles.stepTitleSub}>{selectedDate}</Text>
+              </View>
             </View>
 
             {slotsLoading ? (
               <ActivityIndicator size="large" color={COLORS.primary} style={{ marginVertical: SPACE[8] }} />
             ) : timeSlots.filter(s => s.isAvailable).length === 0 ? (
               <View style={styles.emptySlots}>
+                <Ionicons name="time-outline" size={32} color={COLORS.textMuted} />
                 <Text style={styles.emptyText}>Bu tarihte uygun saat bulunmamaktadır.</Text>
                 <TouchableOpacity onPress={() => setStep(2)} activeOpacity={0.7}>
                   <Text style={styles.linkText}>Başka bir tarih seçin</Text>
@@ -448,104 +527,110 @@ export default function BookingScreen() {
               </View>
             ) : (
               <View style={styles.timeGrid}>
-                {timeSlots.filter(s => s.isAvailable).map((slot) => {
+                {timeSlots.filter(s => s.isAvailable).map((slot, idx) => {
                   const timeStr = new Date(slot.startTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+                  const active = selectedTime === timeStr;
                   return (
-                    <TouchableOpacity
-                      key={slot.startTime}
-                      style={[styles.timeSlot, selectedTime === timeStr && styles.timeSlotActive]}
-                      onPress={() => setSelectedTime(timeStr)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={[styles.timeSlotText, selectedTime === timeStr && styles.timeSlotTextActive]}>
-                        {timeStr}
-                      </Text>
-                    </TouchableOpacity>
+                    <Animated.View key={slot.startTime} entering={FadeInUp.duration(220).delay(Math.min(idx, 12) * 25)}>
+                      <TouchableOpacity
+                        style={[styles.timeSlot, active && styles.timeSlotActive]}
+                        onPress={() => setSelectedTime(timeStr)}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="time-outline" size={14} color={active ? STATIC_WHITE : COLORS.primary} />
+                        <Text style={[styles.timeSlotText, active && styles.timeSlotTextActive]}>
+                          {timeStr}
+                        </Text>
+                      </TouchableOpacity>
+                    </Animated.View>
                   );
                 })}
               </View>
             )}
-          </View>
+          </Animated.View>
         )}
 
         {step === 4 && (
-          <View style={styles.stepContent}>
+          <Animated.View entering={FadeIn.duration(220)} style={styles.stepContent}>
             <Text style={styles.stepTitle}>Kişisel Bilgiler</Text>
+            <Text style={styles.stepSubtitle}>Randevunuzu onaylayabilmemiz için iletişim bilgilerinizi girin.</Text>
 
-            <View style={styles.formRow}>
-              <View style={styles.formField}>
-                <Text style={styles.formLabel}>Ad *</Text>
-                <TextInput
-                  style={styles.formInput}
-                  placeholder="Ad"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={form.ad}
-                  onChangeText={(v) => handleFormChange('ad', v)}
-                />
-              </View>
-              <View style={styles.formField}>
-                <Text style={styles.formLabel}>Soyad *</Text>
-                <TextInput
-                  style={styles.formInput}
-                  placeholder="Soyad"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={form.soyad}
-                  onChangeText={(v) => handleFormChange('soyad', v)}
-                />
-              </View>
-            </View>
-
-            <View style={styles.formField}>
-              <Text style={styles.formLabel}>Telefon *</Text>
-              <View style={styles.phoneWrap}>
-                <View style={styles.phonePrefix}>
-                  <Text style={styles.phonePrefixText}>+90</Text>
+            <View style={styles.formCard}>
+              <View style={styles.formRow}>
+                <View style={styles.formField}>
+                  <Text style={styles.formLabel}>Ad *</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    placeholder="Ad"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={form.ad}
+                    onChangeText={(v) => handleFormChange('ad', v)}
+                  />
                 </View>
+                <View style={styles.formField}>
+                  <Text style={styles.formLabel}>Soyad *</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    placeholder="Soyad"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={form.soyad}
+                    onChangeText={(v) => handleFormChange('soyad', v)}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.formField}>
+                <Text style={styles.formLabel}>Telefon *</Text>
+                <View style={styles.phoneWrap}>
+                  <View style={styles.phonePrefix}>
+                    <Text style={styles.phonePrefixText}>+90</Text>
+                  </View>
+                  <TextInput
+                    style={styles.phoneInput}
+                    placeholder="5XX XXX XX XX"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={formatPhoneDisplay(form.telefon)}
+                    onChangeText={handlePhoneChange}
+                    keyboardType="phone-pad"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.formField}>
+                <Text style={styles.formLabel}>E-posta *</Text>
                 <TextInput
-                  style={styles.phoneInput}
-                  placeholder="5XX XXX XX XX"
+                  style={styles.formInput}
+                  placeholder="ornek@email.com"
                   placeholderTextColor={COLORS.textMuted}
-                  value={formatPhoneDisplay(form.telefon)}
-                  onChangeText={handlePhoneChange}
-                  keyboardType="phone-pad"
+                  value={form.email}
+                  onChangeText={(v) => handleFormChange('email', v)}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                 />
               </View>
-            </View>
 
-            <View style={styles.formField}>
-              <Text style={styles.formLabel}>E-posta *</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="ornek@email.com"
-                placeholderTextColor={COLORS.textMuted}
-                value={form.email}
-                onChangeText={(v) => handleFormChange('email', v)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+              <View style={styles.formField}>
+                <Text style={styles.formLabel}>Şehir *</Text>
+                <TextInput
+                  style={styles.formInput}
+                  placeholder="Şehir"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={form.sehir}
+                  onChangeText={(v) => handleFormChange('sehir', v)}
+                />
+              </View>
 
-            <View style={styles.formField}>
-              <Text style={styles.formLabel}>Şehir *</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="Şehir"
-                placeholderTextColor={COLORS.textMuted}
-                value={form.sehir}
-                onChangeText={(v) => handleFormChange('sehir', v)}
-              />
-            </View>
-
-            <View style={styles.formField}>
-              <Text style={styles.formLabel}>Açıklama</Text>
-              <TextInput
-                style={[styles.formInput, { height: 80, textAlignVertical: 'top' }]}
-                placeholder="Randevu ile ilgili eklemek istedikleriniz..."
-                placeholderTextColor={COLORS.textMuted}
-                value={form.aciklama}
-                onChangeText={(v) => handleFormChange('aciklama', v)}
-                multiline
-              />
+              <View style={styles.formField}>
+                <Text style={styles.formLabel}>Açıklama</Text>
+                <TextInput
+                  style={[styles.formInput, { height: 84, textAlignVertical: 'top' }]}
+                  placeholder="Randevu ile ilgili eklemek istedikleriniz..."
+                  placeholderTextColor={COLORS.textMuted}
+                  value={form.aciklama}
+                  onChangeText={(v) => handleFormChange('aciklama', v)}
+                  multiline
+                />
+              </View>
             </View>
 
             <View style={styles.summaryCard}>
@@ -562,12 +647,13 @@ export default function BookingScreen() {
                 <Text style={styles.summaryLabel}>Saat</Text>
                 <Text style={styles.summaryValue}>{selectedTime}</Text>
               </View>
+              <View style={styles.summaryDivider} />
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Ücret</Text>
+                <Text style={styles.summaryTotalLabel}>Toplam Ücret</Text>
                 <Text style={styles.summaryPrice}>₺{selectedServiceData?.price.toLocaleString('tr-TR')}</Text>
               </View>
             </View>
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
 
@@ -620,89 +706,122 @@ export default function BookingScreen() {
 }
 
 const createStyles = (COLORS: Palette) => StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: COLORS.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACE[5],
     paddingBottom: SPACE[3],
+    backgroundColor: COLORS.bg,
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: RADIUS.lg,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOW.sm,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
-  headerSub: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
-  stepBar: {
+  headerTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
+  headerSub: { fontSize: FONT.xs, color: COLORS.textSecondary, marginTop: 2 },
+  stepBarCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingHorizontal: SPACE[5],
+    marginHorizontal: SPACE[5],
+    marginBottom: SPACE[3],
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    paddingHorizontal: SPACE[3],
     paddingVertical: SPACE[4],
-    gap: 0,
+    ...SHADOW.sm,
   },
-  stepItem: { alignItems: 'center', gap: 4 },
+  stepItem: { alignItems: 'center', gap: 6, width: 56 },
   stepCircle: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: COLORS.surfaceAlt,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepCircleActive: { backgroundColor: COLORS.primary },
-  stepNumber: { fontSize: FONT.sm, fontWeight: FONT.bold, color: 'rgba(255,255,255,0.4)' },
+  stepCircleActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  stepCircleDone: { backgroundColor: COLORS.success, borderColor: COLORS.success },
+  stepNumber: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.textMuted },
   stepNumberActive: { color: STATIC_WHITE },
-  stepLabel: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.3)' },
-  stepLabelActive: { color: STATIC_WHITE },
-  stepLine: { width: 30, height: 2, backgroundColor: 'rgba(255,255,255,0.1)', marginHorizontal: 4, marginBottom: 16 },
-  stepLineActive: { backgroundColor: COLORS.primary },
+  stepLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: FONT.medium },
+  stepLabelActive: { color: COLORS.text, fontWeight: FONT.semibold },
+  stepLine: { width: 20, height: 2, backgroundColor: COLORS.border, marginHorizontal: 2, marginTop: 15 },
+  stepLineActive: { backgroundColor: COLORS.success },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACE[2],
     marginHorizontal: SPACE[5],
     marginBottom: SPACE[3],
-    backgroundColor: 'rgba(1,84,240,0.1)',
+    backgroundColor: COLORS.errorLight,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: 'rgba(1,84,240,0.2)',
+    borderColor: COLORS.error + '33',
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
   },
-  errorText: { fontSize: FONT.sm, color: COLORS.textSecondary, flex: 1 },
+  errorText: { fontSize: FONT.sm, color: COLORS.errorText, flex: 1 },
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[8] },
-  stepContent: { gap: SPACE[4] },
-  stepTitle: { fontSize: FONT.lg, fontWeight: FONT.bold, color: STATIC_WHITE },
+  stepContent: { gap: SPACE[3] },
+  stepTitle: { fontSize: FONT.xl, fontWeight: FONT.extrabold, color: COLORS.text },
+  stepSubtitle: { fontSize: FONT.sm, color: COLORS.textSecondary, marginTop: -SPACE[2], marginBottom: SPACE[1] },
   stepTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  stepTitleSub: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.5)' },
-  emptyText: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginVertical: SPACE[6] },
+  stepTitleSub: { fontSize: FONT.xs, color: COLORS.textSecondary, marginTop: 2 },
+  emptyText: { fontSize: FONT.sm, color: COLORS.textMuted, textAlign: 'center', marginVertical: SPACE[2] },
   serviceCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACE[3],
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: COLORS.borderLight,
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[4],
+    ...SHADOW.sm,
   },
   serviceCardActive: {
     borderColor: COLORS.primary,
-    backgroundColor: 'rgba(1,84,240,0.08)',
+    backgroundColor: COLORS.primaryMuted,
   },
-  serviceName: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: STATIC_WHITE },
-  serviceDuration: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.4)', marginTop: 2 },
+  serviceIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primaryMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  serviceIconActive: { backgroundColor: COLORS.primary },
+  serviceName: { fontSize: FONT.base, fontWeight: FONT.semibold, color: COLORS.text },
+  serviceMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 },
+  serviceDuration: { fontSize: FONT.xs, color: COLORS.textMuted },
   servicePrice: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.primary },
-  servicePriceActive: { color: COLORS.primary },
+  calCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    padding: SPACE[4],
+    gap: SPACE[3],
+    ...SHADOW.sm,
+  },
   calendarNav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -711,17 +830,18 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   calNavBtn: {
     width: 36,
     height: 36,
-    borderRadius: RADIUS.md,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surfaceAlt,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  calMonth: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
+  calNavBtnDisabled: { opacity: 0.4 },
+  calMonth: { fontSize: FONT.md, fontWeight: FONT.extrabold, color: COLORS.text },
   calDayHeaders: {
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  calDayHeader: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: 'rgba(255,255,255,0.3)', width: 40, textAlign: 'center' },
+  calDayHeader: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textMuted, width: 40, textAlign: 'center' },
   calGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -733,21 +853,33 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.md,
-    gap: 2,
+    gap: 3,
   },
-  calDayPast: { opacity: 0.3 },
+  calDayPast: { opacity: 0.35 },
   calDaySelected: { backgroundColor: COLORS.primary },
-  calDayToday: { backgroundColor: 'rgba(1,84,240,0.15)' },
-  calDayAvailable: { backgroundColor: 'rgba(34,197,94,0.1)' },
-  calDayUnavailable: { backgroundColor: 'rgba(255,255,255,0.03)' },
-  calDayNum: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
-  calDayNumPast: { color: 'rgba(255,255,255,0.2)' },
+  calDayToday: { backgroundColor: COLORS.primaryMuted, borderWidth: 1.5, borderColor: COLORS.primary },
+  calDayAvailable: { backgroundColor: COLORS.successLight },
+  calDayUnavailable: { backgroundColor: COLORS.surfaceAlt },
+  calDayNum: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  calDayNumPast: { color: COLORS.textMuted },
+  calDayNumUnavailable: { color: COLORS.textMuted },
   calDayNumSelected: { color: STATIC_WHITE },
   calDayNumToday: { color: COLORS.primary },
-  calDayAvailableText: { fontSize: 7, color: COLORS.success, fontWeight: FONT.semibold },
-  calDayUnavailableText: { fontSize: 7, color: 'rgba(255,255,255,0.2)' },
-  emptySlots: { alignItems: 'center', marginVertical: SPACE[6] },
-  linkText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primary, marginTop: SPACE[2] },
+  calDayDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: COLORS.success },
+  calDayDotSelected: { width: 4, height: 4, borderRadius: 2, backgroundColor: STATIC_WHITE },
+  calLegend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: SPACE[4],
+    paddingTop: SPACE[2],
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderLight,
+  },
+  calLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  calLegendDot: { width: 8, height: 8, borderRadius: 4 },
+  calLegendText: { fontSize: FONT.xs, color: COLORS.textSecondary },
+  emptySlots: { alignItems: 'center', marginVertical: SPACE[6], gap: SPACE[2] },
+  linkText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.primary, marginTop: SPACE[1] },
   timeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -755,63 +887,75 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   },
   timeSlot: {
     width: '30%',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
     paddingVertical: SPACE[3],
     borderRadius: RADIUS.lg,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderColor: COLORS.borderLight,
+    backgroundColor: COLORS.surface,
+    ...SHADOW.sm,
   },
   timeSlotActive: {
     borderColor: COLORS.primary,
-    backgroundColor: 'rgba(1,84,240,0.1)',
+    backgroundColor: COLORS.primary,
   },
-  timeSlotText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: 'rgba(255,255,255,0.6)' },
-  timeSlotTextActive: { color: COLORS.primary },
+  timeSlotText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
+  timeSlotTextActive: { color: STATIC_WHITE },
+  formCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    padding: SPACE[4],
+    gap: SPACE[4],
+    ...SHADOW.sm,
+  },
   formRow: { flexDirection: 'row', gap: SPACE[3] },
   formField: { flex: 1, gap: SPACE[2] },
-  formLabel: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: 'rgba(255,255,255,0.6)' },
+  formLabel: { fontSize: FONT.xs, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   formInput: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.surfaceAlt,
     borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
     fontSize: FONT.sm,
-    color: STATIC_WHITE,
+    color: COLORS.text,
   },
   phoneWrap: {
     flexDirection: 'row',
     borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     overflow: 'hidden',
   },
   phonePrefix: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: COLORS.surfaceAlt,
     paddingHorizontal: SPACE[3],
     paddingVertical: SPACE[3],
     justifyContent: 'center',
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(255,255,255,0.1)',
+    borderRightWidth: 1.5,
+    borderRightColor: COLORS.border,
   },
-  phonePrefixText: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)' },
+  phonePrefixText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   phoneInput: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.surfaceAlt,
     paddingHorizontal: SPACE[4],
     paddingVertical: SPACE[3],
     fontSize: FONT.sm,
-    color: STATIC_WHITE,
+    color: COLORS.text,
   },
   summaryCard: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: COLORS.primaryDark,
+    borderRadius: RADIUS.xl,
     padding: SPACE[4],
     gap: SPACE[3],
+    ...SHADOW.md,
   },
   summaryTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
   summaryRow: {
@@ -819,17 +963,19 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  summaryLabel: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.4)' },
+  summaryLabel: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.55)' },
   summaryValue: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: STATIC_WHITE },
-  summaryPrice: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.primary },
+  summaryDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.12)' },
+  summaryTotalLabel: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
+  summaryPrice: { fontSize: FONT.lg, fontWeight: FONT.extrabold, color: COLORS.primaryLight },
   bottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACE[5],
     paddingTop: SPACE[3],
-    backgroundColor: COLORS.surfaceDark,
+    backgroundColor: COLORS.surface,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.08)',
+    borderTopColor: COLORS.borderLight,
   },
   backStepBtn: {
     flexDirection: 'row',
@@ -858,24 +1004,72 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     paddingHorizontal: SPACE[6],
     paddingVertical: SPACE[4],
     borderRadius: RADIUS.lg,
+    ...SHADOW.md,
   },
+  successScroll: { flexGrow: 1, justifyContent: 'center' },
   successContainer: {
-    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: SPACE[6],
+    paddingVertical: SPACE[8],
+    gap: SPACE[3],
+  },
+  successIconOuter: {
+    width: 128,
+    height: 128,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: SPACE[8],
-    gap: SPACE[4],
+    marginBottom: SPACE[2],
   },
-  successIcon: { marginBottom: SPACE[2] },
-  successTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: STATIC_WHITE, textAlign: 'center' },
-  successText: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 22 },
-  successBtn: {
-    width: '100%',
+  successIconGlow: {
+    position: 'absolute',
+    width: 128,
+    height: 128,
+    borderRadius: 64,
+  },
+  successIconCircle: {
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    backgroundColor: COLORS.success,
     alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOW.lg,
+  },
+  successTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.text, textAlign: 'center' },
+  successText: { fontSize: FONT.sm, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 22, paddingHorizontal: SPACE[2] },
+  successSummaryCard: {
+    width: '100%',
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    padding: SPACE[4],
+    gap: SPACE[3],
+    marginTop: SPACE[3],
+    ...SHADOW.sm,
+  },
+  successSummaryRow: { flexDirection: 'row', alignItems: 'center', gap: SPACE[3] },
+  successSummaryIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primaryMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  successSummaryLabel: { fontSize: FONT.xs, color: COLORS.textMuted },
+  successSummaryValue: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text, marginTop: 1 },
+  successDivider: { height: 1, backgroundColor: COLORS.borderLight },
+  successBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACE[2],
+    width: '100%',
     backgroundColor: COLORS.primary,
     paddingVertical: SPACE[4],
     borderRadius: RADIUS.lg,
-    marginTop: SPACE[4],
+    marginTop: SPACE[5],
     ...SHADOW.primary,
   },
   successBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
@@ -884,5 +1078,5 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACE[3],
   },
-  successSecondaryText: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.4)' },
+  successSecondaryText: { fontSize: FONT.sm, fontWeight: FONT.medium, color: COLORS.textSecondary },
 });
