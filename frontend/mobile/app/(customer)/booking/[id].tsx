@@ -238,7 +238,18 @@ export default function BookingScreen() {
       await queryClient.invalidateQueries({ queryKey: ['my-appointments'] });
       setSuccess(true);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Randevu oluşturulurken bir hata oluştu.');
+      if (err.response?.status === 404) {
+        toast.error('Seçtiğiniz hizmet artık kullanılamıyor. Lütfen tekrar seçin.');
+        setSelectedService(null);
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setStep(1);
+        api.get(`/businesses/${businessId}`)
+          .then((res) => setServices(res.data.services || []))
+          .catch(() => {});
+      } else {
+        setError(err.response?.data?.message || 'Randevu oluşturulurken bir hata oluştu.');
+      }
     } finally {
       setLoading(false);
     }

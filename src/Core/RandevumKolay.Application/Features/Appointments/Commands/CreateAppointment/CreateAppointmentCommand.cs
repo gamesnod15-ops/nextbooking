@@ -42,7 +42,7 @@ public sealed class CreateAppointmentCommandHandler
             .FirstOrDefaultAsync(s => s.Id == request.ServiceId
                                    && s.IsActive
                                    && !s.IsDeleted, cancellationToken)
-            ?? throw new NotFoundException(nameof(Service), request.ServiceId);
+            ?? throw new NotFoundException("Seçilen hizmet artık mevcut değil veya pasif duruma alınmış. Lütfen sayfayı yenileyip tekrar deneyin.");
 
         var tenantId = service.TenantId;
         var businessId = service.BusinessId;
@@ -122,7 +122,7 @@ public sealed class CreateAppointmentCommandHandler
                                        && e.TenantId == tenantId
                                        && e.IsActive
                                        && !e.IsDeleted, cancellationToken)
-                ?? throw new NotFoundException(nameof(Employee), request.EmployeeId.Value);
+                ?? throw new NotFoundException("Seçilen çalışan artık mevcut değil veya pasif duruma alınmış. Lütfen sayfayı yenileyip tekrar deneyin.");
         }
 
         var employees = await _context.Employees
