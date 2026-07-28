@@ -56,7 +56,7 @@ const CARD_WIDTH = SCREEN_WIDTH - SPACE[5] * 2;
 // Leaves real breathing room above (below the category chips) and below (above
 // the swipe-hint bar, now attached directly under the card) instead of the
 // card stretching edge-to-edge vertically.
-const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.58, 540);
+const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.6, 560);
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   'Kuaför & Berber': 'cut-outline',
