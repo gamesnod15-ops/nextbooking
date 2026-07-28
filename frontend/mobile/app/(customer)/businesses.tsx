@@ -61,8 +61,9 @@ interface PaginatedResult<T> {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACE[5] * 2;
 // Leaves real breathing room above (below the category chips) and below (above
-// the swipe-hint row) instead of the card stretching edge-to-edge vertically.
-const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.52, 480);
+// the swipe-hint bar, now attached directly under the card) instead of the
+// card stretching edge-to-edge vertically.
+const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.46, 440);
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   'Kuaför & Berber': 'cut-outline',
@@ -281,13 +282,9 @@ export default function BusinessesScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <View style={styles.headerTop}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.greet}>İşletmeler</Text>
-            <Text style={styles.heroTitle}>Keşfedin</Text>
-          </View>
+          <Text style={styles.greet}>İşletmeler</Text>
+          <Text style={styles.heroTitle}>Keşfedin</Text>
         </View>
-
-        <Text style={styles.heroSubtitle}>{'Kaydırarak keşfet: sağa kaydır favorile,\nsola kaydır geç, dokun randevu al.'}</Text>
 
         <View style={styles.searchBox}>
           <Ionicons name="search-outline" size={18} color={COLORS.textMuted} />
@@ -341,7 +338,7 @@ export default function BusinessesScreen() {
         })}
       </ScrollView>
 
-      <View style={styles.deckArea}>
+      <View style={[styles.deckArea, { paddingBottom: insets.bottom + SPACE[3] }]}>
         {loading ? (
           <View style={{ paddingHorizontal: SPACE[5], width: '100%' }}>
             <SkeletonList variant="card" count={1} />
@@ -357,41 +354,45 @@ export default function BusinessesScreen() {
             }
           />
         ) : (
-          <SwipeCardDeck<BusinessItem>
-            data={deckItems}
-            keyExtractor={(item) => item.id}
-            renderCard={renderCard}
-            onSwipeLeft={handleSwipeLeft}
-            onSwipeRight={handleSwipeRight}
-            onTap={goToBooking}
-            cardWidth={CARD_WIDTH}
-            cardHeight={CARD_HEIGHT}
-            onEmpty={() => <EmptyState icon="business-outline" title="İşletme bulunamadı." />}
-          />
+          <View style={styles.deckStack}>
+            <View style={styles.cardBox}>
+              <SwipeCardDeck<BusinessItem>
+                data={deckItems}
+                keyExtractor={(item) => item.id}
+                renderCard={renderCard}
+                onSwipeLeft={handleSwipeLeft}
+                onSwipeRight={handleSwipeRight}
+                onTap={goToBooking}
+                cardWidth={CARD_WIDTH}
+                cardHeight={CARD_HEIGHT}
+                onEmpty={() => <EmptyState icon="business-outline" title="İşletme bulunamadı." />}
+              />
+            </View>
+
+            {deckItems.length > 0 && (
+              <View style={styles.hintBar}>
+                <View style={styles.hintItem}>
+                  <Ionicons name="close-circle-outline" size={20} color={COLORS.textMuted} />
+                  <Text style={styles.hintText}>Geç</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.refreshBtn}
+                  onPress={handleRefresh}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Yeniden karıştır"
+                >
+                  <Ionicons name="shuffle" size={18} color={STATIC_WHITE} />
+                </TouchableOpacity>
+                <View style={styles.hintItem}>
+                  <Text style={styles.hintText}>Favorile</Text>
+                  <Ionicons name="heart" size={20} color={COLORS.primary} />
+                </View>
+              </View>
+            )}
+          </View>
         )}
       </View>
-
-      {!loading && !error && deckItems.length > 0 && (
-        <View style={[styles.hintRow, { paddingBottom: insets.bottom + SPACE[4] }]}>
-          <View style={styles.hintItem}>
-            <Ionicons name="close-circle-outline" size={20} color={COLORS.textMuted} />
-            <Text style={styles.hintText}>Geç</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.refreshBtn}
-            onPress={handleRefresh}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel="Yeniden karıştır"
-          >
-            <Ionicons name="shuffle" size={18} color={STATIC_WHITE} />
-          </TouchableOpacity>
-          <View style={styles.hintItem}>
-            <Text style={styles.hintText}>Favorile</Text>
-            <Ionicons name="heart" size={20} color={COLORS.primary} />
-          </View>
-        </View>
-      )}
     </View>
   );
 }
@@ -399,10 +400,9 @@ export default function BusinessesScreen() {
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   header: { paddingHorizontal: SPACE[5], paddingBottom: SPACE[5], gap: SPACE[4], borderBottomLeftRadius: RADIUS['2xl'], borderBottomRightRadius: RADIUS['2xl'], overflow: 'hidden' },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: SPACE[4] },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: SPACE[4] },
   greet: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.5)' },
   heroTitle: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: STATIC_WHITE },
-  heroSubtitle: { fontSize: FONT.sm, color: 'rgba(255,255,255,0.65)', lineHeight: 19 },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -431,7 +431,9 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   quickChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   quickChipTextActive: { color: STATIC_WHITE },
 
-  deckArea: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: SPACE[5], paddingBottom: SPACE[2] },
+  deckArea: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: SPACE[4] },
+  deckStack: { width: CARD_WIDTH, alignItems: 'center' },
+  cardBox: { width: CARD_WIDTH, height: CARD_HEIGHT },
 
   card: {
     flex: 1,
@@ -485,12 +487,19 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   },
   retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
 
-  hintRow: {
+  hintBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACE[6],
-    paddingTop: SPACE[5],
+    width: '100%',
+    marginTop: SPACE[3],
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    paddingVertical: SPACE[3],
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    ...SHADOW.sm,
   },
   hintItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   hintText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textMuted },
