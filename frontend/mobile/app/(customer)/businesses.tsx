@@ -60,7 +60,9 @@ interface PaginatedResult<T> {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACE[5] * 2;
-const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.62, 560);
+// Leaves real breathing room above (below the category chips) and below (above
+// the swipe-hint row) instead of the card stretching edge-to-edge vertically.
+const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.52, 480);
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   'Kuaför & Berber': 'cut-outline',
@@ -429,7 +431,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   quickChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
   quickChipTextActive: { color: STATIC_WHITE },
 
-  deckArea: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: SPACE[3] },
+  deckArea: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: SPACE[5], paddingBottom: SPACE[2] },
 
   card: {
     flex: 1,
@@ -450,10 +452,12 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    padding: SPACE[5],
-    gap: SPACE[2],
+    paddingHorizontal: SPACE[5],
+    paddingTop: SPACE[5],
+    paddingBottom: SPACE[6],
+    gap: SPACE[3],
   },
-  cardTopRow: { flexDirection: 'row', gap: SPACE[2] },
+  cardTopRow: { flexDirection: 'row', gap: SPACE[2], marginBottom: SPACE[1] },
   categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -486,7 +490,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACE[6],
-    paddingTop: SPACE[2],
+    paddingTop: SPACE[5],
   },
   hintItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   hintText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textMuted },
