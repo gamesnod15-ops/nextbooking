@@ -542,14 +542,18 @@ export default function BookingScreen() {
                   const timeStr = new Date(slot.startTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
                   const active = selectedTime === timeStr;
                   return (
-                    <Animated.View key={slot.startTime} entering={FadeInUp.duration(220).delay(Math.min(idx, 12) * 25)}>
+                    <Animated.View
+                      key={slot.startTime}
+                      style={styles.timeSlotWrap}
+                      entering={FadeInUp.duration(220).delay(Math.min(idx, 12) * 25)}
+                    >
                       <TouchableOpacity
                         style={[styles.timeSlot, active && styles.timeSlotActive]}
                         onPress={() => setSelectedTime(timeStr)}
                         activeOpacity={0.7}
                       >
                         <Ionicons name="time-outline" size={14} color={active ? STATIC_WHITE : COLORS.primary} />
-                        <Text style={[styles.timeSlotText, active && styles.timeSlotTextActive]}>
+                        <Text style={[styles.timeSlotText, active && styles.timeSlotTextActive]} numberOfLines={1}>
                           {timeStr}
                         </Text>
                       </TouchableOpacity>
@@ -896,13 +900,17 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     flexWrap: 'wrap',
     gap: SPACE[2],
   },
+  timeSlotWrap: {
+    width: '31%',
+  },
   timeSlot: {
-    width: '30%',
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
     paddingVertical: SPACE[3],
+    paddingHorizontal: SPACE[1],
     borderRadius: RADIUS.lg,
     borderWidth: 1.5,
     borderColor: COLORS.borderLight,
