@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   TextInput,
   Image,
   Dimensions,
@@ -42,12 +41,6 @@ interface BusinessItem {
   distanceKm: number | null;
 }
 
-interface CategoryItem {
-  id: number;
-  name: string;
-  count: number;
-}
-
 interface PaginatedResult<T> {
   items: T[];
   pageNumber: number;
@@ -63,7 +56,7 @@ const CARD_WIDTH = SCREEN_WIDTH - SPACE[5] * 2;
 // Leaves real breathing room above (below the category chips) and below (above
 // the swipe-hint bar, now attached directly under the card) instead of the
 // card stretching edge-to-edge vertically.
-const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.46, 440);
+const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.5, 460);
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   'Kuaför & Berber': 'cut-outline',
@@ -116,7 +109,6 @@ export default function BusinessesScreen() {
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
 
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [shuffleSeed, setShuffleSeed] = useState(0);
 
   const { data: favorites = [], refetch: refetchFavorites } = useQuery({
@@ -148,11 +140,10 @@ export default function BusinessesScreen() {
   });
 
   const businessesQuery = useQuery({
-    queryKey: ['businesses-deck', search, selectedCategory],
+    queryKey: ['businesses-deck', search],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
-      if (selectedCategory != null) params.set('categoryIds', String(selectedCategory));
       params.set('pageNumber', '1');
       params.set('pageSize', '100');
       const res = await api.get(`/businesses?${params.toString()}`);
@@ -160,27 +151,6 @@ export default function BusinessesScreen() {
     },
     staleTime: 60 * 1000,
   });
-
-  const { data: filterSource = [] } = useQuery({
-    queryKey: ['businesses-filter-source'],
-    queryFn: async () => {
-      const res = await api.get('/businesses?pageNumber=1&pageSize=200');
-      return (res.data?.items ?? (Array.isArray(res.data) ? res.data : [])) as BusinessItem[];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const allCategories = useMemo(() => {
-    const byId = new Map<number, { name: string; count: number }>();
-    for (const b of filterSource) {
-      const existing = byId.get(b.categoryId);
-      if (existing) existing.count++;
-      else byId.set(b.categoryId, { name: b.categoryName, count: 1 });
-    }
-    return [...byId.entries()]
-      .map(([id, { name, count }]) => ({ id, name, count }))
-      .sort((a, b) => a.name.localeCompare(b.name, 'tr'));
-  }, [filterSource]);
 
   // Deck order is re-shuffled whenever the source data changes (fresh fetch,
   // pull-to-refresh, or a filter/search change) — "hep karışık listelensin".
@@ -197,15 +167,6 @@ export default function BusinessesScreen() {
 
   function handleSearch(text: string) {
     setSearch(text);
-  }
-
-  function selectQuickCategory(id: number | null) {
-    setSelectedCategory(id);
-  }
-
-  function handleRefresh() {
-    setShuffleSeed((s) => s + 1);
-    businessesQuery.refetch();
   }
 
   function goToBooking(business: BusinessItem) {
@@ -304,40 +265,6 @@ export default function BusinessesScreen() {
         </View>
       </LinearGradient>
 
-      <ScrollView
-        horizontal
-        style={styles.quickCatsScroll}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.quickCats}
-      >
-        <TouchableOpacity
-          style={[styles.quickChip, selectedCategory === null && styles.quickChipActive]}
-          onPress={() => selectQuickCategory(null)}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Tüm kategoriler"
-        >
-          <Ionicons name="apps-outline" size={15} color={selectedCategory === null ? STATIC_WHITE : COLORS.text} />
-          <Text style={[styles.quickChipText, selectedCategory === null && styles.quickChipTextActive]}>Tümü</Text>
-        </TouchableOpacity>
-        {allCategories.map((cat: CategoryItem) => {
-          const active = selectedCategory === cat.id;
-          return (
-            <TouchableOpacity
-              key={cat.id}
-              style={[styles.quickChip, active && styles.quickChipActive]}
-              onPress={() => selectQuickCategory(active ? null : cat.id)}
-              activeOpacity={0.8}
-              accessibilityRole="button"
-              accessibilityLabel={cat.name}
-            >
-              <Ionicons name={categoryIcon(cat.name)} size={15} color={active ? STATIC_WHITE : COLORS.text} />
-              <Text style={[styles.quickChipText, active && styles.quickChipTextActive]}>{cat.name}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
       <View style={[styles.deckArea, { paddingBottom: insets.bottom + SPACE[3] }]}>
         {loading ? (
           <View style={{ paddingHorizontal: SPACE[5], width: '100%' }}>
@@ -354,42 +281,18 @@ export default function BusinessesScreen() {
             }
           />
         ) : (
-          <View style={styles.deckStack}>
-            <View style={styles.cardBox}>
-              <SwipeCardDeck<BusinessItem>
-                data={deckItems}
-                keyExtractor={(item) => item.id}
-                renderCard={renderCard}
-                onSwipeLeft={handleSwipeLeft}
-                onSwipeRight={handleSwipeRight}
-                onTap={goToBooking}
-                cardWidth={CARD_WIDTH}
-                cardHeight={CARD_HEIGHT}
-                onEmpty={() => <EmptyState icon="business-outline" title="İşletme bulunamadı." />}
-              />
-            </View>
-
-            {deckItems.length > 0 && (
-              <View style={styles.hintBar}>
-                <View style={styles.hintItem}>
-                  <Ionicons name="close-circle-outline" size={20} color={COLORS.textMuted} />
-                  <Text style={styles.hintText}>Geç</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.refreshBtn}
-                  onPress={handleRefresh}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityLabel="Yeniden karıştır"
-                >
-                  <Ionicons name="shuffle" size={18} color={STATIC_WHITE} />
-                </TouchableOpacity>
-                <View style={styles.hintItem}>
-                  <Text style={styles.hintText}>Favorile</Text>
-                  <Ionicons name="heart" size={20} color={COLORS.primary} />
-                </View>
-              </View>
-            )}
+          <View style={styles.cardBox}>
+            <SwipeCardDeck<BusinessItem>
+              data={deckItems}
+              keyExtractor={(item) => item.id}
+              renderCard={renderCard}
+              onSwipeLeft={handleSwipeLeft}
+              onSwipeRight={handleSwipeRight}
+              onTap={goToBooking}
+              cardWidth={CARD_WIDTH}
+              cardHeight={CARD_HEIGHT}
+              onEmpty={() => <EmptyState icon="business-outline" title="İşletme bulunamadı." />}
+            />
           </View>
         )}
       </View>
@@ -413,26 +316,8 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     height: 48,
   },
   searchInput: { flex: 1, fontSize: FONT.base, color: COLORS.text },
-  quickCatsScroll: { flexGrow: 0, flexShrink: 0, height: 64 },
-  quickCats: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACE[4], paddingTop: SPACE[3], paddingBottom: SPACE[2], gap: SPACE[2] },
-  quickChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-    ...SHADOW.sm,
-  },
-  quickChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  quickChipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
-  quickChipTextActive: { color: STATIC_WHITE },
 
   deckArea: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: SPACE[4] },
-  deckStack: { width: CARD_WIDTH, alignItems: 'center' },
   cardBox: { width: CARD_WIDTH, height: CARD_HEIGHT },
 
   card: {
@@ -486,30 +371,4 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
-
-  hintBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACE[6],
-    width: '100%',
-    marginTop: SPACE[3],
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.xl,
-    paddingVertical: SPACE[3],
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
-    ...SHADOW.sm,
-  },
-  hintItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  hintText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textMuted },
-  refreshBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOW.primary,
-  },
 });
