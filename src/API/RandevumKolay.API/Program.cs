@@ -222,7 +222,16 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 
 using var scope = app.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-await db.Database.MigrateAsync();
+try
+{
+    await db.Database.MigrateAsync();
+}
+catch (Exception ex)
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Migration failed — attempting to continue without migration");
+    await db.Database.EnsureCreatedAsync();
+}
 
 if (!await db.Tenants.AnyAsync())
     await SeedData.InitializeAsync(db);
