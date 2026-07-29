@@ -326,7 +326,7 @@ export default function SettingsScreen() {
                     const parts = profileInfo.fullName.trim().split(' ');
                     await api.put('/users/me', {
                       firstName: parts[0] ?? '',
-                      lastName: parts.slice(1).join(' ') || parts[0] ?? '',
+                      lastName: (parts.slice(1).join(' ') || parts[0]) ?? '',
                       phone: profileInfo.phone || null,
                       jobTitle: profileInfo.jobTitle || null,
                     });
