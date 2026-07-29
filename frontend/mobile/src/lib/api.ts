@@ -17,13 +17,16 @@ export const API_ORIGIN = BASE_URL.startsWith('http')
   ? BASE_URL.substring(0, BASE_URL.indexOf('/', 8))
   : 'http://localhost:5280';
 
-/** Replace localhost URLs with the actual server IP for mobile device access */
+/** Normalise an image URL to an absolute URL the device/browser can fetch.
+ *  - null / undefined / '' → ''
+ *  - Already absolute (http*) → returned as-is (localhost swapped to API_ORIGIN)
+ *  - Relative with leading / (/uploads/x.png) → API_ORIGIN + url
+ *  - Bare relative (uploads/x.png) → API_ORIGIN + / + url  */
 export function fixImageUrl(url: string | null | undefined): string {
   if (!url) return '';
   const swapped = url.replace(/https?:\/\/localhost(:\d+)?/gi, API_ORIGIN);
-  // Relative paths like /uploads/... → full URL
-  if (swapped.startsWith('/')) return `${API_ORIGIN}${swapped}`;
-  return swapped;
+  if (swapped.startsWith('http')) return swapped;
+  return `${API_ORIGIN}/${swapped.startsWith('/') ? swapped.slice(1) : swapped}`;
 }
 
 const api = axios.create({

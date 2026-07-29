@@ -110,6 +110,13 @@ function formatDistance(km: number | null): string | null {
   return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 }
 
+/** Card image that shows fallback on load failure */
+function CardImage({ uri, fallback }: { uri: string; fallback: React.ReactNode }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <>{fallback}</>;
+  return <Image source={{ uri }} style={StyleSheet.absoluteFill} resizeMode="cover" onError={() => setFailed(true)} />;
+}
+
 const AD_GRADIENTS: Record<string, [string, string]> = {
   BasicBoost: ['#F59E0B', '#D97706'],
   ProfessionalBoost: ['#8B5CF6', '#6D28D9'],
@@ -267,7 +274,7 @@ export default function BusinessesScreen() {
       const adImg = fixImageUrl(item.coverImageUrl || '/uploads/banner-1.png');
       return (
         <View style={styles.card}>
-          {adImg ? <Image source={{ uri: adImg }} style={styles.cardImage} resizeMode="cover" /> : <View style={[styles.cardImage, styles.cardImageFallback]} />}
+          <CardImage uri={adImg} fallback={<View style={[styles.cardImage, { backgroundColor: '#08224B' }]} />} />
         </View>
       );
     }
@@ -277,7 +284,7 @@ export default function BusinessesScreen() {
     return (
       <View style={styles.card}>
         {imageUrl ? (
-          <Image source={{ uri: fixImageUrl(imageUrl) }} style={styles.cardImage} resizeMode="cover" />
+          <CardImage uri={fixImageUrl(imageUrl)} fallback={<View style={[styles.cardImage, styles.cardImageFallback]}><Avatar name={biz.name} size={72} /></View>} />
         ) : (
           <View style={[styles.cardImage, styles.cardImageFallback]}>
             <Avatar name={biz.name} size={72} />
