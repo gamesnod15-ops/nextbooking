@@ -54,7 +54,12 @@ interface PublicAdDto {
   targetCategory: string;
 }
 
-type DeckItem = BusinessItem | (PublicAdDto & { __type: 'ad' });
+type AdDeckItem = PublicAdDto & { __type: 'ad' };
+type DeckItem = BusinessItem | AdDeckItem;
+
+function isAd(item: DeckItem): item is AdDeckItem {
+  return '__type' in item && item.__type === 'ad';
+}
 
 interface PaginatedResult<T> {
   items: T[];
@@ -236,7 +241,7 @@ export default function BusinessesScreen() {
   }
 
   function goToBooking(item: DeckItem) {
-    if ('__type' in item && item.__type === 'ad') {
+    if (isAd(item)) {
       router.push(`/(customer)/business/${item.businessId}`);
       return;
     }
@@ -244,11 +249,12 @@ export default function BusinessesScreen() {
   }
 
   function handleSwipeRight(item: DeckItem) {
-    if ('__type' in item && item.__type === 'ad') return;
-    const isFavorite = favoriteIds.has(item.id);
+    if (isAd(item)) return;
+    const biz = item;
+    const isFavorite = favoriteIds.has(biz.id);
     if (!isFavorite) {
-      favoriteMutation.mutate({ businessId: item.id, isFavorite: false });
-      toast.success(`${item.name} favorilere eklendi`);
+      favoriteMutation.mutate({ businessId: biz.id, isFavorite: false });
+      toast.success(`${biz.name} favorilere eklendi`);
     }
   }
 
@@ -257,22 +263,24 @@ export default function BusinessesScreen() {
   }
 
   function renderCard(item: DeckItem) {
-    if ('__type' in item && item.__type === 'ad') {
+    if (isAd(item)) {
+      const adImg = fixImageUrl(item.coverImageUrl || '/uploads/banner-1.png');
       return (
         <View style={styles.card}>
-          <Image source={{ uri: fixImageUrl(item.coverImageUrl) }} style={styles.cardImage} resizeMode="cover" />
+          {adImg ? <Image source={{ uri: adImg }} style={styles.cardImage} resizeMode="cover" /> : <View style={[styles.cardImage, styles.cardImageFallback]} />}
         </View>
       );
     }
-    const imageUrl = item.coverImageUrl || item.logoUrl;
-    const dist = formatDistance(item.distanceKm);
+    const biz = item;
+    const imageUrl = biz.coverImageUrl || biz.logoUrl;
+    const dist = formatDistance(biz.distanceKm);
     return (
       <View style={styles.card}>
         {imageUrl ? (
           <Image source={{ uri: fixImageUrl(imageUrl) }} style={styles.cardImage} resizeMode="cover" />
         ) : (
           <View style={[styles.cardImage, styles.cardImageFallback]}>
-            <Avatar name={item.name} size={72} />
+            <Avatar name={biz.name} size={72} />
           </View>
         )}
         <LinearGradient
@@ -282,13 +290,13 @@ export default function BusinessesScreen() {
           end={{ x: 0, y: 1 }}
         />
         <View style={styles.categoryIconWrap}>
-          <Ionicons name={categoryIcon(item.categoryName)} size={18} color={COLORS.primary} />
+          <Ionicons name={categoryIcon(biz.categoryName)} size={18} color={COLORS.primary} />
         </View>
         <View style={styles.cardInfo}>
           <View style={styles.cardTopRow}>
             <View style={styles.categoryPill}>
-              <Ionicons name={categoryIcon(item.categoryName)} size={12} color={STATIC_WHITE} />
-              <Text style={styles.categoryPillText} numberOfLines={1}>{item.categoryName}</Text>
+              <Ionicons name={categoryIcon(biz.categoryName)} size={12} color={STATIC_WHITE} />
+              <Text style={styles.categoryPillText} numberOfLines={1}>{biz.categoryName}</Text>
             </View>
             {dist && (
               <View style={styles.categoryPill}>
@@ -297,21 +305,21 @@ export default function BusinessesScreen() {
               </View>
             )}
           </View>
-          <Text style={styles.cardName} numberOfLines={2}>{item.name}</Text>
+          <Text style={styles.cardName} numberOfLines={2}>{biz.name}</Text>
           <View style={styles.cardMetaRow}>
-            {item.reviewCount > 0 ? (
+            {biz.reviewCount > 0 ? (
               <View style={styles.ratingRow}>
                 <Ionicons name="star" size={14} color="#FBBF24" />
-                <Text style={styles.ratingText}>{item.averageRating.toFixed(1)}</Text>
-                <Text style={styles.ratingCount}>({item.reviewCount})</Text>
+                <Text style={styles.ratingText}>{biz.averageRating.toFixed(1)}</Text>
+                <Text style={styles.ratingCount}>({biz.reviewCount})</Text>
               </View>
             ) : (
               <Text style={styles.ratingCount}>Yeni işletme</Text>
             )}
-            {item.city ? (
+            {biz.city ? (
               <View style={styles.cityRow}>
                 <Ionicons name="location" size={13} color="rgba(255,255,255,0.85)" />
-                <Text style={styles.cityText} numberOfLines={1}>{item.city}</Text>
+                <Text style={styles.cityText} numberOfLines={1}>{biz.city}</Text>
               </View>
             ) : null}
           </View>
@@ -367,7 +375,7 @@ export default function BusinessesScreen() {
           <View style={styles.cardBox}>
             <SwipeCardDeck<DeckItem>
               data={deckItems}
-              keyExtractor={(item) => ('__type' in item && item.__type === 'ad' ? `ad-${item.id}` : item.id)}
+              keyExtractor={(item) => (isAd(item) ? `ad-${item.id}` : item.id)}
               renderCard={renderCard}
               onSwipeLeft={handleSwipeLeft}
               onSwipeRight={handleSwipeRight}

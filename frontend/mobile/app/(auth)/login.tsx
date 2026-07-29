@@ -70,7 +70,7 @@ export default function LoginScreen() {
       if (selectedRole === 'business') {
         router.replace('/(business)');
       } else {
-        router.replace('/(customer)');
+        router.replace('/(customer)' as any);
       }
     } catch (err: any) {
       const message = err.response?.data?.message || err.response?.data?.detail || err.message || 'Bir hata oluştu';

@@ -376,7 +376,7 @@ export default function BusinessDetailScreen() {
               </TouchableOpacity>
             )}
             {biz.website && (
-              <TouchableOpacity style={styles.contactRow} activeOpacity={0.7} onPress={() => Linking.openURL(`https://${biz.website.replace(/^https?:\/\//, '')}`)}>
+              <TouchableOpacity style={styles.contactRow} activeOpacity={0.7} onPress={() => biz.website && Linking.openURL(`https://${biz.website.replace(/^https?:\/\//, '')}`)}>
                 <View style={styles.contactIcon}>
                   <Ionicons name="globe" size={18} color={COLORS.primary} />
                 </View>
@@ -576,7 +576,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.lg,
   },
   galleryMore: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: RADIUS.lg,
     backgroundColor: 'rgba(0,0,0,0.5)',
     alignItems: 'center',
@@ -782,7 +782,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   },
   bookBtnText: { fontSize: FONT.md, fontWeight: FONT.bold, color: STATIC_WHITE },
   lightbox: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0,0,0,0.95)',
     zIndex: 100,
     justifyContent: 'center',

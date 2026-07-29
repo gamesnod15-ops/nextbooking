@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { DotGrid } from '@/components/ui/DotGrid';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useToast } from '@/components/ui/Toast';
 import { useTheme, useColors, type Palette } from '@/lib/themeContext';
 import {

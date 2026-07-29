@@ -63,7 +63,7 @@ export default function SplashScreen() {
 
     setTimeout(() => {
       screenOpacity.value = withTiming(0, { duration: FADE_DURATION, ...NO_REDUCE_MOTION });
-      setTimeout(() => router.replace(target), FADE_DURATION);
+      setTimeout(() => router.replace(target as any), FADE_DURATION);
     }, SPLASH_DURATION - FADE_DURATION);
   }
 
