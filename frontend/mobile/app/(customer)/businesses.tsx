@@ -271,10 +271,23 @@ export default function BusinessesScreen() {
 
   function renderCard(item: DeckItem) {
     if (isAd(item)) {
-      const adImg = fixImageUrl(item.coverImageUrl || '/uploads/banner-1.png');
+      const adImg = fixImageUrl(item.coverImageUrl || '');
+      const gradient = adGradient(item.packageType);
+      const fallback = (
+        <View style={[styles.cardImage, { backgroundColor: gradient[1] }]}>
+          <LinearGradient colors={[gradient[0], gradient[1]]} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+          <View style={styles.adFallbackContent}>
+            <View style={styles.adBadge}>
+              <Ionicons name="megaphone" size={14} color="#08224B" />
+              <Text style={styles.adBadgeText}>Reklam</Text>
+            </View>
+            <Text style={styles.adFallbackName} numberOfLines={2}>{item.businessName}</Text>
+          </View>
+        </View>
+      );
       return (
         <View style={styles.card}>
-          <CardImage uri={adImg} fallback={<View style={[styles.cardImage, { backgroundColor: '#08224B' }]} />} />
+          {adImg ? <CardImage uri={adImg} fallback={fallback} /> : fallback}
         </View>
       );
     }
@@ -504,6 +517,36 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   adIndicatorText: {
     fontSize: FONT.xs,
     color: COLORS.textMuted,
+  },
+
+  adFallbackContent: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: SPACE[5],
+    paddingBottom: SPACE[6],
+    gap: SPACE[2],
+  },
+  adBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+  },
+  adBadgeText: {
+    fontSize: FONT.xs,
+    fontWeight: FONT.bold,
+    color: '#08224B',
+  },
+  adFallbackName: {
+    fontSize: FONT.xl,
+    fontWeight: FONT.extrabold,
+    color: STATIC_WHITE,
   },
 
   retryBtn: {
