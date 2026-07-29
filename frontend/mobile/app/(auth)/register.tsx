@@ -15,6 +15,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { useToast } from '@/components/ui/Toast';
@@ -117,7 +118,9 @@ export default function RegisterScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill}>
+        <PatternOverlay />
+      </LinearGradient>
       <View style={styles.blob} />
 
       <ScrollView

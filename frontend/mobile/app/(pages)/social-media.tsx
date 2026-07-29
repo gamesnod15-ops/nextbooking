@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
+import { useToast } from '@/components/ui/Toast';
 
 // No backend endpoint exists yet for social auto-post settings. Persisted
 // locally only so the toggle survives an app restart; it is not enforced by
@@ -14,10 +16,9 @@ import { Badge } from '@/components/ui/Badge';
 const AUTO_POST_KEY = 'business_social_autopost';
 
 const PLATFORMS = [
-  { id: 'instagram', label: 'Instagram', icon: 'logo-instagram', color: '#E1306C', bg: '#FCE4EC', connected: true, followers: 4280 },
-  { id: 'facebook', label: 'Facebook', icon: 'logo-facebook', color: '#1877F2', bg: '#E3F2FD', connected: true, followers: 1840 },
-  { id: 'google', label: 'Google İşletme', icon: 'logo-google', color: '#4285F4', bg: '#E8F0FE', connected: false, followers: null },
-  { id: 'twitter', label: 'Twitter / X', icon: 'logo-twitter', color: '#1DA1F2', bg: '#E3F2FD', connected: false, followers: null },
+  { id: 'instagram', label: 'Instagram', icon: 'logo-instagram', color: '#E1306C', bg: '#FCE4EC', url: 'https://instagram.com' },
+  { id: 'facebook', label: 'Facebook', icon: 'logo-facebook', color: '#1877F2', bg: '#E3F2FD', url: 'https://facebook.com' },
+  { id: 'x', label: 'X (Twitter)', icon: 'logo-twitter', color: '#000000', bg: '#F5F5F5', url: 'https://x.com' },
 ];
 
 const RECENT_POSTS = [
@@ -29,6 +30,7 @@ export default function SocialMediaScreen() {
   const insets = useSafeAreaInsets();
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
+  const toast = useToast();
   const [autoPost, setAutoPost] = useState(true);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function SocialMediaScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Sosyal Medya" showBack />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Platforms */}
@@ -56,16 +59,10 @@ export default function SocialMediaScreen() {
               </View>
               <View style={styles.platformInfo}>
                 <Text style={styles.platformName}>{p.label}</Text>
-                {p.connected && p.followers ? (
-                  <Text style={styles.platformSub}>{p.followers.toLocaleString('tr')} takipçi</Text>
-                ) : (
-                  <Text style={styles.platformSub}>Bağlı değil</Text>
-                )}
+                <Text style={styles.platformSub}>Profili ziyaret et</Text>
               </View>
-              <TouchableOpacity style={[styles.connectBtn, p.connected && styles.connectBtnConnected]}>
-                <Text style={[styles.connectBtnText, p.connected && styles.connectBtnTextConnected]}>
-                  {p.connected ? 'Bağlı' : 'Bağla'}
-                </Text>
+              <TouchableOpacity style={styles.connectBtn} onPress={() => Linking.openURL(p.url).catch(() => toast.error('Bağlantı açılamadı.'))}>
+                <Text style={styles.connectBtnText}>Git</Text>
               </TouchableOpacity>
             </View>
           ))}

@@ -13,6 +13,7 @@ import {
 import { tr } from 'date-fns/locale';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { MenuButton } from '@/components/DrawerMenu';
@@ -506,6 +507,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       {/* Header */}
       <View style={styles.header}>
         <MenuButton showBadge={false} />

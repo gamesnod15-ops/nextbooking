@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -69,6 +70,7 @@ export default function SurveysScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader
         title="Memnuniyet Anketi"
         subtitle={list.length > 0 ? `${list.length} geri bildirim · ort. ${avgRating}` : 'Geri bildirim yok'}

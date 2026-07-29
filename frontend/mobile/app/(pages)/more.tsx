@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { Avatar } from '@/components/ui/Avatar';
@@ -110,9 +111,11 @@ export default function MoreScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
         {/* Profile Header */}
         <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.profileHeader}>
+          <PatternOverlay />
           <View style={styles.profileRow}>
             <Avatar name={auth.fullName ?? 'İşletme'} size={56} />
             <View style={{ flex: 1 }}>

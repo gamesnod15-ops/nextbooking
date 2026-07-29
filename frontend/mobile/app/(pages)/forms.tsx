@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -41,6 +42,7 @@ export default function FormsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Formlar" subtitle={`${list.length} form`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={() => setModal({ open: true })} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />

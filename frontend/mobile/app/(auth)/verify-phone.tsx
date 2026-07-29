@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FONT, RADIUS, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
 
@@ -97,7 +98,9 @@ export default function VerifyPhoneScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill}>
+        <PatternOverlay />
+      </LinearGradient>
       <View style={styles.blob} />
 
       <View style={[styles.container, { paddingTop: insets.top + SPACE[5] }]}>

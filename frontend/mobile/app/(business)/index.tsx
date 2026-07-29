@@ -19,6 +19,7 @@ import { useColors, type Palette } from '@/lib/themeContext';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setBusiness } from '@/store/slices/businessSlice';
 import { updateProfile } from '@/store/slices/authSlice';
@@ -172,6 +173,7 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.root}>
+      <PatternOverlay opacity={0.25} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.content, { paddingTop: insets.top + SPACE[4], paddingBottom: insets.bottom + 100 }]}
@@ -201,6 +203,7 @@ export default function DashboardScreen() {
         {/* Hero: today's appointments */}
         <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/(business)/appointments')}>
           <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <PatternOverlay />
             <View style={styles.heroBlobOne} />
             <View style={styles.heroBlobTwo} />
             <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>

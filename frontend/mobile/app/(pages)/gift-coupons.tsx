@@ -5,11 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { DateField } from '@/components/ui/DateField';
 import { useToast } from '@/components/ui/Toast';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import type { GiftCoupon } from '@/types';
@@ -60,6 +62,7 @@ export default function GiftCouponsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Hediye Kuponları" subtitle={`${(list ?? []).filter(c => c.status === 'active').length} aktif`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
@@ -108,7 +111,7 @@ export default function GiftCouponsScreen() {
         <FormField label="Alıcı Adı" value={form.recipientName} onChangeText={v => setForm(p => ({ ...p, recipientName: v }))} placeholder="Örn: Ayşe Yılmaz" />
         <FormField label="Alıcı E-postası" value={form.recipientEmail} onChangeText={v => setForm(p => ({ ...p, recipientEmail: v }))} placeholder="İsteğe bağlı" keyboardType="email-address" />
         <FormField label="Satın Alan" value={form.purchasedBy} onChangeText={v => setForm(p => ({ ...p, purchasedBy: v }))} placeholder="Örn: Mehmet Kaya" />
-        <FormField label="Son Kullanım Tarihi" value={form.expiryDate} onChangeText={v => setForm(p => ({ ...p, expiryDate: v }))} placeholder="İsteğe bağlı, örn: 2025-12-31" />
+        <DateField label="Son Kullanım Tarihi" value={form.expiryDate} onChangeText={v => setForm(p => ({ ...p, expiryDate: v }))} placeholder="2025-12-31" />
         <FormField label="Mesaj" value={form.message} onChangeText={v => setForm(p => ({ ...p, message: v }))} placeholder="İsteğe bağlı" multiline />
       </FormModal>
     </View>

@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 
 const { width } = Dimensions.get('window');
 
@@ -89,7 +90,9 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill}>
+        <PatternOverlay />
+      </LinearGradient>
 
       <View style={[styles.container, { paddingTop: insets.top + SPACE[5], paddingBottom: insets.bottom + SPACE[5] }]}>
         <TouchableOpacity style={styles.skipBtn} onPress={skip} activeOpacity={0.7}>

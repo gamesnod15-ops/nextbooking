@@ -5,11 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { DateField } from '@/components/ui/DateField';
 import { formatDate } from '@/lib/utils';
 import type { Campaign } from '@/types';
 import api from '@/lib/api';
@@ -56,6 +58,7 @@ export default function CampaignsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Kampanyalar" subtitle={`${(list ?? []).filter(c => c.status === 'active').length} aktif`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
@@ -139,8 +142,8 @@ export default function CampaignsScreen() {
           </View>
         </View>
         <FormField label="İndirim Değeri" value={form.discountValue} onChangeText={v => setForm(p => ({ ...p, discountValue: v }))} placeholder={form.discountType === 'percentage' ? 'Örn: 20' : 'Örn: 150'} keyboardType="numeric" />
-        <FormField label="Başlangıç Tarihi" value={form.startDate} onChangeText={v => setForm(p => ({ ...p, startDate: v }))} placeholder="Örn: 2025-01-01" />
-        <FormField label="Bitiş Tarihi" value={form.endDate} onChangeText={v => setForm(p => ({ ...p, endDate: v }))} placeholder="Örn: 2025-12-31" />
+        <DateField label="Başlangıç Tarihi" value={form.startDate} onChangeText={v => setForm(p => ({ ...p, startDate: v }))} placeholder="2025-01-01" />
+        <DateField label="Bitiş Tarihi" value={form.endDate} onChangeText={v => setForm(p => ({ ...p, endDate: v }))} placeholder="2025-12-31" />
         <FormField label="Maks. Kullanım" value={form.usageLimit} onChangeText={v => setForm(p => ({ ...p, usageLimit: v }))} placeholder="Sınırsız için boş bırakın" keyboardType="numeric" />
       </FormModal>
     </View>

@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   interpolate,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withSpring,
   withTiming,
   Extrapolation,
@@ -85,9 +87,43 @@ export function SwipeCardDeck<T>({
 
   const activeItem = data[activeIndex];
 
+  const idleRotate = useSharedValue(0);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startIdleSway = useCallback(() => {
+    // 3 full cycles: right → center → left → center → right → center
+    idleRotate.value = withRepeat(
+      withTiming(2.5, { duration: 700 }),
+      6,
+      true,
+      (finished) => {
+        if (finished) idleRotate.value = withSpring(0, { damping: 8, stiffness: 60 });
+      }
+    );
+  }, [idleRotate]);
+
+  const stopIdleSway = useCallback(() => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleRotate.value = withSpring(0, { damping: 10, stiffness: 80 });
+  }, [idleRotate]);
+
+  const scheduleIdleSway = useCallback(() => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => startIdleSway(), 3000);
+  }, [startIdleSway]);
+
+  useEffect(() => {
+    if (!activeItem) return;
+    scheduleIdleSway();
+    return () => { if (idleTimerRef.current) clearTimeout(idleTimerRef.current); };
+  }, [activeIndex, activeItem, scheduleIdleSway]);
+
   const panGesture = useMemo(() => {
     return Gesture.Pan()
       .enabled(!!activeItem)
+      .onBegin(() => {
+        runOnJS(stopIdleSway)();
+      })
       .onUpdate((e) => {
         translateX.value = e.translationX;
         translateY.value = e.translationY;
@@ -109,9 +145,10 @@ export function SwipeCardDeck<T>({
         } else {
           translateX.value = withSpring(0, { damping: 15, stiffness: 150 });
           translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
+          runOnJS(scheduleIdleSway)();
         }
       });
-  }, [activeItem, handleSwipeLeft, handleSwipeRight, translateX, translateY]);
+  }, [activeItem, handleSwipeLeft, handleSwipeRight, translateX, translateY, stopIdleSway, scheduleIdleSway]);
 
   const tapGesture = useMemo(() => {
     return Gesture.Tap()
@@ -134,7 +171,7 @@ export function SwipeCardDeck<T>({
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
-        { rotate: `${rotate}deg` },
+        { rotate: `${rotate + idleRotate.value}deg` },
       ],
     };
   });
@@ -172,11 +209,11 @@ export function SwipeCardDeck<T>({
                   ]}
                 >
                   {renderCard(item, activeIndex)}
-                  <Animated.View pointerEvents="none" style={[styles.badge, styles.likeBadge, likeOverlayStyle]}>
-                    <Animated.Text style={styles.badgeText}>BEĞENDİM</Animated.Text>
+                  <Animated.View pointerEvents="none" style={[styles.overlayIcon, likeOverlayStyle]}>
+                    <Ionicons name="heart" size={80} color="#22C55E" />
                   </Animated.View>
-                  <Animated.View pointerEvents="none" style={[styles.badge, styles.nopeBadge, nopeOverlayStyle]}>
-                    <Animated.Text style={styles.badgeText}>GEÇ</Animated.Text>
+                  <Animated.View pointerEvents="none" style={[styles.overlayIcon, nopeOverlayStyle]}>
+                    <Ionicons name="close" size={80} color="#EF4444" />
                   </Animated.View>
                 </Animated.View>
               </GestureDetector>
@@ -223,27 +260,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: RADIUS['2xl'],
   },
-  badge: {
+  overlayIcon: {
     position: 'absolute',
-    top: 24,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: RADIUS.md,
-    borderWidth: 3,
-  },
-  likeBadge: {
-    left: 20,
-    borderColor: '#22C55E',
-    transform: [{ rotate: '-18deg' }],
-  },
-  nopeBadge: {
-    right: 20,
-    borderColor: '#EF4444',
-    transform: [{ rotate: '18deg' }],
-  },
-  badgeText: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    top: 0, left: 0, right: 0, bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

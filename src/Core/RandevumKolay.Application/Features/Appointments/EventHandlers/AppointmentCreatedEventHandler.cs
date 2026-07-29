@@ -51,5 +51,15 @@ public class AppointmentCreatedEventHandler : INotificationHandler<AppointmentCr
                 startTime = notification.Appointment.StartTime
             },
             cancellationToken);
+
+        // Send push notification to tenant staff devices
+        var pushTitle = "Yeni Randevu";
+        var pushBody = $"{notification.Appointment.Customer?.Name} - {notification.Appointment.StartTime:dd.MM HH:mm}";
+        await _notificationService.SendPushNotificationAsync(
+            notification.Appointment.TenantId,
+            pushTitle,
+            pushBody,
+            new { appointmentId, type = "new_appointment" },
+            cancellationToken);
     }
 }

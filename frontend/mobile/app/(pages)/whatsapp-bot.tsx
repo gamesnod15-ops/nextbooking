@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -31,6 +32,7 @@ export default function WhatsappBotScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="WhatsApp Bot" showBack />
       {/* Status Banner */}
       <View style={styles.statusBanner}>
@@ -77,15 +79,10 @@ export default function WhatsappBotScreen() {
           </View>
         </ScrollView>
       ) : (
-        <ScrollView contentContainerStyle={styles.chatContainer}>
-          {messages.length === 0 ? (
-            <EmptyState icon="chatbubbles-outline" title="Mesaj yok" />
-          ) : messages.map((msg) => (
-            <View key={msg.id} style={[styles.bubble, msg.from === 'user' ? styles.bubbleUser : styles.bubbleBot]}>
-              <Text style={[styles.bubbleText, msg.from === 'user' ? styles.bubbleTextUser : styles.bubbleTextBot]}>{msg.text}</Text>
-            </View>
-          ))}
-        </ScrollView>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: SPACE[10], opacity: 0.5, pointerEvents: 'none' } as any}>
+          <Ionicons name="construct-outline" size={40} color={COLORS.textMuted} />
+          <Text style={{ marginTop: SPACE[3], fontSize: FONT.base, color: COLORS.textMuted, textAlign: 'center' }}>Sohbet önizlemesi şu anda kullanılamıyor. Yakında!</Text>
+        </View>
       )}
     </View>
   );

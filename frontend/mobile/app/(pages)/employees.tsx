@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Badge } from '@/components/ui/Badge';
@@ -15,6 +16,7 @@ import type { Employee } from '@/types';
 import api from '@/lib/api';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { PhoneField } from '@/components/ui/PhoneField';
 import { useToast } from '@/components/ui/Toast';
 
 export default function EmployeesScreen() {
@@ -63,6 +65,7 @@ export default function EmployeesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Çalışanlar" subtitle={`${(data ?? []).length} personel`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
@@ -116,7 +119,7 @@ export default function EmployeesScreen() {
         onDelete={modal.item ? () => deleteMutation.mutate() : undefined}
       >
         <FormField label="Ad Soyad" value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} placeholder="Örn: Ali Yılmaz" />
-        <FormField label="Telefon" value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} placeholder="0555 555 55 55" keyboardType="phone-pad" />
+        <PhoneField label="Telefon" value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} placeholder="5XX XXX XX XX" />
         <FormField label="E-posta" value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} placeholder="ornek@email.com" keyboardType="email-address" />
         <FormField label="Ünvan" value={form.title} onChangeText={v => setForm(p => ({ ...p, title: v }))} placeholder="Örn: Kalfası" />
       </FormModal>

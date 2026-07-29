@@ -13,6 +13,7 @@ import Animated, {
 import { useAppDispatch } from '@/store';
 import { setCredentials } from '@/store/slices/authSlice';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ONBOARDING_KEY } from './welcome';
 
 const NO_REDUCE_MOTION = { reduceMotion: ReduceMotion.Never };
@@ -77,6 +78,7 @@ export default function SplashScreen() {
 
   return (
     <Animated.View style={[styles.root, screenAnimatedStyle]}>
+      <PatternOverlay opacity={0.25} />
       <Animated.Image
         source={require('../assets/images/icon-site.png')}
         style={[styles.logo, logoAnimatedStyle]}

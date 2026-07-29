@@ -6,6 +6,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import type { RootState } from '@/store';
 import { FONT, RADIUS } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 

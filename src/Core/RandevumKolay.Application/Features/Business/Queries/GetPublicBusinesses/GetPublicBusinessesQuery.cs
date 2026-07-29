@@ -109,6 +109,7 @@ public sealed class GetPublicBusinessesQueryHandler
                 b.Description,
                 b.IsActive,
                 b.CoverImageUrl,
+                GalleryImages = b.GalleryImages.Take(1).ToList(),
                 b.Latitude,
                 b.Longitude,
             })
@@ -160,7 +161,9 @@ public sealed class GetPublicBusinessesQueryHandler
                 x.Row.Website,
                 x.Row.Description,
                 x.Row.IsActive,
-                x.Row.CoverImageUrl,
+                string.IsNullOrEmpty(x.Row.CoverImageUrl)
+                    ? x.Row.GalleryImages.FirstOrDefault()
+                    : x.Row.CoverImageUrl,
                 ratings.TryGetValue(x.Row.Id, out var r) ? Math.Round(r.Average, 1) : 0,
                 ratings.TryGetValue(x.Row.Id, out var r2) ? r2.Count : 0,
                 x.Row.Latitude,

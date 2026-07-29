@@ -85,6 +85,8 @@ public class Business : AuditableEntity, ITenantEntity
 
     public void SetLogo(string logoUrl) => LogoUrl = logoUrl;
 
+    public void SetCoverImage(string? coverImageUrl) => CoverImageUrl = coverImageUrl;
+
     public void SetGalleryImages(List<string> images) => GalleryImages = images;
 
     public void UpsertSettings(Dictionary<string, string> updates)

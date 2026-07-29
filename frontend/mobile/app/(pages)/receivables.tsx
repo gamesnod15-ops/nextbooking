@@ -5,12 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { PhoneField } from '@/components/ui/PhoneField';
 import { Button } from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Receivable } from '@/types';
@@ -94,6 +96,7 @@ export default function ReceivablesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Alacaklar" showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
@@ -146,7 +149,7 @@ export default function ReceivablesScreen() {
         saving={createMutation.isPending}
       >
         <FormField label="Müşteri Adı" value={form.customerName} onChangeText={v => setForm(p => ({ ...p, customerName: v }))} placeholder="Örn: Ahmet Yılmaz" />
-        <FormField label="Telefon (isteğe bağlı)" value={form.customerPhone} onChangeText={v => setForm(p => ({ ...p, customerPhone: v }))} placeholder="0555 555 55 55" keyboardType="phone-pad" />
+        <PhoneField label="Telefon (isteğe bağlı)" value={form.customerPhone} onChangeText={v => setForm(p => ({ ...p, customerPhone: v }))} placeholder="5XX XXX XX XX" />
         <FormField label="Açıklama" value={form.description} onChangeText={v => setForm(p => ({ ...p, description: v }))} placeholder="Örn: Saç kesimi ücreti" />
         <FormField label="Toplam Tutar" value={form.totalAmount} onChangeText={v => setForm(p => ({ ...p, totalAmount: v }))} placeholder="Örn: 500" keyboardType="numeric" />
         <FormField label="Vade Tarihi" value={form.dueDate} onChangeText={v => setForm(p => ({ ...p, dueDate: v }))} placeholder="Örn: 2025-06-15" />

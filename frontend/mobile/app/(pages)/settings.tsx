@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -13,7 +14,7 @@ import { logout, updateProfile } from '@/store/slices/authSlice';
 import { clearBusiness, setBusiness } from '@/store/slices/businessSlice';
 import * as SecureStore from 'expo-secure-store';
 import { useToast } from '@/components/ui/Toast';
-import api from '@/lib/api';
+import api, { fixImageUrl } from '@/lib/api';
 
 const DAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 const INITIAL_HOURS = DAYS.map((day, i) => ({
@@ -69,6 +70,9 @@ export default function SettingsScreen() {
   const [notifSettings, setNotifSettings] = useState(DEFAULT_NOTIF_SETTINGS);
   const [localAvatarUri, setLocalAvatarUri] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const [localCoverUri, setLocalCoverUri] = useState<string | null>(null);
+  const [coverUploading, setCoverUploading] = useState(false);
 
   useEffect(() => {
     SecureStore.getItemAsync(NOTIF_PREFS_KEY)
@@ -213,6 +217,65 @@ export default function SettingsScreen() {
     ]);
   }
 
+  async function uploadCoverImage(uri: string) {
+    setLocalCoverUri(uri);
+    setCoverUploading(true);
+    try {
+      const filename = uri.split('/').pop() || `cover_${Date.now()}.jpg`;
+      const extMatch = /\.(\w+)$/.exec(filename);
+      const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
+      const mimeType = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+      const formData = new FormData();
+      formData.append('file', { uri, name: filename, type: mimeType } as any);
+      const res = await api.post<{ url: string }>('/uploads/image?folder=business', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const url = res.data.url;
+      await api.put('/business/me', { coverImageUrl: url });
+      setLocalCoverUri(null);
+      toast.success('Kapak fotoğrafı güncellendi.');
+    } catch {
+      setLocalCoverUri(null);
+      toast.error('Kapak fotoğrafı güncellenemedi.');
+    } finally {
+      setCoverUploading(false);
+    }
+  }
+
+  async function pickCoverFrom(source: 'camera' | 'library') {
+    try {
+      let result: ImagePicker.ImagePickerResult;
+      if (source === 'camera') {
+        const perm = await ImagePicker.requestCameraPermissionsAsync();
+        if (!perm.granted) {
+          toast.warning('Fotoğraf çekmek için kamera erişimine izin vermelisiniz.');
+          return;
+        }
+        result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [16, 9], quality: 0.7 });
+      } else {
+        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!perm.granted) {
+          toast.warning('Fotoğraf seçmek için galeri erişimine izin vermelisiniz.');
+          return;
+        }
+        result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [16, 9], quality: 0.7 });
+      }
+      if (result.canceled || !result.assets?.[0]?.uri) return;
+      await uploadCoverImage(result.assets[0].uri);
+    } catch {
+      toast.error('Fotoğraf seçilirken bir hata oluştu.');
+    }
+  }
+
+  function handleCoverPress() {
+    if (coverUploading) return;
+    Alert.alert('Kapak Fotoğrafı', 'Fotoğrafı nereden seçmek istersiniz?', [
+      { text: 'Kameradan Çek', onPress: () => pickCoverFrom('camera') },
+      { text: 'Galeriden Seç', onPress: () => pickCoverFrom('library') },
+      { text: 'Vazgeç', style: 'cancel' },
+    ]);
+  }
+
   const profileFields = [
     { label: 'Ad Soyad', done: !!profileInfo.fullName.trim() },
     { label: 'Telefon', done: !!profileInfo.phone.trim() },
@@ -241,6 +304,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Ayarlar" showBack />
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
@@ -423,6 +487,22 @@ export default function SettingsScreen() {
                     />
                   </View>
                 ))}
+                <View style={styles.coverSection}>
+                  <TouchableOpacity style={styles.coverPicker} onPress={handleCoverPress} activeOpacity={0.8} disabled={coverUploading}>
+                    {localCoverUri || (business as any)?.coverImageUrl ? (
+                      <Image source={{ uri: fixImageUrl(localCoverUri ?? (business as any)?.coverImageUrl) }} style={styles.coverPreview} resizeMode="cover" />
+                    ) : (
+                      <View style={styles.coverPlaceholder}>
+                        <Ionicons name="image-outline" size={32} color={COLORS.textMuted} />
+                        <Text style={styles.coverPlaceholderText}>Kapak Fotoğrafı Ekle</Text>
+                      </View>
+                    )}
+                    <View style={styles.coverBadge}>
+                      {coverUploading ? <ActivityIndicator size="small" color={STATIC_WHITE} /> : <Ionicons name="camera" size={16} color={STATIC_WHITE} />}
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={async () => {
                   try {
                     await api.put('/business/me', {
@@ -446,6 +526,22 @@ export default function SettingsScreen() {
               </>
             ) : (
               <>
+                <View style={styles.coverSection}>
+                  <TouchableOpacity style={styles.coverPicker} onPress={handleCoverPress} activeOpacity={0.8} disabled={coverUploading}>
+                    {(business as any)?.coverImageUrl ? (
+                      <Image source={{ uri: fixImageUrl((business as any)?.coverImageUrl) }} style={styles.coverPreview} resizeMode="cover" />
+                    ) : (
+                      <View style={styles.coverPlaceholder}>
+                        <Ionicons name="image-outline" size={32} color={COLORS.textMuted} />
+                        <Text style={styles.coverPlaceholderText}>Kapak Fotoğrafı Ekle</Text>
+                      </View>
+                    )}
+                    <View style={styles.coverBadge}>
+                      {coverUploading ? <ActivityIndicator size="small" color={STATIC_WHITE} /> : <Ionicons name="camera" size={16} color={STATIC_WHITE} />}
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
                 {[
                   { label: 'İşletme Adı', value: businessInfo.name },
                   { label: 'Telefon', value: businessInfo.phone },
@@ -627,6 +723,12 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   notifCard: { marginHorizontal: SPACE[5], backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.borderLight, overflow: 'hidden', ...SHADOW.sm },
   settingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SPACE[4] },
   settingLabel: { fontSize: FONT.base, color: COLORS.text },
+  coverSection: { marginHorizontal: SPACE[5], marginBottom: SPACE[4] },
+  coverPicker: { width: '100%', height: 160, borderRadius: RADIUS.xl, overflow: 'hidden', backgroundColor: COLORS.surfaceAlt, borderWidth: 1, borderColor: COLORS.borderLight, borderStyle: 'dashed' },
+  coverPreview: { width: '100%', height: '100%' },
+  coverPlaceholder: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACE[2] },
+  coverPlaceholderText: { fontSize: FONT.sm, color: COLORS.textMuted },
+  coverBadge: { position: 'absolute', right: SPACE[3], bottom: SPACE[3], width: 32, height: 32, borderRadius: RADIUS.full, backgroundColor: COLORS.primary + 'CC', alignItems: 'center', justifyContent: 'center' },
   securityRow: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginBottom: SPACE[2], borderRadius: RADIUS.xl, padding: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight },
   securityRowOpen: { borderBottomLeftRadius: 0, borderBottomRightRadius: 0, marginBottom: 0 },
   securityForm: { backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], padding: SPACE[4], paddingTop: 0, borderBottomLeftRadius: RADIUS.xl, borderBottomRightRadius: RADIUS.xl, borderWidth: 1, borderTopWidth: 0, borderColor: COLORS.borderLight, marginBottom: SPACE[2] },

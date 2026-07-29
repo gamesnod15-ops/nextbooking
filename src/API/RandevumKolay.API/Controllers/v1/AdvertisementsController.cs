@@ -7,6 +7,7 @@ using RandevumKolay.Application.Features.Advertisements.Commands.DeleteAdvertise
 using RandevumKolay.Application.Features.Advertisements.Commands.UpdateAdvertisementStatus;
 using RandevumKolay.Application.Features.Advertisements.Queries.GetAdvertisementAnalytics;
 using RandevumKolay.Application.Features.Advertisements.Queries.GetAdvertisements;
+using RandevumKolay.Application.Features.Advertisements.Queries.GetPublicAdvertisements;
 using RandevumKolay.Domain.Entities;
 
 namespace RandevumKolay.API.Controllers.v1;
@@ -70,6 +71,16 @@ public class AdvertisementsController : ControllerBase
     {
         await _sender.Send(new DeleteAdvertisementCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    [HttpGet("public")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPublicAdvertisements(
+        [FromQuery] int count = 10,
+        CancellationToken cancellationToken = default)
+    {
+        var ads = await _sender.Send(new GetPublicAdvertisementsQuery(count), cancellationToken);
+        return Ok(ads);
     }
 
     public record UpdateStatusRequest(AdStatus Status);

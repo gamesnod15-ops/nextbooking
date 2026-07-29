@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Badge } from '@/components/ui/Badge';
@@ -78,6 +79,7 @@ export default function ServicesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Hizmetler" subtitle={`${(data ?? []).length} hizmet`} showBack
         right={
           <TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle">
@@ -141,6 +143,10 @@ export default function ServicesScreen() {
         <FormField label="Açıklama" value={form.description} onChangeText={v => setForm(p => ({ ...p, description: v }))} placeholder="İsteğe bağlı" multiline />
         <FormField label="Süre (dk)" value={form.durationMinutes} onChangeText={v => setForm(p => ({ ...p, durationMinutes: v }))} placeholder="45" keyboardType="numeric" />
         <FormField label="Fiyat (₺)" value={form.price} onChangeText={v => setForm(p => ({ ...p, price: v }))} placeholder="250" keyboardType="numeric" />
+        <View style={[styles.fieldGroup, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+          <Text style={styles.fieldLabel}>Durum</Text>
+          <Switch value={form.isActive} onValueChange={v => setForm(p => ({ ...p, isActive: v }))} trackColor={{ false: COLORS.border, true: COLORS.primary }} thumbColor={STATIC_WHITE} />
+        </View>
       </FormModal>
     </View>
   );
@@ -164,5 +170,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   metaText: { fontSize: FONT.xs, color: COLORS.textMuted },
   right: { alignItems: 'flex-end', gap: SPACE[2] },
   price: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
+  fieldGroup: { gap: SPACE[1] },
+  fieldLabel: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.text },
 });
 

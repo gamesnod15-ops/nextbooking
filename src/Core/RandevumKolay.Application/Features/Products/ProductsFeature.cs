@@ -21,6 +21,7 @@ public record ProductDto(
     string Unit,
     bool IsActive,
     bool IsLowStock,
+    string? ImageUrl,
     DateTimeOffset CreatedAt);
 
 // ─── Queries ───────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, 
         var items = await q.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
             .Select(p => new ProductDto(p.Id, p.Name, p.Description, p.Category, p.Barcode,
                 p.SalePrice, p.CostPrice, p.StockQuantity, p.MinStockLevel, p.Unit, p.IsActive,
-                p.StockQuantity <= p.MinStockLevel, p.CreatedAt))
+                p.StockQuantity <= p.MinStockLevel, p.ImageUrl, p.CreatedAt))
             .ToListAsync(ct);
 
         return new PaginatedList<ProductDto>(items, total, request.PageNumber, request.PageSize);
@@ -138,6 +139,25 @@ public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductC
         }
 
         _context.Products.Remove(product);
+        await _context.SaveChangesAsync(ct);
+    }
+}
+
+public record UpdateProductImageCommand(Guid Id, string ImageUrl) : IRequest;
+
+public sealed class UpdateProductImageCommandHandler : IRequestHandler<UpdateProductImageCommand>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly ICurrentTenantService _tenant;
+    public UpdateProductImageCommandHandler(IApplicationDbContext context, ICurrentTenantService tenant)
+    { _context = context; _tenant = tenant; }
+
+    public async Task Handle(UpdateProductImageCommand request, CancellationToken ct)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(
+            p => p.Id == request.Id && p.TenantId == _tenant.TenantId, ct)
+            ?? throw new Exception("Product not found");
+        product.SetImageUrl(request.ImageUrl);
         await _context.SaveChangesAsync(ct);
     }
 }

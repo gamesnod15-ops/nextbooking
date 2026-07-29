@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -57,6 +58,7 @@ export default function ChatbotScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="AI Chatbot" showBack />
       <View style={styles.statusBanner}>
         <View style={styles.statusLeft}>
@@ -70,31 +72,19 @@ export default function ChatbotScreen() {
       </View>
 
       <View style={styles.tabs}>
-        <TouchableOpacity style={[styles.tab, activeTab === 'preview' && styles.tabActive]} onPress={() => setActiveTab('preview')}>
-          <Text style={[styles.tabText, activeTab === 'preview' && styles.tabTextActive]}>Önizleme</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={[styles.tab, activeTab === 'settings' && styles.tabActive]} onPress={() => setActiveTab('settings')}>
           <Text style={[styles.tabText, activeTab === 'settings' && styles.tabTextActive]}>Ayarlar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.tab, activeTab === 'preview' && styles.tabActive]} onPress={() => setActiveTab('preview')}>
+          <Text style={[styles.tabText, activeTab === 'preview' && styles.tabTextActive]}>Önizleme</Text>
         </TouchableOpacity>
       </View>
 
       {activeTab === 'preview' ? (
-        <ScrollView contentContainerStyle={styles.chatContainer}>
-          {messages.length === 0 ? (
-            <EmptyState icon="chatbubbles-outline" title="Mesaj yok" />
-          ) : messages.map((msg) => (
-            <View key={msg.id} style={[styles.bubble, msg.from === 'user' ? styles.bubbleUser : styles.bubbleBot]}>
-              {msg.from === 'bot' && (
-                <View style={styles.botAvatar}>
-                  <Ionicons name="hardware-chip" size={14} color={COLORS.primaryDark} />
-                </View>
-              )}
-              <View style={[styles.bubbleContent, msg.from === 'user' ? styles.bubbleContentUser : styles.bubbleContentBot]}>
-                <Text style={[styles.bubbleText, msg.from === 'user' ? styles.bubbleTextUser : styles.bubbleTextBot]}>{msg.text}</Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: SPACE[10], opacity: 0.5, pointerEvents: 'none' } as any}>
+          <Ionicons name="construct-outline" size={40} color={COLORS.textMuted} />
+          <Text style={{ marginTop: SPACE[3], fontSize: FONT.base, color: COLORS.textMuted, textAlign: 'center' }}>Canlı sohbet önizlemesi şu anda kullanılamıyor. Yakında!</Text>
+        </View>
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
           <View style={styles.section}>

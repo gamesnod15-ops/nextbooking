@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { StatCard } from '@/components/ui/StatCard';
 import { formatCurrency } from '@/lib/utils';
@@ -69,6 +70,7 @@ export default function ReportsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Raporlar" showBack />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Period */}
@@ -154,14 +156,14 @@ export default function ReportsScreen() {
 
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
+  chip: { paddingHorizontal: 16, paddingVertical: 10, minHeight: 40, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },
   kpiGrid: { flexDirection: 'row', gap: SPACE[3], paddingHorizontal: SPACE[5], marginBottom: SPACE[3] },
   card: { marginHorizontal: SPACE[5], marginBottom: SPACE[4], backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACE[4], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm, gap: SPACE[3] },
   cardTitle: { fontSize: FONT.md, fontWeight: FONT.bold, color: COLORS.text },
-  barChart: { flexDirection: 'row', alignItems: 'flex-end', height: 100, gap: 6 },
+  barChart: { flexDirection: 'row', alignItems: 'flex-end', height: 160, gap: 6 },
   barCol: { flex: 1, alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: 3 },
   barVal: { fontSize: 9, color: COLORS.textMuted, fontWeight: FONT.bold },
   barBg: { width: '100%', flex: 1, backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.sm, justifyContent: 'flex-end', overflow: 'hidden' },

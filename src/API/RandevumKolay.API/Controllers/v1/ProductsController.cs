@@ -46,4 +46,29 @@ public class ProductsController : ControllerBase
         await _sender.Send(new DeleteProductCommand(id), ct);
         return NoContent();
     }
+
+    [HttpPut("{id:guid}/image")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public async Task<IActionResult> UploadProductImage(Guid id, IFormFile file, CancellationToken ct)
+    {
+        if (file is not { Length: > 0 })
+            return BadRequest(new { message = "Dosya gerekli." });
+
+        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
+        Directory.CreateDirectory(uploadsDir);
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!new[] { ".jpg", ".jpeg", ".png", ".webp" }.Contains(ext))
+            return BadRequest(new { message = "Yalnızca JPG, PNG ve WebP dosyalarına izin verilir." });
+
+        var fileName = $"{id}_{Guid.NewGuid()}{ext}";
+        var filePath = Path.Combine(uploadsDir, fileName);
+
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream, ct);
+
+        var url = $"/uploads/products/{fileName}";
+        await _sender.Send(new UpdateProductImageCommand(id, url), ct);
+        return Ok(new { url });
+    }
 }

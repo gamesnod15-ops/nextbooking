@@ -1,3 +1,5 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,6 +13,7 @@ public class NotificationService : INotificationService
     private readonly IEmailService _emailService;
     private readonly ISmsService _smsService;
     private readonly IHubContext<SignalR.NotificationHub> _hubContext;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<NotificationService> _logger;
 
     public NotificationService(
@@ -18,12 +21,14 @@ public class NotificationService : INotificationService
         IEmailService emailService,
         ISmsService smsService,
         IHubContext<SignalR.NotificationHub> hubContext,
+        IHttpClientFactory httpClientFactory,
         ILogger<NotificationService> logger)
     {
         _context = context;
         _emailService = emailService;
         _smsService = smsService;
         _hubContext = hubContext;
+        _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
 
@@ -149,5 +154,56 @@ public class NotificationService : INotificationService
         await _hubContext.Clients
             .Group($"user:{userId}")
             .SendAsync(eventName, payload, cancellationToken);
+    }
+
+    public async Task SendPushNotificationAsync(
+        Guid tenantId,
+        string title,
+        string body,
+        object? data = null,
+        CancellationToken cancellationToken = default)
+    {
+        var tokens = await _context.PushTokens
+            .Where(pt => pt.IsActive)
+            .Where(pt => pt.UserId != null &&
+                _context.TenantUsers.Any(tu =>
+                    tu.TenantId == tenantId &&
+                    tu.UserId == pt.UserId.Value &&
+                    tu.IsActive))
+            .Select(pt => pt.Token)
+            .ToListAsync(cancellationToken);
+
+        if (tokens.Count == 0) return;
+
+        using var client = _httpClientFactory.CreateClient("ExpoPush");
+        var messages = tokens.Select(token => new
+        {
+            to = token,
+            title,
+            body,
+            data,
+            sound = "default",
+            priority = "high"
+        });
+
+        try
+        {
+            var response = await client.PostAsJsonAsync(
+                "/--/api/v2/push/send",
+                new { messages },
+                cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Expo push API returned {StatusCode}: {Body}",
+                    response.StatusCode,
+                    await response.Content.ReadAsStringAsync(cancellationToken));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send Expo push notification for tenant {TenantId}", tenantId);
+        }
     }
 }

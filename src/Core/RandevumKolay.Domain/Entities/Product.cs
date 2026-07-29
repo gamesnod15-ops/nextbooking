@@ -15,6 +15,7 @@ public class Product : AuditableEntity, ITenantEntity
     public int MinStockLevel { get; private set; } = 5;
     public string Unit { get; private set; } = "adet";
     public bool IsActive { get; private set; } = true;
+    public string? ImageUrl { get; private set; }
 
     private Product() { }
 
@@ -28,7 +29,8 @@ public class Product : AuditableEntity, ITenantEntity
         decimal? costPrice = null,
         int minStockLevel = 5,
         string unit = "adet",
-        string? description = null)
+        string? description = null,
+        string? imageUrl = null)
     {
         return new Product
         {
@@ -41,7 +43,8 @@ public class Product : AuditableEntity, ITenantEntity
             CostPrice = costPrice,
             MinStockLevel = minStockLevel,
             Unit = unit,
-            Description = description
+            Description = description,
+            ImageUrl = imageUrl
         };
     }
 
@@ -58,6 +61,8 @@ public class Product : AuditableEntity, ITenantEntity
         Unit = unit;
         Description = description;
     }
+
+    public void SetImageUrl(string? imageUrl) => ImageUrl = imageUrl;
 
     public void AdjustStock(int delta) => StockQuantity = Math.Max(0, StockQuantity + delta);
     public void SetActive(bool isActive) => IsActive = isActive;

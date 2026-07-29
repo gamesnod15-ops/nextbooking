@@ -19,6 +19,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import api from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
 import { useToast } from '@/components/ui/Toast';
@@ -226,6 +227,7 @@ export default function BookingScreen() {
         email: form.email,
         city: form.sehir,
         notes: form.aciklama,
+        source: 'mobile',
         deviceId,
       });
       await SecureStore.setItemAsync(GUEST_INFO_KEY, JSON.stringify({
@@ -260,6 +262,7 @@ export default function BookingScreen() {
   if (loadingServices) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
         <View style={{ padding: SPACE[5] }}>
           <SkeletonList variant="row" count={4} />
         </View>
@@ -270,6 +273,7 @@ export default function BookingScreen() {
   if (success) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
         <ScrollView contentContainerStyle={styles.successScroll} showsVerticalScrollIndicator={false}>
           <Animated.View entering={FadeInDown.duration(450)} style={styles.successContainer}>
             <View style={styles.successIconOuter}>

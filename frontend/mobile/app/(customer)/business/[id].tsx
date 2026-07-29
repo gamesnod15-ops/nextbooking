@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { SkeletonList } from '@/components/ui/Skeleton';
@@ -187,6 +188,7 @@ export default function BusinessDetailScreen() {
   if (loading) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
         <View style={{ padding: SPACE[5] }}>
           <SkeletonList variant="card" count={1} />
         </View>
@@ -197,6 +199,7 @@ export default function BusinessDetailScreen() {
   if (error || !biz) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
         <View style={styles.center}>
           <Ionicons name="business-outline" size={48} color={COLORS.textMuted} />
           <Text style={styles.emptyText}>{error || 'İşletme bulunamadı'}</Text>
@@ -217,8 +220,10 @@ export default function BusinessDetailScreen() {
 
   return (
     <View style={styles.root}>
+      <PatternOverlay opacity={0.25} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero}>
+          <PatternOverlay />
           <View style={[styles.heroNav, { paddingTop: insets.top + SPACE[3] }]}>
             <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">
               <Ionicons name="chevron-back" size={22} color={STATIC_WHITE} />

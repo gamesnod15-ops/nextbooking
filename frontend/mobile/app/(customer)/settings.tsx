@@ -89,6 +89,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <View style={styles.blobBlue} />
       <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
 

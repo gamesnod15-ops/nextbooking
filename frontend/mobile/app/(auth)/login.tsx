@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useAppDispatch } from '@/store';
 import { setCredentials, setAppRole } from '@/store/slices/authSlice';
 import api from '@/lib/api';
@@ -86,6 +87,7 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <LinearGradient colors={['#E8F0FE', '#D4E4F7', '#EBF2FF']} style={StyleSheet.absoluteFill} />
+        <PatternOverlay opacity={0.15} />
         <View style={styles.blobBlue} />
         <View style={styles.blobAccent} />
         <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />

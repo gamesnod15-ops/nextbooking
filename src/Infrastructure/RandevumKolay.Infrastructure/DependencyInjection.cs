@@ -60,6 +60,11 @@ public static class DependencyInjection
 
         // Notifications
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddHttpClient("ExpoPush", client =>
+        {
+            client.BaseAddress = new Uri("https://exp.host");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
 
         // OAuth
         services.AddHttpClient<IOAuthService, OAuthService>(client =>

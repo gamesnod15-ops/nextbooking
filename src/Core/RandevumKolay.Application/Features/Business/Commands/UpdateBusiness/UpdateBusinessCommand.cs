@@ -18,6 +18,7 @@ public record UpdateBusinessCommand(
     string? Website,
     string? Description,
     string? LogoUrl,
+    string? CoverImageUrl,
     double? Latitude,
     double? Longitude,
     List<string>? GalleryImages,
@@ -47,6 +48,9 @@ public sealed class UpdateBusinessCommandHandler : IRequestHandler<UpdateBusines
 
         if (request.LogoUrl is not null)
             business.SetLogo(request.LogoUrl);
+
+        if (request.CoverImageUrl is not null)
+            business.SetCoverImage(request.CoverImageUrl);
 
         if (request.GalleryImages is not null)
             business.SetGalleryImages(request.GalleryImages);

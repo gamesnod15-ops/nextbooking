@@ -1,4 +1,5 @@
 import React from 'react';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { Stack } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { TabBar, type TabBarItem } from '@/components/TabBar';
@@ -13,6 +14,7 @@ const CUSTOMER_TABS: TabBarItem[] = [
 export default function TabsLayout() {
   return (
     <View style={styles.root}>
+      <PatternOverlay opacity={0.25} />
       <Stack screenOptions={{ headerShown: false }} />
       <TabBar basePath="/(customer)/(tabs)" tabs={CUSTOMER_TABS} />
     </View>

@@ -5,11 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormModal } from '@/components/ui/FormModal';
 import { FormField } from '@/components/ui/FormField';
+import { PhoneField } from '@/components/ui/PhoneField';
 import api from '@/lib/api';
 import type { Branch } from '@/types';
 import { useToast } from '@/components/ui/Toast';
@@ -55,6 +57,7 @@ export default function BranchesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Şubeler" subtitle={`${(data ?? []).length} şube`} showBack
         right={<TouchableOpacity style={styles.addBtn} activeOpacity={0.8} onPress={openCreate} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="add" size={22} color={STATIC_WHITE} /></TouchableOpacity>}
       />
@@ -108,7 +111,7 @@ export default function BranchesScreen() {
       >
         <FormField label="Şube Adı" value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} placeholder="Örn: Merkez Şube" />
         <FormField label="Adres" value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} placeholder="Örn: Atatürk Cad. No:1" />
-        <FormField label="Telefon" value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} placeholder="0555 555 55 55" keyboardType="phone-pad" />
+        <PhoneField label="Telefon" value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} placeholder="5XX XXX XX XX" />
       </FormModal>
     </View>
   );

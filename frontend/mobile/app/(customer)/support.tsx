@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { DotGrid } from '@/components/ui/DotGrid';
 
 const CONTACT_ITEMS = [
@@ -27,6 +28,7 @@ export default function SupportScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <View style={styles.blobBlue} />
       <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
 

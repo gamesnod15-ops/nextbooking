@@ -7,6 +7,7 @@ import {
   TextInput,
   Image,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -19,6 +20,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { SkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SwipeCardDeck } from '@/components/ui/SwipeCardDeck';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useToast } from '@/components/ui/Toast';
 import api, { fixImageUrl } from '@/lib/api';
 import { getDeviceId } from '@/lib/deviceId';
@@ -40,6 +42,20 @@ interface BusinessItem {
   longitude: number | null;
   distanceKm: number | null;
 }
+
+interface PublicAdDto {
+  id: string;
+  businessId: string;
+  title: string;
+  description: string | null;
+  businessName: string;
+  coverImageUrl: string | null;
+  logoUrl: string | null;
+  packageType: string;
+  targetCategory: string;
+}
+
+type DeckItem = BusinessItem | (PublicAdDto & { __type: 'ad' });
 
 interface PaginatedResult<T> {
   items: T[];
@@ -90,6 +106,16 @@ function formatDistance(km: number | null): string | null {
   return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 }
 
+const AD_GRADIENTS: Record<string, [string, string]> = {
+  BasicBoost: ['#F59E0B', '#D97706'],
+  ProfessionalBoost: ['#8B5CF6', '#6D28D9'],
+  PremiumSpotlight: ['#FBBF24', '#F59E0B'],
+};
+
+function adGradient(pkg: string): [string, string] {
+  return AD_GRADIENTS[pkg] ?? ['#6366F1', '#4F46E5'];
+}
+
 /** Fisher-Yates shuffle — returns a new array, never mutates the input. */
 function shuffle<T>(items: T[]): T[] {
   const arr = [...items];
@@ -98,6 +124,22 @@ function shuffle<T>(items: T[]): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+/** Interleave ads into a shuffled business deck — roughly every 4-6 cards. */
+function interleaveAds(businesses: BusinessItem[], ads: PublicAdDto[]): DeckItem[] {
+  if (ads.length === 0) return businesses;
+  const result: DeckItem[] = [];
+  const interval = 4 + Math.floor(Math.random() * 3);
+  let adIdx = 0;
+  for (let i = 0; i < businesses.length; i++) {
+    result.push(businesses[i]);
+    if ((i + 1) % interval === 0 && adIdx < ads.length) {
+      result.push({ ...ads[adIdx], __type: 'ad' });
+      adIdx++;
+    }
+  }
+  return result;
 }
 
 export default function BusinessesScreen() {
@@ -152,15 +194,23 @@ export default function BusinessesScreen() {
     staleTime: 60 * 1000,
   });
 
-  // Deck order is re-shuffled whenever the source data changes (fresh fetch,
-  // pull-to-refresh, or a filter/search change) — "hep karışık listelensin".
+  const adsQuery = useQuery({
+    queryKey: ['public-ads', shuffleSeed],
+    queryFn: async () => {
+      const res = await api.get('/advertisements/public?count=10');
+      return (res.data ?? []) as PublicAdDto[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Deck order: shuffle businesses, then interleave ads at random intervals.
   const deckItems = useMemo(() => {
     const items = businessesQuery.data?.items ?? [];
-    return shuffle(items);
-    // shuffleSeed is a deliberate re-shuffle trigger for pull-to-refresh even
-    // when the underlying data hasn't changed.
+    const ads = adsQuery.data ?? [];
+    const shuffled = shuffle(items);
+    return interleaveAds(shuffled, ads);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessesQuery.data, shuffleSeed]);
+  }, [businessesQuery.data, adsQuery.data, shuffleSeed]);
 
   const loading = businessesQuery.isLoading;
   const error = businessesQuery.isError;
@@ -169,23 +219,53 @@ export default function BusinessesScreen() {
     setSearch(text);
   }
 
-  function goToBooking(business: BusinessItem) {
-    router.push(`/(customer)/booking/${business.id}`);
+  function goToBooking(item: DeckItem) {
+    if ('__type' in item && item.__type === 'ad') {
+      router.push(`/(customer)/business/${item.businessId}`);
+      return;
+    }
+    router.push(`/(customer)/booking/${item.id}`);
   }
 
-  function handleSwipeRight(business: BusinessItem) {
-    const isFavorite = favoriteIds.has(business.id);
+  function handleSwipeRight(item: DeckItem) {
+    if ('__type' in item && item.__type === 'ad') return;
+    const isFavorite = favoriteIds.has(item.id);
     if (!isFavorite) {
-      favoriteMutation.mutate({ businessId: business.id, isFavorite: false });
-      toast.success(`${business.name} favorilere eklendi`);
+      favoriteMutation.mutate({ businessId: item.id, isFavorite: false });
+      toast.success(`${item.name} favorilere eklendi`);
     }
   }
 
-  function handleSwipeLeft(_business: BusinessItem) {
+  function handleSwipeLeft(_item: DeckItem) {
     // Pass — no API call, card just leaves the deck.
   }
 
-  function renderCard(item: BusinessItem) {
+  function renderCard(item: DeckItem) {
+    if ('__type' in item && item.__type === 'ad') {
+      const img = item.coverImageUrl || item.logoUrl;
+      const [c1, c2] = adGradient(item.packageType);
+      return (
+        <View style={styles.card}>
+          <LinearGradient colors={[c1, c2]} style={styles.cardImage} />
+          {img ? (
+            <View style={styles.adLogoWrap}>
+              <Image source={{ uri: fixImageUrl(img) }} style={styles.adLogo} resizeMode="contain" />
+            </View>
+          ) : null}
+          <View style={styles.adBadge}>
+            <Ionicons name="megaphone" size={12} color={STATIC_WHITE} />
+            <Text style={styles.adBadgeText}>Reklam</Text>
+          </View>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardCategory}>{item.businessName}</Text>
+            <Text style={styles.cardName} numberOfLines={2}>{item.title}</Text>
+            {item.description ? (
+              <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
+            ) : null}
+          </View>
+        </View>
+      );
+    }
     const imageUrl = item.coverImageUrl || item.logoUrl;
     const dist = formatDistance(item.distanceKm);
     return (
@@ -203,6 +283,9 @@ export default function BusinessesScreen() {
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
         />
+        <View style={styles.categoryIconWrap}>
+          <Ionicons name={categoryIcon(item.categoryName)} size={18} color={COLORS.primary} />
+        </View>
         <View style={styles.cardInfo}>
           <View style={styles.cardTopRow}>
             <View style={styles.categoryPill}>
@@ -241,7 +324,9 @@ export default function BusinessesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <PatternOverlay />
         <View style={styles.headerTop}>
           <Text style={styles.greet}>İşletmeler</Text>
           <Text style={styles.heroTitle}>Keşfedin</Text>
@@ -282,9 +367,9 @@ export default function BusinessesScreen() {
           />
         ) : (
           <View style={styles.cardBox}>
-            <SwipeCardDeck<BusinessItem>
+            <SwipeCardDeck<DeckItem>
               data={deckItems}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => ('__type' in item && item.__type === 'ad' ? `ad-${item.id}` : item.id)}
               renderCard={renderCard}
               onSwipeLeft={handleSwipeLeft}
               onSwipeRight={handleSwipeRight}
@@ -334,6 +419,18 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   cardImage: { ...StyleSheet.absoluteFill },
   cardImageFallback: { backgroundColor: COLORS.surfaceAlt, alignItems: 'center', justifyContent: 'center' },
   cardGradient: { ...StyleSheet.absoluteFill },
+  categoryIconWrap: {
+    position: 'absolute',
+    top: SPACE[3],
+    right: SPACE[3],
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.full,
+    backgroundColor: STATIC_WHITE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOW.sm,
+  },
   cardInfo: {
     position: 'absolute',
     left: 0,
@@ -363,6 +460,45 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   ratingCount: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.75)' },
   cityRow: { flexDirection: 'row', alignItems: 'center', gap: 3, flexShrink: 1 },
   cityText: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.85)', flexShrink: 1 },
+
+  adLogoWrap: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  adLogo: {
+    width: '60%',
+    height: '60%',
+    opacity: 0.2,
+  },
+  adBadge: {
+    position: 'absolute',
+    top: SPACE[3],
+    left: SPACE[3],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+  },
+  adBadgeText: {
+    fontSize: FONT.xs,
+    fontWeight: FONT.semibold,
+    color: STATIC_WHITE,
+  },
+  cardDescription: {
+    fontSize: FONT.sm,
+    color: 'rgba(255,255,255,0.85)',
+    lineHeight: 20,
+  },
+  cardCategory: {
+    fontSize: FONT.sm,
+    fontWeight: FONT.semibold,
+    color: 'rgba(255,255,255,0.7)',
+  },
 
   retryBtn: {
     paddingHorizontal: SPACE[5],

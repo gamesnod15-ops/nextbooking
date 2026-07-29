@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
@@ -66,6 +67,8 @@ export default function SubscriptionScreen() {
     onError: (err: any) => toast.error(err?.response?.data?.message || 'Plan güncellenemedi.'),
   });
 
+  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+
   const handleSelectPlan = (planId: string, planName: string) => {
     const isDowngrade =
       currentPlanId != null &&
@@ -80,7 +83,19 @@ export default function SubscriptionScreen() {
         : `${planName} planına geçmek istediğinize emin misiniz?`,
       [
         { text: 'Vazgeç', style: 'cancel' },
-        { text: 'Onayla', style: isDowngrade ? 'destructive' : 'default', onPress: () => changePlanMutation.mutate(planId) },
+        { text: 'Ödemeye Git', style: 'default', onPress: async () => {
+          try {
+            const res = await api.post<{ url: string }>('/payment/create-checkout-session', { plan: planId, months: 1 });
+            const url = res.data.url;
+            if (url) {
+              await Linking.openURL(url);
+            } else {
+              toast.error('Ödeme sayfası açılamadı.');
+            }
+          } catch {
+            toast.error('Ödeme başlatılamadı.');
+          }
+        }},
       ],
     );
   };
@@ -100,10 +115,12 @@ export default function SubscriptionScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Abonelik" showBack />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }} refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.primary} />}>
         {/* Current Plan Banner */}
         <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.currentBanner} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <PatternOverlay />
           <View style={styles.currentLeft}>
             <Text style={styles.currentLabel}>Mevcut Plan</Text>
             <Text style={styles.currentPlan}>{currentPlan?.name ?? (currentPlanId ? currentPlanId : 'Yükleniyor...')}</Text>

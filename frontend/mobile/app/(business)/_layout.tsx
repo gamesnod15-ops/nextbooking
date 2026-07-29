@@ -1,4 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '@/store';
@@ -18,6 +19,7 @@ export default function BusinessLayout() {
   return (
     <DrawerProvider>
       <View style={styles.root}>
+        <PatternOverlay opacity={0.25} />
         <Stack screenOptions={{ headerShown: false }} />
         <TabBar />
       </View>

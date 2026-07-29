@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -55,6 +56,7 @@ export default function WalkinQueueScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Sıra Takibi" subtitle={`${queue.filter(e => e.status !== 'completed').length} aktif müşteri`} showBack
         right={<TouchableOpacity style={styles.addBtn} onPress={() => { setForm({customerName:'',serviceName:'',employeeName:''}); setModal({open:true}); }} accessibilityRole="button" accessibilityLabel="Ekle"><Ionicons name="person-add" size={18} color={STATIC_WHITE} /></TouchableOpacity>}
       />

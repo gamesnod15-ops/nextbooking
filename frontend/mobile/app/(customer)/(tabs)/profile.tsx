@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
+import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { Avatar } from '@/components/ui/Avatar';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { ProfileEditModal, type ProfileEditValues } from '@/components/ui/ProfileEditModal';
@@ -60,6 +61,31 @@ export default function CustomerProfileScreen() {
   }, []);
 
   async function handleSaveProfile(values: ProfileEditValues, newPhotoUri: string | null) {
+    if (accessToken) {
+      try {
+        await api.put('/users/me', {
+          firstName: values.ad,
+          lastName: values.soyad,
+          email: values.email || null,
+          phone: values.telefon || null,
+        });
+        if (newPhotoUri && newPhotoUri !== photoUri) {
+          const filename = newPhotoUri.split('/').pop() || `avatar_${Date.now()}.jpg`;
+          const extMatch = /\.(\w+)$/.exec(filename);
+          const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
+          const mimeType = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
+          const formData = new FormData();
+          formData.append('file', { uri: newPhotoUri, name: filename, type: mimeType } as any);
+          await api.put('/users/me/avatar', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+        }
+        toast.success('Profil güncellendi.');
+      } catch {
+        toast.error('Profil güncellenemedi.');
+        return;
+      }
+    }
     await SecureStore.setItemAsync(GUEST_INFO_KEY, JSON.stringify(values));
     if (newPhotoUri) {
       await SecureStore.setItemAsync(GUEST_PHOTO_KEY, newPhotoUri);
@@ -152,6 +178,7 @@ export default function CustomerProfileScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      <PatternOverlay opacity={0.25} />
       <View style={styles.blobBlue} />
       <DotGrid style={styles.dotGridTopRight} rows={5} cols={4} />
 
