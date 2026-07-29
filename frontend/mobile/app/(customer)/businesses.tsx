@@ -271,9 +271,10 @@ export default function BusinessesScreen() {
 
   function renderCard(item: DeckItem) {
     if (isAd(item)) {
+      const adImg = fixImageUrl(item.coverImageUrl || '/uploads/banner-1.png');
       const gradient = adGradient(item.packageType);
-      return (
-        <View style={styles.card}>
+      const gradientFallback = (
+        <View style={styles.cardImage}>
           <LinearGradient colors={[gradient[0], gradient[1]]} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
           <View style={styles.adCardContent}>
             <View style={styles.adBadge}>
@@ -283,6 +284,11 @@ export default function BusinessesScreen() {
             <Text style={styles.adCardName} numberOfLines={2}>{item.businessName}</Text>
             {item.description ? <Text style={styles.adCardDesc} numberOfLines={2}>{item.description}</Text> : null}
           </View>
+        </View>
+      );
+      return (
+        <View style={styles.card}>
+          {adImg ? <CardImage uri={adImg} fallback={gradientFallback} /> : gradientFallback}
         </View>
       );
     }
