@@ -13,6 +13,7 @@ import { formatDateTime } from '@/lib/utils';
 import type { WaitingListEntry } from '@/types';
 import api from '@/lib/api';
 import { FormModal } from '@/components/ui/FormModal';
+import { PhoneField } from '@/components/ui/PhoneField';
 import { FormField } from '@/components/ui/FormField';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/Toast';
@@ -37,6 +38,12 @@ export default function WaitingListScreen() {
     mutationFn: async () => api.post('/waiting-list', { customerName: form.customerName, customerPhone: form.customerPhone, serviceName: form.serviceName || undefined, notes: form.notes || undefined, status: 'waiting' }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['waiting-list'] }); setModal({ open: false }); },
     onError: () => toast.error('Kişi eklenemedi.'),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => api.patch(`/waiting-list/${id}/status`, { status }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['waiting-list'] }); },
+    onError: () => toast.error('Durum güncellenemedi.'),
   });
 
   function handleSave() {
@@ -87,7 +94,7 @@ export default function WaitingListScreen() {
                 {item.status === 'confirmed' ? 'Onaylandı' : item.status === 'notified' ? 'Bildirim' : 'Bekliyor'}
               </Badge>
               {item.status === 'waiting' && (
-                <TouchableOpacity style={styles.notifyBtn}>
+                <TouchableOpacity style={styles.notifyBtn} onPress={() => updateMutation.mutate({ id: item.id, status: 'notified' })}>
                   <Ionicons name="notifications-outline" size={14} color={COLORS.primary} />
                   <Text style={styles.notifyText}>Bildir</Text>
                 </TouchableOpacity>
@@ -104,7 +111,7 @@ export default function WaitingListScreen() {
         saving={createMutation.isPending}
       >
         <FormField label="Müşteri Adı" value={form.customerName} onChangeText={v => setForm(p => ({...p, customerName: v}))} placeholder="Örn: Ali Yılmaz" />
-        <FormField label="Telefon" value={form.customerPhone} onChangeText={v => setForm(p => ({...p, customerPhone: v}))} placeholder="05XX XXX XXXX" keyboardType="phone-pad" />
+        <PhoneField label="Telefon" value={form.customerPhone} onChangeText={v => setForm(p => ({...p, customerPhone: v}))} placeholder="5XX XXX XX XX" />
         <FormField label="Hizmet" value={form.serviceName} onChangeText={v => setForm(p => ({...p, serviceName: v}))} placeholder="Örn: Saç Kesimi" />
         <FormField label="Not" value={form.notes} onChangeText={v => setForm(p => ({...p, notes: v}))} placeholder="Opsiyonel" multiline />
       </FormModal>

@@ -42,6 +42,12 @@ export default function WalkinQueueScreen() {
     onError: () => toast.error('Müşteri eklenemedi.'),
   });
 
+  const advanceMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => api.patch(`/walkin-queue/${id}/status`, { status }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['walkin-queue'] }); },
+    onError: () => toast.error('Durum güncellenemedi.'),
+  });
+
   function handleSave() {
     if (!form.customerName) { toast.warning('Müşteri adı zorunludur.'); return; }
     createMutation.mutate();
@@ -80,14 +86,14 @@ export default function WalkinQueueScreen() {
                   </View>
                   <View style={{ gap: SPACE[2] }}>
                     {col.status === 'waiting' && (
-                      <View style={[styles.moveBtn, { backgroundColor: COLORS.infoLight }]}>
+                      <TouchableOpacity style={[styles.moveBtn, { backgroundColor: COLORS.infoLight }]} onPress={() => advanceMutation.mutate({ id: item.id, status: 'in_service' })}>
                         <Ionicons name="play" size={12} color={COLORS.info} />
-                      </View>
+                      </TouchableOpacity>
                     )}
                     {col.status === 'in_service' && (
-                      <View style={[styles.moveBtn, { backgroundColor: COLORS.successLight }]}>
+                      <TouchableOpacity style={[styles.moveBtn, { backgroundColor: COLORS.successLight }]} onPress={() => advanceMutation.mutate({ id: item.id, status: 'completed' })}>
                         <Ionicons name="checkmark" size={12} color={COLORS.success} />
-                      </View>
+                      </TouchableOpacity>
                     )}
                   </View>
                 </View>
