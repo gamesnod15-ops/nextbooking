@@ -271,23 +271,18 @@ export default function BusinessesScreen() {
 
   function renderCard(item: DeckItem) {
     if (isAd(item)) {
-      const adImg = fixImageUrl(item.coverImageUrl || '');
       const gradient = adGradient(item.packageType);
-      const fallback = (
-        <View style={[styles.cardImage, { backgroundColor: gradient[1] }]}>
+      return (
+        <View style={styles.card}>
           <LinearGradient colors={[gradient[0], gradient[1]]} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-          <View style={styles.adFallbackContent}>
+          <View style={styles.adCardContent}>
             <View style={styles.adBadge}>
               <Ionicons name="megaphone" size={14} color="#08224B" />
               <Text style={styles.adBadgeText}>Reklam</Text>
             </View>
-            <Text style={styles.adFallbackName} numberOfLines={2}>{item.businessName}</Text>
+            <Text style={styles.adCardName} numberOfLines={2}>{item.businessName}</Text>
+            {item.description ? <Text style={styles.adCardDesc} numberOfLines={2}>{item.description}</Text> : null}
           </View>
-        </View>
-      );
-      return (
-        <View style={styles.card}>
-          {adImg ? <CardImage uri={adImg} fallback={fallback} /> : fallback}
         </View>
       );
     }
@@ -519,7 +514,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     color: COLORS.textMuted,
   },
 
-  adFallbackContent: {
+  adCardContent: {
     position: 'absolute',
     left: 0,
     right: 0,
@@ -543,10 +538,15 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     fontWeight: FONT.bold,
     color: '#08224B',
   },
-  adFallbackName: {
+  adCardName: {
     fontSize: FONT.xl,
     fontWeight: FONT.extrabold,
     color: STATIC_WHITE,
+  },
+  adCardDesc: {
+    fontSize: FONT.sm,
+    color: 'rgba(255,255,255,0.85)',
+    lineHeight: 20,
   },
 
   retryBtn: {
