@@ -17,7 +17,7 @@ import { RADIUS } from '@/lib/theme';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.28;
 const SWIPE_OUT_DISTANCE = SCREEN_WIDTH * 1.4;
-const MAX_VISIBLE_STACK = 4;
+const MAX_VISIBLE_STACK = 3;
 
 export interface SwipeCardDeckProps<T> {
   data: T[];
@@ -220,10 +220,10 @@ export function SwipeCardDeck<T>({
             );
           }
 
-          // Cards behind the top one: static peek, alternately tilted.
+          // Cards behind the top one: static peek, alternately tilted so every card is visible.
           const tilt = stackIndex % 2 === 0 ? 1 : -1;
-          const scale = 1 - stackIndex * 0.03;
-          const offsetY = stackIndex * 18;
+          const scale = 1 - stackIndex * 0.04;
+          const offsetY = stackIndex * 22;
           return (
             <View
               key={key}
@@ -235,7 +235,7 @@ export function SwipeCardDeck<T>({
                 {
                   transform: [
                     { translateY: offsetY },
-                    { rotate: `${tilt * (2 + stackIndex * 1.5)}deg` },
+                    { rotate: `${tilt * (3 + stackIndex * 2)}deg` },
                     { scale },
                   ],
                   zIndex: -stackIndex,
