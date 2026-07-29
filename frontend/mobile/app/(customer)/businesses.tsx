@@ -118,9 +118,9 @@ function CardImage({ uri, fallback }: { uri: string; fallback: React.ReactNode }
 }
 
 const AD_GRADIENTS: Record<string, [string, string]> = {
-  BasicBoost: ['#F59E0B', '#D97706'],
+  BasicBoost: ['#6366F1', '#4F46E5'],
   ProfessionalBoost: ['#8B5CF6', '#6D28D9'],
-  PremiumSpotlight: ['#FBBF24', '#F59E0B'],
+  PremiumSpotlight: ['#F59E0B', '#D97706'],
 };
 
 function adGradient(pkg: string): [string, string] {

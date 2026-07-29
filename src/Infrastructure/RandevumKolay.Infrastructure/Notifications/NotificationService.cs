@@ -163,15 +163,15 @@ public class NotificationService : INotificationService
         object? data = null,
         CancellationToken cancellationToken = default)
     {
-        var tokens = await _context.PushTokens
-            .Where(pt => pt.IsActive)
-            .Where(pt => pt.UserId != null &&
-                _context.TenantUsers.Any(tu =>
-                    tu.TenantId == tenantId &&
-                    tu.UserId == pt.UserId.Value &&
-                    tu.IsActive))
-            .Select(pt => pt.Token)
-            .ToListAsync(cancellationToken);
+    var tokens = await _context.PushTokens
+        .Where(pt => pt.IsActive)
+        .Where(pt => pt.UserId != null &&
+            _context.Users.Any(u =>
+                u.TenantId == tenantId &&
+                u.Id == pt.UserId.Value &&
+                u.IsActive))
+        .Select(pt => pt.Token)
+        .ToListAsync(cancellationToken);
 
         if (tokens.Count == 0) return;
 
