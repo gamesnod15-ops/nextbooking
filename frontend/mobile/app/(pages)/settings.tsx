@@ -10,7 +10,7 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout, updateProfile } from '@/store/slices/authSlice';
-import { clearBusiness } from '@/store/slices/businessSlice';
+import { clearBusiness, setBusiness } from '@/store/slices/businessSlice';
 import * as SecureStore from 'expo-secure-store';
 import { useToast } from '@/components/ui/Toast';
 import api from '@/lib/api';
@@ -20,13 +20,8 @@ const INITIAL_HOURS = DAYS.map((day, i) => ({
   day, isOpen: i < 6, open: '09:00', close: '20:00',
 }));
 
-const TABS = ['Genel', 'Çalışma Saatleri', 'Bildirimler', 'Güvenlik'];
+const TABS = ['Profil', 'Genel', 'Çalışma Saatleri', 'Bildirimler', 'Güvenlik'];
 
-// Business-side notification preferences persist locally only — there is no
-// backend NotificationPreference table/endpoint yet, so these toggles are not
-// enforced anywhere in the actual notification-dispatch pipeline (push/SMS/email
-// sends are not filtered by this key). They just remember the owner's choice
-// across app restarts. See app/(customer)/notifications.tsx for the same pattern.
 const NOTIF_PREFS_KEY = 'business_notification_prefs';
 
 const DEFAULT_NOTIF_SETTINGS = [
@@ -47,15 +42,29 @@ export default function SettingsScreen() {
   const toast = useToast();
   const auth = useAppSelector((s) => s.auth);
   const business = useAppSelector((s) => s.business.business);
-  const [tab, setTab] = useState('Genel');
+  const [tab, setTab] = useState('Profil');
+
+  // Profile state
+  const [profileEditMode, setProfileEditMode] = useState(false);
+  const [profileInfo, setProfileInfo] = useState({
+    fullName: auth.fullName ?? '',
+    phone: auth.phone ?? '',
+    jobTitle: auth.jobTitle ?? '',
+    email: auth.email ?? '',
+  });
+
+  // Business state
   const [editMode, setEditMode] = useState(false);
   const [businessInfo, setBusinessInfo] = useState({
     name: business?.name ?? '',
     phone: business?.phone ?? '',
-    address: business?.address ?? '',
-    website: business?.website ?? '',
     email: business?.email ?? auth.email ?? '',
+    address: business?.address ?? '',
+    city: (business as any)?.city ?? '',
+    website: business?.website ?? '',
+    description: (business as any)?.description ?? '',
   });
+
   const [hours, setHours] = useState(INITIAL_HOURS);
   const [notifSettings, setNotifSettings] = useState(DEFAULT_NOTIF_SETTINGS);
   const [localAvatarUri, setLocalAvatarUri] = useState<string | null>(null);
@@ -70,6 +79,36 @@ export default function SettingsScreen() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    api.get<{ fullName: string; phone: string | null; jobTitle: string | null; email: string; avatarUrl: string | null }>('/users/me')
+      .then(r => setProfileInfo({
+        fullName: r.data.fullName ?? '',
+        phone: r.data.phone ?? '',
+        jobTitle: r.data.jobTitle ?? '',
+        email: r.data.email ?? '',
+      }))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'Genel') {
+      api.get<any>('/business/me')
+        .then(r => {
+          setBusinessInfo({
+            name: r.data.name ?? '',
+            phone: r.data.phone ?? '',
+            email: r.data.email ?? '',
+            address: r.data.address ?? '',
+            city: r.data.city ?? '',
+            website: r.data.website ?? '',
+            description: r.data.description ?? '',
+          });
+          dispatch(setBusiness(r.data));
+        })
+        .catch(() => {});
+    }
+  }, [tab, dispatch]);
 
   const [securityItem, setSecurityItem] = useState<string | null>(null);
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
@@ -99,6 +138,11 @@ export default function SettingsScreen() {
     if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`;
     if (d.length <= 8) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`;
     return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
+  }
+
+  function handleProfilePhoneChange(text: string) {
+    const digits = text.replace(/\D/g, '').slice(0, 10);
+    setProfileInfo(prev => ({ ...prev, phone: digits ? `+90${digits}` : '' }));
   }
 
   function handleBusinessPhoneChange(text: string) {
@@ -169,11 +213,36 @@ export default function SettingsScreen() {
     ]);
   }
 
+  const profileFields = [
+    { label: 'Ad Soyad', done: !!profileInfo.fullName.trim() },
+    { label: 'Telefon', done: !!profileInfo.phone.trim() },
+    { label: 'E-posta', done: !!profileInfo.email.trim() },
+    { label: 'Unvan / Rol', done: !!profileInfo.jobTitle.trim() },
+    { label: 'Profil fotoğrafı', done: !!(auth.avatarUrl || localAvatarUri) },
+  ];
+  const profileDone = profileFields.filter(f => f.done).length;
+  const profileTotal = profileFields.length;
+  const profilePct = Math.round((profileDone / profileTotal) * 100);
+  const profileComplete = profileDone === profileTotal;
+
+  const businessFields = [
+    { label: 'İşletme Adı', done: !!businessInfo.name.trim() },
+    { label: 'Telefon', done: !!businessInfo.phone.trim() },
+    { label: 'E-posta', done: !!businessInfo.email.trim() },
+    { label: 'Şehir', done: !!businessInfo.city.trim() },
+    { label: 'Adres', done: !!businessInfo.address.trim() },
+    { label: 'Web Sitesi', done: !!businessInfo.website.trim() },
+    { label: 'Açıklama', done: !!businessInfo.description.trim() },
+  ];
+  const bizDone = businessFields.filter(f => f.done).length;
+  const bizTotal = businessFields.length;
+  const bizPct = Math.round((bizDone / bizTotal) * 100);
+  const bizComplete = bizDone === bizTotal;
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScreenHeader title="Ayarlar" showBack />
 
-      {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: SPACE[5], paddingVertical: SPACE[3], gap: SPACE[2], alignItems: 'center' }}>
         {TABS.map((t) => (
           <TouchableOpacity key={t} style={[styles.chip, tab === t && styles.chipActive]} onPress={() => setTab(t)} activeOpacity={0.8}>
@@ -183,31 +252,148 @@ export default function SettingsScreen() {
       </ScrollView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        {tab === 'Genel' && (
+        {/* ─── PROFİL ─────────────────────────────────────────────────── */}
+        {tab === 'Profil' && (
           <>
+            <View style={[styles.completionCard, profileComplete && styles.completionCardDone]}>
+              <View style={styles.completionRow}>
+                <View style={styles.completionInfo}>
+                  <Text style={styles.completionTitle}>
+                    {profileComplete ? 'Profil tamamlandı' : 'Profil tamamlanma durumu'}
+                  </Text>
+                  <Text style={styles.completionSub}>
+                    {profileComplete ? 'Tüm bilgiler eksiksiz.' : `${profileTotal - profileDone} eksik alan kaldı`}
+                  </Text>
+                </View>
+                <Text style={[styles.completionPct, profileComplete && styles.completionPctDone]}>%{profilePct}</Text>
+              </View>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${profilePct}%` }, profileComplete && styles.progressFillDone]} />
+              </View>
+              <View style={styles.checklist}>
+                {profileFields.map(f => (
+                  <View key={f.label} style={styles.checkItem}>
+                    <Ionicons name={f.done ? 'checkmark-circle' : 'ellipse-outline'} size={14} color={f.done ? '#10B981' : COLORS.textMuted} />
+                    <Text style={[styles.checkText, f.done && styles.checkTextDone]}>{f.label}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
             <View style={styles.profileCard}>
-              <TouchableOpacity
-                style={styles.avatarWrap}
-                onPress={handleAvatarPress}
-                activeOpacity={0.8}
-                disabled={avatarUploading}
-                accessibilityRole="button"
-                accessibilityLabel="Profil fotoğrafını değiştir"
-              >
-                <Avatar name={auth.fullName ?? businessInfo.name} size={64} url={localAvatarUri ?? auth.avatarUrl ?? ''} />
+              <TouchableOpacity style={styles.avatarWrap} onPress={handleAvatarPress} activeOpacity={0.8} disabled={avatarUploading}>
+                <Avatar name={profileInfo.fullName} size={64} url={localAvatarUri ?? auth.avatarUrl ?? ''} />
                 <View style={styles.avatarEditBadge}>
-                  {avatarUploading ? (
-                    <ActivityIndicator size="small" color={STATIC_WHITE} />
-                  ) : (
-                    <Ionicons name="camera" size={12} color={STATIC_WHITE} />
-                  )}
+                  {avatarUploading ? <ActivityIndicator size="small" color={STATIC_WHITE} /> : <Ionicons name="camera" size={12} color={STATIC_WHITE} />}
                 </View>
               </TouchableOpacity>
               <View style={styles.profileInfo}>
-                <Text style={styles.profileName}>{businessInfo.name}</Text>
+                <Text style={styles.profileName}>{profileInfo.fullName || 'Kullanıcı'}</Text>
+                <Text style={styles.profileEmail}>{profileInfo.email}</Text>
+              </View>
+              <TouchableOpacity style={styles.editBtn} onPress={() => setProfileEditMode(!profileEditMode)} activeOpacity={0.8}>
+                <Ionicons name={profileEditMode ? 'close' : 'pencil'} size={16} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            {profileEditMode ? (
+              <>
+                {[
+                  { key: 'fullName', label: 'Ad Soyad', placeholder: 'Adınız Soyadınız' },
+                  { key: 'phone', label: 'Telefon', placeholder: '05XX XXX XX XX', keyboardType: 'phone-pad' as const },
+                  { key: 'jobTitle', label: 'Unvan / Rol', placeholder: 'Örn: İşletme Sahibi' },
+                ].map((field) => (
+                  <View key={field.key} style={styles.editField}>
+                    <Text style={styles.editLabel}>{field.label}</Text>
+                    <TextInput
+                      style={styles.editInput}
+                      value={field.key === 'phone' ? formatPhoneDisplay(profileInfo.phone) : (profileInfo as any)[field.key]}
+                      onChangeText={(v) => field.key === 'phone' ? handleProfilePhoneChange(v) : setProfileInfo(p => ({ ...p, [field.key]: v }))}
+                      placeholder={field.placeholder}
+                      placeholderTextColor={COLORS.textMuted}
+                      keyboardType={(field as any).keyboardType ?? 'default'}
+                    />
+                  </View>
+                ))}
+                <View style={styles.editField}>
+                  <Text style={styles.editLabel}>E-posta</Text>
+                  <View style={[styles.editInput, { backgroundColor: COLORS.borderLight, justifyContent: 'center' }]}>
+                    <Text style={{ color: COLORS.textMuted, fontSize: FONT.base }}>{profileInfo.email}</Text>
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={async () => {
+                  try {
+                    const parts = profileInfo.fullName.trim().split(' ');
+                    await api.put('/users/me', {
+                      firstName: parts[0] ?? '',
+                      lastName: parts.slice(1).join(' ') || parts[0] ?? '',
+                      phone: profileInfo.phone || null,
+                      jobTitle: profileInfo.jobTitle || null,
+                    });
+                    dispatch(updateProfile({ fullName: profileInfo.fullName, phone: profileInfo.phone, jobTitle: profileInfo.jobTitle }));
+                    setProfileEditMode(false);
+                    toast.success('Profil kaydedildi.');
+                  } catch (err: any) {
+                    const msg = err?.response?.data?.detail ?? err?.response?.data?.title ?? 'Profil kaydedilemedi.';
+                    toast.error(msg);
+                  }
+                }}>
+                  <Text style={styles.saveBtnText}>Profili Kaydet</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {[
+                  { label: 'Ad Soyad', value: profileInfo.fullName },
+                  { label: 'Telefon', value: profileInfo.phone },
+                  { label: 'E-posta', value: profileInfo.email },
+                  { label: 'Unvan / Rol', value: profileInfo.jobTitle },
+                ].map((field) => (
+                  <View key={field.label} style={styles.fieldCard}>
+                    <Text style={styles.fieldLabel}>{field.label}</Text>
+                    <Text style={[styles.fieldValue, !field.value && { color: COLORS.textMuted }]}>{field.value || '—'}</Text>
+                    <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+                  </View>
+                ))}
+              </>
+            )}
+          </>
+        )}
+
+        {/* ─── GENEL (İşletme Bilgileri) ──────────────────────────────── */}
+        {tab === 'Genel' && (
+          <>
+            <View style={[styles.completionCard, bizComplete && styles.completionCardDone]}>
+              <View style={styles.completionRow}>
+                <View style={styles.completionInfo}>
+                  <Text style={styles.completionTitle}>
+                    {bizComplete ? 'İşletme profili tamamlandı' : 'İşletme profili tamamlanma durumu'}
+                  </Text>
+                  <Text style={styles.completionSub}>
+                    {bizComplete ? 'Tüm bilgiler eksiksiz.' : `${bizTotal - bizDone} eksik alan kaldı`}
+                  </Text>
+                </View>
+                <Text style={[styles.completionPct, bizComplete && styles.completionPctDone]}>%{bizPct}</Text>
+              </View>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${bizPct}%` }, bizComplete && styles.progressFillDone]} />
+              </View>
+              <View style={styles.checklist}>
+                {businessFields.map(f => (
+                  <View key={f.label} style={styles.checkItem}>
+                    <Ionicons name={f.done ? 'checkmark-circle' : 'ellipse-outline'} size={14} color={f.done ? '#10B981' : COLORS.textMuted} />
+                    <Text style={[styles.checkText, f.done && styles.checkTextDone]}>{f.label}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.profileCard}>
+              <View style={styles.profileInfo}>
+                <Text style={styles.profileName}>{businessInfo.name || 'İşletme'}</Text>
                 <Text style={styles.profileEmail}>{businessInfo.email}</Text>
               </View>
-              <TouchableOpacity style={styles.editBtn} onPress={() => setEditMode(!editMode)} accessibilityRole="button" accessibilityLabel={editMode ? 'Kapat' : 'Düzenle'}>
+              <TouchableOpacity style={styles.editBtn} onPress={() => setEditMode(!editMode)} activeOpacity={0.8}>
                 <Ionicons name={editMode ? 'close' : 'pencil'} size={16} color={COLORS.textMuted} />
               </TouchableOpacity>
             </View>
@@ -218,8 +404,10 @@ export default function SettingsScreen() {
                   { key: 'name', label: 'İşletme Adı', placeholder: 'İşletme adı' },
                   { key: 'phone', label: 'Telefon', placeholder: '05XX XXX XX XX', keyboardType: 'phone-pad' as const },
                   { key: 'email', label: 'E-posta', placeholder: 'ornek@mail.com', keyboardType: 'email-address' as const },
+                  { key: 'city', label: 'Şehir', placeholder: 'İstanbul' },
                   { key: 'address', label: 'Adres', placeholder: 'Adres' },
                   { key: 'website', label: 'Web Sitesi', placeholder: 'ornek.com' },
+                  { key: 'description', label: 'Açıklama', placeholder: 'İşletmeniz hakkında kısa açıklama' },
                 ].map((field) => (
                   <View key={field.key} style={styles.editField}>
                     <Text style={styles.editLabel}>{field.label}</Text>
@@ -230,6 +418,8 @@ export default function SettingsScreen() {
                       placeholder={field.placeholder}
                       placeholderTextColor={COLORS.textMuted}
                       keyboardType={(field as any).keyboardType ?? 'default'}
+                      multiline={field.key === 'description'}
+                      numberOfLines={field.key === 'description' ? 3 : 1}
                     />
                   </View>
                 ))}
@@ -240,7 +430,9 @@ export default function SettingsScreen() {
                       phone: businessInfo.phone,
                       email: businessInfo.email,
                       address: businessInfo.address,
+                      city: businessInfo.city,
                       website: businessInfo.website,
+                      description: businessInfo.description,
                     });
                     setEditMode(false);
                     toast.success('İşletme bilgileri kaydedildi.');
@@ -257,12 +449,15 @@ export default function SettingsScreen() {
                 {[
                   { label: 'İşletme Adı', value: businessInfo.name },
                   { label: 'Telefon', value: businessInfo.phone },
+                  { label: 'E-posta', value: businessInfo.email },
+                  { label: 'Şehir', value: businessInfo.city },
                   { label: 'Adres', value: businessInfo.address },
                   { label: 'Web Sitesi', value: businessInfo.website },
+                  { label: 'Açıklama', value: businessInfo.description },
                 ].map((field) => (
                   <View key={field.label} style={styles.fieldCard}>
                     <Text style={styles.fieldLabel}>{field.label}</Text>
-                    <Text style={styles.fieldValue}>{field.value}</Text>
+                    <Text style={[styles.fieldValue, !field.value && { color: COLORS.textMuted }]}>{field.value || '—'}</Text>
                     <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
                   </View>
                 ))}
@@ -271,6 +466,7 @@ export default function SettingsScreen() {
           </>
         )}
 
+        {/* ─── ÇALIŞMA SAATLERİ ───────────────────────────────────────── */}
         {tab === 'Çalışma Saatleri' && (
           <View style={styles.hoursCard}>
             {hours.map((h, idx) => (
@@ -287,6 +483,7 @@ export default function SettingsScreen() {
           </View>
         )}
 
+        {/* ─── BİLDİRİMLER ────────────────────────────────────────────── */}
         {tab === 'Bildirimler' && (
           <View style={styles.notifCard}>
             {notifSettings.map((s, idx) => (
@@ -298,6 +495,7 @@ export default function SettingsScreen() {
           </View>
         )}
 
+        {/* ─── GÜVENLİK ───────────────────────────────────────────────── */}
         {tab === 'Güvenlik' && (
           <>
             <TouchableOpacity style={[styles.securityRow, securityItem === 'password' && styles.securityRowOpen]} onPress={() => setSecurityItem(securityItem === 'password' ? null : 'password')} activeOpacity={0.8}>
@@ -389,20 +587,26 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },
+  completionCard: { marginHorizontal: SPACE[5], marginBottom: SPACE[4], borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.primary + '30', backgroundColor: COLORS.primary + '08', padding: SPACE[4], ...SHADOW.sm },
+  completionCardDone: { borderColor: '#10B981' + '40', backgroundColor: '#10B981' + '08' },
+  completionRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: SPACE[2] },
+  completionInfo: { flex: 1, gap: 2 },
+  completionTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
+  completionSub: { fontSize: FONT.xs, color: COLORS.textMuted },
+  completionPct: { fontSize: 22, fontWeight: FONT.bold, color: COLORS.primary },
+  completionPctDone: { color: '#10B981' },
+  progressTrack: { height: 6, borderRadius: 3, backgroundColor: COLORS.border, overflow: 'hidden', marginBottom: SPACE[3] },
+  progressFill: { height: '100%', borderRadius: 3, backgroundColor: COLORS.primary },
+  progressFillDone: { backgroundColor: '#10B981' },
+  checklist: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACE[2] },
+  checkItem: { flexDirection: 'row', alignItems: 'center', gap: 4, width: '48%' },
+  checkText: { fontSize: FONT.xs, color: COLORS.textMuted },
+  checkTextDone: { color: COLORS.text },
   profileCard: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginBottom: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   avatarWrap: { position: 'relative' },
   avatarEditBadge: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    width: 24,
-    height: 24,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.surface,
+    position: 'absolute', bottom: -2, right: -2, width: 24, height: 24, borderRadius: RADIUS.full,
+    backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.surface,
   },
   profileInfo: { flex: 1, gap: 4 },
   profileName: { fontSize: FONT.lg, fontWeight: FONT.bold, color: COLORS.text },
@@ -430,4 +634,3 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: SPACE[3] },
   switchLabel: { fontSize: FONT.base, color: COLORS.text },
 });
-
