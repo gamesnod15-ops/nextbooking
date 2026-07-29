@@ -7,7 +7,6 @@ import {
   TextInput,
   Image,
   Dimensions,
-  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -130,11 +129,12 @@ function shuffle<T>(items: T[]): T[] {
 function interleaveAds(businesses: BusinessItem[], ads: PublicAdDto[]): DeckItem[] {
   if (ads.length === 0) return businesses;
   const result: DeckItem[] = [];
-  const interval = 4 + Math.floor(Math.random() * 3);
+  const interval = Math.max(2, 4 + Math.floor(Math.random() * 3));
   let adIdx = 0;
   for (let i = 0; i < businesses.length; i++) {
     result.push(businesses[i]);
-    if ((i + 1) % interval === 0 && adIdx < ads.length) {
+    // Insert ad every `interval` businesses, or after the last biz if we still have ads left.
+    if (((i + 1) % interval === 0 || i === businesses.length - 1) && adIdx < ads.length) {
       result.push({ ...ads[adIdx], __type: 'ad' });
       adIdx++;
     }
@@ -206,8 +206,24 @@ export default function BusinessesScreen() {
   // Deck order: shuffle businesses, then interleave ads at random intervals.
   const deckItems = useMemo(() => {
     const items = businessesQuery.data?.items ?? [];
-    const ads = adsQuery.data ?? [];
+    const realAds = adsQuery.data ?? [];
     const shuffled = shuffle(items);
+    // When no real ads exist, generate mock ones from businesses so dev can see the cards.
+    let ads = realAds;
+    if (ads.length === 0 && items.length > 0) {
+      const packages: ['BasicBoost', 'ProfessionalBoost', 'PremiumSpotlight'] = ['BasicBoost', 'ProfessionalBoost', 'PremiumSpotlight'];
+      ads = items.slice(0, 3).map((biz, i) => ({
+        id: `mock-ad-${biz.id}`,
+        businessId: biz.id,
+        title: '',
+        description: null,
+        businessName: '',
+        coverImageUrl: '/uploads/banner-1.png',
+        logoUrl: null,
+        packageType: packages[i],
+        targetCategory: ['Hair', 'Beauty', 'Wellness'][i],
+      })) as unknown as PublicAdDto[];
+    }
     return interleaveAds(shuffled, ads);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessesQuery.data, adsQuery.data, shuffleSeed]);
@@ -242,27 +258,9 @@ export default function BusinessesScreen() {
 
   function renderCard(item: DeckItem) {
     if ('__type' in item && item.__type === 'ad') {
-      const img = item.coverImageUrl || item.logoUrl;
-      const [c1, c2] = adGradient(item.packageType);
       return (
         <View style={styles.card}>
-          <LinearGradient colors={[c1, c2]} style={styles.cardImage} />
-          {img ? (
-            <View style={styles.adLogoWrap}>
-              <Image source={{ uri: fixImageUrl(img) }} style={styles.adLogo} resizeMode="contain" />
-            </View>
-          ) : null}
-          <View style={styles.adBadge}>
-            <Ionicons name="megaphone" size={12} color={STATIC_WHITE} />
-            <Text style={styles.adBadgeText}>Reklam</Text>
-          </View>
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardCategory}>{item.businessName}</Text>
-            <Text style={styles.cardName} numberOfLines={2}>{item.title}</Text>
-            {item.description ? (
-              <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
-            ) : null}
-          </View>
+          <Image source={{ uri: fixImageUrl(item.coverImageUrl) }} style={styles.cardImage} resizeMode="cover" />
         </View>
       );
     }
@@ -378,6 +376,15 @@ export default function BusinessesScreen() {
               cardHeight={CARD_HEIGHT}
               onEmpty={() => <EmptyState icon="business-outline" title="İşletme bulunamadı." />}
             />
+            {(() => {
+              const adCount = deckItems.filter((x): x is PublicAdDto & { __type: 'ad' } => '__type' in x && x.__type === 'ad').length;
+              return adCount > 0 ? (
+                <View style={styles.adIndicator}>
+                  <Ionicons name="megaphone" size={12} color="#F59E0B" />
+                  <Text style={styles.adIndicatorText}>{adCount} reklam kartı araya yerleştirildi</Text>
+                </View>
+              ) : null;
+            })()}
           </View>
         )}
       </View>
@@ -461,34 +468,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   cityRow: { flexDirection: 'row', alignItems: 'center', gap: 3, flexShrink: 1 },
   cityText: { fontSize: FONT.xs, color: 'rgba(255,255,255,0.85)', flexShrink: 1 },
 
-  adLogoWrap: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  adLogo: {
-    width: '60%',
-    height: '60%',
-    opacity: 0.2,
-  },
-  adBadge: {
-    position: 'absolute',
-    top: SPACE[3],
-    left: SPACE[3],
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: RADIUS.full,
-  },
-  adBadgeText: {
-    fontSize: FONT.xs,
-    fontWeight: FONT.semibold,
-    color: STATIC_WHITE,
-  },
   cardDescription: {
     fontSize: FONT.sm,
     color: 'rgba(255,255,255,0.85)',
@@ -498,6 +477,18 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     fontSize: FONT.sm,
     fontWeight: FONT.semibold,
     color: 'rgba(255,255,255,0.7)',
+  },
+  adIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: SPACE[2],
+    paddingVertical: SPACE[1],
+  },
+  adIndicatorText: {
+    fontSize: FONT.xs,
+    color: COLORS.textMuted,
   },
 
   retryBtn: {

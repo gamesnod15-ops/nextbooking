@@ -20,7 +20,10 @@ export const API_ORIGIN = BASE_URL.startsWith('http')
 /** Replace localhost URLs with the actual server IP for mobile device access */
 export function fixImageUrl(url: string | null | undefined): string {
   if (!url) return '';
-  return url.replace(/https?:\/\/localhost(:\d+)?/gi, API_ORIGIN);
+  const swapped = url.replace(/https?:\/\/localhost(:\d+)?/gi, API_ORIGIN);
+  // Relative paths like /uploads/... → full URL
+  if (swapped.startsWith('/')) return `${API_ORIGIN}${swapped}`;
+  return swapped;
 }
 
 const api = axios.create({
