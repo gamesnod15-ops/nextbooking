@@ -233,7 +233,22 @@ export default function SettingsScreen() {
                     />
                   </View>
                 ))}
-                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setEditMode(false); toast.success('İşletme bilgileri kaydedildi.'); }}>
+                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={async () => {
+                  try {
+                    await api.put('/business/me', {
+                      name: businessInfo.name,
+                      phone: businessInfo.phone,
+                      email: businessInfo.email,
+                      address: businessInfo.address,
+                      website: businessInfo.website,
+                    });
+                    setEditMode(false);
+                    toast.success('İşletme bilgileri kaydedildi.');
+                  } catch (err: any) {
+                    const msg = err?.response?.data?.detail ?? err?.response?.data?.title ?? 'İşletme bilgileri kaydedilemedi.';
+                    toast.error(msg);
+                  }
+                }}>
                   <Text style={styles.saveBtnText}>Kaydet</Text>
                 </TouchableOpacity>
               </>
@@ -304,11 +319,20 @@ export default function SettingsScreen() {
                   <Text style={styles.editLabel}>Yeni Şifre (Tekrar)</Text>
                   <TextInput style={styles.editInput} value={passwordForm.confirm} onChangeText={v => setPasswordForm(p => ({...p, confirm: v}))} placeholder="••••••••" secureTextEntry placeholderTextColor={COLORS.textMuted} />
                 </View>
-                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => {
+                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={async () => {
                   if (!passwordForm.current || !passwordForm.newPass) { toast.warning('Tüm alanları doldurun.'); return; }
                   if (passwordForm.newPass !== passwordForm.confirm) { toast.warning('Yeni şifreler eşleşmiyor.'); return; }
                   setSavingPass(true);
-                  setTimeout(() => { setSavingPass(false); setSecurityItem(null); setPasswordForm({current:'',newPass:'',confirm:''}); toast.success('Şifre değiştirildi.'); }, 1000);
+                  try {
+                    await api.put('/users/me/password', { currentPassword: passwordForm.current, newPassword: passwordForm.newPass });
+                    setSecurityItem(null);
+                    setPasswordForm({current:'',newPass:'',confirm:''});
+                    toast.success('Şifre değiştirildi.');
+                  } catch {
+                    toast.error('Şifre değiştirilemedi.');
+                  } finally {
+                    setSavingPass(false);
+                  }
                 }}>
                   {savingPass ? <ActivityIndicator size="small" color={STATIC_WHITE} /> : <Text style={styles.saveBtnText}>Şifreyi Değiştir</Text>}
                 </TouchableOpacity>
@@ -332,7 +356,16 @@ export default function SettingsScreen() {
                     <TextInput style={styles.editInput} value={formatPhoneDisplay(twoFA.phone)} onChangeText={handleTwoFAPhoneChange} placeholder="05XX XXX XX XX" keyboardType="phone-pad" placeholderTextColor={COLORS.textMuted} />
                   </View>
                 )}
-                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={() => { setSecurityItem(null); toast.success('2FA ayarları kaydedildi.'); }}>
+                <TouchableOpacity style={styles.saveBtn} activeOpacity={0.8} onPress={async () => {
+                  try {
+                    await api.patch('/business/me/settings', { twoFactorEnabled: String(twoFA.enabled), twoFactorPhone: twoFA.phone });
+                    setSecurityItem(null);
+                    toast.success('2FA ayarları kaydedildi.');
+                  } catch (err: any) {
+                    const msg = err?.response?.data?.detail ?? err?.response?.data?.title ?? '2FA ayarları kaydedilemedi.';
+                    toast.error(msg);
+                  }
+                }}>
                   <Text style={styles.saveBtnText}>Kaydet</Text>
                 </TouchableOpacity>
               </View>
@@ -352,7 +385,7 @@ export default function SettingsScreen() {
 
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
+  chip: { paddingHorizontal: 16, paddingVertical: 10, minHeight: 40, borderRadius: RADIUS.full, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: 'transparent', justifyContent: 'center', flexShrink: 0 },
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },
