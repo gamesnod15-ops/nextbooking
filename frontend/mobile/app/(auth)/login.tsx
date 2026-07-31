@@ -272,7 +272,7 @@ export default function LoginScreen() {
                 <Ionicons name="calendar-outline" size={28} color={COLORS.info} />
               </View>
               <View style={styles.cardContent}>
-                <Text style={styles.cardTitleBlue}>Hemen Rezervasyon Yap</Text>
+                <Text style={styles.cardTitleBlue}>Hemen Randevu Al</Text>
                 <Text style={styles.cardDescBlue}>İşletmeleri keşfedin ve randevunuzu hemen oluşturun</Text>
               </View>
               <View style={styles.cardArrowBlue}>
