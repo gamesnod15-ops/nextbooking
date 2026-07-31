@@ -8,10 +8,8 @@ using RandevumKolay.Application.Features.Auth.Commands.Login;
 using RandevumKolay.Application.Features.Auth.Commands.RefreshToken;
 using RandevumKolay.Application.Features.Auth.Commands.RegisterCustomer;
 using RandevumKolay.Application.Features.Auth.Commands.ResetPassword;
-using RandevumKolay.Application.Features.Auth.Commands.SendPhoneOtp;
 using RandevumKolay.Application.Features.Auth.Commands.UpdateEmail;
 using RandevumKolay.Application.Features.Auth.Commands.VerifyEmail;
-using RandevumKolay.Application.Features.Auth.Commands.VerifyPhoneOtp;
 
 namespace RandevumKolay.API.Controllers.v1;
 
@@ -171,30 +169,6 @@ public class AuthController : ControllerBase
         var result = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(RegisterCustomer), result);
     }
-
-    [HttpPost("send-phone-otp")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SendPhoneOtp(
-        [FromBody] SendPhoneOtpRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        await _sender.Send(new SendPhoneOtpCommand(request.Phone), cancellationToken);
-        return NoContent();
-    }
-
-    [HttpPost("verify-phone-otp")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> VerifyPhoneOtp(
-        [FromBody] VerifyPhoneOtpRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        await _sender.Send(new VerifyPhoneOtpCommand(request.Phone, request.Otp), cancellationToken);
-        return Ok(new { message = "Telefon numarası başarıyla doğrulandı." });
-    }
 }
 
 public record VerifyEmailRequest(string Token);
@@ -202,5 +176,3 @@ public record UpdateEmailRequest(string NewEmail);
 public record ForgotPasswordRequest(string Email);
 public record ResetPasswordRequest(string Token, string NewPassword);
 public record RefreshTokenRequest(string? RefreshToken);
-public record SendPhoneOtpRequest(string Phone);
-public record VerifyPhoneOtpRequest(string Phone, string Otp);

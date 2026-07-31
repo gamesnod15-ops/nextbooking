@@ -8,16 +8,13 @@ namespace RandevumKolay.Application.Features.Appointments.EventHandlers;
 public class AppointmentCancelledEventHandler : INotificationHandler<AppointmentCancelledEvent>
 {
     private readonly INotificationService _notificationService;
-    private readonly IJobService _jobService;
     private readonly ILogger<AppointmentCancelledEventHandler> _logger;
 
     public AppointmentCancelledEventHandler(
         INotificationService notificationService,
-        IJobService jobService,
         ILogger<AppointmentCancelledEventHandler> logger)
     {
         _notificationService = notificationService;
-        _jobService = jobService;
         _logger = logger;
     }
 
@@ -26,12 +23,6 @@ public class AppointmentCancelledEventHandler : INotificationHandler<Appointment
         _logger.LogInformation(
             "Appointment cancelled: {AppointmentId}, Reason: {Reason}",
             notification.Appointment.Id, notification.Reason);
-
-        _jobService.Enqueue<INotificationService>(
-            svc => svc.SendAppointmentCancellationAsync(
-                notification.Appointment.Id,
-                notification.Reason,
-                CancellationToken.None));
 
         await _notificationService.SendRealtimeNotificationAsync(
             notification.Appointment.TenantId,

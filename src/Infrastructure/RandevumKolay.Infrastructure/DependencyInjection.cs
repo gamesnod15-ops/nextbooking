@@ -10,7 +10,6 @@ using RandevumKolay.Infrastructure.Identity;
 using RandevumKolay.Infrastructure.Services;
 using RandevumKolay.Infrastructure.Notifications;
 using RandevumKolay.Infrastructure.Notifications.Email;
-using RandevumKolay.Infrastructure.Notifications.Sms;
 using StackExchange.Redis;
 
 namespace RandevumKolay.Infrastructure;
@@ -53,10 +52,6 @@ public static class DependencyInjection
         // Email verification toggle
         services.Configure<EmailVerificationSettings>(configuration.GetSection("EmailVerification"));
         services.AddScoped<IEmailVerificationConfiguration, EmailVerificationConfiguration>();
-
-        // SMS
-        services.Configure<NetGsmSettings>(configuration.GetSection("NetGsm"));
-        services.AddHttpClient<ISmsService, NetGsmSmsService>();
 
         // Notifications
         services.AddScoped<INotificationService, NotificationService>();

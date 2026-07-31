@@ -11,7 +11,6 @@ public class NotificationService : INotificationService
 {
     private readonly IApplicationDbContext _context;
     private readonly IEmailService _emailService;
-    private readonly ISmsService _smsService;
     private readonly IHubContext<SignalR.NotificationHub> _hubContext;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<NotificationService> _logger;
@@ -19,14 +18,12 @@ public class NotificationService : INotificationService
     public NotificationService(
         IApplicationDbContext context,
         IEmailService emailService,
-        ISmsService smsService,
         IHubContext<SignalR.NotificationHub> hubContext,
         IHttpClientFactory httpClientFactory,
         ILogger<NotificationService> logger)
     {
         _context = context;
         _emailService = emailService;
-        _smsService = smsService;
         _hubContext = hubContext;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
@@ -46,10 +43,6 @@ public class NotificationService : INotificationService
 
         var customer = appointment.Customer;
         var localTime = appointment.StartTime.ToString("dd.MM.yyyy HH:mm");
-
-        // Send SMS
-        var smsMessage = $"Sayın {customer.Name}, {localTime} tarihindeki {appointment.Service?.Name} randevunuz onaylandı. İyi günler dileriz. - RandevumKolay";
-        await _smsService.SendAsync(customer.Phone, smsMessage, cancellationToken);
 
         // Send Email if available
         if (!string.IsNullOrWhiteSpace(customer.Email))
@@ -79,38 +72,12 @@ public class NotificationService : INotificationService
     {
         var appointment = await _context.Appointments
             .Include(a => a.Customer)
-            .Include(a => a.Service)
             .FirstOrDefaultAsync(a => a.Id == appointmentId, cancellationToken);
 
         if (appointment?.Customer is null || appointment.ReminderSent) return;
 
-        var customer = appointment.Customer;
-        var localTime = appointment.StartTime.ToString("dd.MM.yyyy HH:mm");
-
-        var message = $"Sayın {customer.Name}, yarın {localTime} saatindeki {appointment.Service?.Name} randevunuzu hatırlatmak istedik. - RandevumKolay";
-        await _smsService.SendAsync(customer.Phone, message, cancellationToken);
-
         appointment.MarkReminderSent();
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task SendAppointmentCancellationAsync(
-        Guid appointmentId,
-        string reason,
-        CancellationToken cancellationToken = default)
-    {
-        var appointment = await _context.Appointments
-            .Include(a => a.Customer)
-            .Include(a => a.Service)
-            .FirstOrDefaultAsync(a => a.Id == appointmentId, cancellationToken);
-
-        if (appointment?.Customer is null) return;
-
-        var customer = appointment.Customer;
-        var localTime = appointment.StartTime.ToString("dd.MM.yyyy HH:mm");
-
-        var message = $"Sayın {customer.Name}, {localTime} tarihindeki {appointment.Service?.Name} randevunuz iptal edilmiştir. Sebep: {reason}. - RandevumKolay";
-        await _smsService.SendAsync(customer.Phone, message, cancellationToken);
     }
 
     public async Task SendWinBackMessageAsync(
@@ -124,7 +91,6 @@ public class NotificationService : INotificationService
         if (customer is null) return;
 
         var message = messageText.Replace("{customerName}", customer.Name);
-        await _smsService.SendAsync(customer.Phone, message, cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(customer.Email))
         {

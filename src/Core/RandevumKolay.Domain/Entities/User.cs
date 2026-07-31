@@ -47,7 +47,6 @@ public class User : AuditableEntity
 
     public void RecordLogin() => LastLoginAt = DateTimeOffset.UtcNow;
     public void VerifyEmail() => EmailVerified = true;
-    public void VerifyPhone() => PhoneVerified = true;
     public void SetAvatar(string? url) => AvatarUrl = url;
     public void UpdatePassword(string hash) => PasswordHash = hash;
     public void UpdateEmail(string email) => Email = email.ToLowerInvariant();

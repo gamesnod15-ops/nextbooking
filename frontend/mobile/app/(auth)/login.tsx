@@ -53,7 +53,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const res = await api.post('/auth/login', { email: email.trim(), password });
-      const { accessToken, refreshToken, userId, role: userRole, tenantId, fullName, email: userEmail, phone, jobTitle, avatarUrl, phoneVerified, emailVerified } = res.data;
+      const { accessToken, refreshToken, userId, role: userRole, tenantId, fullName, email: userEmail, phone, jobTitle, avatarUrl, emailVerified } = res.data;
 
       const authData = { accessToken, userId, role: userRole, tenantId, fullName, email: userEmail, phone, jobTitle, avatarUrl, appRole: selectedRole };
       await SecureStore.setItemAsync('access_token', accessToken);
@@ -61,11 +61,6 @@ export default function LoginScreen() {
       await SecureStore.setItemAsync('auth_data', JSON.stringify(authData));
 
       dispatch(setCredentials(authData));
-
-      if (phone && !phoneVerified && selectedRole === 'customer') {
-        router.replace({ pathname: '/(auth)/verify-phone', params: { phone, role: selectedRole } } as any);
-        return;
-      }
 
       if (selectedRole === 'business') {
         router.replace('/(business)');

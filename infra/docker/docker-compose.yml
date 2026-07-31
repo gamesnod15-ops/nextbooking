@@ -53,8 +53,6 @@ services:
       Smtp__UserName: "${SMTP_USER}"
       Smtp__Password: "${SMTP_PASSWORD}"
       Smtp__FromEmail: "${SMTP_FROM_EMAIL:-noreply@randevumkolay.com}"
-      NetGsm__UserCode: "${NETGSM_USER_CODE}"
-      NetGsm__Password: "${NETGSM_PASSWORD}"
     ports:
       - "5000:8080"
     depends_on:

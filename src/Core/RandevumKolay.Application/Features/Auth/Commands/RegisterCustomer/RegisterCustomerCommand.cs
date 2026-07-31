@@ -21,8 +21,6 @@ public sealed class RegisterCustomerCommandHandler
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IEmailService _emailService;
-    private readonly ISmsService _smsService;
-    private readonly ICacheService _cache;
     private readonly IEmailVerificationConfiguration _emailVerification;
 
     public RegisterCustomerCommandHandler(
@@ -30,16 +28,12 @@ public sealed class RegisterCustomerCommandHandler
         IPasswordHasher passwordHasher,
         IJwtTokenService jwtTokenService,
         IEmailService emailService,
-        ISmsService smsService,
-        ICacheService cache,
         IEmailVerificationConfiguration emailVerification)
     {
         _context = context;
         _passwordHasher = passwordHasher;
         _jwtTokenService = jwtTokenService;
         _emailService = emailService;
-        _smsService = smsService;
-        _cache = cache;
         _emailVerification = emailVerification;
     }
 
@@ -103,11 +97,6 @@ public sealed class RegisterCustomerCommandHandler
         {
             user.VerifyEmail();
         }
-
-        // Send phone OTP
-        var otp = Random.Shared.Next(100000, 999999).ToString();
-        await _cache.SetAsync($"phone_otp:{request.Phone}", otp, TimeSpan.FromMinutes(5), cancellationToken);
-        await _smsService.SendOtpAsync(request.Phone, otp, cancellationToken);
 
         return new RegisterCustomerResult(user.Id, user.FullName);
     }
