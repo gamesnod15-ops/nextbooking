@@ -4,7 +4,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { API_ORIGIN } from '@/lib/api';
 
 const MASCOT_SIZE = 130;
-const MASCOT_URL = `${API_ORIGIN}/uploads/hello.webm`;
+const MASCOT_URL = `${API_ORIGIN}/uploads/hello.mp4`;
 
 /** Looping, transparent-background mascot clip served from the API's static uploads folder. */
 export function MascotGreeting() {
