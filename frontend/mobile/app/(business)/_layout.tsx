@@ -19,7 +19,7 @@ export default function BusinessLayout() {
   return (
     <DrawerProvider>
       <View style={styles.root}>
-        <PatternOverlay opacity={0.25} />
+        <PatternOverlay opacity={0.08} />
         <Stack screenOptions={{ headerShown: false }} />
         <TabBar />
       </View>

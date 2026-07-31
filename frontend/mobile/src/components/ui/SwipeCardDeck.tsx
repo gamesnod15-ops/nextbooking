@@ -14,10 +14,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { RADIUS } from '@/lib/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.28;
 const SWIPE_OUT_DISTANCE = SCREEN_WIDTH * 1.4;
 const MAX_VISIBLE_STACK = 3;
+const PEEK_HEIGHT = 30;
 
 export interface SwipeCardDeckProps<T> {
   data: T[];
@@ -27,16 +28,11 @@ export interface SwipeCardDeckProps<T> {
   onSwipeRight?: (item: T) => void;
   onTap?: (item: T) => void;
   onEmpty?: () => React.ReactNode;
-  /** Fires once, right when the active index moves past the last card. */
   onExhausted?: () => void;
   cardWidth?: number;
   cardHeight?: number;
 }
 
-/**
- * Generic Tinder-style swipeable card deck. Purely presentational/gestural —
- * the caller owns the data, the card visuals, and what a swipe *means*.
- */
 export function SwipeCardDeck<T>({
   data,
   keyExtractor,
@@ -53,14 +49,20 @@ export function SwipeCardDeck<T>({
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  // Reset the deck whenever the underlying data identity changes (new fetch/shuffle).
+  const baseWidth = cardWidth ?? SCREEN_WIDTH - 32;
+  const baseHeight = cardHeight ?? Math.min(SCREEN_HEIGHT * 0.6, 560);
+  const visibleCount = data.length > activeIndex
+    ? Math.min(data.length - activeIndex, MAX_VISIBLE_STACK)
+    : 0;
+  const deckHeight = baseHeight + Math.max(0, visibleCount - 1) * PEEK_HEIGHT;
+
+
+
   const dataKey = useMemo(() => data.map(keyExtractor).join('|'), [data, keyExtractor]);
   useEffect(() => {
     translateX.value = 0;
     translateY.value = 0;
     setActiveIndex(0);
-    // dataKey captures the full ordered id list — any change (new data, reshuffle) resets the deck.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataKey]);
 
   const advance = useCallback(() => {
@@ -91,7 +93,6 @@ export function SwipeCardDeck<T>({
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startIdleSway = useCallback(() => {
-    // 3 full cycles: right → center → left → center → right → center
     idleRotate.value = withRepeat(
       withTiming(2.5, { duration: 700 }),
       6,
@@ -185,76 +186,66 @@ export function SwipeCardDeck<T>({
   }));
 
   if (activeIndex >= data.length) {
-    return <View style={styles.container}>{onEmpty?.()}</View>;
+    return <View style={[styles.container, { width: baseWidth, height: baseHeight }]}>{onEmpty?.()}</View>;
   }
 
   const visibleItems = data.slice(activeIndex, activeIndex + MAX_VISIBLE_STACK);
 
   return (
-    <View style={styles.container}>
-      {visibleItems
-        .map((item, i) => ({ item, stackIndex: i }))
-        .reverse()
-        .map(({ item, stackIndex }) => {
-          const key = keyExtractor(item);
-          if (stackIndex === 0) {
-            return (
-              <GestureDetector gesture={composedGesture} key={key}>
-                <Animated.View
-                  style={[
-                    styles.cardSlot,
-                    cardWidth ? { width: cardWidth } : null,
-                    cardHeight ? { height: cardHeight } : null,
-                    topCardStyle,
-                  ]}
-                >
-                  {renderCard(item, activeIndex)}
-                  <Animated.View pointerEvents="none" style={[styles.overlayIcon, likeOverlayStyle]}>
-                    <Ionicons name="heart" size={80} color="#22C55E" />
-                  </Animated.View>
-                  <Animated.View pointerEvents="none" style={[styles.overlayIcon, nopeOverlayStyle]}>
-                    <Ionicons name="close" size={80} color="#EF4444" />
-                  </Animated.View>
-                </Animated.View>
-              </GestureDetector>
-            );
-          }
-
-          // Cards behind the top one: static peek, alternately tilted so every card is visible.
-          const tilt = stackIndex % 2 === 0 ? 1 : -1;
-          const scale = 1 - stackIndex * 0.04;
-          const offsetY = stackIndex * 22;
-          return (
-            <View
-              key={key}
-              pointerEvents="none"
-              style={[
-                styles.cardSlot,
-                cardWidth ? { width: cardWidth } : null,
-                cardHeight ? { height: cardHeight } : null,
-                {
-                  transform: [
-                    { translateY: offsetY },
-                    { rotate: `${tilt * (3 + stackIndex * 2)}deg` },
-                    { scale },
-                  ],
-                  zIndex: -stackIndex,
-                },
-              ]}
-            >
-              {renderCard(item, activeIndex + stackIndex)}
-            </View>
-          );
-        })}
+    <View style={[styles.container, { width: baseWidth, height: deckHeight }]}>
+      {visibleItems.slice(1).map((item, i) => {
+        const stackIndex = i + 1;
+        const tilt = stackIndex % 2 === 0 ? 1 : -1;
+        const scale = 1 - stackIndex * 0.03;
+        const opacity = 1 - stackIndex * 0.08;
+        return (
+          <View
+            key={keyExtractor(item)}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: stackIndex * PEEK_HEIGHT,
+              alignSelf: 'center',
+              width: baseWidth,
+              height: baseHeight,
+              opacity,
+              borderRadius: RADIUS['2xl'],
+              transform: [
+                { rotate: `${tilt * 2}deg` },
+                { scale },
+              ],
+              zIndex: 1,
+            }}
+          >
+            {renderCard(item, activeIndex + stackIndex)}
+          </View>
+        );
+      })}
+      <GestureDetector gesture={composedGesture}>
+        <Animated.View
+          style={[
+            styles.cardSlot,
+            { width: baseWidth, height: baseHeight, alignSelf: 'center', zIndex: 2 },
+            topCardStyle,
+          ]}
+        >
+          {renderCard(activeItem, activeIndex)}
+          <Animated.View pointerEvents="none" style={[styles.overlayIcon, likeOverlayStyle]}>
+            <Ionicons name="heart" size={80} color="#22C55E" />
+          </Animated.View>
+          <Animated.View pointerEvents="none" style={[styles.overlayIcon, nopeOverlayStyle]}>
+            <Ionicons name="close" size={80} color="#EF4444" />
+          </Animated.View>
+        </Animated.View>
+      </GestureDetector>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    alignSelf: 'stretch',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   cardSlot: {
     position: 'absolute',

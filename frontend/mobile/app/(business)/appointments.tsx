@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
-import { PatternOverlay } from '@/components/ui/PatternOverlay';
+
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -179,7 +179,6 @@ export default function AppointmentsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <PatternOverlay opacity={0.25} />
       <ScreenHeader
         title="Randevular"
         subtitle={`${filtered.length} randevu`}

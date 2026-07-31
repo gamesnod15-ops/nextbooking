@@ -7,6 +7,8 @@ import {
   TextInput,
   Image,
   Dimensions,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -164,6 +166,7 @@ export default function BusinessesScreen() {
 
   const [search, setSearch] = useState('');
   const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [selectedAd, setSelectedAd] = useState<AdDeckItem | null>(null);
 
   const { data: favorites = [], refetch: refetchFavorites } = useQuery({
     queryKey: ['favorites'],
@@ -249,7 +252,7 @@ export default function BusinessesScreen() {
 
   function goToBooking(item: DeckItem) {
     if (isAd(item)) {
-      router.push(`/(customer)/business/${item.businessId}`);
+      setSelectedAd(item);
       return;
     }
     router.push(`/(customer)/booking/${item.id}`);
@@ -351,7 +354,7 @@ export default function BusinessesScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <PatternOverlay opacity={0.25} />
+      <PatternOverlay opacity={0.08} />
       <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <PatternOverlay />
         <View style={styles.headerTop}>
@@ -405,18 +408,64 @@ export default function BusinessesScreen() {
               cardHeight={CARD_HEIGHT}
               onEmpty={() => <EmptyState icon="business-outline" title="İşletme bulunamadı." />}
             />
-            {(() => {
-              const adCount = deckItems.filter((x): x is PublicAdDto & { __type: 'ad' } => '__type' in x && x.__type === 'ad').length;
-              return adCount > 0 ? (
-                <View style={styles.adIndicator}>
-                  <Ionicons name="megaphone" size={12} color="#F59E0B" />
-                  <Text style={styles.adIndicatorText}>{adCount} reklam kartı araya yerleştirildi</Text>
-                </View>
-              ) : null;
-            })()}
+
           </View>
         )}
       </View>
+
+      <Modal visible={selectedAd !== null} transparent animationType="fade">
+        <View style={styles.adModalOverlay}>
+          <View style={styles.adModalCard}>
+            {selectedAd && (() => {
+              const ad = selectedAd;
+              const adImg = fixImageUrl(ad.coverImageUrl || '/uploads/banner-1.png');
+              const gradient = adGradient(ad.packageType);
+              return (
+                <>
+                  <View style={styles.adModalImage}>
+                    {adImg ? (
+                      <Image source={{ uri: adImg }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                    ) : (
+                      <LinearGradient colors={[gradient[0], gradient[1]]} style={StyleSheet.absoluteFill} />
+                    )}
+                    <View style={styles.adModalBadge}>
+                      <Ionicons name="megaphone" size={12} color="#08224B" />
+                      <Text style={styles.adModalBadgeText}>Reklam</Text>
+                    </View>
+                  </View>
+                  <ScrollView style={styles.adModalBody} showsVerticalScrollIndicator={false}>
+                    <Text style={styles.adModalName}>{ad.businessName}</Text>
+                    <View style={styles.adModalPkg}>
+                      <Ionicons name="star" size={14} color="#F59E0B" />
+                      <Text style={styles.adModalPkgText}>{ad.packageType}</Text>
+                    </View>
+                    {ad.description ? (
+                      <Text style={styles.adModalDesc}>{ad.description}</Text>
+                    ) : null}
+                    <View style={styles.adModalActions}>
+                      <TouchableOpacity
+                        style={styles.adModalBusinessBtn}
+                        onPress={() => { setSelectedAd(null); router.push(`/(customer)/business/${ad.businessId}`); }}
+                        activeOpacity={0.85}
+                      >
+                        <Ionicons name="business-outline" size={16} color={STATIC_WHITE} />
+                        <Text style={styles.adModalBusinessBtnText}>İşletmeyi Gör</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.adModalCloseBtn}
+                        onPress={() => setSelectedAd(null)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.adModalCloseBtnText}>Kapat</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </ScrollView>
+                </>
+              );
+            })()}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -439,7 +488,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   searchInput: { flex: 1, fontSize: FONT.base, color: COLORS.text },
 
   deckArea: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: SPACE[4] },
-  cardBox: { width: CARD_WIDTH, height: CARD_HEIGHT },
+  cardBox: { width: CARD_WIDTH },
 
   card: {
     flex: 1,
@@ -507,19 +556,6 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     fontWeight: FONT.semibold,
     color: 'rgba(255,255,255,0.7)',
   },
-  adIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: SPACE[2],
-    paddingVertical: SPACE[1],
-  },
-  adIndicatorText: {
-    fontSize: FONT.xs,
-    color: COLORS.textMuted,
-  },
-
   adCardContent: {
     position: 'absolute',
     left: 0,
@@ -562,4 +598,96 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   retryBtnText: { fontSize: FONT.sm, fontWeight: FONT.bold, color: STATIC_WHITE },
+
+  adModalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: SPACE[5],
+  },
+  adModalCard: {
+    width: '100%',
+    maxHeight: '70%',
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS['2xl'],
+    overflow: 'hidden',
+    ...SHADOW.lg,
+  },
+  adModalImage: {
+    height: 200,
+    overflow: 'hidden',
+  },
+  adModalBadge: {
+    position: 'absolute',
+    top: SPACE[3],
+    left: SPACE[3],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+  },
+  adModalBadgeText: {
+    fontSize: FONT.xs,
+    fontWeight: FONT.bold,
+    color: '#08224B',
+  },
+  adModalBody: {
+    padding: SPACE[5],
+    gap: SPACE[3],
+  },
+  adModalName: {
+    fontSize: FONT['2xl'],
+    fontWeight: FONT.extrabold,
+    color: COLORS.text,
+    marginBottom: SPACE[1],
+  },
+  adModalPkg: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: SPACE[2],
+  },
+  adModalPkgText: {
+    fontSize: FONT.sm,
+    fontWeight: FONT.semibold,
+    color: '#F59E0B',
+  },
+  adModalDesc: {
+    fontSize: FONT.base,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+    marginBottom: SPACE[4],
+  },
+  adModalActions: {
+    gap: SPACE[3],
+    paddingTop: SPACE[2],
+  },
+  adModalBusinessBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACE[2],
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACE[3] + 2,
+    ...SHADOW.primary,
+  },
+  adModalBusinessBtnText: {
+    fontSize: FONT.md,
+    fontWeight: FONT.bold,
+    color: STATIC_WHITE,
+  },
+  adModalCloseBtn: {
+    alignItems: 'center',
+    paddingVertical: SPACE[2],
+  },
+  adModalCloseBtnText: {
+    fontSize: FONT.sm,
+    fontWeight: FONT.medium,
+    color: COLORS.textMuted,
+  },
 });
