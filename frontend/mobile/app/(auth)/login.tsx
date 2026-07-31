@@ -11,6 +11,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
+import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,10 +21,11 @@ import { useColors, type Palette } from '@/lib/themeContext';
 import { PatternOverlay } from '@/components/ui/PatternOverlay';
 import { useAppDispatch } from '@/store';
 import { setCredentials, setAppRole } from '@/store/slices/authSlice';
-import api from '@/lib/api';
+import api, { API_ORIGIN } from '@/lib/api';
 import * as SecureStore from 'expo-secure-store';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { useToast } from '@/components/ui/Toast';
+import { MascotGreeting } from '@/components/ui/MascotGreeting';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -36,6 +38,7 @@ export default function LoginScreen() {
 
   const [selectedRole, setSelectedRole] = useState<'business' | 'customer'>(role === 'business' ? 'business' : 'customer');
   const [showLoginForm, setShowLoginForm] = useState(role === 'business');
+  const [showMascot, setShowMascot] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -223,6 +226,7 @@ export default function LoginScreen() {
             style={styles.primaryCard}
             activeOpacity={0.85}
             onPress={() => {
+              setShowMascot(false);
               setSelectedRole('business');
               dispatch(setAppRole('business'));
               setShowLoginForm(true);
@@ -253,6 +257,7 @@ export default function LoginScreen() {
             style={styles.secondaryCard}
             activeOpacity={0.85}
             onPress={() => {
+              setShowMascot(false);
               dispatch(setAppRole('customer'));
               router.push('/(customer)/(tabs)');
             }}
@@ -310,12 +315,28 @@ export default function LoginScreen() {
           </Text>
         </View>
       </View>
+
+      {showMascot && (
+        <Animated.View
+          entering={SlideInDown.duration(600).springify().damping(14)}
+          exiting={SlideOutDown.duration(280)}
+          style={[styles.mascotWrap, { bottom: insets.bottom }]}
+          pointerEvents="none"
+        >
+          <MascotGreeting />
+        </Animated.View>
+      )}
     </View>
   );
 }
 
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1 },
+  mascotWrap: {
+    position: 'absolute',
+    right: SPACE[2],
+    zIndex: 10,
+  },
   blobBlue: {
     position: 'absolute',
     top: -80,
