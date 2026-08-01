@@ -53,7 +53,18 @@ export default function FavoritesScreen() {
       const deviceId = await getDeviceId();
       await api.delete(`/favorites/by-device/${businessId}?deviceId=${deviceId}`);
     },
-    onSuccess: () => {
+    onMutate: async (businessId: string) => {
+      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+      const previous = queryClient.getQueryData<FavoriteBusiness[]>(['favorites']);
+      queryClient.setQueryData<FavoriteBusiness[]>(['favorites'], (old = []) =>
+        old.filter((f) => f.businessId !== businessId)
+      );
+      return { previous };
+    },
+    onError: (_err, _businessId, context) => {
+      if (context?.previous) queryClient.setQueryData(['favorites'], context.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     },
   });

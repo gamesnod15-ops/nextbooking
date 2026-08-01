@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
@@ -97,6 +98,7 @@ export default function BusinessDetailScreen() {
   const COLORS = useColors();
   const styles = useMemo(() => createStyles(COLORS), [COLORS]);
   const toast = useToast();
+  const queryClient = useQueryClient();
 
   const [biz, setBiz] = useState<BusinessDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -156,6 +158,7 @@ export default function BusinessDetailScreen() {
       } else {
         await api.post(`/favorites/by-device/${id}?deviceId=${deviceId}`);
       }
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
     } catch {
       setFavoriteIds((prev) => (isFavorite ? [...prev, id] : prev.filter(x => x !== id)));
       toast.error('Favori işlemi sırasında bir hata oluştu.');

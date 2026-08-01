@@ -192,8 +192,19 @@ export default function BusinessesScreen() {
       if (isFavorite) await api.delete(`/favorites/by-device/${businessId}?deviceId=${deviceId}`);
       else await api.post(`/favorites/by-device/${businessId}?deviceId=${deviceId}`);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
-    onError: () => toast.error('Bir şeyler ters gitti, tekrar dene.'),
+    onMutate: async ({ businessId, isFavorite }) => {
+      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+      const previous = queryClient.getQueryData<any[]>(['favorites']);
+      queryClient.setQueryData<any[]>(['favorites'], (old = []) =>
+        isFavorite ? old.filter((f) => f.businessId !== businessId) : [...old, { businessId }]
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) queryClient.setQueryData(['favorites'], context.previous);
+      toast.error('Bir şeyler ters gitti, tekrar dene.');
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
   });
 
   const businessesQuery = useQuery({
