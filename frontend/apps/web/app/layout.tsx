@@ -1,6 +1,6 @@
 
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Fraunces } from 'next/font/google'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 import { CookieConsent } from '@/components/CookieConsent'
@@ -15,6 +15,14 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const fraunces = Fraunces({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-display',
+})
+
 export const metadata: Metadata = {
   title:       'JetRandevu — Türkiye\'nin En Hızlı Randevu Sistemi',
   description: 'Kuaför, güzellik salonu, diş kliniği ve daha fazlası için çevrimiçi randevu sistemi. Kolay kurulum, güçlü yönetim.',
@@ -26,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr" className={inter.variable}>
+    <html lang="tr" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="antialiased">
         <PreloadScreen />
         {children}

@@ -12,7 +12,7 @@ const preloadCSS = `
 #preload-screen.hide { opacity: 0; visibility: hidden; pointer-events: none; }
 .preload-inner { display: flex; flex-direction: column; align-items: center; gap: 20px; position: relative; }
 .ps-lines { position: absolute; inset: -80px; pointer-events: none; overflow: hidden; }
-.ps-line { position: absolute; height: 2px; background: linear-gradient(90deg, transparent, rgba(1,84,240,0.5), transparent); border-radius: 2px; opacity: 0; animation: psSpeed 1.2s ease-out infinite; }
+.ps-line { position: absolute; height: 2px; background: linear-gradient(90deg, transparent, rgba(176,95,82,0.5), transparent); border-radius: 2px; opacity: 0; animation: psSpeed 1.2s ease-out infinite; }
 .ps-l1 { top: 20%; left: -40%; width: 60%; animation-delay: 0s; }
 .ps-l2 { top: 40%; left: -30%; width: 50%; animation-delay: 0.2s; }
 .ps-l3 { top: 55%; left: -50%; width: 70%; animation-delay: 0.4s; }
@@ -20,7 +20,7 @@ const preloadCSS = `
 .ps-l5 { top: 85%; left: -45%; width: 65%; animation-delay: 0.35s; }
 @keyframes psSpeed { 0% { opacity: 0; transform: translateX(-100%); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateX(300%); } }
 .ps-icon-wrap { position: relative; width: 80px; height: 80px; animation: psEntry 0.8s cubic-bezier(0.25,0.46,0.45,0.94) both; }
-.ps-icon { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(1,84,240,0.3)); }
+.ps-icon { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(176,95,82,0.3)); }
 .ps-copy { position: absolute; top: 0; left: 0; mix-blend-mode: multiply; }
 .ps-r { animation: psGlitchR 3s infinite; }
 .ps-b { animation: psGlitchB 3s infinite; }

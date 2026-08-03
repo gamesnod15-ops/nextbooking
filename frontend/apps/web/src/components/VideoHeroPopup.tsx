@@ -91,7 +91,7 @@ export function VideoHeroPopup({ targetId }: { targetId: string }) {
           shown ? 'translate-x-0 opacity-100' : '-translate-x-[140%] opacity-0'
         }`}
       >
-        <div className="h-1.5 w-full bg-gradient-to-r from-brand-500 to-amber-400" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-brand-500 to-gold-400" />
 
         <button
           onClick={close}

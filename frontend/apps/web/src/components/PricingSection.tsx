@@ -15,7 +15,7 @@ interface ApiPlan {
   planKey: string | null
 }
 
-const accentClasses = ['border-slate-200 bg-slate-100 text-slate-700', 'border-blue-200 bg-blue-50 text-blue-700', 'border-amber-200 bg-amber-50 text-amber-700']
+const accentClasses = ['border-sage-200 bg-sage-50 text-sage-700', 'border-gray-200 bg-gray-100 text-gray-700', 'border-gold-200 bg-gold-50 text-gold-700']
 
 async function getPlans(): Promise<ApiPlan[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280'
@@ -55,7 +55,7 @@ export async function PricingSection({ showComparison = false }: { showCompariso
     <section id="pricing" className="bg-gray-50 py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <SlideIn direction="left" className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold text-gray-900">İşletmenize Uygun Plan</h2>
+          <h2 className="font-serif text-4xl font-medium text-gray-900">İşletmenize Uygun Plan</h2>
           <p className="mt-4 text-lg text-gray-600">14 gün ücretsiz deneyin. Kredi kartı gerekmez.</p>
         </SlideIn>
 
@@ -76,7 +76,7 @@ export async function PricingSection({ showComparison = false }: { showCompariso
               >
                 {plan.isHighlighted && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="rounded-full bg-black px-3 py-1 text-xs font-bold text-brand-500 shadow">
+                    <span className="rounded-full bg-gold-500 px-3 py-1 text-xs font-bold text-gray-900 shadow">
                       {plan.highlightLabel || 'En Popüler'}
                     </span>
                   </div>
@@ -118,7 +118,7 @@ export async function PricingSection({ showComparison = false }: { showCompariso
                   href={plan.planKey === 'custom' ? '/iletisim' : '/register'}
                   className={`mt-8 block rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all hover:-translate-y-0.5 ${
                     plan.isHighlighted
-                      ? 'bg-black text-white hover:bg-gray-900 shadow'
+                      ? 'bg-white text-brand-700 hover:bg-brand-50 shadow'
                       : 'bg-brand-500 text-white hover:bg-brand-600'
                   }`}
                 >

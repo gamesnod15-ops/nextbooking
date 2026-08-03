@@ -197,7 +197,7 @@ export function FeaturesSection() {
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-gray-900">Özellikler</span>
             </div>
-            <h2 className="text-4xl font-extrabold text-gray-900">İşletmenizi Büyütecek Her Şey</h2>
+            <h2 className="font-serif text-4xl font-medium text-gray-900">İşletmenizi Büyütecek Her Şey</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
               JetRandevu&apos;ın güçlü özellikleri ile vaktinizi müşterilerinize harcayın, idari işler için değil.
             </p>
@@ -233,7 +233,7 @@ export function FeaturesSection() {
       </section>
 
       {/* How it works */}
-      <section className="relative bg-gradient-to-br from-brand-50/50 to-violet-50/50 py-24 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-brand-50/60 to-sage-50/50 py-24 overflow-hidden">
         <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
           <svg className="absolute top-20 right-10 h-72 w-72 opacity-[0.03]" viewBox="0 0 200 200" fill="none">
             <polygon points="100,0 200,200 0,200" className="fill-gray-900" />
@@ -249,7 +249,7 @@ export function FeaturesSection() {
               <SlideIn direction="right">
               <div className="mb-10">
                 <p className="text-sm font-semibold uppercase tracking-widest text-gray-900">Nasıl Çalışır?</p>
-                <h2 className="mt-2 text-4xl font-extrabold text-gray-900">3 Adımda Hazır</h2>
+                <h2 className="mt-2 font-serif text-4xl font-medium text-gray-900">3 Adımda Hazır</h2>
                 <p className="mt-4 text-lg text-gray-600">Karmaşık kurulum yok. Dakikalar içinde başlayın.</p>
               </div>
               </SlideIn>
@@ -314,9 +314,9 @@ export function FeaturesSection() {
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-gray-900">Avantajlar</span>
             </div>
-            <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
+            <h2 className="font-serif text-4xl font-medium text-gray-900 leading-tight">
               Rakiplerinizden Bir Adım{' '}
-              <span className="text-brand-500">Önde Olun</span>
+              <span className="italic text-brand-600">Önde Olun</span>
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-gray-600 leading-relaxed">
               Müşterileriniz artık telefon beklemiyor. Online randevu sistemiyle hem müşteri memnuniyetini artırın,
@@ -367,29 +367,27 @@ export function FeaturesSection() {
       </section>
 
       {/* Integrations */}
-      <section className="relative bg-gray-950 py-24 overflow-hidden">
+      <section className="relative bg-brand-50/40 py-24 overflow-hidden border-y border-gray-200">
         <div aria-hidden className="pointer-events-none absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%)' }} />
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          style={{ background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(201,125,114,0.14) 0%, transparent 70%)' }} />
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <svg className="absolute -top-10 -right-10 h-80 w-80 opacity-[0.04]" viewBox="0 0 200 200" fill="none">
-            <polygon points="100,0 200,100 100,200 0,100" className="fill-white" />
+          <svg className="absolute -top-10 -right-10 h-80 w-80 opacity-[0.05]" viewBox="0 0 200 200" fill="none">
+            <polygon points="100,0 200,100 100,200 0,100" className="fill-gray-900" />
           </svg>
-          <svg className="absolute bottom-10 left-10 h-60 w-60 opacity-[0.03]" viewBox="0 0 200 200" fill="none">
-            <rect x="30" y="30" width="140" height="140" rx="20" className="stroke-white stroke-[1.5]" fill="none" />
-            <circle cx="100" cy="100" r="40" className="stroke-white stroke-[1.5]" fill="none" />
+          <svg className="absolute bottom-10 left-10 h-60 w-60 opacity-[0.04]" viewBox="0 0 200 200" fill="none">
+            <rect x="30" y="30" width="140" height="140" rx="20" className="stroke-gray-900 stroke-[1.5]" fill="none" />
+            <circle cx="100" cy="100" r="40" className="stroke-gray-900 stroke-[1.5]" fill="none" />
           </svg>
-          <svg className="absolute top-1/3 left-1/2 h-48 w-48 opacity-[0.025]" viewBox="0 0 200 200" fill="none">
-            <polygon points="100,15 185,185 15,185" className="stroke-white stroke-[1]" fill="none" />
+          <svg className="absolute top-1/3 left-1/2 h-48 w-48 opacity-[0.03]" viewBox="0 0 200 200" fill="none">
+            <polygon points="100,15 185,185 15,185" className="stroke-gray-900 stroke-[1]" fill="none" />
           </svg>
         </div>
 
         <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SlideIn direction="right" className="text-center mb-14">
-            <p className="text-sm font-semibold uppercase tracking-widest text-brand-500">Entegrasyonlar</p>
-            <h2 className="mt-2 text-4xl font-extrabold text-white">Kullandığınız Araçlarla Çalışır</h2>
-            <p className="mt-3 text-gray-400 max-w-xl mx-auto leading-relaxed">
+            <p className="text-sm font-semibold uppercase tracking-widest text-brand-600">Entegrasyonlar</p>
+            <h2 className="mt-2 font-serif text-4xl font-medium text-gray-900">Kullandığınız Araçlarla Çalışır</h2>
+            <p className="mt-3 text-gray-500 max-w-xl mx-auto leading-relaxed">
               Ödeme, mesajlaşma, sosyal medya ve muhasebe araçlarıyla sorunsuz entegrasyon.
               Mevcut iş akışınızı değiştirmenize gerek yok.
             </p>
@@ -401,13 +399,13 @@ export function FeaturesSection() {
                 {[...row1, ...row1].map((int, i) => {
                   const Icon = int.icon
                   return (
-                    <div key={`r1-${i}`} className={`flex shrink-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 transition-colors ring-1 ${int.ring}`}>
+                    <div key={`r1-${i}`} className={`flex shrink-0 items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3.5 shadow-sm hover:shadow-md hover:border-brand-200 transition-all ring-1 ${int.ring}`}>
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: int.bg }}>
                         <Icon className={int.iconStyle} style={{ height: '18px', width: '18px' }} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white leading-tight">{int.name}</p>
-                        <p className="text-xs text-gray-400 leading-tight">{int.category}</p>
+                        <p className="text-sm font-semibold text-gray-900 leading-tight">{int.name}</p>
+                        <p className="text-xs text-gray-500 leading-tight">{int.category}</p>
                       </div>
                     </div>
                   )
@@ -420,13 +418,13 @@ export function FeaturesSection() {
                 {[...row2, ...row2].map((int, i) => {
                   const Icon = int.icon
                   return (
-                    <div key={`r2-${i}`} className={`flex shrink-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 transition-colors ring-1 ${int.ring}`}>
+                    <div key={`r2-${i}`} className={`flex shrink-0 items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3.5 shadow-sm hover:shadow-md hover:border-brand-200 transition-all ring-1 ${int.ring}`}>
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: int.bg }}>
                         <Icon className={int.iconStyle} style={{ height: '18px', width: '18px' }} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white leading-tight">{int.name}</p>
-                        <p className="text-xs text-gray-400 leading-tight">{int.category}</p>
+                        <p className="text-sm font-semibold text-gray-900 leading-tight">{int.name}</p>
+                        <p className="text-xs text-gray-500 leading-tight">{int.category}</p>
                       </div>
                     </div>
                   )
@@ -435,14 +433,14 @@ export function FeaturesSection() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
             <div>
-              <h3 className="text-xl font-bold text-white">İhtiyacınız olan entegrasyon listede yok mu?</h3>
-              <p className="mt-1 text-sm text-gray-400">Özel entegrasyon geliştirme için satış ekibimizle iletişime geçin.</p>
+              <h3 className="text-xl font-bold text-gray-900">İhtiyacınız olan entegrasyon listede yok mu?</h3>
+              <p className="mt-1 text-sm text-gray-500">Özel entegrasyon geliştirme için satış ekibimizle iletişime geçin.</p>
             </div>
             <Link
               href="/iletisim"
-              className="shrink-0 flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-all hover:-translate-y-0.5 shadow-lg"
+              className="shrink-0 flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition-all hover:-translate-y-0.5 shadow-lg"
             >
               Bizimle İletişime Geç <ArrowRight className="h-4 w-4" />
             </Link>

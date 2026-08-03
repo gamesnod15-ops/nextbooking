@@ -56,40 +56,40 @@ export function LiveStatsBanner() {
   return (
     <div className="mt-8 flex flex-wrap items-center gap-5 sm:gap-8">
       <div className="flex items-center gap-2.5">
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15">
-          <div className="absolute h-2 w-2 rounded-full bg-emerald-500 animate-ping opacity-40" />
-          <Users className="h-4 w-4 text-emerald-400 relative" />
+        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-sage-500/15">
+          <div className="absolute h-2 w-2 rounded-full bg-sage-500 animate-ping opacity-40" />
+          <Users className="h-4 w-4 text-sage-600 relative" />
         </div>
         <div>
-          <p className="text-sm font-bold text-white">
+          <p className="text-sm font-bold text-gray-900">
             <AnimatedCounter value={activeUsers} />
           </p>
           <p className="text-[10px] text-gray-500 leading-tight">Anlık Kullanıcı</p>
         </div>
       </div>
 
-      <div className="hidden sm:block h-8 w-px bg-white/10" />
+      <div className="hidden sm:block h-8 w-px bg-gray-200" />
 
       <div className="flex items-center gap-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500/15">
-          <CalendarCheck className="h-4 w-4 text-brand-500" />
+          <CalendarCheck className="h-4 w-4 text-brand-600" />
         </div>
         <div>
-          <p className="text-sm font-bold text-white">
+          <p className="text-sm font-bold text-gray-900">
             <AnimatedCounter value={todayBookings} />
           </p>
           <p className="text-[10px] text-gray-500 leading-tight">Bugünkü Randevu</p>
         </div>
       </div>
 
-      <div className="hidden sm:block h-8 w-px bg-white/10" />
+      <div className="hidden sm:block h-8 w-px bg-gray-200" />
 
       <div className="flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/15">
-          <TrendingUp className="h-4 w-4 text-violet-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold-500/15">
+          <TrendingUp className="h-4 w-4 text-gold-600" />
         </div>
         <div>
-          <p className="text-sm font-bold text-white">
+          <p className="text-sm font-bold text-gray-900">
             <AnimatedCounter value={weeklyGrowth} suffix="%" />
           </p>
           <p className="text-[10px] text-gray-500 leading-tight">Haftalık Artış</p>

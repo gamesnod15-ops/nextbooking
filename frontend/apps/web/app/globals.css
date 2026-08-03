@@ -3,17 +3,42 @@
 @tailwind utilities;
 
 :root {
-  --brand-50:  233 240 253;
-  --brand-100: 182 206 252;
-  --brand-200: 161 182 220;
-  --brand-300: 142 155 178;
-  --brand-400: 119 136 165;
-  --brand-500: 1 84 240;
-  --brand-600: 8 84 240;
-  --brand-700: 8 34 75;
-  --brand-800: 5 22 56;
-  --brand-900: 5 22 56;
+  /* Toz gülü (rose) — birincil marka rengi */
+  --brand-50:  253 244 240;
+  --brand-100: 249 226 219;
+  --brand-200: 243 218 211;
+  --brand-300: 224 176 164;
+  --brand-400: 210 145 130;
+  --brand-500: 201 125 114;
+  --brand-600: 176 95 82;
+  --brand-700: 143 72 61;
+  --brand-800: 107 51 43;
+  --brand-900: 74 33 27;
+
+  /* Adaçayı yeşili — ikincil vurgu */
+  --sage-50:  240 244 240;
+  --sage-100: 225 234 224;
+  --sage-200: 208 222 205;
+  --sage-300: 179 199 175;
+  --sage-400: 143 171 138;
+  --sage-500: 124 154 130;
+  --sage-600: 95 122 100;
+  --sage-700: 74 96 79;
+  --sage-800: 56 73 60;
+  --sage-900: 40 53 44;
+
+  /* İnce altın — puan / premium vurgusu */
+  --gold-50:  250 244 230;
+  --gold-100: 242 230 206;
+  --gold-200: 232 210 168;
+  --gold-300: 216 184 128;
+  --gold-400: 205 163 100;
+  --gold-500: 201 166 107;
+  --gold-600: 168 133 78;
+  --gold-700: 138 109 62;
+  --gold-800: 107 84 48;
+  --gold-900: 74 58 34;
 }
 
 html { scroll-behavior: smooth; }
-body { font-family: var(--font-inter), 'Inter', sans-serif; color: #000000; }
+body { font-family: var(--font-inter), 'Inter', sans-serif; color: #2B241E; background-color: #FBF6F2; }

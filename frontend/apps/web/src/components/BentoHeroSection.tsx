@@ -128,9 +128,9 @@ function SearchCard() {
 
       <div className="relative">
         <SlideIn direction="left">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-          <span className="block text-brand-500">Hizmetini ara,</span>
-          <span className="block text-gray-900">anında randevu al</span>
+        <h1 className="font-serif text-3xl font-medium leading-tight sm:text-4xl">
+          <span className="block text-gray-900">Hizmetini ara,</span>
+          <span className="block italic text-brand-600">anında randevu al</span>
         </h1>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-500">
           Binlerce işletme arasından sana en yakınını bul, uygun saati seç, saniyeler içinde randevunu oluştur.
@@ -255,7 +255,7 @@ function SearchCard() {
         <div className="mt-6 flex items-center gap-3">
           <button
             onClick={() => setDemoOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-gray-800"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-brand-700"
           >
             <PlayCircle className="h-4 w-4" />
             Hemen Dene
@@ -293,9 +293,9 @@ function CategoriesCard() {
 
       <div className="relative">
         <SlideIn direction="right">
-        <h2 className="text-2xl font-extrabold leading-tight tracking-tight">
-          <span className="block text-brand-500">Her kategoride</span>
-          <span className="block text-gray-900">binlerce işletme</span>
+        <h2 className="font-serif text-2xl font-medium leading-tight">
+          <span className="block text-gray-900">Her kategoride</span>
+          <span className="block italic text-brand-600">binlerce işletme</span>
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-gray-500">
           Kuaförden diş kliniğine, spordan veterinere — aradığın hizmet Türkiye&apos;nin her şehrinde.
@@ -335,9 +335,9 @@ function TrustCard() {
 
       <div className="relative">
         <SlideIn direction="left">
-        <h2 className="text-2xl font-extrabold leading-tight tracking-tight">
-          <span className="block text-brand-500">Gerçek yorumlar,</span>
-          <span className="block text-gray-900">güvenilir işletmeler</span>
+        <h2 className="font-serif text-2xl font-medium leading-tight">
+          <span className="block text-gray-900">Gerçek yorumlar,</span>
+          <span className="block italic text-brand-600">güvenilir işletmeler</span>
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-gray-500">
           Sadece randevusunu tamamlayan müşteriler puan verebilir. Gördüğün her yorum gerçek.
@@ -346,7 +346,7 @@ function TrustCard() {
         <div className="mt-4 flex items-center gap-2">
           <div className="flex items-center gap-0.5">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+              <Star key={i} className="h-4 w-4 fill-gold-500 text-gold-500" />
             ))}
           </div>
           <span className="text-sm font-bold text-gray-900">4.9</span>
@@ -366,9 +366,9 @@ function OnlineCard() {
 
       <div className="relative flex-1 p-7 sm:p-9">
         <SlideIn direction="right">
-        <h2 className="text-2xl font-extrabold leading-tight tracking-tight">
-          <span className="block text-brand-500">%100 online</span>
-          <span className="block text-gray-900">randevu deneyimi</span>
+        <h2 className="font-serif text-2xl font-medium leading-tight">
+          <span className="block text-gray-900">%100 online</span>
+          <span className="block italic text-brand-600">randevu deneyimi</span>
         </h2>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-500">
           Telefonla uğraşma, sıra bekleme. Gece yarısı bile randevunu al, hatırlatmanı WhatsApp&apos;tan gönderelim.

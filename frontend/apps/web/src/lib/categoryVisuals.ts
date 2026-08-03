@@ -20,11 +20,13 @@ export const categoryIcons: Record<string, string> = {
   'Yoga & Pilates': '🧘',
 }
 
+// Warm, muted clinic-pastel rotation — kept soft/desaturated so category
+// chips read as calm and coordinated rather than saturated "tech SaaS" hues.
 const CATEGORY_COLORS = [
-  'bg-violet-100 text-violet-700', 'bg-pink-100 text-pink-700', 'bg-blue-100 text-blue-700',
-  'bg-emerald-100 text-emerald-700', 'bg-amber-100 text-amber-700', 'bg-teal-100 text-teal-700',
-  'bg-rose-100 text-rose-700', 'bg-orange-100 text-orange-700', 'bg-lime-100 text-lime-700',
-  'bg-sky-100 text-sky-700', 'bg-purple-100 text-purple-700', 'bg-cyan-100 text-cyan-700',
+  'bg-[#F3DAD3] text-[#B05F52]', 'bg-[#E1EAE0] text-[#4F6B55]', 'bg-[#F2E6CE] text-[#8A6D1F]',
+  'bg-[#F0DCC8] text-[#9C5B33]', 'bg-[#EBDEE6] text-[#7C5170]', 'bg-[#F1E7D8] text-[#7A6650]',
+  'bg-[#DCE5D2] text-[#54633F]', 'bg-[#EAD9D2] text-[#8A5240]', 'bg-[#DEE3E6] text-[#4C5B67]',
+  'bg-[#F5DFC9] text-[#95582A]', 'bg-[#E6DCE8] text-[#6B4C77]', 'bg-[#DCE8DE] text-[#3F6B4E]',
 ]
 
 export function categoryColor(name: string) {

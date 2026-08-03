@@ -29,9 +29,9 @@ export function SocialProofSection() {
             <span className="h-2 w-2 rounded-full bg-brand-500" />
             <span className="text-xs font-semibold text-gray-900">Müşteri Yorumları</span>
           </div>
-          <h2 className="text-4xl font-extrabold text-gray-900">
+          <h2 className="font-serif text-4xl font-medium text-gray-900">
             İşletme Sahipleri{' '}
-            <span className="text-brand-500">Ne Diyor?</span>
+            <span className="italic text-brand-600">Ne Diyor?</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
             Türkiye&apos;nin dört bir yanından binlerce işletme randevu yönetimini JetRandevu ile dönüştürüyor
