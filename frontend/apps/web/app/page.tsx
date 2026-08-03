@@ -1,4 +1,5 @@
 import { Navbar }             from '@/components/Navbar'
+import { VideoHeroBanner }    from '@/components/VideoHeroBanner'
 import { BentoHeroSection }   from '@/components/BentoHeroSection'
 import { FeaturesSection }    from '@/components/FeaturesSection'
 import { PricingSection }     from '@/components/PricingSection'
@@ -11,6 +12,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <main>
+        <VideoHeroBanner />
         <BentoHeroSection />
         <FeaturesSection />
         <SocialProofSection />
