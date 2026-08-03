@@ -200,7 +200,7 @@ export default function DashboardScreen() {
 
         {/* Hero: today's appointments */}
         <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/(business)/appointments')}>
-          <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <LinearGradient colors={[COLORS.primaryDark, '#8A4A3F']} style={styles.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
             <View style={styles.heroBlobOne} />
             <View style={styles.heroBlobTwo} />
             <Text style={styles.heroLabel}>BUGÜNKÜ RANDEVULAR</Text>

@@ -1,30 +1,30 @@
 // ─── Brand Colors ───────────────────────────────────────────────────────────
 export const COLORS = {
-  // Primary blue brand
-  primary: '#0154F0',
-  primaryDark: '#08224B',
-  primaryLight: '#B6CEFC',
-  primaryMuted: 'rgba(1, 84, 240, 0.12)',
+  // Primary — toz gülü (rose)
+  primary: '#C97D72',
+  primaryDark: '#6B372E',
+  primaryLight: '#F3DAD3',
+  primaryMuted: 'rgba(201, 125, 114, 0.12)',
 
   // Neutrals
-  black: '#051638',
+  black: '#2B241E',
   white: '#FFFFFF',
 
   // Backgrounds
-  bg: '#E9F0FD',
+  bg: '#FBF6F2',
   surface: '#FFFFFF',
-  surfaceAlt: '#F0F4FC',
-  surfaceDark: '#08224B',
+  surfaceAlt: '#F5EDE7',
+  surfaceDark: '#6B372E',
 
   // Text
-  text: '#08224B',
-  textSecondary: '#607193',
-  textMuted: '#8E9BB2',
+  text: '#2B241E',
+  textSecondary: '#7A6F63',
+  textMuted: '#8F8175',
   textInverse: '#FFFFFF',
 
   // Border
-  border: '#B6CEFC',
-  borderLight: '#E9F0FD',
+  border: '#E9DDD3',
+  borderLight: '#F5EDE7',
 
   // Semantic
   success: '#22C55E',
@@ -44,18 +44,18 @@ export const COLORS = {
   pending: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
   confirmed: { bg: '#DCFCE7', text: '#166534', border: '#BBF7D0' },
   cancelled: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA' },
-  completed: { bg: '#B6CEFC', text: '#08224B', border: '#B6CEFC' },
-  no_show: { bg: '#E9F0FD', text: '#7788A5', border: '#B6CEFC' },
+  completed: { bg: '#F3DAD3', text: '#8A4A3F', border: '#E8C4BA' },
+  no_show: { bg: '#F5EDE7', text: '#8F8175', border: '#E9DDD3' },
 
   // Plan colors
-  starter: '#7788A5',
-  business: '#0154F0',
-  professional: '#6097F3',
-  custom: '#A1B6DC',
+  starter: '#8F8175',
+  business: '#C97D72',
+  professional: '#C9A66B',
+  custom: '#7C9A82',
 
   // Overlay
-  overlay: 'rgba(5,22,56,0.5)',
-  overlayLight: 'rgba(5,22,56,0.15)',
+  overlay: 'rgba(43,36,30,0.5)',
+  overlayLight: 'rgba(43,36,30,0.15)',
 } as const;
 
 /**
@@ -69,7 +69,7 @@ export const COLORS = {
  * `useColors().white`/`.black`.
  */
 export const STATIC_WHITE = '#FFFFFF';
-export const STATIC_BLACK = '#051638';
+export const STATIC_BLACK = '#2B241E';
 
 // ─── Typography ─────────────────────────────────────────────────────────────
 export const FONT = {
@@ -118,28 +118,28 @@ export const RADIUS = {
 // ─── Shadow ─────────────────────────────────────────────────────────────────
 export const SHADOW = {
   sm: {
-    shadowColor: '#08224B',
+    shadowColor: '#2B241E',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
   md: {
-    shadowColor: '#08224B',
+    shadowColor: '#2B241E',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#08224B',
+    shadowColor: '#2B241E',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 20,
     elevation: 8,
   },
   primary: {
-    shadowColor: '#0154F0',
+    shadowColor: '#C97D72',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 12,

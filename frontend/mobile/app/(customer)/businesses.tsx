@@ -292,7 +292,7 @@ export default function BusinessesScreen() {
           <LinearGradient colors={[gradient[0], gradient[1]]} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
           <View style={styles.adCardContent}>
             <View style={styles.adBadge}>
-              <Ionicons name="megaphone" size={14} color="#08224B" />
+              <Ionicons name="megaphone" size={14} color="#2B241E" />
               <Text style={styles.adBadgeText}>Reklam</Text>
             </View>
             <Text style={styles.adCardName} numberOfLines={2}>{item.businessName}</Text>
@@ -366,7 +366,7 @@ export default function BusinessesScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <PatternOverlay opacity={0.08} />
-      <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+      <LinearGradient colors={[COLORS.primaryDark, '#8A4A3F']} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <PatternOverlay />
         <View style={styles.headerTop}>
           <Text style={styles.greet}>İşletmeler</Text>
@@ -440,7 +440,7 @@ export default function BusinessesScreen() {
                       <LinearGradient colors={[gradient[0], gradient[1]]} style={StyleSheet.absoluteFill} />
                     )}
                     <View style={styles.adModalBadge}>
-                      <Ionicons name="megaphone" size={12} color="#08224B" />
+                      <Ionicons name="megaphone" size={12} color="#2B241E" />
                       <Text style={styles.adModalBadgeText}>Reklam</Text>
                     </View>
                   </View>
@@ -589,7 +589,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   adBadgeText: {
     fontSize: FONT.xs,
     fontWeight: FONT.bold,
-    color: '#08224B',
+    color: '#2B241E',
   },
   adCardName: {
     fontSize: FONT.xl,
@@ -644,7 +644,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   adModalBadgeText: {
     fontSize: FONT.xs,
     fontWeight: FONT.bold,
-    color: '#08224B',
+    color: '#2B241E',
   },
   adModalBody: {
     padding: SPACE[5],

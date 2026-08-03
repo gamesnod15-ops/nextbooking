@@ -47,12 +47,12 @@ const getMenuSections = (COLORS: Palette): MenuSection[] => [
     items: [
       { id: 'payments', label: 'Ödemeler', icon: 'card-outline', route: '/(pages)/payments', color: '#10B981' },
       { id: 'campaigns', label: 'Kampanyalar', icon: 'pricetag-outline', route: '/(pages)/campaigns', color: '#F59E0B' },
-      { id: 'gift-coupons', label: 'Hediye Kuponlar', icon: 'gift-outline', route: '/(pages)/gift-coupons', color: '#6097F3' },
+      { id: 'gift-coupons', label: 'Hediye Kuponlar', icon: 'gift-outline', route: '/(pages)/gift-coupons', color: '#C9A66B' },
       { id: 'discounts', label: 'İndirimler', icon: 'calculator-outline', route: '/(pages)/discounts', color: '#F97316' },
       { id: 'products', label: 'Ürün & Stok', icon: 'storefront-outline', route: '/(pages)/products', color: '#6366F1' },
       { id: 'receivables', label: 'Cari Alacaklar', icon: 'receipt-outline', route: '/(pages)/receivables', color: '#0EA5E9' },
-      { id: 'commissions', label: 'Prim & Hak Ediş', icon: 'ribbon-outline', route: '/(pages)/commissions', color: '#6097F3' },
-      { id: 'debts', label: 'Borç Takibi', icon: 'alert-circle-outline', route: '/(pages)/debts', color: '#7788A5' },
+      { id: 'commissions', label: 'Prim & Hak Ediş', icon: 'ribbon-outline', route: '/(pages)/commissions', color: '#C9A66B' },
+      { id: 'debts', label: 'Borç Takibi', icon: 'alert-circle-outline', route: '/(pages)/debts', color: '#8F8175' },
       { id: 'advertisements', label: 'Reklam Yönetimi', icon: 'megaphone-outline', route: '/(pages)/advertisements', color: '#F59E0B' },
     ],
   },
@@ -76,9 +76,9 @@ const getMenuSections = (COLORS: Palette): MenuSection[] => [
     title: 'İletişim & Sosyal',
     items: [
       { id: 'whatsapp-bot', label: 'WhatsApp Bot', icon: 'logo-whatsapp', route: '/(pages)/whatsapp-bot', color: '#25D366' },
-      { id: 'social-media', label: 'Sosyal Medya', icon: 'share-social-outline', route: '/(pages)/social-media', color: '#6097F3' },
+      { id: 'social-media', label: 'Sosyal Medya', icon: 'share-social-outline', route: '/(pages)/social-media', color: '#C9A66B' },
       { id: 'chatbot', label: 'Chatbot', icon: 'chatbubbles-outline', route: '/(pages)/chatbot', color: '#6366F1' },
-      { id: 'maps', label: 'Harita & Konum', icon: 'map-outline', route: '/(pages)/maps', color: '#8E9BB2' },
+      { id: 'maps', label: 'Harita & Konum', icon: 'map-outline', route: '/(pages)/maps', color: '#8F8175' },
     ],
   },
   {
@@ -86,7 +86,7 @@ const getMenuSections = (COLORS: Palette): MenuSection[] => [
     items: [
       { id: 'notifications', label: 'Bildirimler', icon: 'notifications-outline', route: '/(pages)/notifications', badge: '3', color: COLORS.primaryDark },
       { id: 'plugins', label: 'Eklentiler', icon: 'extension-puzzle-outline', route: '/(pages)/plugins', color: '#6366F1' },
-      { id: 'subscription', label: 'Abonelik', icon: 'diamond-outline', route: '/(pages)/subscription', color: '#A1B6DC' },
+      { id: 'subscription', label: 'Abonelik', icon: 'diamond-outline', route: '/(pages)/subscription', color: '#7C9A82' },
       { id: 'settings', label: 'Ayarlar', icon: 'settings-outline', route: '/(pages)/settings', color: COLORS.textSecondary },
     ],
   },
@@ -114,7 +114,7 @@ export default function MoreScreen() {
       <PatternOverlay opacity={0.25} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
         {/* Profile Header */}
-        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.profileHeader}>
+        <LinearGradient colors={[COLORS.primaryDark, '#8A4A3F']} style={styles.profileHeader}>
           <PatternOverlay />
           <View style={styles.profileRow}>
             <Avatar name={auth.fullName ?? 'İşletme'} size={56} />

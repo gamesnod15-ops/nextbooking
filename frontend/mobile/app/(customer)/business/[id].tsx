@@ -225,7 +225,7 @@ export default function BusinessDetailScreen() {
     <View style={styles.root}>
       <PatternOverlay opacity={0.25} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.hero}>
+        <LinearGradient colors={[COLORS.primaryDark, '#8A4A3F']} style={styles.hero}>
           <PatternOverlay />
           <View style={[styles.heroNav, { paddingTop: insets.top + SPACE[3] }]}>
             <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Geri">

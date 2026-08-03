@@ -46,7 +46,7 @@ export async function registerForPushNotifications(): Promise<PushRegistrationRe
         name: 'Randevu Bildirimleri',
         importance: N.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#0154F0',
+        lightColor: '#C97D72',
       });
     }
 

@@ -90,7 +90,7 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={[COLORS.primaryDark, '#051638']} style={StyleSheet.absoluteFill}>
+      <LinearGradient colors={[COLORS.primaryDark, '#8A4A3F']} style={StyleSheet.absoluteFill}>
         <PatternOverlay />
       </LinearGradient>
 

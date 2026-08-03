@@ -119,7 +119,7 @@ export default function SubscriptionScreen() {
       <ScreenHeader title="Abonelik" showBack />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }} refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.primary} />}>
         {/* Current Plan Banner */}
-        <LinearGradient colors={[COLORS.primaryDark, '#08224B']} style={styles.currentBanner} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <LinearGradient colors={[COLORS.primaryDark, '#8A4A3F']} style={styles.currentBanner} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <PatternOverlay />
           <View style={styles.currentLeft}>
             <Text style={styles.currentLabel}>Mevcut Plan</Text>

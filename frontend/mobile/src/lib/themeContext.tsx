@@ -27,26 +27,26 @@ export const LIGHT_COLORS: Palette = COLORS;
  * whole object without touching any individual usage.
  */
 export const DARK_COLORS: Palette = {
-  primary: '#3B82F6',
-  primaryDark: '#0B1B33',
-  primaryLight: '#1E3A5F',
-  primaryMuted: 'rgba(59, 130, 246, 0.16)',
+  primary: '#E0958A',
+  primaryDark: '#3B1D18',
+  primaryLight: '#4A2A22',
+  primaryMuted: 'rgba(224, 149, 138, 0.16)',
 
   black: '#F8FAFC',
   white: '#0B1220',
 
-  bg: '#070E1B',
-  surface: '#111C2E',
-  surfaceAlt: '#18263B',
-  surfaceDark: '#050B15',
+  bg: '#1A1512',
+  surface: '#241D19',
+  surfaceAlt: '#2E2521',
+  surfaceDark: '#120E0C',
 
-  text: '#E8EEF8',
-  textSecondary: '#A5B4CB',
-  textMuted: '#7488A3',
-  textInverse: '#0B1220',
+  text: '#F3EAE4',
+  textSecondary: '#C7B8AE',
+  textMuted: '#9A8A80',
+  textInverse: '#1A1512',
 
-  border: '#26374F',
-  borderLight: '#1B2942',
+  border: '#3D322B',
+  borderLight: '#2E2521',
 
   success: '#22C55E',
   successLight: '#0F2C1C',
@@ -64,13 +64,13 @@ export const DARK_COLORS: Palette = {
   pending: { bg: '#32250A', text: '#FCD34D', border: '#4A3810' },
   confirmed: { bg: '#0F2C1C', text: '#86EFAC', border: '#17452B' },
   cancelled: { bg: '#33161A', text: '#FCA5A5', border: '#4C2126' },
-  completed: { bg: '#152740', text: '#BFDBFE', border: '#1F3A5C' },
-  no_show: { bg: '#18263B', text: '#8FA3BF', border: '#26374F' },
+  completed: { bg: '#3B1D18', text: '#E8B9AE', border: '#5A2E26' },
+  no_show: { bg: '#2E2521', text: '#9A8A80', border: '#3D322B' },
 
-  starter: '#8FA3BF',
-  business: '#3B82F6',
-  professional: '#60A5FA',
-  custom: '#A5B4CB',
+  starter: '#9A8A80',
+  business: '#E0958A',
+  professional: '#D8B673',
+  custom: '#9FBBA5',
 
   overlay: 'rgba(0,0,0,0.62)',
   overlayLight: 'rgba(0,0,0,0.28)',
