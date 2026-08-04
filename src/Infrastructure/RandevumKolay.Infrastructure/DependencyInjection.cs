@@ -62,6 +62,7 @@ public static class DependencyInjection
         });
 
         // OAuth
+        services.Configure<OAuthSettings>(configuration.GetSection("OAuth"));
         services.AddHttpClient<IOAuthService, OAuthService>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(10);

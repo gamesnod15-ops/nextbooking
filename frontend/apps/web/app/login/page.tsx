@@ -6,6 +6,7 @@ import { api, ApiError } from "@/lib/api"
 import Link from "next/link"
 import { CalendarCheck, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react"
 import { GoogleIcon, AppleIcon } from "@/lib/icons"
+import { startOAuthLogin } from "@/lib/oauth"
 
 function LoginForm() {
   const router = useRouter()
@@ -57,19 +58,6 @@ function LoginForm() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleSocialLogin = (provider: string) => {
-    const redirectUri = `${window.location.origin}/auth/oauth/callback`
-    const clientIds: Record<string, string> = {
-      google: 'YOUR_GOOGLE_CLIENT_ID',
-      apple: 'YOUR_APPLE_CLIENT_ID',
-    }
-    const authUrls: Record<string, string> = {
-      google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientIds[provider]}&redirect_uri=${redirectUri}&response_type=token&scope=openid%20email%20profile`,
-      apple: `https://appleid.apple.com/auth/authorize?client_id=${clientIds[provider]}&redirect_uri=${redirectUri}&response_type=code%20id_token&scope=name%20email&response_mode=form_post`,
-    }
-    window.location.href = authUrls[provider]
   }
 
   return (
@@ -244,11 +232,11 @@ function LoginForm() {
             </div>
 
               <div className="flex justify-center gap-4">
-                <button type="button" onClick={() => handleSocialLogin('google')} aria-label="Google ile giriş yap"
+                <button type="button" onClick={() => startOAuthLogin('google')} aria-label="Google ile giriş yap"
                   className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300">
                   <GoogleIcon size={20} />
                 </button>
-                <button type="button" onClick={() => handleSocialLogin('apple')} aria-label="Apple ile giriş yap"
+                <button type="button" onClick={() => startOAuthLogin('apple')} aria-label="Apple ile giriş yap"
                   className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300">
                   <AppleIcon size={20} className="text-gray-900" />
                 </button>
