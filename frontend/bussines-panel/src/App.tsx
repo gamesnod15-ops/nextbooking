@@ -67,7 +67,10 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 }
 
 /** Reads ?autologin=TOKEN&userId=...&role=...&tenantId=...&fullName=... from URL
- *  and stores credentials so the user lands directly on the dashboard. */
+ *  and stores credentials so the user lands directly in the panel — on the
+ *  business dashboard for business/tenant_admin accounts, or on the plain
+ *  account page for accounts with no business attached (e.g. a customer who
+ *  signed up with Google) rather than bouncing them to /login. */
 
 function AutoLoginHandler() {
   const dispatch  = useDispatch();
@@ -77,15 +80,19 @@ function AutoLoginHandler() {
     const token    = params.get('autologin');
     if (!token) return;
 
+    const role = params.get('role') ?? undefined;
+
     dispatch(setCredentials({
       accessToken: token,
       userId:      params.get('userId')   ?? undefined,
-      role:        params.get('role')     ?? undefined,
+      role,
       tenantId:    params.get('tenantId') ?? undefined,
       fullName:    params.get('fullName') ?? undefined,
     }));
     window.history.replaceState({}, '', '/');
-    window.location.href = '/dashboard';
+
+    const hasBusinessAccess = role === 'business' || role === 'tenant_admin';
+    window.location.href = hasBusinessAccess ? '/dashboard' : '/user/dashboard';
   }, []);
 
   return null;

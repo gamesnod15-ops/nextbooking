@@ -67,6 +67,9 @@ export function UserDashboardPage() {
   const auth = useSelector((s: RootState) => s.auth)
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  // Business creation is the main web app's registration wizard — this SPA
+  // has no /register route of its own.
+  const registerUrl = `${import.meta.env.VITE_WEB_APP_URL || window.location.origin}/register`
 
   useEffect(() => {
     if (!auth.accessToken) {
@@ -154,13 +157,13 @@ export function UserDashboardPage() {
             <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-sm font-bold text-gray-500 uppercase tracking-wider">Hızlı İşlemler</h2>
               <div className="space-y-2">
-                <Link to="/login" className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <a href={registerUrl} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                   <span className="flex items-center gap-3">
                     <Building2 className="h-4 w-4 text-brand-500" />
-                    İşletme Paneli
+                    İşletme Oluştur
                   </span>
                   <ExternalLink className="h-4 w-4 text-gray-400" />
-                </Link>
+                </a>
                 <Link to="/subscription" className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                   <span className="flex items-center gap-3">
                     <Package className="h-4 w-4 text-brand-500" />
@@ -223,9 +226,9 @@ export function UserDashboardPage() {
               ) : (
                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-6 text-center">
                   <p className="text-sm text-gray-500">Henüz bir işletmeye bağlı değilsiniz.</p>
-                  <Link to="/register" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-500 hover:text-brand-600">
+                  <a href={registerUrl} className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-500 hover:text-brand-600">
                     İşletme oluştur <ChevronRight className="h-3 w-3" />
-                  </Link>
+                  </a>
                 </div>
               )}
             </div>
