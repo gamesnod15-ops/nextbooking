@@ -67,9 +67,9 @@ export function UserDashboardPage() {
   const auth = useSelector((s: RootState) => s.auth)
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
-  // Business creation is the main web app's registration wizard — this SPA
-  // has no /register route of its own.
-  const registerUrl = `${import.meta.env.VITE_WEB_APP_URL || window.location.origin}/register`
+  // Attaches a business to this already-authenticated account (no email/
+  // password re-entry) — this SPA has no route of its own for it.
+  const registerUrl = `${import.meta.env.VITE_WEB_APP_URL || window.location.origin}/panel/isletme-olustur`
 
   useEffect(() => {
     if (!auth.accessToken) {

@@ -60,6 +60,17 @@ public class User : AuditableEntity
     public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;
 
+    /// <summary>
+    /// Attaches an existing account (e.g. one created via a customer/OAuth
+    /// signup with no business) to a newly created tenant, upgrading its role
+    /// in place rather than requiring a brand-new user record.
+    /// </summary>
+    public void AssignToTenant(Guid tenantId, string role)
+    {
+        TenantId = tenantId;
+        Role = role;
+    }
+
     public void AddPermission(string permission)
     {
         if (!Permissions.Contains(permission))
