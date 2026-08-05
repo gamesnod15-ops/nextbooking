@@ -97,6 +97,15 @@ export default function CreateBusinessPage() {
       localStorage.setItem('role', res.role)
       localStorage.setItem('tenantId', res.tenantId)
 
+      const panelParams = new URLSearchParams({
+        autologin: res.accessToken,
+        userId: res.userId,
+        role: res.role,
+        tenantId: res.tenantId,
+        fullName: localStorage.getItem('fullName') ?? '',
+      })
+      localStorage.setItem('business_panel_url', `${process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000'}?${panelParams.toString()}`)
+
       router.push('/register/onboarding')
     } catch (err) {
       const apiErr = err as ApiError

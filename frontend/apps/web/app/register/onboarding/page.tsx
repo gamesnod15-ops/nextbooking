@@ -101,6 +101,21 @@ export default function OnboardingPage() {
     setAuthChecked(true)
   }, [router])
 
+  // The "done" screen shows a spinner and says "yönlendiriliyorsunuz…" but
+  // nothing actually redirected — only the "Paneli manuel aç" link worked.
+  useEffect(() => {
+    if (!done) return
+    const panelUrl = localStorage.getItem('business_panel_url')
+    const timer = setTimeout(() => {
+      if (panelUrl) {
+        window.location.href = panelUrl
+      } else {
+        router.push('/login')
+      }
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [done, router])
+
   function completeOnboarding(plan?: string) {
     localStorage.setItem('onboarding_done', '1')
     setDone(true)

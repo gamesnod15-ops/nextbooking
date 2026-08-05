@@ -232,7 +232,14 @@ export default function RegisterPage() {
         localStorage.setItem('userId', loginRes.userId)
         localStorage.setItem('fullName', loginRes.fullName)
         localStorage.setItem('tenantId', loginRes.tenantId)
-        localStorage.setItem('business_panel_url', `https://next-bussines-ten.vercel.app?autologin=${loginRes.accessToken}&userId=${loginRes.userId}`)
+        const panelParams = new URLSearchParams({
+          autologin: loginRes.accessToken,
+          userId: loginRes.userId,
+          role: loginRes.role,
+          tenantId: loginRes.tenantId,
+          fullName: loginRes.fullName,
+        })
+        localStorage.setItem('business_panel_url', `${process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000'}?${panelParams.toString()}`)
 
         router.push('/register/onboarding')
       } catch {
