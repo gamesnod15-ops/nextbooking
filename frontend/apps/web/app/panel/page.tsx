@@ -188,8 +188,8 @@ export default function PanelPage() {
           <Link
             key={href}
             href={href}
-            className="group flex flex-col items-center justify-center gap-2 rounded-xl bg-white border border-gray-100 px-4 py-4 min-h-[140px] min-w-0 max-w-full hover:shadow-md hover:border-brand-100 transition-all"
-            style={{ height: 160, minWidth: 0 }}
+            className="group flex flex-col items-center justify-center gap-2 rounded-xl bg-white border border-gray-100 px-4 py-7 min-h-[160px] min-w-0 max-w-full hover:shadow-md hover:border-brand-100 transition-all"
+            style={{ height: 190, minWidth: 0 }}
           >
             <div className="flex flex-col items-center justify-center flex-1 w-full">
               <div className="flex items-center justify-center h-8 w-8 rounded-xl bg-brand-50 mb-2">
