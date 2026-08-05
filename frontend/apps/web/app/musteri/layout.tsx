@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import {
-  Calendar, User, LogOut, Menu, X, Clock,
+  Calendar, User, LogOut, Menu, X, Clock, Building2,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -57,6 +57,15 @@ export default function MusteriLayout({ children }: { children: React.ReactNode 
             </Link>
           )
         })}
+
+        {/* İşletme sahibi olmak isteyenler için */}
+        <div className="pt-4 mt-4 border-t border-gray-100">
+          <Link href="/panel/isletme-olustur" onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-all">
+            <Building2 className="h-4 w-4" />
+            İşletmeni Oluştur
+          </Link>
+        </div>
       </nav>
 
       <div className="border-t border-gray-100 p-3">
