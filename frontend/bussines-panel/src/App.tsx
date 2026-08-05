@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '@/store'
+import { RootState, store } from '@/store'
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { setCredentials } from '@/store/slices/authSlice'
 import api from '@/lib/api'
@@ -71,7 +71,15 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
  *  and stores credentials so the user lands directly in the panel — on the
  *  business dashboard for business/tenant_admin accounts, or on the plain
  *  account page for accounts with no business attached (e.g. a customer who
- *  signed up with Google) rather than bouncing them to /login. */
+ *  signed up with Google) rather than bouncing them to /login.
+ *
+ *  If this browser already has a session for the SAME user (e.g. they logged
+ *  into the business panel directly at some point), that session is kept as
+ *  is instead of being overwritten — the web app's own access token is short
+ *  -lived and frequently stale by the time this link is clicked, and
+ *  clobbering an already-good session with a stale one just to redo the
+ *  handoff was bouncing people to /login for no reason. A different userId
+ *  (or no existing session at all) still goes through the normal handoff. */
 
 function AutoLoginHandler() {
   const dispatch  = useDispatch();
@@ -81,11 +89,21 @@ function AutoLoginHandler() {
     const token    = params.get('autologin');
     if (!token) return;
 
+    const incomingUserId = params.get('userId') ?? undefined;
+    const existing = store.getState().auth;
+
+    if (existing.accessToken && existing.userId && existing.userId === incomingUserId) {
+      window.history.replaceState({}, '', '/');
+      const hasBusinessAccess = existing.role === 'business' || existing.role === 'tenant_admin';
+      window.location.href = hasBusinessAccess ? '/dashboard' : '/user/dashboard';
+      return;
+    }
+
     const role = params.get('role') ?? undefined;
 
     dispatch(setCredentials({
       accessToken: token,
-      userId:      params.get('userId')   ?? undefined,
+      userId:      incomingUserId,
       role,
       tenantId:    params.get('tenantId') ?? undefined,
       fullName:    params.get('fullName') ?? undefined,
