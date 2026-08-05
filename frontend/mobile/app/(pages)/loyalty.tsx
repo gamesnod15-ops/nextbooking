@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -58,19 +58,25 @@ export default function LoyaltyScreen() {
       <PatternOverlay opacity={0.25} />
       <ScreenHeader title="Sadakat Programı" showBack />
 
-      {/* Tier Cards */}
-      <View style={styles.tierRow}>
+      {/* Tier Cards — horizontal carousel so any number of tiers stays
+          compact instead of wrapping into a tall grid */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.tierScroll}
+        contentContainerStyle={styles.tierRow}
+      >
         {[...tiers].sort((a, b) => a.sortOrder - b.sortOrder).map((t, idx) => {
           const visual = TIER_VISUALS[idx] ?? FALLBACK_VISUAL;
           return (
             <View key={t.id} style={[styles.tierCard, { borderTopColor: visual.color }]}>
               <Text style={styles.tierEmoji}>{visual.icon}</Text>
-              <Text style={styles.tierLabel}>{t.name}</Text>
+              <Text style={styles.tierLabel} numberOfLines={1} ellipsizeMode="tail">{t.name}</Text>
               <Text style={[styles.tierCount, { color: visual.color }]}>{tierCounts[t.name] ?? 0}</Text>
             </View>
           );
         })}
-      </View>
+      </ScrollView>
 
       {/* Members */}
       <FlatList
@@ -111,8 +117,21 @@ export default function LoyaltyScreen() {
 
 const createStyles = (COLORS: Palette) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
+  tierScroll: { flexGrow: 0 },
   tierRow: { flexDirection: 'row', gap: SPACE[3], paddingHorizontal: SPACE[5], paddingVertical: SPACE[4] },
-  tierCard: { flex: 1, backgroundColor: COLORS.surface, borderRadius: RADIUS.lg, padding: SPACE[3], alignItems: 'center', gap: SPACE[1], borderTopWidth: 3, borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
+  tierCard: {
+    width: 92,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACE[2],
+    paddingHorizontal: SPACE[2],
+    alignItems: 'center',
+    gap: SPACE[1],
+    borderTopWidth: 3,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    ...SHADOW.sm,
+  },
   tierEmoji: { fontSize: 20 },
   tierLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: FONT.medium },
   tierCount: { fontSize: FONT.xl, fontWeight: FONT.bold },

@@ -337,7 +337,7 @@ export default function SettingsScreen() {
               <View style={styles.checklist}>
                 {profileFields.map(f => (
                   <View key={f.label} style={styles.checkItem}>
-                    <Ionicons name={f.done ? 'checkmark-circle' : 'ellipse-outline'} size={14} color={f.done ? '#10B981' : COLORS.textMuted} />
+                    <Ionicons name={f.done ? 'checkmark-circle' : 'ellipse-outline'} size={15} color={f.done ? COLORS.success : COLORS.textMuted} />
                     <Text style={[styles.checkText, f.done && styles.checkTextDone]}>{f.label}</Text>
                   </View>
                 ))}
@@ -445,7 +445,7 @@ export default function SettingsScreen() {
               <View style={styles.checklist}>
                 {businessFields.map(f => (
                   <View key={f.label} style={styles.checkItem}>
-                    <Ionicons name={f.done ? 'checkmark-circle' : 'ellipse-outline'} size={14} color={f.done ? '#10B981' : COLORS.textMuted} />
+                    <Ionicons name={f.done ? 'checkmark-circle' : 'ellipse-outline'} size={15} color={f.done ? COLORS.success : COLORS.textMuted} />
                     <Text style={[styles.checkText, f.done && styles.checkTextDone]}>{f.label}</Text>
                   </View>
                 ))}
@@ -683,21 +683,21 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
   chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   chipText: { fontSize: FONT.sm, fontWeight: FONT.semibold, color: COLORS.textSecondary },
   chipTextActive: { color: STATIC_WHITE },
-  completionCard: { marginHorizontal: SPACE[5], marginBottom: SPACE[4], borderRadius: RADIUS.xl, borderWidth: 1, borderColor: COLORS.primary + '30', backgroundColor: COLORS.primary + '08', padding: SPACE[4], ...SHADOW.sm },
-  completionCardDone: { borderColor: '#10B981' + '40', backgroundColor: '#10B981' + '08' },
-  completionRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: SPACE[2] },
-  completionInfo: { flex: 1, gap: 2 },
-  completionTitle: { fontSize: FONT.sm, fontWeight: FONT.bold, color: COLORS.text },
-  completionSub: { fontSize: FONT.xs, color: COLORS.textMuted },
-  completionPct: { fontSize: 22, fontWeight: FONT.bold, color: COLORS.primary },
-  completionPctDone: { color: '#10B981' },
-  progressTrack: { height: 6, borderRadius: 3, backgroundColor: COLORS.border, overflow: 'hidden', marginBottom: SPACE[3] },
-  progressFill: { height: '100%', borderRadius: 3, backgroundColor: COLORS.primary },
-  progressFillDone: { backgroundColor: '#10B981' },
-  checklist: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACE[2] },
-  checkItem: { flexDirection: 'row', alignItems: 'center', gap: 4, width: '48%' },
-  checkText: { fontSize: FONT.xs, color: COLORS.textMuted },
-  checkTextDone: { color: COLORS.text },
+  completionCard: { marginHorizontal: SPACE[5], marginBottom: SPACE[5], borderRadius: RADIUS['2xl'], borderWidth: 1, borderColor: COLORS.primary + '25', backgroundColor: COLORS.primary + '0A', padding: SPACE[5], ...SHADOW.md },
+  completionCardDone: { borderColor: COLORS.success + '35', backgroundColor: COLORS.success + '0A' },
+  completionRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: SPACE[3], marginBottom: SPACE[3] },
+  completionInfo: { flex: 1, gap: 4 },
+  completionTitle: { fontSize: FONT.base, fontWeight: FONT.bold, color: COLORS.text, letterSpacing: -0.2 },
+  completionSub: { fontSize: FONT.xs, color: COLORS.textMuted, lineHeight: 16 },
+  completionPct: { fontSize: FONT['2xl'], fontWeight: FONT.extrabold, color: COLORS.primary },
+  completionPctDone: { color: COLORS.success },
+  progressTrack: { height: 7, borderRadius: RADIUS.full, backgroundColor: COLORS.border, overflow: 'hidden', marginBottom: SPACE[4] },
+  progressFill: { height: '100%', borderRadius: RADIUS.full, backgroundColor: COLORS.primary },
+  progressFillDone: { backgroundColor: COLORS.success },
+  checklist: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACE[3] },
+  checkItem: { flexDirection: 'row', alignItems: 'center', gap: 6, width: '47%' },
+  checkText: { fontSize: FONT.xs, color: COLORS.textMuted, flexShrink: 1 },
+  checkTextDone: { color: COLORS.text, fontWeight: FONT.medium },
   profileCard: { flexDirection: 'row', alignItems: 'center', gap: SPACE[4], backgroundColor: COLORS.surface, marginHorizontal: SPACE[5], marginBottom: SPACE[4], borderRadius: RADIUS.xl, padding: SPACE[5], borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOW.sm },
   avatarWrap: { position: 'relative' },
   avatarEditBadge: {

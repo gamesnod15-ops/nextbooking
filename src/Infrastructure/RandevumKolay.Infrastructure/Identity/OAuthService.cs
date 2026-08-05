@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RandevumKolay.Application.Common.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
@@ -51,9 +52,17 @@ public class OAuthService : IOAuthService
 
     private async Task<OAuthUserInfo> VerifyGoogleTokenAsync(string idToken)
     {
-        if (string.IsNullOrWhiteSpace(_settings.Google.ClientId))
+        // The web app, business-panel, and the mobile app each authenticate
+        // against a *different* Google OAuth client (a "Web application"
+        // client can't use a native `jetrandevu://` redirect, so iOS/Android
+        // each need their own client) — any of them is a legitimate audience.
+        var validAudiences = new[] { _settings.Google.ClientId, _settings.Google.IosClientId, _settings.Google.AndroidClientId }
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToArray();
+
+        if (validAudiences.Length == 0)
         {
-            _logger.LogError("Google OAuth is not configured (OAuth:Google:ClientId is empty).");
+            _logger.LogError("Google OAuth is not configured (no OAuth:Google client ID is set).");
             throw new UnauthorizedAccessException("Google OAuth is not configured.");
         }
 
@@ -66,7 +75,7 @@ public class OAuthService : IOAuthService
         // `tokeninfo` verifies the token's signature/expiry, but not that it was
         // issued *for this app* — an id_token minted for a different Google
         // client would otherwise still pass. Checking `aud` closes that gap.
-        if (response.Aud != _settings.Google.ClientId)
+        if (!validAudiences.Contains(response.Aud))
             throw new UnauthorizedAccessException("Google token was not issued for this application.");
 
         return new OAuthUserInfo(
@@ -79,9 +88,16 @@ public class OAuthService : IOAuthService
 
     private async Task<OAuthUserInfo> VerifyAppleTokenAsync(string idToken)
     {
-        if (string.IsNullOrWhiteSpace(_settings.Apple.ClientId))
+        // Native Sign In with Apple (expo-apple-authentication on mobile) mints
+        // an id_token whose `aud` is the app's *bundle ID*, not the Services ID
+        // used for the web flow — both are legitimate audiences for us.
+        var validAudiences = new[] { _settings.Apple.ClientId, _settings.Apple.BundleId }
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToArray();
+
+        if (validAudiences.Length == 0)
         {
-            _logger.LogError("Apple OAuth is not configured (OAuth:Apple:ClientId is empty).");
+            _logger.LogError("Apple OAuth is not configured (no OAuth:Apple client ID is set).");
             throw new UnauthorizedAccessException("Apple OAuth is not configured.");
         }
 
@@ -93,7 +109,7 @@ public class OAuthService : IOAuthService
             ValidateIssuer = true,
             ValidIssuer = AppleIssuer,
             ValidateAudience = true,
-            ValidAudience = _settings.Apple.ClientId,
+            ValidAudiences = validAudiences,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKeys = jwks.Keys,
@@ -167,10 +183,18 @@ public class OAuthSettings
 
 public class GoogleOAuthSettings
 {
+    /// <summary>The "Web application" client shared by the web app and business-panel.</summary>
     public string ClientId { get; set; } = string.Empty;
+    /// <summary>The "iOS" client tied to the mobile app's bundle ID (com.jetrandevu.app).</summary>
+    public string IosClientId { get; set; } = string.Empty;
+    /// <summary>The "Android" client tied to the mobile app's package name + signing SHA-1.</summary>
+    public string AndroidClientId { get; set; } = string.Empty;
 }
 
 public class AppleOAuthSettings
 {
+    /// <summary>The Services ID used by the web/business-panel Sign In with Apple flow.</summary>
     public string ClientId { get; set; } = string.Empty;
+    /// <summary>The app's bundle ID (com.jetrandevu.app) — the audience native Sign In with Apple tokens carry.</summary>
+    public string BundleId { get; set; } = string.Empty;
 }

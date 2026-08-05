@@ -72,6 +72,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-image',
     'expo-splash-screen',
     'expo-web-browser',
+    'expo-apple-authentication',
     '@react-native-community/datetimepicker',
     [
       'expo-location',
@@ -117,5 +118,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       projectId: 'a85921df-08a8-4f7a-aceb-b806e3a100b8',
     },
+    // Google Sign-In needs a platform-specific OAuth client (tied to the
+    // bundle ID / package name + SHA-1 for Android) — a "Web application"
+    // client (the one the web app and business panel share) can't be used
+    // here since it doesn't support a native `jetrandevu://` redirect.
+    // Read at runtime in app/(auth)/login.tsx.
+    googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
+    googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? '',
   },
 } as ExpoConfig);

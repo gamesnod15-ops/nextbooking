@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,11 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import Constants from 'expo-constants';
 import { FONT, RADIUS, SHADOW, SPACE, STATIC_WHITE } from '@/lib/theme';
 import { useColors, type Palette } from '@/lib/themeContext';
 import { PatternOverlay } from '@/components/ui/PatternOverlay';
@@ -24,6 +28,34 @@ import api from '@/lib/api';
 import * as SecureStore from 'expo-secure-store';
 import { DotGrid } from '@/components/ui/DotGrid';
 import { useToast } from '@/components/ui/Toast';
+
+// Required so the browser tab opened for Google's consent screen closes
+// itself and hands control back to the app once Google redirects.
+WebBrowser.maybeCompleteAuthSession();
+
+const GOOGLE_DISCOVERY = { authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth' };
+
+function randomNonce() {
+  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+}
+
+interface OAuthCallbackResponse {
+  isNewUser: boolean;
+  accessToken?: string;
+  userId?: string;
+  role?: string;
+  fullName?: string;
+  email?: string;
+  avatarUrl?: string | null;
+  tenantId?: string | null;
+  providerInfo?: {
+    provider: string;
+    providerUserId: string;
+    email: string;
+    fullName: string;
+    avatarUrl: string | null;
+  };
+}
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -42,8 +74,120 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<'google' | 'apple' | null>(null);
+  const [googleNonce] = useState(randomNonce);
 
   const isBusiness = selectedRole === 'business';
+
+  const googleClientId = Platform.select({
+    ios: Constants.expoConfig?.extra?.googleIosClientId,
+    android: Constants.expoConfig?.extra?.googleAndroidClientId,
+  }) as string | undefined;
+
+  const [, googleResponse, promptGoogleAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: googleClientId || 'not-configured',
+      scopes: ['openid', 'email', 'profile'],
+      redirectUri: AuthSession.makeRedirectUri({ scheme: 'jetrandevu' }),
+      responseType: AuthSession.ResponseType.IdToken,
+      extraParams: { nonce: googleNonce },
+    },
+    GOOGLE_DISCOVERY
+  );
+
+  useEffect(() => {
+    if (googleResponse?.type === 'success' && googleResponse.params.id_token) {
+      handleOAuthLogin('google', googleResponse.params.id_token);
+    } else if (googleResponse?.type === 'error') {
+      toast.error('Google ile giriş başarısız. Lütfen tekrar deneyin.');
+    }
+  }, [googleResponse]);
+
+  async function handleGooglePress() {
+    if (!googleClientId) {
+      toast.warning('Google ile giriş şu anda yapılandırılmamış.');
+      return;
+    }
+    await promptGoogleAsync();
+  }
+
+  async function handleApplePress() {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      if (!credential.identityToken) {
+        toast.error('Apple kimlik bilgisi alınamadı.');
+        return;
+      }
+      // Apple only ever sends the real name on the very first authorization —
+      // the backend's id_token has no name claim, so it's forwarded separately.
+      const appleName = credential.fullName
+        ? `${credential.fullName.givenName ?? ''} ${credential.fullName.familyName ?? ''}`.trim()
+        : undefined;
+      await handleOAuthLogin('apple', credential.identityToken, appleName);
+    } catch (err: any) {
+      if (err?.code !== 'ERR_REQUEST_CANCELED') {
+        toast.error('Apple ile giriş başarısız. Lütfen tekrar deneyin.');
+      }
+    }
+  }
+
+  async function handleOAuthLogin(provider: 'google' | 'apple', token: string, appleName?: string) {
+    setOauthLoading(provider);
+    try {
+      const res = await api.post(`/auth/oauth/${provider}/callback`, {
+        token,
+        deviceInfo: `${Platform.OS} app`,
+      });
+      const data: OAuthCallbackResponse = res.data;
+
+      if (data.isNewUser) {
+        router.push({
+          pathname: '/(auth)/oauth-complete',
+          params: {
+            provider: data.providerInfo?.provider ?? provider,
+            providerUserId: data.providerInfo?.providerUserId ?? '',
+            email: data.providerInfo?.email ?? '',
+            fullName: appleName || data.providerInfo?.fullName || '',
+            avatarUrl: data.providerInfo?.avatarUrl ?? '',
+            role: selectedRole,
+          },
+        });
+        return;
+      }
+
+      const authData = {
+        accessToken: data.accessToken!,
+        userId: data.userId!,
+        role: data.role!,
+        tenantId: data.tenantId ?? null,
+        fullName: data.fullName ?? '',
+        email: data.email ?? '',
+        phone: null,
+        jobTitle: null,
+        avatarUrl: data.avatarUrl ?? null,
+        appRole: selectedRole,
+      };
+      await SecureStore.setItemAsync('access_token', authData.accessToken);
+      await SecureStore.setItemAsync('auth_data', JSON.stringify(authData));
+      dispatch(setCredentials(authData));
+
+      if (selectedRole === 'business') {
+        router.replace('/(business)');
+      } else {
+        router.replace('/(customer)' as any);
+      }
+    } catch (err: any) {
+      const message = err.response?.data?.message || err.response?.data?.detail || err.message || 'Giriş başarısız.';
+      toast.error(message);
+    } finally {
+      setOauthLoading(null);
+    }
+  }
 
   async function handleLogin() {
     if (!email.trim() || !password.trim()) {
@@ -81,7 +225,7 @@ export default function LoginScreen() {
         style={styles.root}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <LinearGradient colors={['#E8F0FE', '#D4E4F7', '#EBF2FF']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[COLORS.bg, COLORS.primaryLight, COLORS.bg]} style={StyleSheet.absoluteFill} />
         <PatternOverlay opacity={0.15} />
         <View style={styles.blobBlue} />
         <View style={styles.blobAccent} />
@@ -176,6 +320,42 @@ export default function LoginScreen() {
               <View style={styles.dividerLine} />
             </View>
 
+            <View style={styles.oauthRow}>
+              <TouchableOpacity
+                style={styles.oauthBtn}
+                onPress={handleGooglePress}
+                disabled={oauthLoading !== null}
+                activeOpacity={0.8}
+              >
+                {oauthLoading === 'google' ? (
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                ) : (
+                  <>
+                    <FontAwesome5 name="google" size={16} color={COLORS.text} />
+                    <Text style={styles.oauthBtnText}>Google</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                  style={styles.oauthBtn}
+                  onPress={handleApplePress}
+                  disabled={oauthLoading !== null}
+                  activeOpacity={0.8}
+                >
+                  {oauthLoading === 'apple' ? (
+                    <ActivityIndicator size="small" color={COLORS.primary} />
+                  ) : (
+                    <>
+                      <FontAwesome5 name="apple" size={18} color={COLORS.text} />
+                      <Text style={styles.oauthBtnText}>Apple</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+
             <View style={styles.registerRow}>
               <Text style={styles.registerText}>Hesabınız yok mu? </Text>
               <TouchableOpacity onPress={() => router.push(`/(auth)/register?role=${selectedRole}`)} activeOpacity={0.7}>
@@ -196,7 +376,7 @@ export default function LoginScreen() {
   return (
     <View style={[styles.root, { paddingBottom: insets.bottom + SPACE[5] }]}>
       <LinearGradient
-        colors={['#E8F0FE', '#D4E4F7', '#EBF2FF']}
+        colors={[COLORS.bg, COLORS.primaryLight, COLORS.bg]}
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.blobBlue} />
@@ -258,20 +438,20 @@ export default function LoginScreen() {
             }}
           >
             <LinearGradient
-              colors={['#FFFFFF', '#F5F9FF']}
+              colors={[COLORS.white, COLORS.surfaceAlt]}
               style={styles.cardGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
               <View style={styles.cardIconBlue}>
-                <Ionicons name="calendar-outline" size={28} color={COLORS.info} />
+                <Ionicons name="calendar-outline" size={28} color={COLORS.primary} />
               </View>
               <View style={styles.cardContent}>
                 <Text style={styles.cardTitleBlue}>Hemen Randevu Al</Text>
                 <Text style={styles.cardDescBlue}>İşletmeleri keşfedin ve randevunuzu hemen oluşturun</Text>
               </View>
               <View style={styles.cardArrowBlue}>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.info} />
+                <Ionicons name="chevron-forward" size={20} color={COLORS.primary} />
               </View>
             </LinearGradient>
           </TouchableOpacity>
@@ -323,7 +503,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     width: 240,
     height: 240,
     borderRadius: 120,
-    backgroundColor: '#3B82F6',
+    backgroundColor: COLORS.primary,
     opacity: 0.08,
   },
   blobAccent: {
@@ -333,7 +513,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: '#60A5FA',
+    backgroundColor: COLORS.primaryDark,
     opacity: 0.06,
   },
   dotGridTopRight: {
@@ -465,6 +645,29 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     fontSize: FONT.xs,
     color: COLORS.textMuted,
   },
+  oauthRow: {
+    flexDirection: 'row',
+    gap: SPACE[3],
+    width: '100%',
+    marginBottom: SPACE[5],
+  },
+  oauthBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACE[2],
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    paddingVertical: SPACE[3] + 2,
+  },
+  oauthBtnText: {
+    fontSize: FONT.sm,
+    fontWeight: FONT.semibold,
+    color: COLORS.text,
+  },
   registerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -540,7 +743,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS['2xl'],
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#D4E4F7',
+    borderColor: COLORS.borderLight,
     backgroundColor: COLORS.white,
     ...SHADOW.sm,
   },
@@ -565,7 +768,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: RADIUS.lg,
-    backgroundColor: '#EBF5FF',
+    backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -607,9 +810,9 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: RADIUS.full,
-    backgroundColor: '#EBF5FF',
+    backgroundColor: COLORS.primaryLight,
     borderWidth: 1.5,
-    borderColor: COLORS.primaryLight,
+    borderColor: COLORS.primary + '40',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -635,7 +838,7 @@ const createStyles = (COLORS: Palette) => StyleSheet.create({
     borderRadius: RADIUS.full,
     borderWidth: 1.5,
     borderColor: COLORS.primaryLight,
-    backgroundColor: 'rgba(1,84,240,0.06)',
+    backgroundColor: COLORS.primary + '0F',
     alignItems: 'center',
     justifyContent: 'center',
   },
