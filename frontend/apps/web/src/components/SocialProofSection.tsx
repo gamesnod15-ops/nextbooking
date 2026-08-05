@@ -5,7 +5,7 @@ const stats = [
   { value: '10.000+', label: 'Aktif İşletme' },
   { value: '2M+',     label: 'Aylık Randevu' },
   { value: '%98',     label: 'Müşteri Memnuniyeti' },
-  { value: '?500M+',  label: 'İşlem Hacmi' },
+  { value: '₺500M+',  label: 'İşlem Hacmi' },
 ]
 
 export function SocialProofSection() {

@@ -38,7 +38,7 @@ function usePlanMeta() {
           map[key] = {
             id: key,
             name: p.name,
-            price: p.isCustomPricing ? '�zel' : `?${p.price}`,
+            price: p.isCustomPricing ? 'Özel' : `₺${p.price}`,
             period: p.isCustomPricing ? ' fiyat' : '/ay',
             color: COLOR_BY_KEY[key] || 'bg-slate-600',
             monthlyPrice: p.isCustomPricing ? 0 : (p.price ?? 0),
@@ -114,7 +114,7 @@ function saveBilling(info: BillingInfo) {
 }
 
 const EMPTY_BILLING: BillingInfo = {
-  fullName: '', company: '', taxId: '', address: '', city: '', zip: '', country: 'T�rkiye',
+  fullName: '', company: '', taxId: '', address: '', city: '', zip: '', country: 'Türkiye',
 }
 
 function inputCls(err?: boolean) {
@@ -126,7 +126,7 @@ function inputCls(err?: boolean) {
   ].join(' ')
 }
 
-/* ��� Inner component that reads searchParams ��� */
+/* ─── Inner component that reads searchParams ─── */
 function OdemeInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -221,7 +221,7 @@ function OdemeInner() {
               address: data.address || '',
               city: data.city || '',
               zip: data.postalCode || '',
-              country: data.country || 'T�rkiye',
+              country: data.country || 'Türkiye',
             }
             if (info.fullName) {
               setBilling(info)
@@ -260,7 +260,7 @@ function OdemeInner() {
     const errs: typeof billingErrors = {}
     if (!billing.fullName.trim()) errs.fullName = 'Ad soyad gereklidir.'
     if (!billing.address.trim()) errs.address = 'Adres gereklidir.'
-    if (!billing.city.trim()) errs.city = '�ehir gereklidir.'
+    if (!billing.city.trim()) errs.city = 'Şehir gereklidir.'
     setBillingErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -278,11 +278,11 @@ function OdemeInner() {
     const errs: Record<string, string> = {}
     const usingSaved = savedCards.length > 0 && !showNewCardForm && selectedCardId
     if (!usingSaved) {
-      if (cardNumber.replace(/\s/g, '').length < 16) errs.cardNumber = 'Ge�erli bir kart numaras� girin.'
-      if (!cardName.trim()) errs.cardName = 'Kart �zerindeki isim gereklidir.'
-      if (expiry.length < 5) errs.expiry = 'Ge�erli bir son kullanma tarihi girin.'
+      if (cardNumber.replace(/\s/g, '').length < 16) errs.cardNumber = 'Geçerli bir kart numarası girin.'
+      if (!cardName.trim()) errs.cardName = 'Kart üzerindeki isim gereklidir.'
+      if (expiry.length < 5) errs.expiry = 'Geçerli bir son kullanma tarihi girin.'
     }
-    if (cvv.length < 3) errs.cvv = 'CVV en az 3 haneli olmal�d�r.'
+    if (cvv.length < 3) errs.cvv = 'CVV en az 3 haneli olmalıdır.'
     setPayErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -313,7 +313,7 @@ function OdemeInner() {
       const dueDate = new Date()
       dueDate.setDate(dueDate.getDate() + 1)
       await axios.post('/api/v1/Receivables', {
-        customerName: billing.fullName || 'M��teri',
+        customerName: billing.fullName || 'Müşteri',
         totalAmount: getGrandTotal(),
         dueDate: dueDate.toISOString().split('T')[0],
         installmentCount: 1,
@@ -359,18 +359,18 @@ function OdemeInner() {
         for (const [field, messages] of Object.entries(errs)) {
           const arr = messages as string[]
           if (arr.length > 0) {
-            const key = field === 'CardNumber' || field === 'Kart numaras�' ? 'cardNumber'
+            const key = field === 'CardNumber' || field === 'Kart numarası' ? 'cardNumber'
               : field === 'CardHolder' || field === 'Kart sahibi' ? 'cardName'
               : field === 'Expiry' || field === 'Son kullanma tarihi' ? 'expiry'
               : field === 'Cvv' || field === 'CVV' ? 'cvv'
-              : field === 'Brand' || field === 'Kart markas�' ? 'cardNumber'
+              : field === 'Brand' || field === 'Kart markası' ? 'cardNumber'
               : 'cardNumber'
             parsed[key] = arr[0]
           }
         }
         setPayErrors(parsed)
       } else {
-        const msg = err?.response?.data?.message || err?.response?.data?.detail || err?.message || '�deme i�lenirken bir hata olu�tu.'
+        const msg = err?.response?.data?.message || err?.response?.data?.detail || err?.message || 'Ödeme işlenirken bir hata oluştu.'
         setPayErrors({ cardNumber: msg })
       }
     }
@@ -409,9 +409,9 @@ function OdemeInner() {
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
             <CheckCircle className="h-8 w-8 text-emerald-500" />
           </div>
-          <h2 className="text-2xl font-extrabold text-gray-900">�deme Ba�ar�l�!</h2>
+          <h2 className="text-2xl font-extrabold text-gray-900">Ödeme Başarılı!</h2>
           <p className="mt-3 text-gray-600">
-            <span className="font-semibold">{plan.name}</span> plan�n�z aktif edildi. Panel'e y�nlendiriliyorsunuz�
+            <span className="font-semibold">{plan.name}</span> planınız aktif edildi. Panel'e yönlendiriliyorsunuz…
           </p>
           <div className="mt-6 flex flex-col gap-3">
             <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
@@ -436,14 +436,14 @@ function OdemeInner() {
           </Link>
           {/* Step indicator */}
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">?</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">1</span>
             <span className="text-gray-400">Hesap</span>
-            <span className="text-gray-300">�</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">?</span>
+            <span className="text-gray-300">→</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">2</span>
             <span className="text-gray-400">Paket</span>
-            <span className="text-gray-300">�</span>
+            <span className="text-gray-300">→</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">3</span>
-            <span className="font-semibold text-gray-800">�deme</span>
+            <span className="font-semibold text-gray-800">Ödeme</span>
           </div>
         </div>
       </header>
@@ -510,13 +510,13 @@ function OdemeInner() {
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-widest text-brand-500 mb-1">Ad\u0131m 3/3</p>
           <h1 className="text-3xl font-extrabold text-gray-900">
-            {mode === 'form' ? 'Fatura Bilgilerinizi Girin' : 'Sipari�inizi Tamamlay�n'}
+            {mode === 'form' ? 'Fatura Bilgilerinizi Girin' : 'Siparişinizi Tamamlayın'}
           </h1>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
 
-          {/* �� Left: billing form OR cart �� */}
+          {/* ── Left: billing form OR cart ── */}
           <div className="space-y-6">
 
             {/* Billing info section */}
@@ -526,20 +526,20 @@ function OdemeInner() {
                   <MapPin className="h-4 w-4 text-brand-500" /> Fatura Adresi
                 </h2>
                 <p className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                  Bu b�l�m test a�amas�ndad�r. Ger�ek fatura bilgilerinizi girmenize gerek yok � diledi�iniz bilgileri kullanabilirsiniz.
+                  Bu bölüm test aşamasındadır. Gerçek fatura bilgilerinizi girmenize gerek yok — dilediğiniz bilgileri kullanabilirsiniz.
                 </p>
                 <form id="billing-form" onSubmit={handleBillingSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <label htmlFor="billing-fullname" className="mb-1.5 block text-sm font-medium text-gray-700">Ad Soyad *</label>
                       <input id="billing-fullname" value={billing.fullName} onChange={e => setBilling(p => ({ ...p, fullName: e.target.value }))}
-                        placeholder="Ahmet Y�lmaz" className={inputCls(!!billingErrors.fullName)} />
+                        placeholder="Ahmet Yılmaz" className={inputCls(!!billingErrors.fullName)} />
                       {billingErrors.fullName && <p className="mt-1 text-xs text-red-500">{billingErrors.fullName}</p>}
                     </div>
                     <div>
-                      <label htmlFor="billing-company" className="mb-1.5 block text-sm font-medium text-gray-700">�irket Ad�</label>
+                      <label htmlFor="billing-company" className="mb-1.5 block text-sm font-medium text-gray-700">Şirket Adı</label>
                       <input id="billing-company" value={billing.company} onChange={e => setBilling(p => ({ ...p, company: e.target.value }))}
-                        placeholder="Y�lmaz Kuaf�r Ltd." className={inputCls()} />
+                        placeholder="Yılmaz Kuaför Ltd." className={inputCls()} />
                     </div>
                     <div>
                       <label htmlFor="billing-taxid" className="mb-1.5 block text-sm font-medium text-gray-700">Vergi No</label>
@@ -549,13 +549,13 @@ function OdemeInner() {
                     <div className="col-span-2">
                       <label htmlFor="billing-address" className="mb-1.5 block text-sm font-medium text-gray-700">Adres *</label>
                       <input id="billing-address" value={billing.address} onChange={e => setBilling(p => ({ ...p, address: e.target.value }))}
-                        placeholder="Ba�dat Cad. No:1, Kad�k�y" className={inputCls(!!billingErrors.address)} />
+                        placeholder="Bağdat Cad. No:1, Kadıköy" className={inputCls(!!billingErrors.address)} />
                       {billingErrors.address && <p className="mt-1 text-xs text-red-500">{billingErrors.address}</p>}
                     </div>
                     <div>
-                      <label htmlFor="billing-city" className="mb-1.5 block text-sm font-medium text-gray-700">�ehir *</label>
+                      <label htmlFor="billing-city" className="mb-1.5 block text-sm font-medium text-gray-700">Şehir *</label>
                       <input id="billing-city" value={billing.city} onChange={e => setBilling(p => ({ ...p, city: e.target.value }))}
-                        placeholder="�stanbul" className={inputCls(!!billingErrors.city)} />
+                        placeholder="İstanbul" className={inputCls(!!billingErrors.city)} />
                       {billingErrors.city && <p className="mt-1 text-xs text-red-500">{billingErrors.city}</p>}
                     </div>
                     <div>
@@ -564,13 +564,13 @@ function OdemeInner() {
                         placeholder="34000" className={inputCls()} />
                     </div>
                     <div className="col-span-2">
-                      <label htmlFor="billing-country" className="mb-1.5 block text-sm font-medium text-gray-700">�lke</label>
+                      <label htmlFor="billing-country" className="mb-1.5 block text-sm font-medium text-gray-700">Ülke</label>
                       <select id="billing-country" value={billing.country} onChange={e => setBilling(p => ({ ...p, country: e.target.value }))}
                         className={inputCls()}>
-                        <option value="T�rkiye">T�rkiye</option>
+                        <option value="Türkiye">Türkiye</option>
                         <option value="Almanya">Almanya</option>
                         <option value="Hollanda">Hollanda</option>
-                        <option value="Di�er">Di�er</option>
+                        <option value="Diğer">Diğer</option>
                       </select>
                     </div>
                   </div>
@@ -590,7 +590,7 @@ function OdemeInner() {
                     <button type="button" onClick={() => setEditMode(!editMode)}
                       className="flex items-center gap-1 text-sm text-brand-500 hover:text-brand-600 font-medium">
                       {editMode ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                      {editMode ? 'Kapat' : 'D�zenle'}
+                      {editMode ? 'Kapat' : 'Düzenle'}
                     </button>
                   </div>
 
@@ -599,7 +599,7 @@ function OdemeInner() {
                       <p className="font-semibold">{billing.fullName}</p>
                       {billing.company && <p className="text-gray-500">{billing.company}</p>}
                       <p>{billing.address}</p>
-                      <p>{billing.city}{billing.zip ? ` / ${billing.zip}` : ''} � {billing.country}</p>
+                      <p>{billing.city}{billing.zip ? ` / ${billing.zip}` : ''} · {billing.country}</p>
                       {billing.taxId && <p className="text-gray-500">Vergi No: {billing.taxId}</p>}
                     </div>
                   ) : (
@@ -612,7 +612,7 @@ function OdemeInner() {
                           {billingErrors.fullName && <p className="mt-1 text-xs text-red-500">{billingErrors.fullName}</p>}
                         </div>
                         <div>
-                          <label htmlFor="billing-edit-company" className="mb-1.5 block text-sm font-medium text-gray-700">�irket</label>
+                          <label htmlFor="billing-edit-company" className="mb-1.5 block text-sm font-medium text-gray-700">Şirket</label>
                           <input id="billing-edit-company" value={billing.company} onChange={e => setBilling(p => ({ ...p, company: e.target.value }))}
                             className={inputCls()} />
                         </div>
@@ -627,7 +627,7 @@ function OdemeInner() {
                             className={inputCls(!!billingErrors.address)} />
                         </div>
                         <div>
-                          <label htmlFor="billing-edit-city" className="mb-1.5 block text-sm font-medium text-gray-700">�ehir *</label>
+                          <label htmlFor="billing-edit-city" className="mb-1.5 block text-sm font-medium text-gray-700">Şehir *</label>
                           <input id="billing-edit-city" value={billing.city} onChange={e => setBilling(p => ({ ...p, city: e.target.value }))}
                             className={inputCls(!!billingErrors.city)} />
                         </div>
@@ -638,7 +638,7 @@ function OdemeInner() {
                         </div>
                       </div>
                       <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-2.5 text-sm font-bold text-white hover:bg-brand-600 transition-colors">
-                        Bilgileri G�ncelle
+                        Bilgileri Güncelle
                       </button>
                     </form>
                   )}
@@ -647,16 +647,16 @@ function OdemeInner() {
                 {/* Payment method */}
                 <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                   <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
-                    <CreditCard className="h-4 w-4 text-brand-500" /> �deme Y�ntemi
+                    <CreditCard className="h-4 w-4 text-brand-500" /> Ödeme Yöntemi
                   </h2>
                   <p className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                    Bu b�l�m test a�amas�ndad�r. Ger�ek kart bilgisi girmenize gerek yok � herhangi bir kart numaras�, isim ve g�venlik kodu (CVV) kullanabilirsiniz.
+                    Bu bölüm test aşamasındadır. Gerçek kart bilgisi girmenize gerek yok — herhangi bir kart numarası, isim ve güvenlik kodu (CVV) kullanabilirsiniz.
                   </p>
 
                   {/* Saved cards */}
                   {savedCards.length > 0 && !showNewCardForm && (
                     <div className="mb-5 space-y-2">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Kay�tl� Kartlar</p>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Kayıtlı Kartlar</p>
                       {savedCards.map(card => {
                         const selected = selectedCardId === card.id
                         return (
@@ -671,7 +671,7 @@ function OdemeInner() {
                               <p className="text-sm font-medium text-gray-900">**** **** **** {card.lastFour}</p>
                               <p className="text-xs text-gray-400">Son Kullanma: {card.expiry}</p>
                             </div>
-                            {card.default && <span className="shrink-0 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Varsay�lan</span>}
+                            {card.default && <span className="shrink-0 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Varsayılan</span>}
                             <div className={`h-4 w-4 shrink-0 rounded-full border-2 ${selected ? 'border-brand-500 bg-brand-500' : 'border-gray-300'} flex items-center justify-center`}>
                               {selected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
                             </div>
@@ -697,13 +697,13 @@ function OdemeInner() {
                         </div>
                         <p className="text-lg tracking-[3px] font-mono mb-6 text-left">
                           {cardNumber.replace(/\s/g, '')
-                            ? ('�'.repeat(Math.max(0, cardNumber.replace(/\s/g, '').length - 4)) + cardNumber.replace(/\s/g, '').slice(-4))
+                            ? ('•'.repeat(Math.max(0, cardNumber.replace(/\s/g, '').length - 4)) + cardNumber.replace(/\s/g, '').slice(-4))
                                 .replace(/(.{4})/g, '$1 ').trim()
-                            : '����  ����  ����  ����'}
+                            : '••••  ••••  ••••  ••••'}
                         </p>
                         <div className="flex justify-between items-end">
                           <div className="min-w-0 flex-1">
-                            <p className="text-[8px] opacity-70 leading-none">KART SAH�B�</p>
+                            <p className="text-[8px] opacity-70 leading-none">KART SAHİBİ</p>
                             <p className="text-xs font-medium truncate uppercase tracking-wider leading-tight">
                               {cardName || 'AD SOYAD'}
                             </p>
@@ -714,7 +714,7 @@ function OdemeInner() {
                           </div>
                           <div className="text-right ml-3">
                             <p className="text-[8px] opacity-70 leading-none">CVV</p>
-                            <p className="text-xs font-mono leading-tight">{cvv || '���'}</p>
+                            <p className="text-xs font-mono leading-tight">{cvv || '•••'}</p>
                           </div>
                         </div>
                       </div>
@@ -722,18 +722,18 @@ function OdemeInner() {
                   )}
 
                   <form onSubmit={handlePay} noValidate className="space-y-4">
-                    {/* Card form � always visible when no saved cards, or when adding new */}
+                    {/* Card form — always visible when no saved cards, or when adding new */}
                     {(savedCards.length === 0 || showNewCardForm) && (
                       <>
                         <div>
-                          <label htmlFor="pay-cardname" className="mb-1.5 block text-sm font-medium text-gray-700">Kart �zerindeki �sim</label>
+                          <label htmlFor="pay-cardname" className="mb-1.5 block text-sm font-medium text-gray-700">Kart Üzerindeki İsim</label>
                           <input id="pay-cardname" type="text" placeholder="AD SOYAD"
                             value={cardName} onChange={e => setCardName(e.target.value.toUpperCase())}
                             className={`${inputCls(!!payErrors.cardName)} tracking-[1px]`} />
                           {payErrors.cardName && <p className="mt-1 text-xs text-red-500">{payErrors.cardName}</p>}
                         </div>
                         <div>
-                          <label htmlFor="pay-cardnumber" className="mb-1.5 block text-sm font-medium text-gray-700">Kart Numaras�</label>
+                          <label htmlFor="pay-cardnumber" className="mb-1.5 block text-sm font-medium text-gray-700">Kart Numarası</label>
                           <input id="pay-cardnumber" type="text" inputMode="numeric" placeholder="1234 5678 9012 3456"
                             value={cardNumber} onChange={e => setCardNumber(formatCardNum(e.target.value))}
                             className={`${inputCls(!!payErrors.cardNumber)} tracking-[2px] font-mono`} />
@@ -749,11 +749,11 @@ function OdemeInner() {
                           </div>
                           <div>
                             <label htmlFor="pay-cvv" className="mb-1.5 block text-sm font-medium text-gray-700">CVV</label>
-                            <input id="pay-cvv" type="password" inputMode="numeric" placeholder="���"
+                            <input id="pay-cvv" type="password" inputMode="numeric" placeholder="•••"
                               value={cvv} onChange={e => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                               className={`${inputCls(!!payErrors.cvv)} font-mono max-w-[100px]`} />
                             {payErrors.cvv && <p className="mt-1 text-xs text-red-500">{payErrors.cvv}</p>}
-                            <p className="text-[10px] text-gray-400 mt-1">3 haneli g�venlik kodu</p>
+                            <p className="text-[10px] text-gray-400 mt-1">3 haneli güvenlik kodu</p>
                           </div>
                         </div>
                       </>
@@ -763,48 +763,48 @@ function OdemeInner() {
                     {savedCards.length > 0 && !showNewCardForm && selectedCardId && (
                       <div>
                         <label htmlFor="pay-cvv-saved" className="mb-1.5 block text-sm font-medium text-gray-700">CVV</label>
-                        <input id="pay-cvv-saved" type="password" inputMode="numeric" placeholder="���"
+                        <input id="pay-cvv-saved" type="password" inputMode="numeric" placeholder="•••"
                           value={cvv} onChange={e => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                           className={`${inputCls(!!payErrors.cvv)} max-w-[100px] font-mono`} />
                         {payErrors.cvv && <p className="mt-1 text-xs text-red-500">{payErrors.cvv}</p>}
-                        <p className="text-[10px] text-gray-400 mt-1">3 haneli g�venlik kodu</p>
+                        <p className="text-[10px] text-gray-400 mt-1">3 haneli güvenlik kodu</p>
                       </div>
                     )}
 
                     <button type="submit" disabled={paying}
                       className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-4 text-base font-bold text-white shadow-lg hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-xl">
                       <Lock className="h-4 w-4" />
-                      {paying ? '��leniyor�' : plan.id === 'custom' ? '�deme Yap' : `\u20BA${getGrandTotal().toLocaleString('tr-TR')} �de`}
+                      {paying ? 'İşleniyor…' : plan.id === 'custom' ? 'Ödeme Yap' : `\u20BA${getGrandTotal().toLocaleString('tr-TR')} Öde`}
                     </button>
                   </form>
 
                   <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-400">
                     <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> 256-bit SSL</span>
-                    <span>�</span>
+                    <span>•</span>
                     <span>PCI DSS uyumlu</span>
-                    <span>�</span>
-                    <span>�yzico g�venceli</span>
+                    <span>•</span>
+                    <span>İyzico güvenceli</span>
                   </div>
                 </section>
               </>
             )}
           </div>
 
-          {/* �� Right: Order summary �� */}
+          {/* ── Right: Order summary ── */}
           <div className="space-y-4">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sticky top-24">
-              <h2 className="mb-4 text-base font-bold text-gray-900">Sipari� �zeti</h2>
+              <h2 className="mb-4 text-base font-bold text-gray-900">Sipariş Özeti</h2>
 
               {/* Plan badge */}
               <div className={`rounded-xl ${plan.color} p-4 text-white mb-5`}>
-                <p className="text-xs font-semibold opacity-75 uppercase tracking-widest">Se�ilen Plan</p>
+                <p className="text-xs font-semibold opacity-75 uppercase tracking-widest">Seçilen Plan</p>
                 <p className="mt-1 text-xl font-extrabold">{plan.name}</p>
-                <p className="text-sm opacity-80">14 g�n �cretsiz deneme</p>
+                <p className="text-sm opacity-80">14 gün ücretsiz deneme</p>
               </div>
 
               {/* Duration selector */}
               <div className="mb-5">
-                <p className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Paket S�resi</p>
+                <p className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Paket Süresi</p>
                 <div className="flex flex-wrap gap-2">
                   {DURATIONS.map(opt => {
                     const active = duration === opt.months
@@ -837,7 +837,7 @@ function OdemeInner() {
                     <span className="font-semibold text-gray-900">{plan.price}{plan.period}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
-                    <span>S�re</span>
+                    <span>Süre</span>
                     <span className="font-semibold text-gray-900">{getDurationOpt().label}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
@@ -846,7 +846,7 @@ function OdemeInner() {
                   </div>
                   {getDiscount() > 0 && (
                     <div className="flex justify-between text-emerald-600">
-                      <span>�ndirim (%{getDurationOpt().discount})</span>
+                      <span>İndirim (%{getDurationOpt().discount})</span>
                       <span className="font-semibold">-{'\u20BA'}{getDiscount().toLocaleString('tr-TR')}</span>
                     </div>
                   )}
@@ -858,15 +858,15 @@ function OdemeInner() {
                     <span>Toplam</span>
                     <span>{'\u20BA'}{getGrandTotal().toLocaleString('tr-TR')}</span>
                   </div>
-                  <p className="text-xs text-emerald-600 font-medium">{'\u2713'} �lk 14 g�n �cretsiz</p>
+                  <p className="text-xs text-emerald-600 font-medium">{'\u2713'} İlk 14 gün ücretsiz</p>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">�zel fiyatland�rma i�in bizimle ileti�ime ge�in.</p>
+                <p className="text-sm text-gray-500">Özel fiyatlandırma için bizimle iletişime geçin.</p>
               )}
 
               {/* Guarantees */}
               <div className="mt-5 space-y-2">
-                {['30 g�n para-iade garantisi', '�stedi�iniz zaman iptal', '7/24 m��teri deste�i'].map(g => (
+                {['30 gün para-iade garantisi', 'İstediğiniz zaman iptal', '7/24 müşteri desteği'].map(g => (
                   <div key={g} className="flex items-center gap-2 text-xs text-gray-500">
                     <CheckCircle className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                     {g}
@@ -876,7 +876,7 @@ function OdemeInner() {
 
               {/* Change plan link */}
               <Link href="/paket-sec" className="mt-5 block text-center text-xs text-brand-500 hover:underline">
-                Plan� de�i�tir
+                Planı değiştir
               </Link>
             </div>
           </div>

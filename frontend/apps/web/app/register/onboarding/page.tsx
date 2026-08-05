@@ -22,9 +22,9 @@ const STEPS = [
 ] as const
 
 const PLAN_CONFIGS = [
-  { id: 'starter' as const,        name: 'Başlangıç',   price: '?299/ay', badgeLabel: 'Başlangıç', accentClassName: 'border-gray-200 text-gray-600', features: ['Temel randevu, takvim ve müşteri yönetimi', 'Ödeme takibi ve temel raporlar', 'Tek şube ile hızlı başlangıç'] },
-  { id: 'business' as const,       name: 'Büyüme',      price: '?599/ay', badgeLabel: 'En Popüler', accentClassName: 'border-brand-200 bg-brand-50 text-brand-700', features: ['Kampanya, kupon ve indirim yönetimi', 'Online rezervasyon ve bekleme listesi', 'Çoklu şube yönetimi'] },
-  { id: 'professional' as const,   name: 'Profesyonel',  price: '?999/ay', badgeLabel: 'Profesyonel', accentClassName: 'border-amber-200 text-amber-700', features: ['Ürün satışı ve stok yönetimi', 'Personel performans takibi', 'Gelişmiş analitik & raporlar'] },
+  { id: 'starter' as const,        name: 'Başlangıç',   price: '₺299/ay', badgeLabel: 'Başlangıç', accentClassName: 'border-gray-200 text-gray-600', features: ['Temel randevu, takvim ve müşteri yönetimi', 'Ödeme takibi ve temel raporlar', 'Tek şube ile hızlı başlangıç'] },
+  { id: 'business' as const,       name: 'Büyüme',      price: '₺599/ay', badgeLabel: 'En Popüler', accentClassName: 'border-brand-200 bg-brand-50 text-brand-700', features: ['Kampanya, kupon ve indirim yönetimi', 'Online rezervasyon ve bekleme listesi', 'Çoklu şube yönetimi'] },
+  { id: 'professional' as const,   name: 'Profesyonel',  price: '₺999/ay', badgeLabel: 'Profesyonel', accentClassName: 'border-amber-200 text-amber-700', features: ['Ürün satışı ve stok yönetimi', 'Personel performans takibi', 'Gelişmiş analitik & raporlar'] },
   { id: 'custom' as const,         name: 'Kurumsal',    price: 'Özel',    badgeLabel: 'Kurumsal',   accentClassName: 'border-purple-200 text-purple-700', features: ['Canlı chatbot ve walk-in sıra yönetimi', 'Özel entegrasyon ve onboarding', 'SLA garantisi & 7/24 destek'] },
 ]
 
@@ -295,7 +295,9 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
     if (!form.name.trim()) return
     setLoading(true)
     try {
-      const res = await api.post<{ id: string; name: string; durationMinutes: number; price: number }>('/api/v1/services', {
+      // POST /api/v1/services only returns { id } — fill the row in from the
+      // form we already have rather than fields the response doesn't send.
+      const res = await api.post<{ id: string }>('/api/v1/services', {
         name: form.name.trim(),
         description: null,
         durationMinutes: form.durationMinutes || 30,
@@ -307,7 +309,12 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
         requiresConfirmation: false,
         maxCapacity: null,
       })
-      setServices(prev => [...prev, res])
+      setServices(prev => [...prev, {
+        id: res.id,
+        name: form.name.trim(),
+        durationMinutes: form.durationMinutes || 30,
+        price: form.price || 0,
+      }])
       setForm({ name: '', durationMinutes: 30, price: 0 })
     } catch { /* ignore */ }
     setLoading(false)
@@ -338,7 +345,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
           <div className="relative">
             <input className={`${inputCls} pr-8`} type="number" min={0} placeholder="Fiyat" value={form.price || ''}
               onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} onKeyDown={e => e.key === 'Enter' && add()} />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">?</span>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₺</span>
           </div>
           <button type="button" onClick={add} disabled={loading || !form.name.trim()} aria-label="Hizmet ekle"
             className="inline-flex items-center justify-center rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-600 disabled:opacity-50 transition-colors">
@@ -357,7 +364,7 @@ function ServicesStep({ onNext }: { onNext: () => void }) {
             <li key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
               <span className="font-semibold text-gray-900">{s.name}</span>
               <span className="flex items-center gap-3">
-                <span className="text-gray-500">{s.durationMinutes} dk · ?{s.price}</span>
+                <span className="text-gray-500">{s.durationMinutes} dk · ₺{s.price}</span>
                 <button type="button" onClick={() => remove(s.id)} aria-label={`${s.name} hizmetini sil`} className="text-gray-400 hover:text-red-500 transition-colors">
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -427,7 +434,7 @@ function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           <div className="relative">
             <input className={`${inputCls} pr-8`} type="number" min={0} placeholder="Fiyat" value={form.price || ''}
               onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">?</span>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₺</span>
           </div>
           <select className={inputCls} value={form.validityDays ?? ''}
             onChange={e => setForm(f => ({ ...f, validityDays: e.target.value ? Number(e.target.value) : null }))}>
@@ -468,7 +475,7 @@ function PackagesStep({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           {added.map((p, i) => (
             <li key={i} className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
               <span className="font-semibold text-gray-900">{p.name}</span>
-              <span className="text-gray-500">?{p.price}</span>
+              <span className="text-gray-500">₺{p.price}</span>
             </li>
           ))}
         </ul>
@@ -770,7 +777,7 @@ function PlanStep({ onBack, onComplete }: { onBack: () => void; onComplete: (pla
             <p className="font-semibold text-gray-900">{planCfg?.name} Plan</p>
             <p className="text-sm text-gray-500">{planCfg?.badgeLabel} · aylık abonelik</p>
           </div>
-          <p className="text-lg font-extrabold text-gray-900">?{PLAN_PRICES[selected]}<span className="text-sm font-normal text-gray-500">/ay</span></p>
+          <p className="text-lg font-extrabold text-gray-900">₺{PLAN_PRICES[selected]}<span className="text-sm font-normal text-gray-500">/ay</span></p>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3">
