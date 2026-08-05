@@ -68,12 +68,16 @@ public sealed class CompleteOAuthRegistrationCommandHandler
         }
         else
         {
+            // "customer" (not "user") — matches RegisterCustomerCommand. Every
+            // role-based redirect (login, /musteri, Navbar, admin stats) checks
+            // specifically for "customer"; "user" isn't recognized anywhere and
+            // silently falls into the business-panel branch instead.
             user = User.Create(
                 request.Email,
                 string.Empty,
                 request.FirstName,
                 request.LastName,
-                "user",
+                "customer",
                 null);
 
             user.SetAvatar(request.AvatarUrl);
