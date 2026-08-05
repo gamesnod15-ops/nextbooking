@@ -112,6 +112,13 @@ export default function LoginScreen() {
   }
 
   async function handleApplePress() {
+    // Sign In with Apple only exists as a native capability on iOS — Apple
+    // doesn't ship an Android implementation, and expo-apple-authentication's
+    // signInAsync throws immediately if called there.
+    if (Platform.OS !== 'ios') {
+      toast.warning('Apple ile giriş şu anda yalnızca iOS cihazlarda kullanılabilir.');
+      return;
+    }
     try {
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -337,23 +344,21 @@ export default function LoginScreen() {
                 )}
               </TouchableOpacity>
 
-              {Platform.OS === 'ios' && (
-                <TouchableOpacity
-                  style={styles.oauthBtn}
-                  onPress={handleApplePress}
-                  disabled={oauthLoading !== null}
-                  activeOpacity={0.8}
-                >
-                  {oauthLoading === 'apple' ? (
-                    <ActivityIndicator size="small" color={COLORS.primary} />
-                  ) : (
-                    <>
-                      <FontAwesome5 name="apple" size={18} color={COLORS.text} />
-                      <Text style={styles.oauthBtnText}>Apple</Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity
+                style={styles.oauthBtn}
+                onPress={handleApplePress}
+                disabled={oauthLoading !== null}
+                activeOpacity={0.8}
+              >
+                {oauthLoading === 'apple' ? (
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                ) : (
+                  <>
+                    <FontAwesome5 name="apple" size={18} color={COLORS.text} />
+                    <Text style={styles.oauthBtnText}>Apple</Text>
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
 
             <View style={styles.registerRow}>
