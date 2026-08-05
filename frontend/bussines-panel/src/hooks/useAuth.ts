@@ -87,6 +87,7 @@ export function useLogin() {
           phone: null,
           jobTitle: null,
           avatarUrl: data.avatarUrl ?? null,
+          viaAutologin: false,
         })
       )
     },
@@ -112,6 +113,7 @@ export function useOAuthLogin() {
           phone: null,
           jobTitle: null,
           avatarUrl: data.avatarUrl ?? null,
+          viaAutologin: false,
         })
       )
     },
@@ -135,6 +137,7 @@ export function useCompleteOAuthRegistration() {
           phone: null,
           jobTitle: null,
           avatarUrl: null,
+          viaAutologin: false,
         })
       )
     },

@@ -88,6 +88,7 @@ function AutoLoginHandler() {
       role,
       tenantId:    params.get('tenantId') ?? undefined,
       fullName:    params.get('fullName') ?? undefined,
+      viaAutologin: true,
     }));
     window.history.replaceState({}, '', '/');
 

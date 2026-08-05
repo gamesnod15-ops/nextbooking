@@ -33,6 +33,17 @@ api.interceptors.response.use(
     const originalRequest = error.config
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // An autologin session (handed off from the web app via ?autologin=)
+      // never received a refreshToken cookie on this origin — the cookie is
+      // scoped to whichever origin actually performed the login. Attempting
+      // /auth/refresh here is guaranteed to 401 again; skip straight to a
+      // single clean logout instead of a doomed refresh-then-fail round trip.
+      if (store.getState().auth.viaAutologin) {
+        store.dispatch(logout())
+        window.location.href = '/login'
+        return Promise.reject(error)
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
