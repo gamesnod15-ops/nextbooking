@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowRight,
+  Building2,
 } from 'lucide-react'
 import axios from '@/lib/axios'
 
@@ -37,6 +38,7 @@ export default function PanelPage() {
   const [domain, setDomain] = useState('');
   const [activePackage, setActivePackage] = useState('');
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
+  const [hasBusiness, setHasBusiness] = useState(true);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -52,6 +54,14 @@ export default function PanelPage() {
     const fullName = localStorage.getItem('fullName') ?? '';
     const params = new URLSearchParams({ autologin: token, userId, role, tenantId, fullName });
     setBusinessPanelUrl(`${process.env.NEXT_PUBLIC_BUSINESS_PANEL_URL || 'http://localhost:3000'}?${params.toString()}`);
+
+    // A plain customer/OAuth account has no tenant yet — skip the
+    // business-scoped calls entirely rather than letting them 404/error.
+    if (!tenantId) {
+      setHasBusiness(false);
+      setLoading(false);
+      return;
+    }
 
     Promise.all([
       axios.get('/api/v1/Business/me'),
@@ -140,22 +150,39 @@ export default function PanelPage() {
         <p className="mt-1 text-sm text-gray-500">Hesap panelinize hoş geldiniz. Tüm bilgilerinizi buradan yönetebilirsiniz.</p>
       </div>
 
-      <a
-        href={businessPanelUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-4 rounded-2xl bg-black p-5 text-white shadow-md hover:shadow-lg transition-shadow border border-white/10"
-      >
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500">
-          <Globe className="h-6 w-6 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="font-semibold text-base">İşletme Paneline Git</p>
-          <p className="text-sm text-gray-400">Randevularınızı, müşterilerinizi ve personelinizi yönetin.</p>
-        </div>
-        <ExternalLink className="h-5 w-5 text-gray-500" />
-      </a>
+      {hasBusiness ? (
+        <a
+          href={businessPanelUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-4 rounded-2xl bg-black p-5 text-white shadow-md hover:shadow-lg transition-shadow border border-white/10"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500">
+            <Globe className="h-6 w-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-base">İşletme Paneline Git</p>
+            <p className="text-sm text-gray-400">Randevularınızı, müşterilerinizi ve personelinizi yönetin.</p>
+          </div>
+          <ExternalLink className="h-5 w-5 text-gray-500" />
+        </a>
+      ) : (
+        <Link
+          href="/panel/isletme-olustur"
+          className="flex items-center gap-4 rounded-2xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-brand-100 transition-all"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50">
+            <Building2 className="h-6 w-6 text-brand-500" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-base text-gray-900">Henüz bir işletmeniz yok</p>
+            <p className="text-sm text-gray-500">Randevu kabul etmeye başlamak için işletmenizi oluşturun — ad, e-posta ve telefon bilgileriniz zaten hesabınızdan alınacak.</p>
+          </div>
+          <ArrowRight className="h-5 w-5 text-gray-400" />
+        </Link>
+      )}
 
+      {hasBusiness && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {cards.map(({ label, value, sub, icon: Icon, href, status }) => (
           <Link
@@ -181,6 +208,7 @@ export default function PanelPage() {
           </Link>
         ))}
       </div>
+      )}
 
       {hasSiteBuilder && domain && (
         <div className="rounded-2xl bg-white border border-gray-100 p-5">

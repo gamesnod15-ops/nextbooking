@@ -25,6 +25,11 @@ public sealed class GetReceivablesQueryHandler : IRequestHandler<GetReceivablesQ
 
     public async Task<PaginatedList<ReceivableDto>> Handle(GetReceivablesQuery request, CancellationToken ct)
     {
+        // No tenant attached (e.g. a plain customer/OAuth account with no
+        // business yet) simply has no receivables — not a server error.
+        if (!_tenant.IsSet)
+            return new PaginatedList<ReceivableDto>(new List<ReceivableDto>(), 0, request.PageNumber, request.PageSize);
+
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var q = _context.Receivables.AsNoTracking()

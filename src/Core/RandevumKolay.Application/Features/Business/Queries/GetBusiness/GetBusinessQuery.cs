@@ -44,6 +44,13 @@ public sealed class GetBusinessQueryHandler : IRequestHandler<GetBusinessQuery, 
 
     public async Task<BusinessDto> Handle(GetBusinessQuery request, CancellationToken cancellationToken)
     {
+        // An authenticated account with no business attached (e.g. a plain
+        // customer/OAuth signup) has no tenant in its JWT, so nothing sets
+        // ICurrentTenantService — accessing .TenantId in that state throws.
+        // That's a legitimate "no business yet" state, not a server error.
+        if (!_tenantService.IsSet)
+            throw new Common.Exceptions.NotFoundException("Business not found for this account.");
+
         var tenantId = _tenantService.TenantId;
 
         var business = await _context.Businesses
@@ -73,7 +80,7 @@ public sealed class GetBusinessQueryHandler : IRequestHandler<GetBusinessQuery, 
                 b.Settings,
             })
             .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new KeyNotFoundException("Business not found for tenant.");
+            ?? throw new Common.Exceptions.NotFoundException("Business not found for tenant.");
 
         var tenant = await _context.Tenants
             .AsNoTracking()
