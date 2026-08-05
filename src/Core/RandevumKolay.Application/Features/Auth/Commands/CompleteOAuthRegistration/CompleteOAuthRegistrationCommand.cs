@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RandevumKolay.Application.Common.Interfaces;
 using RandevumKolay.Domain.Entities;
+using RandevumKolay.Domain.Enums;
 using DomainRefreshToken = RandevumKolay.Domain.Entities.RefreshToken;
 
 namespace RandevumKolay.Application.Features.Auth.Commands.CompleteOAuthRegistration;
@@ -15,6 +16,8 @@ public record CompleteOAuthRegistrationCommand(
     string Phone,
     string Username,
     string? BusinessName,
+    string? Subdomain,
+    BusinessCategory? BusinessCategory,
     string? Country,
     string? City,
     string? Purpose,
@@ -57,7 +60,6 @@ public sealed class CompleteOAuthRegistrationCommandHandler
             .FirstOrDefaultAsync(u => u.Email == request.Email.ToLowerInvariant() && !u.IsDeleted, cancellationToken);
 
         User user;
-        Guid? tenantId = null;
 
         if (existingUser is not null)
         {
@@ -71,7 +73,9 @@ public sealed class CompleteOAuthRegistrationCommandHandler
             // "customer" (not "user") — matches RegisterCustomerCommand. Every
             // role-based redirect (login, /musteri, Navbar, admin stats) checks
             // specifically for "customer"; "user" isn't recognized anywhere and
-            // silently falls into the business-panel branch instead.
+            // silently falls into the business-panel branch instead. Upgraded
+            // to "tenant_admin" below when the caller also supplied business
+            // details (the business-panel's own signup flow).
             user = User.Create(
                 request.Email,
                 string.Empty,
@@ -84,6 +88,30 @@ public sealed class CompleteOAuthRegistrationCommandHandler
             user.VerifyEmail();
             user.RecordLogin();
             _context.Users.Add(user);
+        }
+
+        // Only the business-panel's signup form sends all three of these —
+        // the web app's plain customer OAuth signup never does, so this is a
+        // no-op there and the account stays a simple customer as before.
+        var wantsBusiness = !string.IsNullOrWhiteSpace(request.BusinessName)
+            && !string.IsNullOrWhiteSpace(request.Subdomain)
+            && request.BusinessCategory.HasValue;
+
+        if (wantsBusiness && !user.TenantId.HasValue)
+        {
+            var subdomainTaken = await _context.Tenants
+                .AnyAsync(t => t.Subdomain == request.Subdomain!.ToLowerInvariant(), cancellationToken);
+            if (subdomainTaken)
+                throw new Common.Exceptions.ConflictException($"Subdomain '{request.Subdomain}' is already taken.");
+
+            var tenant = Tenant.Create(request.BusinessName!, request.Subdomain!, user.Email, "starter");
+            _context.Tenants.Add(tenant);
+
+            var business = RandevumKolay.Domain.Entities.Business.Create(
+                tenant.Id, request.BusinessName!, request.BusinessCategory!.Value);
+            _context.Businesses.Add(business);
+
+            user.AssignToTenant(tenant.Id, "tenant_admin");
         }
 
         await _context.SaveChangesAsync(cancellationToken);

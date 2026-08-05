@@ -32,6 +32,40 @@ const COUNTRIES = [
   { code: 'AZ', name: 'Azerbaycan' },
 ]
 
+// Mirrors the backend's BusinessCategory enum.
+const BUSINESS_CATEGORIES = [
+  { value: 1,  label: 'Güzellik Salonu' },
+  { value: 2,  label: 'Kuaför / Berber' },
+  { value: 3,  label: 'Klinik' },
+  { value: 4,  label: 'Diş Kliniği' },
+  { value: 5,  label: 'Fizyoterapi' },
+  { value: 6,  label: 'Spor Salonu' },
+  { value: 7,  label: 'Kişisel Antrenör' },
+  { value: 8,  label: 'Yoga & Pilates' },
+  { value: 9,  label: 'Spa & Masaj' },
+  { value: 10, label: 'Tırnak Salonu' },
+  { value: 11, label: 'Dövme Stüdyosu' },
+  { value: 12, label: 'Veteriner' },
+  { value: 13, label: 'Oto Servis' },
+  { value: 14, label: 'Oto Yıkama' },
+  { value: 15, label: 'Teknik Servis' },
+  { value: 16, label: 'Danışmanlık' },
+  { value: 17, label: 'Psikolog' },
+  { value: 18, label: 'Beslenme Uzmanı' },
+  { value: 19, label: 'Özel Ders' },
+  { value: 20, label: 'Fotoğrafçı' },
+  { value: 99, label: 'Diğer' },
+]
+
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
   TR: ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 'Mersin', 'Kocaeli', 'Eskişehir', 'Trabzon', 'Samsun', 'Denizli', 'Diyarbakır'],
   DE: ['Berlin', 'Münih', 'Hamburg', 'Frankfurt', 'Köln', 'Stuttgart', 'Düsseldorf'],
@@ -56,6 +90,8 @@ export function CompleteRegistrationPage() {
     phone: '',
     username: '',
     businessName: '',
+    subdomain: '',
+    businessCategory: '',
     country: '',
     city: '',
     purpose: '',
@@ -76,8 +112,14 @@ export function CompleteRegistrationPage() {
     }
   }, [state])
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }))
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const value = e.target.value
+    setForm((prev) => {
+      const next = { ...prev, [field]: value }
+      if (field === 'businessName') next.subdomain = slugify(value)
+      return next
+    })
+  }
 
   function validate(): boolean {
     const errs: typeof errors = {}
@@ -92,6 +134,11 @@ export function CompleteRegistrationPage() {
     if (!form.country) errs.country = 'Ülke seçiniz.'
     if (!form.city) errs.city = 'Şehir seçiniz.'
     if (!form.purpose) errs.purpose = 'Kullanım amacı seçiniz.'
+    if (form.businessName.trim()) {
+      if (!form.subdomain.trim()) errs.subdomain = 'Firma kullanıcı adı gereklidir.'
+      else if (!/^[a-z0-9-]{3,50}$/.test(form.subdomain)) errs.subdomain = 'Yalnızca küçük harf, rakam ve tire (-) kullanabilirsiniz (3-50 karakter).'
+      if (!form.businessCategory) errs.businessCategory = 'İşletme kategorisi seçiniz.'
+    }
     if (!form.agreedToTerms) errs.agreedToTerms = 'Kullanım şartlarını kabul etmelisiniz.'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -102,7 +149,7 @@ export function CompleteRegistrationPage() {
     if (!validate() || !state) return
 
     try {
-      await completeMutation.mutateAsync({
+      const result = await completeMutation.mutateAsync({
         provider: state.provider,
         providerUserId: state.providerUserId,
         email: form.email,
@@ -111,6 +158,8 @@ export function CompleteRegistrationPage() {
         phone: form.phone.replace(/\s/g, ''),
         username: form.username,
         businessName: form.businessName || undefined,
+        subdomain: form.businessName ? form.subdomain : undefined,
+        businessCategory: form.businessName && form.businessCategory ? parseInt(form.businessCategory, 10) : undefined,
         country: form.country,
         city: form.city,
         purpose: form.purpose,
@@ -119,7 +168,8 @@ export function CompleteRegistrationPage() {
       })
       setSuccess(true)
       showToast('success', 'Kayıt tamamlandı', 'Hesabınız başarıyla oluşturuldu.')
-      setTimeout(() => navigate('/user/dashboard'), 2000)
+      const destination = result.role === 'tenant_admin' || result.role === 'business' ? '/onboarding' : '/user/dashboard'
+      setTimeout(() => navigate(destination), 2000)
     } catch {
       showToast('error', 'Kayıt başarısız', 'Bir hata oluştu. Lütfen tekrar deneyin.')
     }
@@ -242,9 +292,33 @@ export function CompleteRegistrationPage() {
                 İşletme Bilgileri (Opsiyonel)
               </h2>
               <div className="space-y-4">
-                <Field label="Şirket / İşletme Adı" error={errors.businessName} hint="Bir işletmeniz varsa adını girin">
+                <Field label="Şirket / İşletme Adı" error={errors.businessName} hint="Bir işletmeniz varsa adını girin — randevu kabul etmeye başlarsınız">
                   <input type="text" value={form.businessName} onChange={set('businessName')} placeholder="İşletme adı" className={inputClass(!!errors.businessName)} />
                 </Field>
+                {form.businessName.trim() && (
+                  <>
+                    <Field
+                      label="Firma Kullanıcı Adı (Subdomain)"
+                      error={errors.subdomain}
+                      hint="Bu adres randevu sayfanızın URL'i olacak: jetrandevu.com/firma-adi"
+                    >
+                      <div className="flex overflow-hidden rounded-xl border border-gray-300 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
+                        <span className="flex items-center whitespace-nowrap border-r border-gray-300 bg-gray-50 px-3 text-xs text-gray-500">
+                          jetrandevu.com/
+                        </span>
+                        <input type="text" value={form.subdomain} onChange={set('subdomain')} placeholder="isletme-adi" className="flex-1 bg-white px-3 py-2.5 text-sm outline-none" />
+                      </div>
+                    </Field>
+                    <Field label="İşletme Kategorisi" error={errors.businessCategory}>
+                      <select value={form.businessCategory} onChange={set('businessCategory')} className={inputClass(!!errors.businessCategory)}>
+                        <option value="">Kategori seçin…</option>
+                        {BUSINESS_CATEGORIES.map((cat) => (
+                          <option key={cat.value} value={cat.value}>{cat.label}</option>
+                        ))}
+                      </select>
+                    </Field>
+                  </>
+                )}
               </div>
             </div>
 

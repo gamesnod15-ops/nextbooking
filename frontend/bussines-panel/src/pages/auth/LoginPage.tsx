@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useLogin } from '@/hooks/useAuth'
 import { showToast } from '@/components/ui/Toast'
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Shield } from 'lucide-react'
+import { GoogleIcon, AppleIcon } from '@/lib/icons'
+import { startOAuthLogin } from '@/lib/oauth'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -129,10 +131,22 @@ export function LoginPage() {
             <span>veya</span>
           </div>
 
+          {/* Social login */}
+          <div className="flex justify-center gap-4">
+            <button type="button" onClick={() => startOAuthLogin('google')} aria-label="Google ile giriş yap"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300">
+              <GoogleIcon size={20} />
+            </button>
+            <button type="button" onClick={() => startOAuthLogin('apple')} aria-label="Apple ile giriş yap"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300">
+              <AppleIcon size={20} className="text-gray-900" />
+            </button>
+          </div>
+
           {/* Register */}
-          <div className="login-register">
+          <div className="login-register mt-4">
             Hesabınız yok mu?{' '}
-            <a href="/register">Kayıt Ol</a>
+            <Link to="/register">Kayıt Ol</Link>
           </div>
         </div>
 

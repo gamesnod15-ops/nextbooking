@@ -50,6 +50,8 @@ interface CompleteOAuthRequest {
   phone: string
   username: string
   businessName?: string
+  subdomain?: string
+  businessCategory?: number
   country?: string
   city?: string
   purpose?: string
@@ -63,6 +65,23 @@ interface CompleteOAuthResponse {
   role: string
   fullName: string
   tenantId: string | null
+}
+
+interface TenantRegisterRequest {
+  businessName: string
+  subdomain: string
+  ownerEmail: string
+  ownerPassword: string
+  ownerFirstName: string
+  ownerLastName: string
+  ownerPhone: string
+  businessCategory: number
+}
+
+interface TenantRegisterResponse {
+  tenantId: string
+  userId: string
+  subdomain: string
 }
 
 export function useLogin() {
@@ -102,6 +121,11 @@ export function useOAuthLogin() {
     onSuccess: (data) => {
       if (data.isNewUser || !data.accessToken) return
 
+      const allowedRoles = ['business', 'tenant_admin']
+      if (!data.role || !allowedRoles.includes(data.role)) {
+        throw new Error('unauthorized_role')
+      }
+
       dispatch(
         setCredentials({
           accessToken: data.accessToken,
@@ -137,6 +161,40 @@ export function useCompleteOAuthRegistration() {
           phone: null,
           jobTitle: null,
           avatarUrl: null,
+          viaAutologin: false,
+        })
+      )
+    },
+  })
+}
+
+// POST /tenants/register only returns { tenantId, userId, subdomain } — no
+// tokens (it sends an email-verification link instead of auto-logging in).
+// Log in with the same credentials right after so the new owner lands
+// straight in the panel, matching the web app's register flow.
+export function useTenantRegister() {
+  const dispatch = useDispatch()
+  return useMutation({
+    mutationFn: async (data: TenantRegisterRequest) => {
+      await api.post<TenantRegisterResponse>('/tenants/register', data)
+      const loginRes = await api.post<LoginResponse>('/auth/login', {
+        email: data.ownerEmail,
+        password: data.ownerPassword,
+      })
+      return loginRes.data
+    },
+    onSuccess: (data) => {
+      dispatch(
+        setCredentials({
+          accessToken: data.accessToken,
+          userId: data.userId,
+          role: data.role,
+          tenantId: data.tenantId,
+          fullName: data.fullName,
+          email: data.email ?? null,
+          phone: null,
+          jobTitle: null,
+          avatarUrl: data.avatarUrl ?? null,
           viaAutologin: false,
         })
       )

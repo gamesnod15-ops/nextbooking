@@ -6,6 +6,7 @@ import { setCredentials } from '@/store/slices/authSlice'
 import api from '@/lib/api'
 import { normalizePlanId, planAllows } from '@/config/plans'
 import { LoginPage } from '@/pages/auth/LoginPage'
+import { RegisterPage } from '@/pages/auth/RegisterPage'
 import { OAuthCallbackPage } from '@/pages/auth/OAuthCallbackPage'
 import { CompleteRegistrationPage } from '@/pages/auth/CompleteRegistrationPage'
 import { OnboardingWizardPage } from '@/pages/onboarding/OnboardingWizardPage'
@@ -158,6 +159,7 @@ export default function App() {
         <FeedbackWidget />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/auth/oauth/callback" element={<OAuthCallbackPage />} />
           <Route path="/auth/complete-registration" element={<CompleteRegistrationPage />} />
           <Route path="/onboarding" element={<PrivateRoute><OnboardingWizardPage /></PrivateRoute>} />

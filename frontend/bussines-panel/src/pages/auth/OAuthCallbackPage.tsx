@@ -4,6 +4,15 @@ import { Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 import { useOAuthLogin } from '@/hooks/useAuth'
 import { showToast } from '@/components/ui/Toast'
 
+function readCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
+  return match ? decodeURIComponent(match[1]) : null
+}
+
+function clearCookie(name: string) {
+  document.cookie = `${name}=; Max-Age=0; path=/`
+}
+
 export function OAuthCallbackPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -12,14 +21,30 @@ export function OAuthCallbackPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
+    if (searchParams.get('error')) {
+      setStatus('error')
+      setErrorMessage('Giriş sağlayıcıdan bir hata döndü. Lütfen tekrar deneyin.')
+      return
+    }
+
     const provider = searchParams.get('provider') || 'google'
-    const token = searchParams.get('token') || searchParams.get('code') || searchParams.get('id_token')
 
-    const hash = window.location.hash.substring(1)
-    const hashParams = new URLSearchParams(hash)
-    const accessToken = hashParams.get('access_token') || hashParams.get('id_token')
-
-    const finalToken = token || accessToken
+    // Apple's response_mode=form_post can't be read by a client route, so its
+    // token arrives via a short-lived cookie set by /api/oauth-apple-callback
+    // rather than a query param or URL fragment.
+    let finalToken: string | null = null
+    if (provider === 'apple') {
+      finalToken = readCookie('oauth_apple_token')
+      clearCookie('oauth_apple_token')
+      sessionStorage.removeItem('oauth_state')
+    } else {
+      const token = searchParams.get('token') || searchParams.get('code') || searchParams.get('id_token')
+      const hash = window.location.hash.substring(1)
+      const hashParams = new URLSearchParams(hash)
+      const accessToken = hashParams.get('access_token') || hashParams.get('id_token')
+      finalToken = token || accessToken
+      sessionStorage.removeItem('oauth_nonce')
+    }
 
     if (!finalToken) {
       setStatus('error')
