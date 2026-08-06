@@ -33,11 +33,14 @@ import { useToast } from '@/components/ui/Toast';
 // itself and hands control back to the app once Google redirects.
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_DISCOVERY = { authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth' };
-
-function randomNonce() {
-  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-}
+// Google's OAuth 2.0 policy for native (Android/iOS) app clients disallows
+// the browser-based implicit grant (response_type=id_token/token) outright —
+// only the authorization-code + PKCE flow is accepted, so the token endpoint
+// is needed too, to exchange the returned `code` for an id_token afterward.
+const GOOGLE_DISCOVERY = {
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+  tokenEndpoint: 'https://oauth2.googleapis.com/token',
+};
 
 interface OAuthCallbackResponse {
   isNewUser: boolean;
@@ -75,7 +78,6 @@ export default function LoginScreen() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'apple' | null>(null);
-  const [googleNonce] = useState(randomNonce);
 
   const isBusiness = selectedRole === 'business';
 
@@ -84,27 +86,47 @@ export default function LoginScreen() {
     android: Constants.expoConfig?.extra?.googleAndroidClientId,
   }) as string | undefined;
 
-  const [, googleResponse, promptGoogleAsync] = AuthSession.useAuthRequest(
+  const googleRedirectUri = AuthSession.makeRedirectUri({ scheme: 'jetrandevu' });
+
+  const [googleRequest, googleResponse, promptGoogleAsync] = AuthSession.useAuthRequest(
     {
       clientId: googleClientId || 'not-configured',
       scopes: ['openid', 'email', 'profile'],
-      redirectUri: AuthSession.makeRedirectUri({ scheme: 'jetrandevu' }),
-      responseType: AuthSession.ResponseType.IdToken,
-      // PKCE only applies to the authorization-code flow — Google rejects
-      // code_challenge/code_challenge_method on an id_token (implicit) request.
-      usePKCE: false,
-      extraParams: { nonce: googleNonce },
+      redirectUri: googleRedirectUri,
+      responseType: AuthSession.ResponseType.Code,
+      usePKCE: true,
     },
     GOOGLE_DISCOVERY
   );
 
   useEffect(() => {
-    if (googleResponse?.type === 'success' && googleResponse.params.id_token) {
-      handleOAuthLogin('google', googleResponse.params.id_token);
+    if (googleResponse?.type === 'success' && googleResponse.params.code) {
+      exchangeGoogleCode(googleResponse.params.code);
     } else if (googleResponse?.type === 'error') {
       toast.error('Google ile giriş başarısız. Lütfen tekrar deneyin.');
     }
   }, [googleResponse]);
+
+  async function exchangeGoogleCode(code: string) {
+    try {
+      const tokenResponse = await AuthSession.exchangeCodeAsync(
+        {
+          clientId: googleClientId!,
+          code,
+          redirectUri: googleRedirectUri,
+          extraParams: { code_verifier: googleRequest?.codeVerifier ?? '' },
+        },
+        GOOGLE_DISCOVERY
+      );
+      if (!tokenResponse.idToken) {
+        toast.error('Google kimlik bilgisi alınamadı.');
+        return;
+      }
+      await handleOAuthLogin('google', tokenResponse.idToken);
+    } catch {
+      toast.error('Google ile giriş başarısız. Lütfen tekrar deneyin.');
+    }
+  }
 
   async function handleGooglePress() {
     if (!googleClientId) {
