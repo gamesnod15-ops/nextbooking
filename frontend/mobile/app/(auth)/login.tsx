@@ -90,6 +90,9 @@ export default function LoginScreen() {
       scopes: ['openid', 'email', 'profile'],
       redirectUri: AuthSession.makeRedirectUri({ scheme: 'jetrandevu' }),
       responseType: AuthSession.ResponseType.IdToken,
+      // PKCE only applies to the authorization-code flow — Google rejects
+      // code_challenge/code_challenge_method on an id_token (implicit) request.
+      usePKCE: false,
       extraParams: { nonce: googleNonce },
     },
     GOOGLE_DISCOVERY
